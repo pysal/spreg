@@ -56,9 +56,9 @@ def setup_package():
         maintainer_email='sjsrey@gmail.com',
         test_suite='nose.collector',
         tests_require=['nose'],
-          packages = finde_packages(),
+        packages = finde_packages(),
         keywords='spatial statistics',
-          py_modules=['spreg'],
+        py_modules=['spreg'],
         classifiers=[
             'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Science/Research',
@@ -73,7 +73,6 @@ def setup_package():
             'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.4'
             ],
-        packages=['spreg'],
         install_reqs = reqs.pop('base'),
         extras_require=extras_reqs,
         cmdclass={'build.py': build_py})
