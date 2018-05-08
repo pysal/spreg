@@ -4,8 +4,8 @@ Spreg
 PySAL Spatial Econometrics Package
 
 
-.. image:: https://travis-ci.org/pysal/libpysal.svg
-   :target: https://travis-ci.org/pysal/libpysal
+.. image:: https://travis-ci.org/pysal/spreg.svg
+   :target: https://travis-ci.org/pysal/spreg
 
 .. image:: https://badges.gitter.im/pysal/pysal.svg
    :target: https://gitter.im/pysal/pysal
