@@ -18,28 +18,38 @@ before_install:
   - ./miniconda.sh -b -p ./miniconda
   - export PATH=`pwd`/miniconda/bin:$PATH
   - conda update --yes conda
+  - conda config --add channels conda-forge
   - conda create -y -q -n test-env python=$TRAVIS_PYTHON_VERSION
   - source activate test-env
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then 2to3 -nw spreg/ > /dev/null; fi
 
 install:
-  - conda install --yes pip nose
-  - which pip
-  - conda install --yes --file requirements.txt;
-  - pip install libpysal
-  - if [[ PYSAL_PLUS ]]; then conda install --yes numba; fi
+  - conda install --yes pip
+  - if [ "$PYSAL_PLUS" == true ]; then
+        echo 'plus testing'; conda install --yes --file requirements_plus.txt;
+        else conda install --yes --file requirements.txt;
+    fi;
+  - pip install -r requirements_dev.txt
 
 script:
-  - pwd
-  - ls -al
   - python setup.py sdist >/dev/null
-  - nosetests -v spreg;
-
+  - echo "check_stable=False" >spreg/config.py
+  - nosetests --verbose --with-coverage --cover-package=spreg;
+  #- cd doc; make pickle; make doctest
 notifications:
     email:
         recipients:
-            - levi.john.wolf+travis@gmail.com
-            - sjsrey+travis@gmail.com
-        on_change: always
+            - sjsrey@gmail.com
+            - levi.john.wolf@gmail.com
+            - dfolch@gmail.com
+            - daniel.arribas.bel@gmail.com
+            - weikang9009@gmail.com
+            - carsonfarmer@gmail.com
+            - tayoshan@gmail.com
+            - marynia.kolak@gmail.com
+            - jgaboardi@gmail.com
+            - phil.stphns@gmail.com
+        on_success: always
         on_failure: always
 
 after_success:

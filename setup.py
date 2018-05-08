@@ -56,7 +56,9 @@ def setup_package():
         maintainer_email='sjsrey@gmail.com',
         test_suite='nose.collector',
         tests_require=['nose'],
+          packages = finde_packages(),
         keywords='spatial statistics',
+          py_modules=['spreg'],
         classifiers=[
             'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Science/Research',
@@ -71,11 +73,9 @@ def setup_package():
             'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.4'
             ],
-        license='3-Clause BSD',
         packages=['spreg'],
-        install_requires=['numpy', 'scipy', 'libpysal'
-                            ],
-        zip_safe=False,
+        install_reqs = reqs.pop('base'),
+        extras_require=extras_reqs,
         cmdclass={'build.py': build_py})
 
 if __name__ == '__main__':
