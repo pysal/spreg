@@ -48,17 +48,20 @@ def setup_package():
     extras_reqs = reqs
 
 
-    setup(name='spreg',  # name of package
-        version='1.0.0',
-        description='PySAL Package for Spatial Econometrics',
-        url='https://github.com/pysal/spreg',
-        maintainer='Sergio Rey',
-        maintainer_email='sjsrey@gmail.com',
+    setup(name='spreg',
+        version=VERSION,
+        description="PySAL Spatial Econometrics Package",
+        long_description=long_description,
+        maintainer="PySAL Developers",
+        maintainer_email='pysal-dev@googlegroups.com',
+        url='http://pysal.org',
+        download_url='https://pypi.python.org/pypi/spreg',
+        license='BSD',
+        py_modules=['spreg'],
+        packages=find_packages(),
         test_suite='nose.collector',
         tests_require=['nose'],
-        packages = find_packages(),
         keywords='spatial statistics',
-        py_modules=['spreg'],
         classifiers=[
             'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Science/Research',
@@ -71,11 +74,16 @@ def setup_package():
             'Programming Language :: Python :: 2.5',
             'Programming Language :: Python :: 2.6',
             'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 3.4'
-            ],
-        install_reqs = reqs.pop('base'),
+            'Programming Language :: Python :: 3.4',
+            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6'
+        ],
+        # package_data={'libpysal':list(example_data_files)},
+        install_requires=install_reqs,
         extras_require=extras_reqs,
-        cmdclass={'build.py': build_py})
+        cmdclass={'build_py': build_py}
+    )
+
 
 if __name__ == '__main__':
     setup_package()
