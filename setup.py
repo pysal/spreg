@@ -79,7 +79,7 @@ def setup_package():
             'Programming Language :: Python :: 3.6'
         ],
         # package_data={'libpysal':list(example_data_files)},
-        install_requires=install_reqs,
+          install_requires=['numpy', 'scipy', 'libpysal'],
         extras_require=extras_reqs,
         cmdclass={'build_py': build_py}
     )
