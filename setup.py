@@ -56,7 +56,7 @@ def setup_package():
         maintainer_email='sjsrey@gmail.com',
         test_suite='nose.collector',
         tests_require=['nose'],
-        packages = finde_packages(),
+        packages = find_packages(),
         keywords='spatial statistics',
         py_modules=['spreg'],
         classifiers=[
