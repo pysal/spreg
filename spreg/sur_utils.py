@@ -19,7 +19,7 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
     
     Parameters
     ----------
-    db          : data object created by pysal.open
+    db          : data object created by lps.open
     y_vars      : list of lists with variable name(s) for dependent var
                   (Note must be a list of lists, even in splm case)
     x_vars      : list of lists with variable names for explanatory vars
@@ -94,7 +94,7 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
     
     Parameters
     ----------
-    db          : data object created by pysal.open
+    db          : data object created by lps.open
     varnames    : list of lists with variable name(s)
                   (Note must be a list of lists, even in splm case)
     form        : format used for data set

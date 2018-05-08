@@ -1,22 +1,22 @@
 import unittest
 import numpy as np
-import pysal
-from pysal.spreg.ols import OLS
-from pysal.spreg.ols_regimes import OLS_Regimes
-from pysal.common import RTOL
+import libpysal.api as lps
+from spreg.ols import OLS
+from spreg.ols_regimes import OLS_Regimes
+from libpysal.common import RTOL
 
-PEGP = pysal.examples.get_path
+PEGP = lps.get_path
 
 class TestOLS_regimes(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+        db = lps.open(lps.get_path('columbus.dbf'),'r')
         self.y_var = 'CRIME'
         self.y = np.array([db.by_col(self.y_var)]).reshape(49,1)
         self.x_var = ['INC','HOVAL']
         self.x = np.array([db.by_col(name) for name in self.x_var]).T
         self.r_var = 'NSA'
         self.regimes = db.by_col(self.r_var)
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_OLS(self):

@@ -211,15 +211,15 @@ class SUR(BaseSUR):
         Examples
         --------
 
-        First import pysal to load the spatial analysis tools.
+        First import libpysal.api as lps to load the spatial analysis tools.
 
-        >>> import pysal
+        >>> import libpysal.api as lps
 
-        Open data on NCOVR US County Homicides (3085 areas) using pysal.open().
-        This is the DBF associated with the NAT shapefile. Note that pysal.open()
+        Open data on NCOVR US County Homicides (3085 areas) using lps.open().
+        This is the DBF associated with the NAT shapefile. Note that lps.open()
         also reads data in CSV format.
 
-        >>> db = pysal.open(pysal.examples.get_path("NAT.dbf"),'r')
+        >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
 
         The specification of the model to be estimated can be provided as lists.
         Each equation should be listed separately. In this example, equation 1
@@ -233,7 +233,7 @@ class SUR(BaseSUR):
         Although not required for this method, we can load a weights matrix file
         to allow for spatial diagnostics.
 
-        >>> w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+        >>> w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
         >>> w.transform='r'
 
         The SUR method requires data to be provided as dictionaries. PySAL
@@ -244,7 +244,7 @@ class SUR(BaseSUR):
         (bigXvars). All these will be created from th database (db) and lists
         of variables (y_var and x_var) created above.
 
-        >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+        >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_utils.sur_dictxy(db,y_var,x_var)
 
         We can now run the regression and then have a summary of the output by typing:
         'print(reg.summary)'
@@ -542,15 +542,15 @@ class ThreeSLS(BaseThreeSLS):
         Examples
         --------
 
-        First import pysal to load the spatial analysis tools.
+        First import libpysal.api as lps to load the spatial analysis tools.
 
-        >>> import pysal
+        >>> import libpysal.api as lps
 
-        Open data on NCOVR US County Homicides (3085 areas) using pysal.open().
-        This is the DBF associated with the NAT shapefile. Note that pysal.open()
+        Open data on NCOVR US County Homicides (3085 areas) using lps.open().
+        This is the DBF associated with the NAT shapefile. Note that lps.open()
         also reads data in CSV format.
 
-        >>> db = pysal.open(pysal.examples.get_path("NAT.dbf"),'r')
+        >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
 
         The specification of the model to be estimated can be provided as lists.
         Each equation should be listed separately. In this example, equation 1
@@ -571,9 +571,9 @@ class ThreeSLS(BaseThreeSLS):
         dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
         additional instruments (q).
 
-        >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
-        >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
-        >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
+        >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+        >>> bigyend,bigyendvars = spreg.sur_utils.sur_dictZ(db,yend_var)
+        >>> bigq,bigqvars = spreg.sur_utils.sur_dictZ(db,q_var)
 
         We can now run the regression and then have a summary of the output by typing:
         print(reg.summary)
@@ -669,15 +669,15 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import pysal
+    import libpysal.api as lps
     from sur_utils import sur_dictxy,sur_dictZ
 
-    db = pysal.open(pysal.examples.get_path('NAT.dbf'), 'r')
+    db = lps.open(lps.get_path('NAT.dbf'), 'r')
     y_var = ['HR80','HR90']
     x_var = [['PS80','UE80'],['PS90','UE90']]
     #Example SUR
     #"""
-    w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+    w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
     w.transform='r'
     bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(db,y_var,x_var)
     reg0 = SUR(bigy0,bigX0,w=w,name_bigy=bigyvars0,name_bigX=bigXvars0,\

@@ -13,7 +13,7 @@ from scipy import sparse as SP
 from scipy.sparse import linalg as SPla
 import scipy.optimize as op
 import numpy.linalg as la
-from pysal import lag_spatial
+from libpysal.api import lag_spatial
 from sputils import *
 import copy
 
@@ -248,7 +248,7 @@ def get_A1_hom(s, scalarKP=False):
     wpw = s.T * s
     twpw = np.sum(wpw.diagonal())
     e = SP.eye(n, n, format='csr')
-    e.data = np.ones(n) * (twpw / n)
+    e.data = np.ones(int(n)) * (twpw / n)
     num = wpw - e
     if not scalarKP:
         return num
@@ -419,11 +419,11 @@ def get_spFilter(w, lamb, sf):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
-    >>> w=pysal.open(pysal.examples.get_path("columbus.gal")).read()        
+    >>> w=lps.open(lps.get_path("columbus.gal")).read()        
     >>> solu = get_spFilter(w,0.5,y)
     >>> print solu[0:5]
     [[  -8.9882875]
@@ -505,7 +505,7 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
     >>> import numpy, pysal
     >>> import numpy.linalg as la
     >>> np.random.seed(10)
-    >>> w = pysal.lat2W(5, 5)
+    >>> w = lps.lat2W(5, 5)
     >>> w.transform = 'r'
     >>> data = np.random.randn(w.n)
     >>> data.shape = (w.n, 1)

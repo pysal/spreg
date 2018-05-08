@@ -1,5 +1,5 @@
-import pysal.spreg as EC
-from pysal.spreg import sputils as spu
+import spreg as EC
+from spreg import sputils as spu
 from warnings import warn as Warn
 import unittest as ut
 import numpy as np

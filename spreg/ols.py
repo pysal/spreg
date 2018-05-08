@@ -78,8 +78,8 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
     >>> X = []
@@ -288,15 +288,15 @@ class OLS(BaseOLS):
     Examples
     --------
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal.api as lps
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; also, the actual OLS class
+    lps.open() also reads data in CSV format; also, the actual OLS class
     requires data to be passed in as numpy arrays so the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
 
     Extract the HOVAL column (home values) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -309,7 +309,7 @@ class OLS(BaseOLS):
     Extract CRIME (crime) and INC (income) vectors from the DBF to be used as
     independent variables in the regression.  Note that PySAL requires this to
     be an nxj numpy array, where j is the number of independent variables (not
-    including a constant). pysal.spreg.OLS adds a vector of ones to the
+    including a constant). spreg.OLS adds a vector of ones to the
     independent variables passed in.
 
     >>> X = []
@@ -324,12 +324,12 @@ class OLS(BaseOLS):
 
     >>> ols = OLS(y, X, name_y='home value', name_x=['income','crime'], name_ds='columbus', white_test=True)
 
-    pysal.spreg.OLS computes the regression coefficients and their standard
+    spreg.OLS computes the regression coefficients and their standard
     errors, t-stats and p-values. It also computes a large battery of
     diagnostics on the regression. In this example we compute the white test
     which by default isn't ('white_test=True'). All of these results can be independently
     accessed as attributes of the regression object created by running
-    pysal.spreg.OLS.  They can also be accessed at one time by printing the
+    spreg.OLS.  They can also be accessed at one time by printing the
     summary attribute of the regression object. In the example below, the
     parameter on crime is -0.4849, with a t-statistic of -2.6544 and p-value
     of 0.01087.
@@ -391,7 +391,7 @@ class OLS(BaseOLS):
     White                             5           2.906           0.7145
     ================================ END OF REPORT =====================================
 
-    If the optional parameters w and spat_diag are passed to pysal.spreg.OLS,
+    If the optional parameters w and spat_diag are passed to spreg.OLS,
     spatial diagnostics will also be computed for the regression.  These
     include Lagrange multiplier tests and Moran's I of the residuals.  The w
     parameter is a PySAL spatial weights matrix. In this example, w is built
@@ -402,7 +402,7 @@ class OLS(BaseOLS):
     residuals is 0.204 with a standardized value of 2.592 and a p-value of
     0.0095.
 
-    >>> w = pysal.weights.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     >>> ols = OLS(y, X, w, spat_diag=True, moran=True, name_y='home value', name_x=['income','crime'], name_ds='columbus')
     >>> ols.betas
     array([[ 46.42818268],
@@ -456,13 +456,13 @@ if __name__ == '__main__':
     _test()
 
     import numpy as np
-    import pysal
-    db = pysal.open(pysal.examples.get_path("columbus.dbf"), 'r')
+    import libpysal.api as lps
+    db = lps.open(lps.get_path("columbus.dbf"), 'r')
     y_var = 'CRIME'
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
     x_var = ['INC', 'HOVAL']
     x = np.array([db.by_col(name) for name in x_var]).T
-    w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     w.transform = 'r'
     ols = OLS(
         y, x, w=w, nonspat_diag=True, spat_diag=True, name_y=y_var, name_x=x_var,

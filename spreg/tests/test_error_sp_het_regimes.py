@@ -1,14 +1,14 @@
 import unittest
-import pysal
+import libpysal.api as lps
 import numpy as np
-from pysal.spreg import error_sp_het_regimes as SP
-from pysal.spreg.error_sp_het import GM_Error_Het, GM_Endog_Error_Het, GM_Combo_Het
-from pysal.common import RTOL
+from spreg import error_sp_het_regimes as SP
+from spreg.error_sp_het import GM_Error_Het, GM_Endog_Error_Het, GM_Combo_Het
+from libpysal.common import RTOL
 
 class TestGM_Error_Het_Regimes(unittest.TestCase):
     def setUp(self):
         #Columbus:
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("CRIME"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -24,7 +24,7 @@ class TestGM_Error_Het_Regimes(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = pysal.queen_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.queen_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
         self.r_var = 'NSA'
         self.regimes = db.by_col(self.r_var)
@@ -37,10 +37,10 @@ class TestGM_Error_Het_Regimes(unittest.TestCase):
         self.x_a = np.hstack((self.x_a1,self.x_a2))
         self.y_a = np.dot(np.hstack((np.ones((n,1)),self.x_a)),np.array([[1],[0.5],[2]])) + np.random.normal(0,1,(n,1))
         latt = int(np.sqrt(n))
-        self.w_a = pysal.lat2W(latt,latt)
+        self.w_a = lps.lat2W(latt,latt)
         self.w_a.transform='r'
         self.regi_a = [0]*(n//2) + [1]*(n//2)
-        self.w_a1 = pysal.lat2W(latt//2,latt)
+        self.w_a1 = lps.lat2W(latt//2,latt)
         self.w_a1.transform='r'
         
     def test_model(self):
@@ -117,8 +117,8 @@ class TestGM_Error_Het_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.chow.joint[0],chow_j, RTOL)
         #Artficial:
         model = SP.GM_Error_Het_Regimes(self.y_a, self.x_a, self.regi_a, w=self.w_a, regime_err_sep=True)
-        model1 = GM_Error_Het(self.y_a[0:(self.n2)].reshape((self.n2),1), self.x_a[0:(self.n2)], w=self.w_a1)
-        model2 = GM_Error_Het(self.y_a[(self.n2):].reshape((self.n2),1), self.x_a[(self.n2):], w=self.w_a1)
+        model1 = GM_Error_Het(self.y_a[0:int(self.n2)].reshape(int(self.n2),1), self.x_a[0:int(self.n2)], w=self.w_a1)
+        model2 = GM_Error_Het(self.y_a[int(self.n2):].reshape(int(self.n2),1), self.x_a[int(self.n2):], w=self.w_a1)
         tbetas = np.vstack((model1.betas, model2.betas))
         np.testing.assert_allclose(model.betas,tbetas, RTOL)
         vm = np.hstack((model1.vm.diagonal(),model2.vm.diagonal()))
@@ -203,8 +203,8 @@ class TestGM_Error_Het_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.chow.joint[0],chow_j, RTOL)
         #Artficial:
         model = SP.GM_Endog_Error_Het_Regimes(self.y_a, self.x_a1, yend=self.x_a2, q=self.q_a, regimes=self.regi_a, w=self.w_a, regime_err_sep=True)
-        model1 = GM_Endog_Error_Het(self.y_a[0:(self.n2)].reshape((self.n2),1), self.x_a1[0:(self.n2)], yend=self.x_a2[0:(self.n2)], q=self.q_a[0:(self.n2)], w=self.w_a1)
-        model2 = GM_Endog_Error_Het(self.y_a[(self.n2):].reshape((self.n2),1), self.x_a1[(self.n2):], yend=self.x_a2[(self.n2):], q=self.q_a[(self.n2):], w=self.w_a1)
+        model1 = GM_Endog_Error_Het(self.y_a[0:int(self.n2)].reshape(int(self.n2),1), self.x_a1[0:int(self.n2)], yend=self.x_a2[0:int(self.n2)], q=self.q_a[0:int(self.n2)], w=self.w_a1)
+        model2 = GM_Endog_Error_Het(self.y_a[int(self.n2):].reshape(int(self.n2),1), self.x_a1[int(self.n2):], yend=self.x_a2[int(self.n2):], q=self.q_a[int(self.n2):], w=self.w_a1)
         tbetas = np.vstack((model1.betas, model2.betas))
         np.testing.assert_allclose(model.betas,tbetas, RTOL)
         vm = np.hstack((model1.vm.diagonal(),model2.vm.diagonal()))
@@ -297,8 +297,8 @@ class TestGM_Error_Het_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.chow.joint[0],chow_j,RTOL)
         #Artficial:
         model = SP.GM_Combo_Het_Regimes(self.y_a, self.x_a1, yend=self.x_a2, q=self.q_a, regimes=self.regi_a, w=self.w_a, regime_err_sep=True, regime_lag_sep=True)
-        model1 = GM_Combo_Het(self.y_a[0:(self.n2)].reshape((self.n2),1), self.x_a1[0:(self.n2)], yend=self.x_a2[0:(self.n2)], q=self.q_a[0:(self.n2)], w=self.w_a1)
-        model2 = GM_Combo_Het(self.y_a[(self.n2):].reshape((self.n2),1), self.x_a1[(self.n2):], yend=self.x_a2[(self.n2):], q=self.q_a[(self.n2):], w=self.w_a1)
+        model1 = GM_Combo_Het(self.y_a[0:int(self.n2)].reshape(int(self.n2),1), self.x_a1[0:int(self.n2)], yend=self.x_a2[0:int(self.n2)], q=self.q_a[0:int(self.n2)], w=self.w_a1)
+        model2 = GM_Combo_Het(self.y_a[int(self.n2):].reshape(int(self.n2),1), self.x_a1[int(self.n2):], yend=self.x_a2[int(self.n2):], q=self.q_a[int(self.n2):], w=self.w_a1)
         tbetas = np.vstack((model1.betas, model2.betas))
         np.testing.assert_allclose(model.betas,tbetas,RTOL)
         vm = np.hstack((model1.vm.diagonal(),model2.vm.diagonal()))

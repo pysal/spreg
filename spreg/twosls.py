@@ -108,8 +108,8 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
     >>> X = []
@@ -371,15 +371,15 @@ class TSLS(BaseTSLS):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal.api as lps
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
 
     Extract the CRIME column (crime rates) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -471,8 +471,8 @@ if __name__ == '__main__':
     _test()
 
     import numpy as np
-    import pysal
-    db = pysal.open(pysal.examples.get_path("columbus.dbf"), 'r')
+    import libpysal.api as lps
+    db = lps.open(lps.get_path("columbus.dbf"), 'r')
     y_var = 'CRIME'
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
     x_var = ['INC']
@@ -481,7 +481,7 @@ if __name__ == '__main__':
     yd = np.array([db.by_col(name) for name in yd_var]).T
     q_var = ['DISCBD']
     q = np.array([db.by_col(name) for name in q_var]).T
-    w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     w.transform = 'r'
     tsls = TSLS(y, x, yd, q, w=w, spat_diag=True, name_y=y_var, name_x=x_var,
                 name_yend=yd_var, name_q=q_var, name_ds='columbus', name_w='columbus.gal')

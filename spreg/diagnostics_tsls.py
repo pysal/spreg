@@ -5,7 +5,7 @@ Diagnostics for two stage least squares regression estimations.
 
 __author__ = "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu "
 
-from pysal.common import *
+from libpysal.common import *
 from scipy.stats import pearsonr
 
 __all__ = ["t_stat", "pr2_aspatial", "pr2_spatial"]
@@ -39,18 +39,18 @@ def t_stat(reg, z_stat=False):
     which we will perform the tests.
 
     >>> import numpy as np
-    >>> import pysal
-    >>> import pysal.spreg.diagnostics as diagnostics
-    >>> from pysal.spreg.ols import OLS
+    >>> import libpysal.api as lps
+    >>> import spreg.diagnostics as diagnostics
+    >>> from spreg.ols import OLS
     >>> from twosls import TSLS
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
 
     Before being able to apply the diagnostics, we have to run a model and,
     for that, we need the input variables. Extract the CRIME column (crime
@@ -151,16 +151,16 @@ def pr2_aspatial(tslsreg):
     which we will perform the tests.
 
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal.api as lps
     >>> from twosls import TSLS
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
 
     Before being able to apply the diagnostics, we have to run a model and,
     for that, we need the input variables. Extract the CRIME column (crime
@@ -240,21 +240,21 @@ def pr2_spatial(tslsreg):
     We first need to import the needed modules. Numpy is needed to convert the
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis. The GM_Lag is required to run the model on
-    which we will perform the tests and the ``pysal.spreg.diagnostics`` module
+    which we will perform the tests and the ``spreg.diagnostics`` module
     contains the function with the test.
 
     >>> import numpy as np
-    >>> import pysal
-    >>> import pysal.spreg.diagnostics as D
+    >>> import libpysal.api as lps
+    >>> import spreg.diagnostics as D
     >>> from twosls_sp import GM_Lag
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
 
     Extract the HOVAL column (home value) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -292,7 +292,7 @@ def pr2_spatial(tslsreg):
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp")) 
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp")) 
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other

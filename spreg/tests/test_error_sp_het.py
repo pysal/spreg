@@ -1,12 +1,13 @@
 import unittest
-import pysal
+import libpysal.api as lps
 import numpy as np
-from pysal.spreg import error_sp_het as HET
-from pysal.common import RTOL
+from spreg import error_sp_het as HET
+from libpysal.common import RTOL
+import spreg
 
 class TestBaseGMErrorHet(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -14,7 +15,7 @@ class TestBaseGMErrorHet(unittest.TestCase):
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
         self.X = np.hstack((np.ones(self.y.shape),self.X))
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -59,14 +60,14 @@ class TestBaseGMErrorHet(unittest.TestCase):
              
 class TestGMErrorHet(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -120,7 +121,7 @@ class TestGMErrorHet(unittest.TestCase):
 
 class TestBaseGMEndogErrorHet(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -133,7 +134,7 @@ class TestBaseGMEndogErrorHet(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -186,7 +187,7 @@ class TestBaseGMEndogErrorHet(unittest.TestCase):
         
 class TestGMEndogErrorHet(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -198,7 +199,7 @@ class TestGMEndogErrorHet(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -256,19 +257,19 @@ class TestGMEndogErrorHet(unittest.TestCase):
  
 class TestBaseGMComboHet(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
         # Only spatial lag
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         reg = HET.BaseGM_Combo_Het(self.y, self.X, yend=yd2, q=q2, w=self.w.sparse, step1c=True)
         betas = np.array([[ 57.7778574 ], [  0.73034922], [ -0.59257362], [ -0.2230231 ], [  0.56636724]])
@@ -326,14 +327,14 @@ class TestBaseGMComboHet(unittest.TestCase):
 
 class TestGMComboHet(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):

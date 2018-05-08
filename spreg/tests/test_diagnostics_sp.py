@@ -1,16 +1,16 @@
 import unittest
 import numpy as np
-import pysal
-from pysal.spreg import diagnostics
-from pysal.spreg.ols import OLS as OLS
-from pysal.spreg.twosls import TSLS as TSLS
-from pysal.spreg.twosls_sp import GM_Lag
-from pysal.spreg.diagnostics_sp import LMtests, MoranRes, spDcache, AKtest
-from pysal.common import RTOL
+import libpysal.api as lps
+from spreg import diagnostics
+from spreg.ols import OLS as OLS
+from spreg.twosls import TSLS as TSLS
+from spreg.twosls_sp import GM_Lag
+from spreg.diagnostics_sp import LMtests, MoranRes, spDcache, AKtest
+from libpysal.common import RTOL
 
 class TestLMtests(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db = lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         y = np.reshape(y, (49,1))
         X = []
@@ -21,7 +21,7 @@ class TestLMtests(unittest.TestCase):
         self.X = X
         ols = OLS(self.y, self.X)
         self.ols = ols
-        w = pysal.open(pysal.examples.get_path('columbus.gal'), 'r').read()
+        w = lps.open(lps.get_path('columbus.gal'), 'r').read()
         w.transform='r'
         self.w = w
 
@@ -53,7 +53,7 @@ class TestLMtests(unittest.TestCase):
 
 class TestMoranRes(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db = lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         y = np.reshape(y, (49,1))
         X = []
@@ -64,7 +64,7 @@ class TestMoranRes(unittest.TestCase):
         self.X = X
         ols = OLS(self.y, self.X)
         self.ols = ols
-        w = pysal.open(pysal.examples.get_path('columbus.gal'), 'r').read()
+        w = lps.open(lps.get_path('columbus.gal'), 'r').read()
         w.transform='r'
         self.w = w
     
@@ -87,7 +87,7 @@ class TestMoranRes(unittest.TestCase):
 
 class TestAKTest(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+        db = lps.open(lps.get_path("columbus.dbf"),'r')
         y = np.array(db.by_col("CRIME"))
         y = np.reshape(y, (49,1))
         self.y = y
@@ -105,7 +105,7 @@ class TestAKTest(unittest.TestCase):
         self.q = q
         reg = TSLS(y, X, yd, q=q)
         self.reg = reg
-        w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         w.transform = 'r'
         self.w = w
 
@@ -135,7 +135,7 @@ class TestAKTest(unittest.TestCase):
 
 class TestSpDcache(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db = lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         y = np.reshape(y, (49,1))
         X = []
@@ -146,7 +146,7 @@ class TestSpDcache(unittest.TestCase):
         self.X = X
         ols = OLS(self.y, self.X)
         self.ols = ols
-        w = pysal.open(pysal.examples.get_path('columbus.gal'), 'r').read()
+        w = lps.open(lps.get_path('columbus.gal'), 'r').read()
         w.transform='r'
         self.w = w
 

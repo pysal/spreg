@@ -1,12 +1,12 @@
 import unittest
-import pysal
+import libpysal.api as lps
 import numpy as np
-from pysal.spreg import probit as PB
-from pysal.common import RTOL
+from spreg import probit as PB
+from libpysal.common import RTOL
 
 class TestBaseProbit(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("CRIME"))
         y = np.reshape(y, (49,1))
         self.y = (y>40).astype(float)
@@ -15,7 +15,7 @@ class TestBaseProbit(unittest.TestCase):
         X.append(db.by_col("HOVAL"))
         self.X = np.array(X).T
         self.X = np.hstack((np.ones(self.y.shape),self.X))
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -57,7 +57,7 @@ class TestBaseProbit(unittest.TestCase):
 
 class TestProbit(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("CRIME"))
         y = np.reshape(y, (49,1))
         self.y = (y>40).astype(float)
@@ -65,7 +65,7 @@ class TestProbit(unittest.TestCase):
         X.append(db.by_col("INC"))
         X.append(db.by_col("HOVAL"))
         self.X = np.array(X).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):

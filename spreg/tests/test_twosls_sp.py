@@ -1,15 +1,16 @@
 import unittest
 import numpy as np
-import pysal
-import pysal.spreg.diagnostics as D
-from pysal.spreg.twosls_sp import BaseGM_Lag, GM_Lag
-from pysal.common import RTOL
+import libpysal.api as lps
+import spreg.diagnostics as D
+from spreg.twosls_sp import BaseGM_Lag, GM_Lag
+from libpysal.common import RTOL
+import spreg
 
 class TestBaseGMLag(unittest.TestCase):
     def setUp(self):
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
-        self.db = pysal.open(pysal.examples.get_path("columbus.dbf"), 'r')
+        self.db = lps.open(lps.get_path("columbus.dbf"), 'r')
         y = np.array(self.db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         
@@ -19,7 +20,7 @@ class TestBaseGMLag(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("CRIME"))
         self.X = np.array(X).T
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         reg = BaseGM_Lag(self.y, self.X, yend=yd2, q=q2, w=self.w.sparse, w_lags=w_lags)
         betas = np.array([[  4.53017056e+01], [  6.20888617e-01], [ -4.80723451e-01], [  2.83622122e-02]])
@@ -86,7 +87,7 @@ class TestBaseGMLag(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("CRIME"))
         self.X = np.array(X).T
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         base_gm_lag = BaseGM_Lag(self.y, self.X,  yend=yd2, q=q2, w=self.w.sparse, w_lags=w_lags, robust='white')
         tbetas = np.array([[  4.53017056e+01], [  6.20888617e-01], [ -4.80723451e-01], [  2.83622122e-02]])
@@ -101,9 +102,9 @@ class TestBaseGMLag(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("CRIME"))
         self.X = np.array(X).T
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
-        gwk = pysal.kernelW_from_shapefile(pysal.examples.get_path('columbus.shp'),k=15,function='triangular', fixed=False)        
+        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=15,function='triangular', fixed=False)        
         base_gm_lag = BaseGM_Lag(self.y, self.X, yend=yd2, q=q2, w=self.w.sparse, w_lags=w_lags, robust='hac', gwk=gwk)
         tbetas = np.array([[  4.53017056e+01], [  6.20888617e-01], [ -4.80723451e-01], [  2.83622122e-02]])
         np.testing.assert_allclose(base_gm_lag.betas, tbetas) 
@@ -119,7 +120,7 @@ class TestBaseGMLag(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, yd, q, w_lags, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, yd, q, w_lags, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         reg = BaseGM_Lag(self.y, self.X, w=self.w.sparse, yend=yd2, q=q2, w_lags=w_lags)
         tbetas = np.array([[ 100.79359082], [  -0.50215501], [  -1.14881711], [  -0.38235022]])
@@ -134,7 +135,7 @@ class TestBaseGMLag(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("CRIME"))
         self.X = np.array(X).T
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, w_lags, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         reg = BaseGM_Lag(self.y, self.X, yend=yd2, q=q2, w=self.w.sparse, w_lags=w_lags, sig2n_k=True)
         betas = np.  array([[  4.53017056e+01], [  6.20888617e-01], [ -4.80723451e-01], [  2.83622122e-02]])
@@ -153,7 +154,7 @@ class TestBaseGMLag(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, yd, q, w_lags, False)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, yd, q, w_lags, False)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         reg = BaseGM_Lag(self.y, self.X, w=self.w.sparse, yend=yd2, q=q2, w_lags=w_lags, lag_q=False)
         tbetas = np.array( [[ 108.83261383], [  -0.48041099], [  -1.18950006], [  -0.56140186]])
@@ -166,9 +167,9 @@ class TestBaseGMLag(unittest.TestCase):
 
 class TestGMLag(unittest.TestCase):
     def setUp(self):
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
-        self.db = pysal.open(pysal.examples.get_path("columbus.dbf"), 'r')
+        self.db = lps.open(lps.get_path("columbus.dbf"), 'r')
         y = np.array(self.db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         
@@ -260,7 +261,7 @@ class TestGMLag(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("CRIME"))
         self.X = np.array(X).T
-        gwk = pysal.kernelW_from_shapefile(pysal.examples.get_path('columbus.shp'),k=15,function='triangular', fixed=False)        
+        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=15,function='triangular', fixed=False)        
         base_gm_lag = GM_Lag(self.y, self.X, w=self.w, w_lags=2, robust='hac', gwk=gwk)
         tbetas = np.array([[  4.53017056e+01], [  6.20888617e-01], [ -4.80723451e-01], [  2.83622122e-02]])
         np.testing.assert_allclose(base_gm_lag.betas, tbetas) 
@@ -317,7 +318,7 @@ class TestGMLag(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        w = pysal.queen_from_shapefile(pysal.examples.get_path('columbus.shp'))
+        w = lps.queen_from_shapefile(lps.get_path('columbus.shp'))
         reg = GM_Lag(self.y, X, yd, q, spat_diag=True, w=w)
         betas = np.array([[  5.46344924e+01], [  4.13301682e-01], [ -5.92637442e-01], [ -7.40490883e-03]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
@@ -336,8 +337,8 @@ class TestGMLag(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        w = pysal.queen_from_shapefile(pysal.examples.get_path('columbus.shp'))
-        gwk = pysal.kernelW_from_shapefile(pysal.examples.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
+        w = lps.queen_from_shapefile(lps.get_path('columbus.shp'))
+        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
         name_x = ['inc']
         name_y = 'crime'
         name_yend = ['crime']

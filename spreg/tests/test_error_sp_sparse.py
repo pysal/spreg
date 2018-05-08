@@ -1,15 +1,15 @@
 import unittest
-import pysal
+import libpysal.api as lps
 import numpy as np
 import scipy
 from scipy import sparse
 
-from pysal.spreg import error_sp as SP
-from pysal.common import RTOL 
+from spreg import error_sp as SP
+from libpysal.common import RTOL 
 
 class TestBaseGMError(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -18,7 +18,7 @@ class TestBaseGMError(unittest.TestCase):
         self.X = np.array(X).T
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         self.X = sparse.csr_matrix(self.X)
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -52,7 +52,7 @@ class TestBaseGMError(unittest.TestCase):
 
 class TestGMError(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -60,7 +60,7 @@ class TestGMError(unittest.TestCase):
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
         self.X = sparse.csr_matrix(self.X)
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -102,7 +102,7 @@ class TestGMError(unittest.TestCase):
 "Maximum Likelihood requires SciPy version 11 or newer.")
 class TestBaseGMEndogError(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -116,7 +116,7 @@ class TestBaseGMEndogError(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -159,7 +159,7 @@ class TestBaseGMEndogError(unittest.TestCase):
 "Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGMEndogError(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -172,7 +172,7 @@ class TestGMEndogError(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -219,19 +219,19 @@ class TestGMEndogError(unittest.TestCase):
 "Maximum Likelihood requires SciPy version 11 or newer.")
 class TestBaseGMCombo(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
         # Only spatial lag
-        yd2, q2 = pysal.spreg.utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
+        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         self.X = sparse.csr_matrix(self.X)
         reg = SP.BaseGM_Combo(self.y, self.X, yend=yd2, q=q2, w=self.w.sparse)
@@ -271,7 +271,7 @@ class TestBaseGMCombo(unittest.TestCase):
 "Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGMCombo(unittest.TestCase):
     def setUp(self):
-        db=pysal.open(pysal.examples.get_path("columbus.dbf"),"r")
+        db=lps.open(lps.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -279,7 +279,7 @@ class TestGMCombo(unittest.TestCase):
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
         self.X = sparse.csr_matrix(self.X)
-        self.w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         # Only spatial lag

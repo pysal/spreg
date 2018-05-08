@@ -1,16 +1,16 @@
 import unittest
 import numpy as np
-import pysal
-from pysal.spreg.twosls_sp_regimes import GM_Lag_Regimes
-from pysal.spreg import utils
-from pysal.spreg.twosls_sp import GM_Lag
-from pysal.common import RTOL
+import libpysal.api as lps
+from spreg.twosls_sp_regimes import GM_Lag_Regimes
+from spreg import utils
+from spreg.twosls_sp import GM_Lag
+from libpysal.common import RTOL
 
 class TestGMLag_Regimes(unittest.TestCase):
     def setUp(self):
-        self.w = pysal.queen_from_shapefile(pysal.examples.get_path("columbus.shp"))
+        self.w = lps.queen_from_shapefile(lps.get_path("columbus.shp"))
         self.w.transform = 'r'
-        self.db = pysal.open(pysal.examples.get_path("columbus.dbf"), 'r')
+        self.db = lps.open(lps.get_path("columbus.dbf"), 'r')
         y = np.array(self.db.by_col("CRIME"))
         self.y = np.reshape(y, (49,1))
         self.r_var = 'NSA'
@@ -225,11 +225,11 @@ class TestGMLag_Regimes(unittest.TestCase):
         x = np.hstack((x1,x2))
         y = np.dot(np.hstack((np.ones((n,1)),x)),np.array([[1],[0.5],[2]])) + np.random.normal(0,1,(n,1))
         latt = int(np.sqrt(n))
-        w = pysal.lat2W(latt,latt)
+        w = lps.lat2W(latt,latt)
         w.transform='r'
         regi = [0]*(n//2) + [1]*(n//2)
         model = GM_Lag_Regimes(y, x1, regi, q=q, yend=x2, w=w, regime_lag_sep=True, regime_err_sep=True)
-        w1 = pysal.lat2W(latt//2,latt)
+        w1 = lps.lat2W(latt//2,latt)
         w1.transform='r'
         model1 = GM_Lag(y[0:(n//2)].reshape((n//2),1), x1[0:(n//2)],yend=x2[0:(n//2)], q=q[0:(n//2)], w=w1)
         model2 = GM_Lag(y[(n//2):n].reshape((n//2),1), x1[(n//2):n],yend=x2[(n//2):n], q=q[(n//2):n], w=w1)

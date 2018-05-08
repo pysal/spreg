@@ -7,7 +7,7 @@ __author__= "Luc Anselin lanselin@gmail.com,    \
             
 
 import numpy as np
-import pysal
+import libpysal.api as lps
 import summary_output as SUMMARY
 import user_output as USER
 from sur import BaseThreeSLS
@@ -102,15 +102,15 @@ class SURlagIV(BaseThreeSLS):
         Examples
         --------
 
-        First import pysal to load the spatial analysis tools.
+        First import libpysal.api as lps to load the spatial analysis tools.
 
-        >>> import pysal
+        >>> import libpysal.api as lps
 
-        Open data on NCOVR US County Homicides (3085 areas) using pysal.open(). 
-        This is the DBF associated with the NAT shapefile. Note that pysal.open() 
+        Open data on NCOVR US County Homicides (3085 areas) using lps.open(). 
+        This is the DBF associated with the NAT shapefile. Note that lps.open() 
         also reads data in CSV format.
 
-        >>> db = pysal.open(pysal.examples.get_path("NAT.dbf"),'r')
+        >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
 
         The specification of the model to be estimated can be provided as lists.
         Each equation should be listed separately. Although not required,
@@ -132,16 +132,16 @@ class SURlagIV(BaseThreeSLS):
         dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
         additional instruments (q).
 
-        >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
-        >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
-        >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
+        >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+        >>> bigyend,bigyendvars = spreg.sur_utils.sur_dictZ(db,yend_var)
+        >>> bigq,bigqvars = spreg.sur_utils.sur_dictZ(db,q_var)
 
         To run a spatial lag model, we need to specify the spatial weights matrix. 
         To do that, we can open an already existing gal file or create a new one.
         In this example, we will create a new one from NAT.shp and transform it to
         row-standardized.
 
-        >>> w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+        >>> w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
         >>> w.transform='r'
 
         We can now run the regression and then have a summary of the output by typing:
@@ -350,11 +350,11 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import pysal
+    import libpysal.api as lps
     from sur_utils import sur_dictxy
 
-    db = pysal.open(pysal.examples.get_path('NAT.dbf'), 'r')
-    w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+    db = lps.open(lps.get_path('NAT.dbf'), 'r')
+    w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
     w.transform='r'
     y_var0 = ['HR80','HR90']
     x_var0 = [['PS80','UE80'],['PS90','UE90']]

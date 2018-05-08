@@ -1,11 +1,11 @@
 import unittest
 import scipy
-import pysal
+import libpysal.api as lps
 import numpy as np
-from pysal.spreg.ml_lag_regimes import ML_Lag_Regimes
-from pysal.spreg.ml_lag import ML_Lag
-from pysal.spreg import utils
-from pysal.common import RTOL
+from spreg.ml_lag_regimes import ML_Lag_Regimes
+from spreg.ml_lag import ML_Lag
+from spreg import utils
+from libpysal.common import RTOL
 from skip import SKIP
 
 
@@ -14,14 +14,14 @@ from skip import SKIP
         "Skipping MLLag Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
-        db =  pysal.open(pysal.examples.get_path("baltim.dbf"),'r')
+        db =  lps.open(lps.get_path("baltim.dbf"),'r')
         self.ds_name = "baltim.dbf"
         self.y_name = "PRICE"
         self.y = np.array(db.by_col(self.y_name)).T
         self.y.shape = (len(self.y),1)
         self.x_names = ["NROOM","AGE","SQFT"]
         self.x = np.array([db.by_col(var) for var in self.x_names]).T
-        ww = pysal.open(pysal.examples.get_path("baltim_q.gal"))
+        ww = lps.open(lps.get_path("baltim_q.gal"))
         self.w = ww.read()
         ww.close()
         self.w_name = "baltim_q.gal"

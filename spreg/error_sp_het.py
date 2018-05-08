@@ -17,7 +17,7 @@ import twosls as TSLS
 import utils as UTILS
 from utils import RegressionPropsY, spdot, set_endog, sphstack
 from scipy import sparse as SP
-from pysal import lag_spatial
+from libpysal.api import lag_spatial
 
 __all__ = ["GM_Error_Het", "GM_Endog_Error_Het", "GM_Combo_Het"]
 
@@ -85,8 +85,8 @@ class BaseGM_Error_Het(RegressionPropsY):
     Examples
     --------
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
     >>> X = []
@@ -94,7 +94,7 @@ class BaseGM_Error_Het(RegressionPropsY):
     >>> X.append(db.by_col("CRIME"))
     >>> X = np.array(X).T
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> reg = BaseGM_Error_Het(y, X, w.sparse, step1c=True)
     >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
@@ -253,15 +253,15 @@ class GM_Error_Het(BaseGM_Error_Het):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal.api as lps
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
 
     Extract the HOVAL column (home values) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -288,7 +288,7 @@ class GM_Error_Het(BaseGM_Error_Het):
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -309,7 +309,7 @@ class GM_Error_Het(BaseGM_Error_Het):
     regression object we have created has many attributes so take your time to
     discover them. This class offers an error model that explicitly accounts
     for heteroskedasticity and that unlike the models from
-    ``pysal.spreg.error_sp``, it allows for inference on the spatial
+    ``spreg.error_sp``, it allows for inference on the spatial
     parameter.
 
     >>> print reg.name_x
@@ -434,8 +434,8 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     Examples
     --------
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
     >>> X = []
@@ -448,7 +448,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> reg = BaseGM_Endog_Error_Het(y, X, yd, q, w=w.sparse, step1c=True)
     >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
@@ -648,15 +648,15 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal.api as lps
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
 
     Extract the HOVAL column (home values) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -698,7 +698,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -720,7 +720,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     regression object we have created has many attributes so take your time to
     discover them. This class offers an error model that explicitly accounts
     for heteroskedasticity and that unlike the models from
-    ``pysal.spreg.error_sp``, it allows for inference on the spatial
+    ``spreg.error_sp``, it allows for inference on the spatial
     parameter. Hence, we find the same number of betas as of standard errors,
     which we calculate taking the square root of the diagonal of the
     variance-covariance matrix:
@@ -854,17 +854,17 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     Examples
     --------
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
     >>> X = []
     >>> X.append(db.by_col("INC"))
     >>> X = np.array(X).T
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> w_lags = 1
-    >>> yd2, q2 = pysal.spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
 
     Example only with spatial lag
@@ -887,7 +887,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> yd2, q2 = pysal.spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
     >>> reg = BaseGM_Combo_Het(y, X, yd2, q2, w=w.sparse, step1c=True)
     >>> betas = np.array([['CONSTANT'],['inc'],['crime'],['lag_hoval'],['lambda']])
@@ -1056,15 +1056,15 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal.api as lps
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
 
     Extract the HOVAL column (home values) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -1090,7 +1090,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -1113,7 +1113,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     regression object we have created has many attributes so take your time to
     discover them. This class offers an error model that explicitly accounts
     for heteroskedasticity and that unlike the models from
-    ``pysal.spreg.error_sp``, it allows for inference on the spatial
+    ``spreg.error_sp``, it allows for inference on the spatial
     parameter. Hence, we find the same number of betas as of standard errors,
     which we calculate taking the square root of the diagonal of the
     variance-covariance matrix:

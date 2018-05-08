@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
-import pysal
-from pysal.spreg.twosls import BaseTSLS, TSLS
-from pysal.common import RTOL
+import libpysal.api as lps
+from spreg.twosls import BaseTSLS, TSLS
+from libpysal.common import RTOL
 
 class TestBaseTSLS(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+        db = lps.open(lps.get_path("columbus.dbf"),'r')
         self.y = np.array(db.by_col("CRIME"))
         self.y = np.reshape(self.y, (49,1))
         self.X = []
@@ -94,7 +94,7 @@ class TestBaseTSLS(unittest.TestCase):
         np.testing.assert_allclose(reg.vm, vm,RTOL)
 
     def test_hac(self):
-        gwk = pysal.kernelW_from_shapefile(pysal.examples.get_path('columbus.shp'),k=15,function='triangular', fixed=False)
+        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=15,function='triangular', fixed=False)
         reg = BaseTSLS(self.y, self.X, self.yd, self.q, robust='hac', gwk=gwk)
         betas = np.array([[ 88.46579584], [  0.5200379 ], [ -1.58216593]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
@@ -105,7 +105,7 @@ class TestBaseTSLS(unittest.TestCase):
 
 class TestTSLS(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+        db = lps.open(lps.get_path("columbus.dbf"),'r')
         self.y = np.array(db.by_col("CRIME"))
         self.y = np.reshape(self.y, (49,1))
         self.X = []
@@ -200,7 +200,7 @@ class TestTSLS(unittest.TestCase):
         self.assertEqual(reg.robust, 'white')
 
     def test_hac(self):
-        gwk = pysal.kernelW_from_shapefile(pysal.examples.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
+        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
         reg = TSLS(self.y, self.X, self.yd, self.q, robust='hac', gwk=gwk)
         betas = np.array([[ 88.46579584], [  0.5200379 ], [ -1.58216593]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
@@ -211,7 +211,7 @@ class TestTSLS(unittest.TestCase):
         self.assertEqual(reg.robust, 'hac')
 
     def test_spatial(self):
-        w = pysal.queen_from_shapefile(pysal.examples.get_path('columbus.shp'))
+        w = lps.queen_from_shapefile(lps.get_path('columbus.shp'))
         reg = TSLS(self.y, self.X, self.yd, self.q, spat_diag=True, w=w)
         betas = np.array([[ 88.46579584], [  0.5200379 ], [ -1.58216593]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
@@ -223,8 +223,8 @@ class TestTSLS(unittest.TestCase):
         np.testing.assert_allclose(reg.ak_test, ak_test,RTOL)
 
     def test_names(self):
-        w = pysal.queen_from_shapefile(pysal.examples.get_path('columbus.shp'))
-        gwk = pysal.kernelW_from_shapefile(pysal.examples.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
+        w = lps.queen_from_shapefile(lps.get_path('columbus.shp'))
+        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
         name_x = ['inc']
         name_y = 'crime'
         name_yend = ['hoval']

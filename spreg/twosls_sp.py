@@ -6,7 +6,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, David C. Folch david.folch@asu.ed
 
 import copy
 import numpy as np
-import pysal
+import libpysal.api as lps
 import numpy.linalg as la
 import twosls as TSLS
 import robust as ROBUST
@@ -118,11 +118,11 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> import pysal.spreg.diagnostics as D
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> import libpysal.api as lps
+    >>> import spreg.diagnostics as D
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     >>> w.transform = 'r'
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
     >>> # no non-spatial endogenous variables
@@ -131,7 +131,7 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     >>> X.append(db.by_col("CRIME"))
     >>> X = np.array(X).T
     >>> w_lags = 2
-    >>> yd2, q2 = pysal.spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
     >>> reg=BaseGM_Lag(y, X, yend=yd2, q=q2, w=w.sparse, w_lags=w_lags)
     >>> reg.betas
@@ -156,7 +156,7 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     >>> yd = np.reshape(yd, (49,1))
     >>> q = np.array(db.by_col("DISCBD"))
     >>> q = np.reshape(q, (49,1))
-    >>> yd2, q2 = pysal.spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
     >>> reg=BaseGM_Lag(y, X, w=w.sparse, yend=yd2, q=q2, w_lags=w_lags)
     >>> reg.betas
@@ -345,16 +345,16 @@ class GM_Lag(BaseGM_Lag):
     model, we also import the diagnostics module.
 
     >>> import numpy as np
-    >>> import pysal
-    >>> import pysal.spreg.diagnostics as D
+    >>> import libpysal.api as lps
+    >>> import spreg.diagnostics as D
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using lps.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    lps.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = pysal.open(pysal.examples.get_path("columbus.dbf"),'r')
+    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
 
     Extract the HOVAL column (home value) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -382,7 +382,7 @@ class GM_Lag(BaseGM_Lag):
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -509,8 +509,8 @@ if __name__ == '__main__':
     _test()
 
     import numpy as np
-    import pysal
-    db = pysal.open(pysal.examples.get_path("columbus.dbf"), 'r')
+    import libpysal.api as lps
+    db = lps.open(lps.get_path("columbus.dbf"), 'r')
     y_var = 'CRIME'
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
     x_var = ['INC']
@@ -519,7 +519,7 @@ if __name__ == '__main__':
     yd = np.array([db.by_col(name) for name in yd_var]).T
     q_var = ['DISCBD']
     q = np.array([db.by_col(name) for name in q_var]).T
-    w = pysal.rook_from_shapefile(pysal.examples.get_path("columbus.shp"))
+    w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
     w.transform = 'r'
     model = GM_Lag(
         y, x, yd, q, w=w, spat_diag=True, name_y=y_var, name_x=x_var,

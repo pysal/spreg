@@ -1,10 +1,10 @@
 import unittest
-import pysal
+import libpysal.api as lps
 import scipy
 import numpy as np
-from pysal.spreg.ml_error import ML_Error
-from pysal.spreg import utils
-from pysal.common import RTOL, ATOL
+from spreg.ml_error import ML_Error
+from spreg import utils
+from libpysal.common import RTOL, ATOL
 from warnings import warn as Warn
 from skip import SKIP
 
@@ -13,13 +13,13 @@ from skip import SKIP
         "Skipping MLError Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
-        db = pysal.open(pysal.examples.get_path("south.dbf"),'r')
+        db = lps.open(lps.get_path("south.dbf"),'r')
         self.y_name = "HR90"
         self.y = np.array(db.by_col(self.y_name))
         self.y.shape = (len(self.y),1)
         self.x_names = ["RD90","PS90","UE90","DV90"]
         self.x = np.array([db.by_col(var) for var in self.x_names]).T
-        ww = pysal.open(pysal.examples.get_path("south_q.gal"))
+        ww = lps.open(lps.get_path("south_q.gal"))
         self.w = ww.read()
         ww.close()
         self.w.transform = 'r'

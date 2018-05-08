@@ -8,10 +8,11 @@ import numpy as np
 import copy as COPY
 from . import diagnostics
 from . import sputils as spu
-from .. import weights 
+from libpysal import weights 
+from libpysal.weights.Distance import Kernel
 import scipy
 from scipy.sparse.csr import csr_matrix
-
+weights.Kernel = Kernel
 __all__ = []
 
 
@@ -329,8 +330,8 @@ def check_arrays(*arrays):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -390,8 +391,8 @@ def check_y(y, n):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -412,7 +413,7 @@ def check_y(y, n):
 
 
 def check_weights(w, y, w_required=False):
-    """Check if the w parameter passed by the user is a pysal.W object and
+    """Check if the w parameter passed by the user is a libpysal.W object and
     check that its dimensionality matches the y parameter.  Note that this
     check is not performed if w set to None.
 
@@ -436,8 +437,8 @@ def check_weights(w, y, w_required=False):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -445,7 +446,7 @@ def check_weights(w, y, w_required=False):
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
-    >>> w = pysal.open(pysal.examples.get_path("columbus.gal"), 'r').read()
+    >>> w = lps.open(lps.get_path("columbus.gal"), 'r').read()
     >>> check_weights(w, y)
     >>> # should not raise an exception
 
@@ -454,7 +455,7 @@ def check_weights(w, y, w_required=False):
         if w == None:
             raise Exception, "A weights matrix w must be provided to run this method."
         if not isinstance(w, weights.W):
-            raise Exception, "w must be a pysal.W object"
+            raise Exception, "w must be a libpysal.W object"
         if w.n != y.shape[0]:
             raise Exception, "y must be nx1, and w must be an nxn PySAL W object"
         diag = w.sparse.diagonal()
@@ -489,8 +490,8 @@ def check_robust(robust, wk):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -556,8 +557,8 @@ def check_spat_diag(spat_diag, w):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -565,14 +566,14 @@ def check_spat_diag(spat_diag, w):
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
-    >>> w = pysal.open(pysal.examples.get_path("columbus.gal"), 'r').read()
+    >>> w = lps.open(lps.get_path("columbus.gal"), 'r').read()
     >>> check_spat_diag(True, w)
     >>> # should not raise an exception
 
     """
     if spat_diag:
         if not isinstance(w, weights.W):
-            raise Exception, "w must be a pysal.W object to run spatial diagnostics"
+            raise Exception, "w must be a libpysal.W object to run spatial diagnostics"
 
 
 def check_regimes(reg_set, N=None, K=None):
@@ -617,8 +618,8 @@ def check_constant(x):
     --------
 
     >>> import numpy as np
-    >>> import pysal
-    >>> db = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal.api as lps
+    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
     >>> X = []
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
