@@ -9,7 +9,7 @@ ATOL = 1e-12
 PEGP = lps.get_path
 
 def dict_compare(actual, desired, rtol=RTOL, atol=ATOL):
-    for i in actual.keys():
+    for i in list(actual.keys()):
         np.testing.assert_allclose(actual[i],desired[i],rtol=rtol, atol=atol)
 
 

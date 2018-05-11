@@ -3,7 +3,7 @@ import libpysal.api as lps
 import numpy as np
 import scipy
 from scipy import sparse
-
+from spreg import utils
 from spreg import error_sp as SP
 from libpysal.common import RTOL 
 
@@ -231,7 +231,7 @@ class TestBaseGMCombo(unittest.TestCase):
 
     def test_model(self):
         # Only spatial lag
-        yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
+        yd2, q2 = utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         self.X = sparse.csr_matrix(self.X)
         reg = SP.BaseGM_Combo(self.y, self.X, yend=yd2, q=q2, w=self.w.sparse)
