@@ -14,15 +14,10 @@ with open('README.rst') as file:
 
 MAJOR = 1
 MINOR = 0
-MICRO = 0 
+MICRO = 2 
 ISRELEASED = False
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 
-
-# BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
-# update it when the contents of directories change.
-if os.path.exists('MANIFEST'):
-    os.remove('MANIFEST')
 
 def _get_requirements_from_files(groups_files):
     groups_reqlist = {}
