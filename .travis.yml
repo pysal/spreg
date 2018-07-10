@@ -4,13 +4,8 @@ branches:
 only:
   - master
 python:
-  - "2.7"
   - "3.5"
   - "3.6"
-
-env:
-  - PYSAL_PLUS=false
-  - PYSAL_PLUS=true
 
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -18,17 +13,14 @@ before_install:
   - ./miniconda.sh -b -p ./miniconda
   - export PATH=`pwd`/miniconda/bin:$PATH
   - conda update --yes conda
-  - conda config --add channels conda-forge
+  - conda config --append channels conda-forge
   - conda create -y -q -n test-env python=$TRAVIS_PYTHON_VERSION
   - source activate test-env
 
 install:
   - conda install --yes pip
   - pip install libpysal
-  - if [ "$PYSAL_PLUS" == true ]; then
-        echo 'plus testing'; conda install --yes --file requirements_plus.txt;
-        else conda install --yes --file requirements.txt;
-    fi;
+  - conda install --yes --file requirements.txt
   - pip install -r requirements_dev.txt
 
 script:
@@ -49,8 +41,8 @@ notifications:
             - marynia.kolak@gmail.com
             - jgaboardi@gmail.com
             - phil.stphns@gmail.com
-        on_success: always
-        on_failure: always
+        on_success: change
+        on_failure: change
 
 after_success:
   - coveralls
