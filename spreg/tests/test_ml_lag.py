@@ -5,7 +5,7 @@ import numpy as np
 from spreg.ml_lag import ML_Lag
 from spreg import utils
 from libpysal.common import RTOL
-from skip import SKIP
+from .skip import SKIP
 
 
 @unittest.skipIf(SKIP,

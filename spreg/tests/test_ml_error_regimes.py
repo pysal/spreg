@@ -6,7 +6,7 @@ from spreg.ml_error_regimes import ML_Error_Regimes
 from spreg.ml_error import ML_Error
 from spreg import utils
 from libpysal.common import RTOL
-from skip import SKIP
+from .skip import SKIP
 
 
 @unittest.skipIf(SKIP,
