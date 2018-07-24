@@ -7,16 +7,16 @@ python:
     - 3.5
     - 3.6
 env: 
-    - PYSAL_PYPI = true
-    - PYSAL_PYPI = false
+    - PYSAL_PYPI=true
+    - PYSAL_PYPI=false
 matrix:
   allow_failures:
       - python: 3.5
-        env: PYSAL_PYPI = false
+        env: PYSAL_PYPI=false
       - python: 3.6
-        env: PYSAL_PYPI = false
+        env: PYSAL_PYPI=false
       - python: 3.7
-        env: PYSAL_PYPI = false
+        env: PYSAL_PYPI=false
 
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -30,12 +30,10 @@ before_install:
 
 install:
   - conda install --yes pip
-  - if [ PYSAL_PYPI ]; then
-        echo 'testing pypi libpysal'; pip install libpysal;
-        else git clone git@github.com:pysal/libpysal.git;\
-            cd libpysal; pip install .;\
-            cd ../;
-        fi
+  - if "$PYSAL_PYPI"; then
+        echo 'testing pypi libpysal' && pip install libpysal;
+        else echo 'testing git libpysal'; git clone https://github.com/pysal/libpysal.git; cd libpysal; pip install .; cd ../;
+    fi;
   - conda install --yes --file requirements.txt;
   - pip install -r requirements_dev.txt
 
