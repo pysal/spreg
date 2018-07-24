@@ -30,13 +30,13 @@ before_install:
 
 install:
   - conda install --yes pip
-  - conda install --yes --file requirements.txt;
   - if [ PYSAL_PYPI ]; then
         echo 'testing pypi libpysal'; pip install libpysal;
         else git clone git@github.com:pysal/libpysal.git;\
             cd libpysal; pip install .;\
             cd ../;
         fi
+  - conda install --yes --file requirements.txt;
   - pip install -r requirements_dev.txt
 
 script:
