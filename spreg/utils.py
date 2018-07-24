@@ -12,7 +12,7 @@ import numpy as np
 from scipy import sparse as SP
 import scipy.optimize as op
 import numpy.linalg as la
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 from .sputils import *
 import copy
 
