@@ -37,7 +37,7 @@ install:
              mv libpysal/libpsyal libpysal_;\
              rm -rf libpysal/; mv libpysal_ libpysal;
         fi
-  - conda install --yes --file requirements_dev.txt
+  - pip install -r requirements_dev.txt
 
 script:
   - python setup.py sdist >/dev/null
