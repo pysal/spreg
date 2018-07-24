@@ -34,8 +34,8 @@ install:
   - if [ PYSAL_PYPI ]; then
         echo 'testing pypi libpysal'; pip install libpysal;
         else git clone git@github.com:pysal/libpysal.git;\
-             mv libpysal/libpsyal libpysal_;\
-             rm -rf libpysal/; mv libpysal_ libpysal;
+            cd libpysal; pip install .;\
+            cd ../;
         fi
   - pip install -r requirements_dev.txt
 
