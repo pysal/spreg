@@ -7,7 +7,6 @@ __author__= "Luc Anselin lanselin@gmail.com,    \
             
 
 import numpy as np
-import libpysal.api as lps
 import numpy.linalg as la
 #import scipy.stats as stats
 from scipy import stats
@@ -215,15 +214,15 @@ class SURerrorML(BaseSURerrorML):
     Examples
     --------
 
-    First import libpysal.api as lps to load the spatial analysis tools.
+    First import libpysal to load the spatial analysis tools.
 
-    >>> import libpysal.api as lps
+    >>> import libpysal
 
-    Open data on NCOVR US County Homicides (3085 areas) using lps.open(). 
-    This is the DBF associated with the NAT shapefile. Note that lps.open() 
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open(). 
+    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open() 
     also reads data in CSV format.
 
-    >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. Equation 1 has HR80 as dependent 
@@ -251,7 +250,7 @@ class SURerrorML(BaseSURerrorML):
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -537,13 +536,13 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import libpysal.api as lps
+    import libpysal
     from .sur_utils import sur_dictxy,sur_dictZ
 
-    db = lps.open(lps.get_path('NAT.dbf'), 'r')
+    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
     y_var = ['HR80','HR90']
     x_var = [['PS80','UE80'],['PS90','UE90']]
-    w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+    w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     w.transform='r'
     bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(db,y_var,x_var)
     reg0 = SURerrorML(bigy0,bigX0,w,name_bigy=bigyvars0,name_bigX=bigXvars0,\

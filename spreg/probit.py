@@ -102,12 +102,12 @@ class BaseProbit(object):
     Examples
     --------
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> dbf = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array([dbf.by_col('CRIME')]).T
     >>> x = np.array([dbf.by_col('INC'), dbf.by_col('HOVAL')]).T
     >>> x = np.hstack((np.ones(y.shape),x))
-    >>> w = lps.open(lps.get_path("columbus.gal"), 'r').read()
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> w.transform='r'
     >>> model = BaseProbit((y>40).astype(float), x, w=w)    
     >>> np.around(model.betas, decimals=6)
@@ -716,15 +716,15 @@ class Probit(BaseProbit):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
 
-    Open data on Columbus neighborhood crime (49 areas) using lps.open().
+    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    lps.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> dbf = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
     Extract the CRIME column (crime) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -755,7 +755,7 @@ class Probit(BaseProbit):
     Note that, in order to read the file, not only to open it, we need to
     append '.read()' at the end of the command.
 
-    >>> w = lps.open(lps.get_path("columbus.gal"), 'r').read() 
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. In PySAL, this
@@ -940,12 +940,12 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import libpysal.api as lps
-    dbf = lps.open(lps.get_path('columbus.dbf'), 'r')
+    import libpysal
+    dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
     y = np.array([dbf.by_col('CRIME')]).T
     var_x = ['INC', 'HOVAL']
     x = np.array([dbf.by_col(name) for name in var_x]).T
-    w = lps.open(lps.get_path("columbus.gal"), 'r').read()
+    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     w.transform = 'r'
     probit1 = Probit(
         (y > 40).astype(float), x, w=w, name_x=var_x, name_y="CRIME",

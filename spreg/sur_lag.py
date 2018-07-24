@@ -7,7 +7,6 @@ __author__= "Luc Anselin lanselin@gmail.com,    \
             
 
 import numpy as np
-import libpysal.api as lps
 from . import summary_output as SUMMARY
 from . import user_output as USER
 from .sur import BaseThreeSLS
@@ -102,15 +101,15 @@ class SURlagIV(BaseThreeSLS):
         Examples
         --------
 
-        First import libpysal.api as lps to load the spatial analysis tools.
+        First import libpysal to load the spatial analysis tools.
 
-        >>> import libpysal.api as lps
+        >>> import libpysal
 
-        Open data on NCOVR US County Homicides (3085 areas) using lps.open(). 
-        This is the DBF associated with the NAT shapefile. Note that lps.open() 
+        Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open(). 
+        This is the DBF associated with the NAT shapefile. Note that libpysal.io.open() 
         also reads data in CSV format.
 
-        >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
+        >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
         The specification of the model to be estimated can be provided as lists.
         Each equation should be listed separately. Although not required,
@@ -141,7 +140,7 @@ class SURlagIV(BaseThreeSLS):
         In this example, we will create a new one from NAT.shp and transform it to
         row-standardized.
 
-        >>> w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+        >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
         >>> w.transform='r'
 
         We can now run the regression and then have a summary of the output by typing:
@@ -350,11 +349,11 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import libpysal.api as lps
+    import libpysal
     from .sur_utils import sur_dictxy
 
-    db = lps.open(lps.get_path('NAT.dbf'), 'r')
-    w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
+    w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     w.transform='r'
     y_var0 = ['HR80','HR90']
     x_var0 = [['PS80','UE80'],['PS90','UE90']]

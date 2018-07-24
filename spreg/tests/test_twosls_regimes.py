@@ -1,13 +1,13 @@
 import unittest
 import numpy as np
-import libpysal.api as lps
+import libpysal
 from spreg.twosls_regimes import TSLS_Regimes
 from spreg.twosls import TSLS
 from libpysal.common import RTOL
 
 class TestTSLS(unittest.TestCase):
     def setUp(self):
-        db = lps.open(lps.get_path("columbus.dbf"),'r')
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
         self.y = np.array(db.by_col("CRIME"))
         self.y = np.reshape(self.y, (49,1))
         self.x = []
@@ -168,7 +168,7 @@ class TestTSLS(unittest.TestCase):
         np.testing.assert_allclose(reg.vm, vm,RTOL)
 
     def test_spatial(self):
-        w = lps.queen_from_shapefile(lps.get_path('columbus.shp'))
+        w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path('columbus.shp'))
         reg = TSLS_Regimes(self.y, self.x, self.yd, self.q, self.regimes, spat_diag=True, w=w, regime_err_sep=False)
         betas = np.array([[ 80.23408166],[  5.48218125],[ 82.98396737],[  0.49775429],[ -3.72663211],[ -1.27451485]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
@@ -189,8 +189,8 @@ class TestTSLS(unittest.TestCase):
         np.testing.assert_allclose(reg.ak_test, ak_test,RTOL)   
 
     def test_names(self):
-        w = lps.queen_from_shapefile(lps.get_path('columbus.shp'))
-        gwk = lps.kernelW_from_shapefile(lps.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
+        w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path('columbus.shp'))
+        gwk = libpysal.weights.Kernel.from_shapefile(libpysal.examples.get_path('columbus.shp'),k=5,function='triangular', fixed=False)
         name_x = ['inc']
         name_y = 'crime'
         name_yend = ['hoval']
