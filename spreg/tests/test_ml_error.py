@@ -1,23 +1,22 @@
 import unittest
-import libpysal.api as lps
-import scipy.sparse as spar
+import libpysal
 import numpy as np
+from scipy import sparse
 from ..ml_error import ML_Error
-from .. import utils
 from libpysal.common import RTOL, ATOL
 from warnings import filterwarnings
-filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
+filterwarnings('ignore', category=sparse.SparseEfficiencyWarning)
 filterwarnings('ignore', message="^Method 'bounded' does not support")
 
 class TestMLError(unittest.TestCase):
     def setUp(self):
-        db = lps.open(lps.get_path("south.dbf"),'r')
+        db = libpysal.io.open(libpysal.examples.get_path("south.dbf"),'r')
         self.y_name = "HR90"
         self.y = np.array(db.by_col(self.y_name))
         self.y.shape = (len(self.y),1)
         self.x_names = ["RD90","PS90","UE90","DV90"]
         self.x = np.array([db.by_col(var) for var in self.x_names]).T
-        ww = lps.open(lps.get_path("south_q.gal"))
+        ww = libpysal.io.open(libpysal.examples.get_path("south_q.gal"))
         self.w = ww.read()
         ww.close()
         self.w.transform = 'r'

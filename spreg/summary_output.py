@@ -4,13 +4,9 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, David C. Folch david.folch@asu.ed
 
 import textwrap as TW
 import numpy as np
-import copy as COPY
 from . import diagnostics as diagnostics
 from . import diagnostics_tsls as diagnostics_tsls
 from . import diagnostics_sp as diagnostics_sp
-import libpysal.api as lps
-import scipy
-from scipy.sparse.csr import csr_matrix
 
 __all__ = []
 
