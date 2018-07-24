@@ -8,7 +8,7 @@ from scipy import sparse as SP
 import numpy as np
 import multiprocessing as mp
 from numpy import linalg as la
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 from .utils import power_expansion, set_endog, iter_msg, sp_att
 from .utils import get_A1_hom, get_A2_hom, get_A1_het, optim_moments
 from .utils import get_spFilter, get_lags, _moments2eqs

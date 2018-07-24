@@ -4,7 +4,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, \
 
 import numpy as np
 import numpy.linalg as la
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 from .utils import spdot, spbroadcast
 from .user_output import check_constant
 

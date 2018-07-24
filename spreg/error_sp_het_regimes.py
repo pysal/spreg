@@ -14,7 +14,7 @@ from .twosls import BaseTSLS
 from .error_sp_het import BaseGM_Error_Het, BaseGM_Endog_Error_Het, get_psi_sigma, get_vc_het, get_vm_het, get_P_hat, get_a1a2, get_vc_het_tsls, get_Omega_GS2SLS
 from .utils import RegressionPropsY, spdot, set_endog, sphstack, set_warn, sp_att
 from scipy import sparse as SP
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 from platform import system
 
 
