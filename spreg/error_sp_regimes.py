@@ -9,7 +9,7 @@ import multiprocessing as mp
 from . import regimes as REGI
 from . import user_output as USER
 from . import summary_output as SUMMARY
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 from .ols import BaseOLS
 from .twosls import BaseTSLS
 from .error_sp import BaseGM_Error, BaseGM_Endog_Error, _momentsGM_Error

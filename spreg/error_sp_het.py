@@ -17,7 +17,7 @@ from . import twosls as TSLS
 from . import utils as UTILS
 from .utils import RegressionPropsY, spdot, set_endog, sphstack
 from scipy import sparse as SP
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 
 __all__ = ["GM_Error_Het", "GM_Endog_Error_Het", "GM_Combo_Het"]
 

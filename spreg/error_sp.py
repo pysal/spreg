@@ -9,7 +9,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, \
 import numpy as np
 from numpy import linalg as la
 from . import ols as OLS
-from libpysal.weights import lag_spatial
+from libpysal.weights.spatial_lag import lag_spatial
 from .utils import power_expansion, set_endog, iter_msg, sp_att
 from .utils import get_A1_hom, get_A2_hom, get_A1_het, optim_moments, get_spFilter, get_lags, _moments2eqs
 from .utils import spdot, RegressionPropsY, set_warn
