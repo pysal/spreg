@@ -1,5 +1,5 @@
 import numpy as np
-import libpysal.api as lps
+from libpysal import weights
 import scipy.sparse as SP
 #from scipy.stats import f, chisqprob
 from scipy import stats
@@ -54,9 +54,9 @@ class Chow:
     Examples
     ========
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
     >>> from ols_regimes import OLS_Regimes
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y_var = 'CRIME'
     >>> y = np.array([db.by_col(y_var)]).reshape(49,1)
     >>> x_var = ['INC','HOVAL']
@@ -490,7 +490,7 @@ def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):
     '''
     w_ids = list(map(w.id_order.__getitem__, regi_ids))
     warn = None
-    w_regi_i = lps.w_subset(w, w_ids, silence_warnings=True)
+    w_regi_i = weights.set_operations.w_subset(w, w_ids, silence_warnings=True)
     if min_n:
         if w_regi_i.n < min_n:
             raise Exception("There are less observations than variables in regime %s." % regi_i)
@@ -530,7 +530,7 @@ def w_regimes(w, regimes, regimes_set, transform=True, get_ids=None, min_n=None)
     w_regi_i = {}
     warn = None
     for r in regimes_set:
-        w_regi_i[r] = lps.w_subset(w, w_ids[r],
+        w_regi_i[r] = weights.set_operations.w_subset(w, w_ids[r],
                                              silence_warnings=True)
         if min_n:
             if w_regi_i[r].n < min_n:
@@ -564,13 +564,13 @@ def w_regimes_union(w, w_regi_i, regimes_set):
     w_regi      : pysal W object
                   Spatial weights object containing the union of the subsets of W
     '''
-    w_regi = lps.weights.w_union(w_regi_i[regimes_set[0]],
+    w_regi = weights.set_operations.w_union(w_regi_i[regimes_set[0]],
                                    w_regi_i[regimes_set[1]], silence_warnings=True)
     if len(regimes_set) > 2:
         for i in range(len(regimes_set))[2:]:
-            w_regi = lps.weights.w_union(w_regi,
+            w_regi = weights.set_operations.w_union(w_regi,
                                            w_regi_i[regimes_set[i]], silence_warnings=True)
-    w_regi = lps.weights.remap_ids(w_regi, dict((i, i)
+    w_regi = weights.util.remap_ids(w_regi, dict((i, i)
                                                   for i in w_regi.id_order), w.id_order)
     w_regi.transform = w.get_transform()
     return w_regi
@@ -682,16 +682,16 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import libpysal.api as lps
+    import libpysal
     from .ols_regimes import OLS_Regimes
-    db = lps.open(lps.get_path('columbus.dbf'), 'r')
+    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
     y_var = 'CRIME'
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
     x_var = ['INC', 'HOVAL']
     x = np.array([db.by_col(name) for name in x_var]).T
     r_var = 'NSA'
     regimes = db.by_col(r_var)
-    w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     w.transform = 'r'
     olsr = OLS_Regimes(
         y, x, regimes, w=w, constant_regi='many', nonspat_diag=False, spat_diag=False,

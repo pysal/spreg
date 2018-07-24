@@ -1,6 +1,5 @@
 import unittest
-import scipy
-import libpysal.api as lps
+import libpysal
 import numpy as np
 from spreg import error_sp as SP
 from spreg import utils
@@ -8,7 +7,7 @@ from libpysal.common import RTOL
 
 class TestBaseGMError(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -16,7 +15,7 @@ class TestBaseGMError(unittest.TestCase):
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
         self.X = np.hstack((np.ones(self.y.shape),self.X))
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -50,14 +49,14 @@ class TestBaseGMError(unittest.TestCase):
 
 class TestGMError(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -95,68 +94,9 @@ class TestGMError(unittest.TestCase):
         z_stat = np.array([[  3.89022140e+00,   1.00152805e-04], [  1.41487186e+00,   1.57106070e-01], [ -3.11175868e+00,   1.85976455e-03]])
         np.testing.assert_allclose(reg.z_stat,z_stat,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
-class TestBaseGMEndogError(unittest.TestCase):
-    def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
-        y = np.array(db.by_col("HOVAL"))
-        self.y = np.reshape(y, (49,1))
-        X = []
-        X.append(db.by_col("INC"))
-        self.X = np.array(X).T
-        self.X = np.hstack((np.ones(self.y.shape),self.X))
-        yd = []
-        yd.append(db.by_col("CRIME"))
-        self.yd = np.array(yd).T
-        q = []
-        q.append(db.by_col("DISCBD"))
-        self.q = np.array(q).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
-        self.w.transform = 'r'
-
-    def test_model(self):
-        reg = SP.BaseGM_Endog_Error(self.y, self.X, self.yd, self.q, self.w.sparse)
-        betas = np.array([[ 55.36095292], [  0.46411479], [ -0.66883535], [  0.38989939]])
-        #raising a warning causes a failure...
-        print('Running reduced precision test in L120 of test_error_sp.py')
-        np.testing.assert_allclose(reg.betas,betas,RTOL+.0001)
-        u = np.array([ 26.55951566])
-        np.testing.assert_allclose(reg.u[0],u,RTOL)
-        e = np.array([ 31.23925425])
-        np.testing.assert_allclose(reg.e_filtered[0],e,RTOL)
-        predy = np.array([ 53.9074875])
-        np.testing.assert_allclose(reg.predy[0],predy,RTOL)
-        n = 49
-        np.testing.assert_allclose(reg.n,n,RTOL)
-        k = 3
-        np.testing.assert_allclose(reg.k,k,RTOL)
-        y = np.array([ 80.467003])
-        np.testing.assert_allclose(reg.y[0],y,RTOL)
-        x = np.array([  1.   ,  19.531])
-        np.testing.assert_allclose(reg.x[0],x,RTOL)
-        yend = np.array([  15.72598])
-        np.testing.assert_allclose(reg.yend[0],yend,RTOL)
-        z = np.array([  1.     ,  19.531  ,  15.72598])
-        np.testing.assert_allclose(reg.z[0],z,RTOL)
-        my = 38.43622446938776
-        np.testing.assert_allclose(reg.mean_y,my,RTOL)
-        #std_y
-        sy = 18.466069465206047
-        np.testing.assert_allclose(reg.std_y,sy,RTOL)
-        #vm
-        vm = np.array([[  5.29158422e+02,  -1.57833675e+01,  -8.38021080e+00],
-       [ -1.57833675e+01,   5.40235041e-01,   2.31120327e-01],
-       [ -8.38021080e+00,   2.31120327e-01,   1.44977385e-01]])
-        np.testing.assert_allclose(reg.vm,vm,RTOL)
-        sig2 = 192.50022721929574
-        np.testing.assert_allclose(reg.sig2,sig2,RTOL)
-
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGMEndogError(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -168,7 +108,7 @@ class TestGMEndogError(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -211,18 +151,16 @@ class TestGMEndogError(unittest.TestCase):
         z_stat = np.array([[ 2.40664208,  0.01609994], [ 0.63144305,  0.52775088], [-1.75659016,  0.07898769]])
         np.testing.assert_allclose(reg.z_stat,z_stat,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestBaseGMCombo(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
 
     def test_model(self):
@@ -260,18 +198,16 @@ class TestBaseGMCombo(unittest.TestCase):
         sig2 = 181.78650186468832
         np.testing.assert_allclose(reg.sig2,sig2,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGMCombo(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         # Only spatial lag

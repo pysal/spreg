@@ -1,22 +1,22 @@
 import unittest
 import numpy as np
-import libpysal.api as lps
+import libpysal
 import spreg as EC
 from spreg import utils
 from libpysal.common import RTOL
 
-PEGP = lps.get_path
+PEGP = libpysal.examples.get_path
 
 class TestBaseOLS(unittest.TestCase):
     def setUp(self):
-        db = lps.open(PEGP('columbus.dbf'),'r')
+        db = libpysal.io.open(PEGP('columbus.dbf'),'r')
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
-        self.w = lps.rook_from_shapefile(PEGP("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(PEGP("columbus.shp"))
 
     def test_ols(self):
         self.X = np.hstack((np.ones(self.y.shape),self.X))

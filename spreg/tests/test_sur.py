@@ -1,11 +1,11 @@
 import unittest
 import numpy as np
-import libpysal.api as lps
+import libpysal
 from spreg.sur_utils import sur_dictxy,sur_dictZ
 from spreg.sur import SUR,ThreeSLS
 from libpysal.common import RTOL
 
-PEGP = lps.get_path
+PEGP = libpysal.examples.get_path
 
 def dict_compare(actual, desired, rtol):
     for i in list(actual.keys()):
@@ -14,8 +14,8 @@ def dict_compare(actual, desired, rtol):
 
 class Test_SUR(unittest.TestCase):
     def setUp(self):
-        self.db = lps.open(lps.get_path('NAT.dbf'),'r')
-        self.w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+        self.db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
+        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
         self.w.transform = 'r'
 
 

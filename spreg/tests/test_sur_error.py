@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
-import libpysal.api as lps
+import libpysal
 from spreg.sur_utils import sur_dictxy,sur_dictZ
 from spreg.sur_error import SURerrorML
 from libpysal.common import RTOL
 ATOL = 1e-12
 
-PEGP = lps.get_path
+PEGP = libpysal.examples.get_path
 
 def dict_compare(actual, desired, rtol=RTOL, atol=ATOL):
     for i in list(actual.keys()):
@@ -15,8 +15,8 @@ def dict_compare(actual, desired, rtol=RTOL, atol=ATOL):
 
 class Test_SUR_error(unittest.TestCase):
     def setUp(self):
-        self.db = lps.open(lps.get_path('NAT.dbf'),'r')
-        self.w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+        self.db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
+        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
         self.w.transform = 'r'
 
 
