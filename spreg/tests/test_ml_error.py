@@ -1,10 +1,13 @@
 import unittest
 import libpysal.api as lps
-import scipy
+import scipy.sparse as spar
 import numpy as np
-from spreg.ml_error import ML_Error
-from spreg import utils
+from ..ml_error import ML_Error
+from .. import utils
 from libpysal.common import RTOL, ATOL
+from warnings import filterwarnings
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
+filterwarnings('ignore', message="^Method 'bounded' does not support")
 
 class TestMLError(unittest.TestCase):
     def setUp(self):

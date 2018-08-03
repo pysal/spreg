@@ -1,13 +1,14 @@
 import unittest
-import scipy
+from scipy import sparse as spar 
 import libpysal.api as lps
 import numpy as np
-from spreg.ml_error_regimes import ML_Error_Regimes
-from spreg.ml_error import ML_Error
-from spreg import utils
+from ..ml_error_regimes import ML_Error_Regimes
+from ..ml_error import ML_Error
+from .. import utils
 from libpysal.common import RTOL
-from .skip import SKIP
+from warnings import filterwarnings
 
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
 
 class TestMLError(unittest.TestCase):
     def setUp(self):

@@ -1,13 +1,15 @@
 import unittest
-import scipy
+from scipy import sparse as spar
 import libpysal.api as lps
 import numpy as np
-from spreg.ml_lag_regimes import ML_Lag_Regimes
-from spreg.ml_lag import ML_Lag
-from spreg import utils
+from ..ml_lag_regimes import ML_Lag_Regimes
+from ..ml_lag import ML_Lag
+from .. import utils
 from libpysal.common import RTOL
 from .skip import SKIP
 
+from warnings import filterwarnings
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
 
 
 class TestMLError(unittest.TestCase):
