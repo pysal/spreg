@@ -115,8 +115,8 @@ class Test_SUR_error(unittest.TestCase):
 
 class Test_SUR_error_gm(unittest.TestCase):
     def setUp(self):
-        self.db = pysal.open(pysal.examples.get_path('NAT.dbf'),'r')
-        self.w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+        self.db = lps.open(lps.get_path('NAT.dbf'),'r')
+        self.w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
         self.w.transform = 'r'
 
 

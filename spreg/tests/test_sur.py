@@ -5,11 +5,11 @@ from ..sur_utils import sur_dictxy,sur_dictZ
 from ..sur import SUR,ThreeSLS
 from libpysal.common import RTOL
 
-PEGP = libpysal.io.examples.get_path
+PEGP = lps.get_path
 
-def dict_compare(actual, desired, rtol):
+def dict_compare(actual, desired, rtol, atol=1e-7):
     for i in actual.keys():
-        np.testing.assert_allclose(actual[i],desired[i],rtol)
+        np.testing.assert_allclose(actual[i],desired[i],rtol,atol=atol)
 
 
 class Test_SUR(unittest.TestCase):
@@ -170,7 +170,7 @@ class Test_SUR(unittest.TestCase):
         y_var0 = ['HR80','HR90']
         x_var0 = [['PS80','UE80'],['PS90','UE90']]
         bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(self.db,y_var0,x_var0)
-        regi1 = bigy0[0].shape[0]/2
+        regi1 = int(bigy0[0].shape[0]/2)
         regi = [0]*(regi1) + [1]*(bigy0[0].shape[0]-regi1)
 
         bigysub,bigXsub = {},{}

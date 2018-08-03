@@ -729,7 +729,7 @@ def _get_bigZhat(reg, bigX, bigyend, bigH):
         try:
             HHi = la.inv(spdot(bigH[r].T,bigH[r]))
         except:
-            raise Exception, "ERROR: singular cross product matrix, check instruments"
+            raise Exception("ERROR: singular cross product matrix, check instruments")
         Hye = spdot(bigH[r].T,bigyend[r])
         yp = spdot(bigH[r],spdot(HHi,Hye))
         bigZhat[r] = sphstack(bigX[r],yp)

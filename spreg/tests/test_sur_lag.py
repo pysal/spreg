@@ -4,7 +4,7 @@ import libpysal.api as lps
 from ..sur_utils import sur_dictxy,sur_dictZ
 from ..sur_lag import SURlagIV
 from .test_sur import dict_compare
-from pysal.common import RTOL
+from libpysal.common import RTOL
 
 PEGP = lps.get_path
 

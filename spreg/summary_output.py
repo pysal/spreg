@@ -1044,7 +1044,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
         strSummary = ""
         regk = len(reg.name_bigX[eq]) / regK #number of exogenous variables in each regime
         for k in range(regK):
-            for i in range(len(reg.name_bigX[eq]))[k*regk:(k+1)*regk]:
+            for i in range(len(reg.name_bigX[eq]))[int(k*regk):int((k+1)*regk)]:
                 strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"   \
                     % (reg.name_bigX[eq][i], betas[eq][i][0], inf[eq][i][0],\
                          inf[eq][i][1], inf[eq][i][2])
@@ -1209,7 +1209,7 @@ def summary_sur(reg, u_cov=False):
 def summary_chow(reg, lambd=False, sur=False):
     sum_text = "\nREGIMES DIAGNOSTICS - CHOW TEST"
     if sur is not False:
-        eq = reg.name_bigy.keys()[sur-1]        
+        eq = list(reg.name_bigy.keys())[sur-1]        
         name_x_r = reg.name_x_r[eq]
         joint,regi = reg.chow_regimes[eq]
         sum_text += " WITHIN EQUATION"
@@ -1427,19 +1427,20 @@ def summary_diag_sur(reg, nonspat_diag, spat_diag, tsls, lambd, rho=False, ml=Tr
                 kx = len(reg.surchow)
                 kend = 0
                 if tsls:
-                    kend = len(reg.name_bigyend[reg.name_bigyend.keys()[0]])
+                    kend = len(reg.name_bigyend[list(reg.name_bigyend.keys())[0]])
                     kx += -kend
                 names_chow = {}
                 reg_counter = 1
                 for k in range(len(reg.surchow)):
                     names_chow[k] = ""
                     if k < ((kx+kend)*reg_counter-kend)/regK:
-                        kxadj = k-(reg_counter-1)*kend/regK
+                        kxadj = int(k-(reg_counter-1)*kend/regK)
                         for i in reg.name_bigX:
                             names_chow[k] += reg.name_bigX[i][kxadj] + ", "
                     else:
                         for j in reg.name_bigyend:
-                            names_chow[k] += reg.name_bigyend[j][k-kx*reg_counter/regK] + ", "
+                            kxadj = int(k-kx*reg_counter/regK)
+                            names_chow[k] += reg.name_bigyend[j][kxadj] + ", "
                     if k+1 == (kx+kend)*reg_counter/regK:
                         reg_counter += 1
                     if len(names_chow[k])>42:
@@ -1449,9 +1450,9 @@ def summary_diag_sur(reg, nonspat_diag, spat_diag, tsls, lambd, rho=False, ml=Tr
                 reg_counter = 1
                 for k in range(len(reg.surchow)):
                     if k < ((kx+kend)*reg_counter-kend)/regK:
-                        kadj = k-(reg_counter-1)*kend/regK
+                        kadj = int(k-(reg_counter-1)*kend/regK)
                     else:
-                        kadj = kx+k-kx*reg_counter/regK 
+                        kadj = int(kx+k-kx*reg_counter/regK)
                     if k + 1 == (kx-kend)/regK:
                         reg_counter += 1
                     strChow += "%41s        %2d   %10.3f           %6.4f\n" % (

@@ -10,8 +10,8 @@ __author__= "Luc Anselin lanselin@gmail.com,    \
 import numpy as np
 import scipy.stats as stats
 import numpy.linalg as la
-from sur_utils import sur_dict2mat,sur_mat2dict,sur_corr,spdot
-from econometrics.regimes import buildR1var,wald_test
+from .sur_utils import sur_dict2mat,sur_mat2dict,sur_corr,spdot
+from .regimes import buildR1var,wald_test
 
 
 __all__ = ['sur_setp','sur_lrtest','sur_lmtest','lam_setp','surLMe','surLMlag']
