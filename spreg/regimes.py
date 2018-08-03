@@ -2,7 +2,8 @@ import numpy as np
 import libpysal.api as lps
 import scipy.sparse as SP
 import itertools as iter
-from scipy.stats import f, chi2.sf as chisqprob
+from scipy.stats import f, chi2
+chisqprob = chi2.sf
 import itertools as iter
 import numpy.linalg as la
 from .utils import spbroadcast
