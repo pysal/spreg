@@ -485,4 +485,4 @@ if __name__ == '__main__':
     w.transform = 'r'
     tsls = TSLS(y, x, yd, q, w=w, spat_diag=True, name_y=y_var, name_x=x_var,
                 name_yend=yd_var, name_q=q_var, name_ds='columbus', name_w='columbus.gal')
-    print tsls.summary
+    print(tsls.summary)
