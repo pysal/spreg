@@ -9,8 +9,6 @@ from libpysal.common import RTOL
 from .skip import SKIP
 
 
-@unittest.skipIf(SKIP,
-        "Skipping MLError Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
         db =  lps.open(lps.get_path("baltim.dbf"),'r')
@@ -28,7 +26,7 @@ class TestMLError(unittest.TestCase):
         self.regimes = db.by_col("CITCOU")
         #Artficial:
         n = 256
-        self.n2 = n/2
+        self.n2 = int(n/2)
         self.x_a1 = np.random.uniform(-10,10,(n,1))
         self.x_a2 = np.random.uniform(1,5,(n,1))
         self.q_a = self.x_a2 + np.random.normal(0,1,(n,1))

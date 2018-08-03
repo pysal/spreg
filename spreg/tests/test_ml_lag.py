@@ -8,8 +8,6 @@ from libpysal.common import RTOL
 from .skip import SKIP
 
 
-@unittest.skipIf(SKIP,
-        "Skipping MLLag Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
         db =  lps.open(lps.get_path("baltim.dbf"),'r')

@@ -181,7 +181,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         self.epsilon = epsilon
         #W = w.full()[0]
         #Wsp = w.sparse
-        ylag = ps.lag_spatial(w, y)
+        ylag = lps.lag_spatial(w, y)
         # b0, b1, e0 and e1
         xtx = spdot(self.x.T, self.x)
         xtxi = la.inv(xtx)
@@ -266,7 +266,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         tr3 = waiTwai.diagonal().sum()
         ### to here
 
-        wpredy = ps.lag_spatial(w, self.predy_e)
+        wpredy = lps.lag_spatial(w, self.predy_e)
         wpyTwpy = spdot(wpredy.T, wpredy)
         xTwpy = spdot(x.T, wpredy)
 
