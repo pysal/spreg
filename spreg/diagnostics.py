@@ -6,7 +6,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia
 
 from libpysal.common import *
 import scipy.sparse as SP
-from math import sqrt
+from math import sqrt, pi
 from .utils import spmultiply, sphstack, spmin, spmax
 
 
@@ -386,7 +386,7 @@ def log_likelihood(reg):
     n = reg.n       # (scalar) number of observations
     utu = reg.utu   # (scalar) residual sum of squares
     ll_result = -0.5 * \
-        (n * (np.log(2 * math.pi)) + n * np.log(utu / n) + (utu / (utu / n)))
+        (n * (np.log(2 * pi)) + n * np.log(utu / n) + (utu / (utu / n)))
     return ll_result
 
 
