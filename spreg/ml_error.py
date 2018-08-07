@@ -107,7 +107,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
     >>> x_names = ["RD90","PS90","UE90","DV90"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
     >>> x = np.hstack((np.ones((len(y),1)),x))
-    >>> ww = lps.open(lps.examples.get_path("south_q.gal"))
+    >>> ww = libpysal.io.open(libpysal.examples.get_path("south_q.gal"))
     >>> w = ww.read()
     >>> ww.close()
     >>> w.transform = 'r'
@@ -231,7 +231,6 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
 
         # residual variance
 
-        self.e_filtered = self.u - self.lam * lps.lag_spatial(w, self.u)
         self.e_filtered = self.u - self.lam * weights.lag_spatial(w, self.u)
         self.sig2 = np.dot(self.e_filtered.T, self.e_filtered) / self.n
 
@@ -388,7 +387,7 @@ class ML_Error(BaseML_Error):
     >>> y.shape = (len(y),1)
     >>> x_names = ["RD90","PS90","UE90","DV90"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
-    >>> ww = lps.open(lps.examples.get_path("south_q.gal"))
+    >>> ww = libpysal.io.open(libpysal.examples.get_path("south_q.gal"))
     >>> w = ww.read()
     >>> ww.close()
     >>> w_name = "south_q.gal"
