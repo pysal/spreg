@@ -1,16 +1,14 @@
 import unittest
 import libpysal.api as lps
-import scipy
+import scipy.sparse as spar
 import numpy as np
-from spreg.ml_error import ML_Error
-from spreg import utils
+from ..ml_error import ML_Error
+from .. import utils
 from libpysal.common import RTOL, ATOL
-from warnings import warn as Warn
-from .skip import SKIP
+from warnings import filterwarnings
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
+filterwarnings('ignore', message="^Method 'bounded' does not support")
 
-
-@unittest.skipIf(SKIP,
-        "Skipping MLError Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
         db = lps.open(lps.get_path("south.dbf"),'r')
@@ -28,7 +26,6 @@ class TestMLError(unittest.TestCase):
         reg = ML_Error(self.y,self.x,w=self.w,name_y=self.y_name,name_x=self.x_names,\
                name_w="south_q.gal", method=method)
         betas = np.array([[ 6.1492], [ 4.4024], [ 1.7784], [-0.3781], [ 0.4858], [ 0.2991]])
-        Warn('Running higher-tolerance tests in test_ml_error.py')
         np.testing.assert_allclose(reg.betas,betas,RTOL + .0001)
         u = np.array([-5.97649777])
         np.testing.assert_allclose(reg.u[0],u,RTOL)
@@ -84,7 +81,6 @@ class TestMLError(unittest.TestCase):
                      name_y=self.y_name, name_x=self.x_names,
                      name_w='south_q.gal',  method='ORD')
         betas = np.array([[ 6.1492], [ 4.4024], [ 1.7784], [-0.3781], [ 0.4858], [ 0.2991]])
-        Warn('Running higher-tolerance tests in test_ml_error.py')
         np.testing.assert_allclose(reg.betas,betas,RTOL + .0001)
         u = np.array([-5.97649777])
         np.testing.assert_allclose(reg.u[0],u,RTOL)

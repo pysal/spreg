@@ -1,16 +1,15 @@
 import unittest
-import scipy
+from scipy import sparse as spar 
 import libpysal.api as lps
 import numpy as np
-from spreg.ml_error_regimes import ML_Error_Regimes
-from spreg.ml_error import ML_Error
-from spreg import utils
+from ..ml_error_regimes import ML_Error_Regimes
+from ..ml_error import ML_Error
+from .. import utils
 from libpysal.common import RTOL
-from .skip import SKIP
+from warnings import filterwarnings
 
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
 
-@unittest.skipIf(SKIP,
-        "Skipping MLError Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
         db =  lps.open(lps.get_path("baltim.dbf"),'r')
@@ -28,7 +27,7 @@ class TestMLError(unittest.TestCase):
         self.regimes = db.by_col("CITCOU")
         #Artficial:
         n = 256
-        self.n2 = n/2
+        self.n2 = int(n/2)
         self.x_a1 = np.random.uniform(-10,10,(n,1))
         self.x_a2 = np.random.uniform(1,5,(n,1))
         self.q_a = self.x_a2 + np.random.normal(0,1,(n,1))

@@ -6,8 +6,6 @@ from spreg import error_sp_regimes as SP
 from spreg.error_sp import GM_Error, GM_Endog_Error, GM_Combo
 from libpysal.common import RTOL
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGM_Error_Regimes(unittest.TestCase):
     def setUp(self):
         db=lps.open(lps.get_path("columbus.dbf"),"r")

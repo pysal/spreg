@@ -1,15 +1,13 @@
 import unittest
 import numpy as np
 import libpysal.api as lps
-from spreg.sur_utils import sur_dictxy,sur_dictZ
-from spreg.sur_lag import SURlagIV
+from ..sur_utils import sur_dictxy,sur_dictZ
+from ..sur_lag import SURlagIV
+from .test_sur import dict_compare
 from libpysal.common import RTOL
 
 PEGP = lps.get_path
 
-def dict_compare(actual, desired, rtol):
-    for i in list(actual.keys()):
-        np.testing.assert_allclose(actual[i],desired[i],rtol)
 
 
 class Test_SURlagIV(unittest.TestCase):

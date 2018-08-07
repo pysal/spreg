@@ -95,8 +95,6 @@ class TestGMError(unittest.TestCase):
         z_stat = np.array([[  3.89022140e+00,   1.00152805e-04], [  1.41487186e+00,   1.57106070e-01], [ -3.11175868e+00,   1.85976455e-03]])
         np.testing.assert_allclose(reg.z_stat,z_stat,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestBaseGMEndogError(unittest.TestCase):
     def setUp(self):
         db=lps.open(lps.get_path("columbus.dbf"),"r")
@@ -152,8 +150,6 @@ class TestBaseGMEndogError(unittest.TestCase):
         sig2 = 192.50022721929574
         np.testing.assert_allclose(reg.sig2,sig2,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGMEndogError(unittest.TestCase):
     def setUp(self):
         db=lps.open(lps.get_path("columbus.dbf"),"r")
@@ -211,8 +207,6 @@ class TestGMEndogError(unittest.TestCase):
         z_stat = np.array([[ 2.40664208,  0.01609994], [ 0.63144305,  0.52775088], [-1.75659016,  0.07898769]])
         np.testing.assert_allclose(reg.z_stat,z_stat,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestBaseGMCombo(unittest.TestCase):
     def setUp(self):
         db=lps.open(lps.get_path("columbus.dbf"),"r")
@@ -260,8 +254,6 @@ class TestBaseGMCombo(unittest.TestCase):
         sig2 = 181.78650186468832
         np.testing.assert_allclose(reg.sig2,sig2,RTOL)
 
-@unittest.skipIf(int(scipy.__version__.split(".")[1]) < 11,
-"Maximum Likelihood requires SciPy version 11 or newer.")
 class TestGMCombo(unittest.TestCase):
     def setUp(self):
         db=lps.open(lps.get_path("columbus.dbf"),"r")

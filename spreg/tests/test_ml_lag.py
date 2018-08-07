@@ -1,15 +1,14 @@
 import unittest
 import libpysal.api as lps
-import scipy
+from scipy import sparse as spar
 import numpy as np
-from spreg.ml_lag import ML_Lag
-from spreg import utils
+from ..ml_lag import ML_Lag
+from .. import utils
 from libpysal.common import RTOL
 from .skip import SKIP
+from warnings import filterwarnings
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
 
-
-@unittest.skipIf(SKIP,
-        "Skipping MLLag Tests")
 class TestMLError(unittest.TestCase):
     def setUp(self):
         db =  lps.open(lps.get_path("baltim.dbf"),'r')
