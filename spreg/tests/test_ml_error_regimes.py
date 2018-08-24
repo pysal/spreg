@@ -1,25 +1,24 @@
 import unittest
-from scipy import sparse as spar 
-import libpysal.api as lps
+import libpysal
 import numpy as np
+from scipy import sparse
 from ..ml_error_regimes import ML_Error_Regimes
 from ..ml_error import ML_Error
-from .. import utils
 from libpysal.common import RTOL
 from warnings import filterwarnings
 
-filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
+filterwarnings('ignore', category=sparse.SparseEfficiencyWarning)
 
 class TestMLError(unittest.TestCase):
     def setUp(self):
-        db =  lps.open(lps.get_path("baltim.dbf"),'r')
+        db =  libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')
         self.ds_name = "baltim.dbf"
         self.y_name = "PRICE"
         self.y = np.array(db.by_col(self.y_name)).T
         self.y.shape = (len(self.y),1)
         self.x_names = ["NROOM","AGE","SQFT"]
         self.x = np.array([db.by_col(var) for var in self.x_names]).T
-        ww = lps.open(lps.get_path("baltim_q.gal"))
+        ww = libpysal.io.open(libpysal.examples.get_path("baltim_q.gal"))
         self.w = ww.read()
         ww.close()
         self.w_name = "baltim_q.gal"
@@ -34,10 +33,10 @@ class TestMLError(unittest.TestCase):
         self.x_a = np.hstack((self.x_a1,self.x_a2))
         self.y_a = np.dot(np.hstack((np.ones((n,1)),self.x_a)),np.array([[1],[0.5],[2]])) + np.random.normal(0,1,(n,1))
         latt = int(np.sqrt(n))
-        self.w_a = lps.lat2W(latt,latt)
+        self.w_a = libpysal.weights.util.lat2W(latt,latt)
         self.w_a.transform='r'
         self.regi_a = [0]*(n//2) + [1]*(n//2) #must be floor!
-        self.w_a1 = lps.lat2W(latt//2,latt)
+        self.w_a1 = libpysal.weights.util.lat2W(latt//2,latt)
         self.w_a1.transform='r'
 
     def test_model1(self):

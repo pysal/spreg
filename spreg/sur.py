@@ -215,15 +215,15 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         Examples
         --------
 
-        First import pysal to load the spatial analysis tools.
+        First import libpysal to load the spatial analysis tools.
 
-        >>> import pysal
+        >>> import libpysal
 
-        Open data on NCOVR US County Homicides (3085 areas) using pysal.open().
-        This is the DBF associated with the NAT shapefile. Note that pysal.open()
+        Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
+        This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
         also reads data in CSV format.
 
-        >>> db = pysal.open(pysal.examples.get_path("NAT.dbf"),'r')
+        >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
         The specification of the model to be estimated can be provided as lists.
         Each equation should be listed separately. In this example, equation 1
@@ -237,7 +237,7 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         Although not required for this method, we can load a weights matrix file
         to allow for spatial diagnostics.
 
-        >>> w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+        >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
         >>> w.transform='r'
 
         The SUR method requires data to be provided as dictionaries. PySAL
@@ -554,15 +554,15 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
         Examples
         --------
 
-        First import pysal to load the spatial analysis tools.
+        First import libpysal to load the spatial analysis tools.
 
-        >>> import pysal
+        >>> import libpysal
 
-        Open data on NCOVR US County Homicides (3085 areas) using pysal.open().
-        This is the DBF associated with the NAT shapefile. Note that pysal.open()
+        Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
+        This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
         also reads data in CSV format.
 
-        >>> db = pysal.open(pysal.examples.get_path("NAT.dbf"),'r')
+        >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
         The specification of the model to be estimated can be provided as lists.
         Each equation should be listed separately. In this example, equation 1
@@ -747,17 +747,17 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import pysal
-    from sur_utils import sur_dictxy,sur_dictZ
+    import libpysal
+    from .sur_utils import sur_dictxy,sur_dictZ
 
-    db = pysal.open(pysal.examples.get_path('NAT.dbf'), 'r')
+    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
     y_var = ['HR80','HR90']
     x_var = [['PS80','UE80'],['PS90','UE90']]
     regimes = db.by_col('SOUTH')
 
     #Example SUR
     #"""
-    w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+    w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     w.transform='r'
     bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(db,y_var,x_var)
     reg0 = SUR(bigy0,bigX0,w=w,regimes=None,name_bigy=bigyvars0,name_bigX=bigXvars0,\

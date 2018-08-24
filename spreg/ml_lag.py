@@ -10,13 +10,13 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
-import libpysal.api as lps
 from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod
 from .sputils import spdot, spfill_diagonal, spinv, spbroadcast
 from . import diagnostics as DIAG
 from . import user_output as USER
 from . import summary_output as SUMMARY
 from .w_utils import symmetrize
+from libpysal import weights
 try:
     from scipy.optimize import minimize_scalar
     minimize_scalar_available = True
@@ -96,8 +96,8 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db =  ps.open(ps.examples.get_path("baltim.dbf"),'r')
+    >>> import libpysal
+    >>> db =  libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T
@@ -181,7 +181,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         self.epsilon = epsilon
         #W = w.full()[0]
         #Wsp = w.sparse
-        ylag = lps.lag_spatial(w, y)
+        ylag = weights.lag_spatial(w, y)
         # b0, b1, e0 and e1
         xtx = spdot(self.x.T, self.x)
         xtxi = la.inv(xtx)
@@ -266,7 +266,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         tr3 = waiTwai.diagonal().sum()
         ### to here
 
-        wpredy = lps.lag_spatial(w, self.predy_e)
+        wpredy = weights.lag_spatial(w, self.predy_e)
         wpyTwpy = spdot(wpredy.T, wpredy)
         xTwpy = spdot(x.T, wpredy)
 
@@ -391,8 +391,8 @@ class ML_Lag(BaseML_Lag):
     ________
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db =  ps.open(ps.examples.get_path("baltim.dbf"),'r')
+    >>> import libpysal
+    >>> db =  libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T

@@ -1,19 +1,19 @@
 import unittest
 import numpy as np
-import libpysal.api as lps
-from ..sur_utils import sur_dictxy,sur_dictZ
+import libpysal
+from ..sur_utils import sur_dictxy
 from ..sur_error import SURerrorML, SURerrorGM
 from .test_sur import dict_compare
 from libpysal.common import RTOL
 ATOL = 1e-12
 
-PEGP = lps.get_path
+PEGP = libpysal.examples.get_path
 
 
 class Test_SUR_error(unittest.TestCase):
     def setUp(self):
-        self.db = lps.open(lps.get_path('NAT.dbf'),'r')
-        self.w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+        self.db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
+        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
         self.w.transform = 'r'
 
 
@@ -115,8 +115,8 @@ class Test_SUR_error(unittest.TestCase):
 
 class Test_SUR_error_gm(unittest.TestCase):
     def setUp(self):
-        self.db = lps.open(lps.get_path('NAT.dbf'),'r')
-        self.w = lps.queen_from_shapefile(lps.get_path("NAT.shp"))
+        self.db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
+        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
         self.w.transform = 'r'
 
 
