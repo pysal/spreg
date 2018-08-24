@@ -1,3 +1,4 @@
+__version__ = "1.0.3"
 from .ols import *
 from .diagnostics import *
 from .diagnostics_sp import *
