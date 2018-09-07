@@ -9,12 +9,8 @@ import os
 with open('README.rst') as file:
     long_description = file.read()
 
-MAJOR = 1
-MINOR = 0
-MICRO = 2 
-ISRELEASED = False
-VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
-
+with open('spreg/__init__.py', 'r') as f:
+    exec(f.readline())
 
 def _get_requirements_from_files(groups_files):
     groups_reqlist = {}
@@ -41,7 +37,7 @@ def setup_package():
 
 
     setup(name='spreg',
-        version=VERSION,
+        version=__version__,
         description="PySAL Spatial Econometrics Package",
         long_description=long_description,
         maintainer="PySAL Developers",
@@ -63,15 +59,12 @@ def setup_package():
             'Topic :: Scientific/Engineering :: GIS',
             'License :: OSI Approved :: BSD License',
             'Programming Language :: Python',
-            'Programming Language :: Python :: 2.5',
-            'Programming Language :: Python :: 2.6',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6'
         ],
         # package_data={'libpysal':list(example_data_files)},
-          install_requires=['numpy', 'scipy', 'libpysal'],
+          install_requires=install_reqs,
         extras_require=extras_reqs,
         cmdclass={'build_py': build_py}
     )
