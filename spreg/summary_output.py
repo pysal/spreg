@@ -1449,7 +1449,7 @@ def summary_diag_sur(reg, nonspat_diag, spat_diag, tsls, lambd, rho=False, ml=Tr
                         kadj = int(k-(reg_counter-1)*kend/regK)
                     else:
                         kadj = int(kx+k-kx*reg_counter/regK)
-                    if k + 1 == (kx-kend)/regK:
+                    if k + 1 == (kx+kend)*reg_counter/regK:
                         reg_counter += 1
                     strChow += "%41s        %2d   %10.3f           %6.4f\n" % (
                         names_chow[k], reg.surchow[kadj][1], reg.surchow[kadj][0], reg.surchow[kadj][2])
