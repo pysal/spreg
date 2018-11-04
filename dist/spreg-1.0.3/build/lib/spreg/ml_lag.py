@@ -30,7 +30,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
     """
     ML estimation of the spatial lag model (note no consistency
-    checks, diagnostics or constants added) :cite:`Anselin1988` 
+    checks, diagnostics or constants added); Anselin (1988) [Anselin1988]_
 
     Parameters
     ----------
@@ -288,7 +288,8 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 class ML_Lag(BaseML_Lag):
 
     """
-    ML estimation of the spatial lag model with all results and diagnostics; :cite:`Anselin1988`
+    ML estimation of the spatial lag model with all results and diagnostics;
+    Anselin (1988) [Anselin1988]_
 
     Parameters
     ----------
