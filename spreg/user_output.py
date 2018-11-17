@@ -9,10 +9,7 @@ import copy as COPY
 from . import diagnostics
 from . import sputils as spu
 from libpysal import weights 
-from libpysal.weights.Distance import Kernel
-import scipy
 from scipy.sparse.csr import csr_matrix
-weights.Kernel = Kernel
 __all__ = []
 
 
@@ -330,8 +327,8 @@ def check_arrays(*arrays):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -349,19 +346,19 @@ def check_arrays(*arrays):
         if i is None:
             continue
         if not isinstance(i, (np.ndarray, csr_matrix)):
-            raise Exception, "all input data must be either numpy arrays or sparse csr matrices"
+            raise Exception("all input data must be either numpy arrays or sparse csr matrices")
         shape = i.shape
         if len(shape) > 2:
-            raise Exception, "all input arrays must have exactly two dimensions"
+            raise Exception("all input arrays must have exactly two dimensions")
         if len(shape) == 1:
-            raise Exception, "all input arrays must have exactly two dimensions"
+            raise Exception("all input arrays must have exactly two dimensions")
         if shape[0] < shape[1]:
-            raise Exception, "one or more input arrays have more columns than rows"
+            raise Exception("one or more input arrays have more columns than rows")
         if not spu.spisfinite(i):
-            raise Exception, "one or more input arrays have missing/NaN values"
+            raise Exception("one or more input arrays have missing/NaN values")
         rows.append(shape[0])
     if len(set(rows)) > 1:
-        raise Exception, "arrays not all of same length"
+        raise Exception("arrays not all of same length")
     return rows[0]
 
 
@@ -391,8 +388,8 @@ def check_y(y, n):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -401,15 +398,15 @@ def check_y(y, n):
 
     """
     if not isinstance(y, np.ndarray):
-        print y.__class__.__name__
-        raise Exception, "y must be a numpy array"
+        print(y.__class__.__name__)
+        raise Exception("y must be a numpy array")
     shape = y.shape
     if len(shape) > 2:
-        raise Exception, "all input arrays must have exactly two dimensions"
+        raise Exception("all input arrays must have exactly two dimensions")
     if len(shape) == 1:
-        raise Exception, "all input arrays must have exactly two dimensions"
+        raise Exception("all input arrays must have exactly two dimensions")
     if shape != (n, 1):
-        raise Exception, "y must be a single column array matching the length of other arrays"
+        raise Exception("y must be a single column array matching the length of other arrays")
 
 
 def check_weights(w, y, w_required=False):
@@ -437,8 +434,8 @@ def check_weights(w, y, w_required=False):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -446,24 +443,25 @@ def check_weights(w, y, w_required=False):
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
-    >>> w = lps.open(lps.get_path("columbus.gal"), 'r').read()
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> check_weights(w, y)
     >>> # should not raise an exception
 
     """
     if w_required == True or w != None:
         if w == None:
-            raise Exception, "A weights matrix w must be provided to run this method."
+            raise Exception("A weights matrix w must be provided to run this method.")
         if not isinstance(w, weights.W):
-            raise Exception, "w must be a libpysal.W object"
+            from warnings import warn
+            warn("w must be API-compatible pysal weights object")
         if w.n != y.shape[0]:
-            raise Exception, "y must be nx1, and w must be an nxn PySAL W object"
+            raise Exception("y must be nx1, and w must be an nxn PySAL W object")
         diag = w.sparse.diagonal()
         # check to make sure all entries equal 0
         if diag.min() != 0:
-            raise Exception, "All entries on diagonal must equal 0."
+            raise Exception("All entries on diagonal must equal 0.")
         if diag.max() != 0:
-            raise Exception, "All entries on diagonal must equal 0."
+            raise Exception("All entries on diagonal must equal 0.")
 
 
 def check_robust(robust, wk):
@@ -490,8 +488,8 @@ def check_robust(robust, wk):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -507,15 +505,15 @@ def check_robust(robust, wk):
     if robust:
         if robust.lower() == 'hac':
             if not isinstance(wk, weights.Kernel):
-                raise Exception, "HAC requires that wk be a Kernel Weights object"
+                raise Exception("HAC requires that wk be a Kernel Weights object")
             diag = wk.sparse.diagonal()
             # check to make sure all entries equal 1
             if diag.min() < 1.0:
-                print diag.min()
-                raise Exception, "All entries on diagonal of kernel weights matrix must equal 1."
+                print(diag.min())
+                raise Exception("All entries on diagonal of kernel weights matrix must equal 1.")
             if diag.max() > 1.0:
-                print diag.max()
-                raise Exception, "All entries on diagonal of kernel weights matrix must equal 1."
+                print(diag.max())
+                raise Exception("All entries on diagonal of kernel weights matrix must equal 1.")
             # ensure off-diagonal entries are in the set of real numbers [0,1)
             wegt = wk.weights
             for i in wk.id_order:
@@ -523,15 +521,15 @@ def check_robust(robust, wk):
                 vmin = min(vals)
                 vmax = max(vals)
                 if vmin < 0.0:
-                    raise Exception, "Off-diagonal entries must be greater than or equal to 0."
+                    raise Exception("Off-diagonal entries must be greater than or equal to 0.")
                 if vmax > 1.0:
                     # NOTE: we are not checking for the case of exactly 1.0 ###
-                    raise Exception, "Off-diagonal entries must be less than 1."
+                    raise Exception("Off-diagonal entries must be less than 1.")
         elif robust.lower() == 'white' or robust.lower() == 'ogmm':
             if wk:
-                raise Exception, "White requires that wk be set to None"
+                raise Exception("White requires that wk be set to None")
         else:
-            raise Exception, "invalid value passed to robust, see docs for valid options"
+            raise Exception("invalid value passed to robust, see docs for valid options")
 
 
 def check_spat_diag(spat_diag, w):
@@ -557,8 +555,8 @@ def check_spat_diag(spat_diag, w):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -566,14 +564,14 @@ def check_spat_diag(spat_diag, w):
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
-    >>> w = lps.open(lps.get_path("columbus.gal"), 'r').read()
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> check_spat_diag(True, w)
     >>> # should not raise an exception
 
     """
     if spat_diag:
         if not isinstance(w, weights.W):
-            raise Exception, "w must be a libpysal.W object to run spatial diagnostics"
+            raise Exception("w must be a libpysal.W object to run spatial diagnostics")
 
 
 def check_regimes(reg_set, N=None, K=None):
@@ -593,9 +591,9 @@ def check_regimes(reg_set, N=None, K=None):
 
     """
     if len(reg_set) < 2:
-        raise Exception, "At least 2 regimes are needed to run regimes methods. Please check your regimes variable."
+        raise Exception("At least 2 regimes are needed to run regimes methods. Please check your regimes variable.")
     if 1.0 * N / len(reg_set) < K + 1:
-        raise Exception, "There aren't enough observations for the given number of regimes and variables. Please check your regimes variable."
+        raise Exception("There aren't enough observations for the given number of regimes and variables. Please check your regimes variable.")
 
 
 def check_constant(x):
@@ -618,8 +616,8 @@ def check_constant(x):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> X = []
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
@@ -630,7 +628,7 @@ def check_constant(x):
 
     """
     if diagnostics.constant_check(x):
-        raise Exception, "x array cannot contain a constant vector; constant will be added automatically"
+        raise Exception("x array cannot contain a constant vector; constant will be added automatically")
     else:
         x_constant = COPY.copy(x)
         return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant)

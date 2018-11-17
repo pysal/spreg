@@ -1,12 +1,12 @@
 import numpy as np
-import regimes as REGI
-import user_output as USER
+from . import regimes as REGI
+from . import user_output as USER
 import multiprocessing as mp
 import scipy.sparse as SP
-from utils import sphstack, set_warn, RegressionProps_basic, spdot, sphstack
-from twosls import BaseTSLS
-from robust import hac_multi
-import summary_output as SUMMARY
+from .utils import sphstack, set_warn, RegressionProps_basic, spdot, sphstack
+from .twosls import BaseTSLS
+from .robust import hac_multi
+from . import summary_output as SUMMARY
 from platform import system
 
 """
@@ -180,15 +180,15 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
 
-    Open data on NCOVR US County Homicides (3085 areas) using lps.open().
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
-    lps.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -234,7 +234,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     an already existing gal file or create a new one. In this case, we will
     create one from ``NAT.shp``.
 
-    >>> w = lps.rook_from_shapefile(lps.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -496,8 +496,8 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import libpysal.api as lps
-    db = lps.open(lps.get_path('NAT.dbf'), 'r')
+    import libpysal
+    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
     y_var = 'HR60'
     y = np.array([db.by_col(y_var)]).T
     x_var = ['PS60', 'DV60', 'RD60']
@@ -512,4 +512,4 @@ if __name__ == '__main__':
                          name_yend=yd_var, name_q=q_var, name_regimes=r_var, cols2regi=[
                              False, True, True, True],
                          sig2n_k=False)
-    print tslsr.summary
+    print(tslsr.summary)

@@ -10,11 +10,10 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, \
 
 import numpy as np
 from scipy import sparse as SP
-from scipy.sparse import linalg as SPla
 import scipy.optimize as op
 import numpy.linalg as la
-from libpysal.api import lag_spatial
-from sputils import *
+from libpysal.weights.spatial_lag import lag_spatial
+from .sputils import *
 import copy
 
 
@@ -419,11 +418,11 @@ def get_spFilter(w, lamb, sf):
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
-    >>> w=lps.open(lps.get_path("columbus.gal")).read()        
+    >>> w=libpysal.io.open(libpysal.examples.get_path("columbus.gal")).read()        
     >>> solu = get_spFilter(w,0.5,y)
     >>> print solu[0:5]
     [[  -8.9882875]
@@ -505,7 +504,7 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
     >>> import numpy, pysal
     >>> import numpy.linalg as la
     >>> np.random.seed(10)
-    >>> w = lps.lat2W(5, 5)
+    >>> w = libpysal.weights.util.lat2W(5, 5)
     >>> w.transform = 'r'
     >>> data = np.random.randn(w.n)
     >>> data.shape = (w.n, 1)
@@ -536,7 +535,7 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
         else:
             inv_prod = spdot(matrix, data)
     else:
-        raise Exception, "Invalid method selected for inversion."
+        raise Exception("Invalid method selected for inversion.")
     return inv_prod
 
 
@@ -575,7 +574,7 @@ def power_expansion(w, data, scalar, post_multiply=False, threshold=0.0000000001
         test_old = test
         test = la.norm(increment)
         if test > test_old:
-            raise Exception, "power expansion will not converge, check model specification and that weight are less than 1"
+            raise Exception("power expansion will not converge, check model specification and that weight are less than 1")
         count += 1
     return running_total
 
@@ -596,7 +595,7 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q):
         q = get_lags(w, x, w_lags)
         yend = yl
     else:
-        raise Exception, "invalid value passed to yend"
+        raise Exception("invalid value passed to yend")
     return yend, q
 
     lag = lag_spatial(w, x)
@@ -629,7 +628,7 @@ def set_endog_sparse(y, x, w, yend, q, w_lags, lag_q):
             q = sphstack(q, w * q)
         yend = yl
     else:
-        raise Exception, "invalid value passed to yend"
+        raise Exception("invalid value passed to yend")
     return yend, q
 
 

@@ -6,17 +6,16 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.
 
 import numpy as np
 import multiprocessing as mp
-import regimes as REGI
-import user_output as USER
-import summary_output as SUMMARY
-from libpysal.api import lag_spatial
-from ols import BaseOLS
-from twosls import BaseTSLS
-from error_sp import BaseGM_Error, BaseGM_Endog_Error, _momentsGM_Error
-from utils import set_endog, iter_msg, sp_att, set_warn
-from utils import optim_moments, get_spFilter, get_lags
-from utils import spdot, RegressionPropsY
-from platform import system
+from . import regimes as REGI
+from . import user_output as USER
+from . import summary_output as SUMMARY
+from libpysal.weights.spatial_lag import lag_spatial
+from .ols import BaseOLS
+from .twosls import BaseTSLS
+from .error_sp import BaseGM_Error, BaseGM_Endog_Error, _momentsGM_Error
+from .utils import set_endog, iter_msg, sp_att, set_warn
+from .utils import optim_moments, get_spFilter, get_lags
+from .utils import spdot, RegressionPropsY
 
 
 class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
@@ -182,16 +181,16 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis.
 
-    >>> import libpysal.api as lps
+    >>> import libpysal
     >>> import numpy as np
 
-    Open data on NCOVR US County Homicides (3085 areas) using lps.open().
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
-    lps.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -222,7 +221,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     observations. To do that, we can open an already existing gal file or 
     create a new one. In this case, we will create one from ``NAT.shp``.
 
-    >>> w = lps.rook_from_shapefile(lps.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -304,7 +303,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 self._error_regimes_multi(y, x, regimes, w, cores,
                                           cols2regi, vm, name_x)
             else:
-                raise Exception, "All coefficients must vary accross regimes if regime_err_sep = True."
+                raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
             self.x, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
                                                               regimes, constant_regi=None, cols2regi=cols2regi, names=name_x)
@@ -597,16 +596,16 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis.
 
-    >>> import libpysal.api as lps
+    >>> import libpysal
     >>> import numpy as np
 
-    Open data on NCOVR US County Homicides (3085 areas) using lps.open().
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
-    lps.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -646,7 +645,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     existing gal file or create a new one. In this case, we will create one 
     from ``NAT.shp``.
 
-    >>> w = lps.rook_from_shapefile(lps.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -729,7 +728,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 self._endog_error_regimes_multi(y, x, regimes, w, yend, q, cores,
                                                 cols2regi, vm, name_x, name_yend, name_q, add_lag)
             else:
-                raise Exception, "All coefficients must vary accross regimes if regime_err_sep = True."
+                raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
             x_constant = USER.check_constant(x)
             q, name_q = REGI.Regimes_Frame.__init__(self, q,
@@ -1083,15 +1082,15 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
 
-    Open data on NCOVR US County Homicides (3085 areas) using lps.open().
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
-    lps.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = lps.open(lps.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -1122,7 +1121,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     observations. To do that, we can open an already existing gal file or 
     create a new one. In this case, we will create one from ``NAT.shp``.
 
-    >>> w = lps.rook_from_shapefile(lps.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -1234,11 +1233,11 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
 
         if regime_lag_sep == True:
             if regime_err_sep == False:
-                raise Exception, "For spatial combo models, if spatial lag is set by regimes (regime_lag_sep=True), spatial error must also be set by regimes (regime_err_sep=True)."
+                raise Exception("For spatial combo models, if spatial lag is set by regimes (regime_lag_sep=True), spatial error must also be set by regimes (regime_err_sep=True).")
             add_lag = [w_lags, lag_q]
         else:
             if regime_err_sep == True:
-                raise Exception, "For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes."
+                raise Exception("For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes.")
             cols2regi += [False]
             add_lag = False
             yend, q = set_endog(y, x, w, yend, q, w_lags, lag_q)
@@ -1321,9 +1320,9 @@ def _test():
 if __name__ == '__main__':
 
     _test()
-    import libpysal.api as lps
+    import libpysal
     import numpy as np
-    dbf = lps.open(lps.get_path('columbus.dbf'), 'r')
+    dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
     y = np.array([dbf.by_col('CRIME')]).T
     names_to_extract = ['INC']
     x = np.array([dbf.by_col(name) for name in names_to_extract]).T
@@ -1332,8 +1331,8 @@ if __name__ == '__main__':
     q_var = ['DISCBD']
     q = np.array([dbf.by_col(name) for name in q_var]).T
     regimes = regimes = dbf.by_col('NSA')
-    w = lps.open(lps.get_path("columbus.gal"), 'r').read()
+    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     w.transform = 'r'
     model = GM_Error_Regimes(y, x, regimes=regimes, w=w, name_y='crime', name_x=[
                              'income'], name_regimes='nsa', name_ds='columbus', regime_err_sep=True)
-    print model.summary
+    print(model.summary)

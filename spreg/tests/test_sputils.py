@@ -1,11 +1,13 @@
 import spreg as EC
 from spreg import sputils as spu
-from warnings import warn as Warn
+from warnings import warn as Warn, filterwarnings
 import unittest as ut
 import numpy as np
 import scipy.sparse as spar
 
-ALL_FUNCS = [f for f,v in spu.__dict__.items() \
+filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
+
+ALL_FUNCS = [f for f,v in list(spu.__dict__.items()) \
 	     if (callable(v) \
 		 and not f.startswith('_'))]
 COVERAGE = ['spinv', 'splogdet', 'spisfinite', 'spmin', 'spfill_diagonal', \
@@ -75,18 +77,18 @@ class Test_Sparse_Utils(ut.TestCase):
         self.assertTrue(not spu.spisfinite(sparse_inf))
 
     def test_min(self):
-        self.assertEquals(spu.spmin(self.dense0), 0)
-        self.assertEquals(spu.spmin(self.sparse0), 0)
+        self.assertEqual(spu.spmin(self.dense0), 0)
+        self.assertEqual(spu.spmin(self.sparse0), 0)
 
     def test_max(self):
-        self.assertEquals(spu.spmax(self.dense1), 1)
-        self.assertEquals(spu.spmax(self.sparse1), 1)
+        self.assertEqual(spu.spmax(self.dense1), 1)
+        self.assertEqual(spu.spmax(self.sparse1), 1)
     
     def test_fill_diagonal(self):
         current_dsum = self.dense0.trace()
         current_ssum = self.sparse0.diagonal().sum()
-        self.assertEquals(current_dsum, 7)
-        self.assertEquals(current_ssum, 7)
+        self.assertEqual(current_dsum, 7)
+        self.assertEqual(current_ssum, 7)
 
         tmpd = self.dense0.copy()
         tmps = self.sparse0.copy()
@@ -95,8 +97,8 @@ class Test_Sparse_Utils(ut.TestCase):
         
         known = 4 * self.n
 
-        self.assertEquals(known, d_4diag.trace())
-        self.assertEquals(known, s_4diag.diagonal().sum())
+        self.assertEqual(known, d_4diag.trace())
+        self.assertEqual(known, s_4diag.diagonal().sum())
 
     def test_broadcast(self):
         test_vec = np.ones((self.n,1)) * .2

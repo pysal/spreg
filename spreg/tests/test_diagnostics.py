@@ -1,13 +1,12 @@
 import unittest
 import numpy as np
-import libpysal.api as lps
+import libpysal
 from spreg import diagnostics
 from spreg.ols import OLS
 from libpysal.common import RTOL
 
-
 # create regression object used by all the tests below
-db = lps.open(lps.get_path("columbus.dbf"), "r")
+db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"))
 y = np.array(db.by_col("CRIME"))
 y = np.reshape(y, (49,1))
 X = []

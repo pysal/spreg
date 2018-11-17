@@ -3,7 +3,7 @@ Spatial diagnostics module
 """
 __author__ = "Luc Anselin luc.anselin@asu.edu, Daniel Arribas-Bel darribas@asu.edu"
 
-from utils import spdot
+from .utils import spdot
 #from scipy.stats.stats import chisqprob
 from scipy import stats
 #stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
@@ -63,12 +63,12 @@ class LMtests:
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
     >>> from ols import OLS
 
     Open the csv file to access the data for analysis
 
-    >>> csv = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> csv = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
     Pull out from the csv the files we need ('HOVAL' as dependent as well as
     'INC' and 'CRIME' as independent) and directly transform them into nx1 and
@@ -79,7 +79,7 @@ class LMtests:
 
     Create the weights object from existing .gal file
 
-    >>> w = lps.open(lps.get_path('columbus.gal'), 'r').read()
+    >>> w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
 
     Row-standardize the weight object (not required although desirable in some
     cases)
@@ -173,12 +173,12 @@ class MoranRes:
     --------
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
     >>> from ols import OLS
 
     Open the csv file to access the data for analysis
 
-    >>> csv = lps.open(lps.get_path('columbus.dbf'),'r')
+    >>> csv = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
     Pull out from the csv the files we need ('HOVAL' as dependent as well as
     'INC' and 'CRIME' as independent) and directly transform them into nx1 and
@@ -189,7 +189,7 @@ class MoranRes:
 
     Create the weights object from existing .gal file
 
-    >>> w = lps.open(lps.get_path('columbus.gal'), 'r').read()
+    >>> w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
 
     Row-standardize the weight object (not required although desirable in some
     cases)
@@ -289,17 +289,17 @@ class AKtest:
     which we will perform the tests.
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
+    >>> import libpysal
     >>> from twosls import TSLS
     >>> from twosls_sp import GM_Lag
 
-    Open data on Columbus neighborhood crime (49 areas) using lps.open().
+    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    lps.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.
 
-    >>> db = lps.open(lps.get_path("columbus.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
 
     Before being able to apply the diagnostics, we have to run a model and,
     for that, we need the input variables. Extract the CRIME column (crime
@@ -350,7 +350,7 @@ class AKtest:
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -394,11 +394,11 @@ class AKtest:
             self.mi = get_mI(iv, w, cache)
             self.ak, self.p = lmErr(iv, w, cache)
         else:
-            print """\n
+            print("""\n
             Fix the optional argument 'case' to match the requirements:
                 * 'gen': General case (spatial lag + end. reg.)
                 * 'nosp': No spatial end. reg.
-            \n"""
+            \n""")
 
 
 class spDcache:

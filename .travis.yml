@@ -4,13 +4,19 @@ branches:
 only:
   - master
 python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
-
-env:
-  - PYSAL_PLUS=false
-  - PYSAL_PLUS=true
+    - 3.5
+    - 3.6
+env: 
+    - PYSAL_PYPI=true
+    - PYSAL_PYPI=false
+matrix:
+  allow_failures:
+      - python: 3.5
+        env: PYSAL_PYPI=false
+      - python: 3.6
+        env: PYSAL_PYPI=false
+      - python: 3.7
+        env: PYSAL_PYPI=false
 
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -18,23 +24,22 @@ before_install:
   - ./miniconda.sh -b -p ./miniconda
   - export PATH=`pwd`/miniconda/bin:$PATH
   - conda update --yes conda
-  - conda config --add channels conda-forge
+  - conda config --append channels conda-forge
   - conda create -y -q -n test-env python=$TRAVIS_PYTHON_VERSION
   - source activate test-env
-  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then 2to3 -nw spreg/ > /dev/null; fi
 
 install:
   - conda install --yes pip
-  - pip install libpysal
-  - if [ "$PYSAL_PLUS" == true ]; then
-        echo 'plus testing'; conda install --yes --file requirements_plus.txt;
-        else conda install --yes --file requirements.txt;
+  - if "$PYSAL_PYPI"; then
+        echo 'testing pypi libpysal' && pip install libpysal;
+        else echo 'testing git libpysal'; git clone https://github.com/pysal/libpysal.git; cd libpysal; pip install .; cd ../;
     fi;
+  - conda install --yes --file requirements.txt;
   - pip install -r requirements_dev.txt
 
 script:
   - python setup.py sdist >/dev/null
-  - echo "check_stable=False" >spreg/config.py
+  - python setup.py install
   - nosetests --verbose --with-coverage --cover-package=spreg;
   #- cd doc; make pickle; make doctest
 notifications:
@@ -50,8 +55,8 @@ notifications:
             - marynia.kolak@gmail.com
             - jgaboardi@gmail.com
             - phil.stphns@gmail.com
-        on_success: always
-        on_failure: always
+        on_success: change
+        on_failure: change
 
 after_success:
   - coveralls

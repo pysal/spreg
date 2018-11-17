@@ -4,15 +4,14 @@ ML Estimation of Spatial Lag Model with Regimes
 
 __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.edu"
 
-import libpysal.api as lps
 import numpy as np
-import regimes as REGI
-import user_output as USER
-import summary_output as SUMMARY
-import diagnostics as DIAG
+from . import regimes as REGI
+from . import user_output as USER
+from . import summary_output as SUMMARY
+from . import diagnostics as DIAG
 import multiprocessing as mp
-from ml_lag import BaseML_Lag
-from utils import set_warn
+from .ml_lag import BaseML_Lag
+from .utils import set_warn
 from platform import system
 
 __all__ = ["ML_Lag_Regimes"]
@@ -65,7 +64,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    Default: no multiprocessing, cores = False
                    Note: Multiprocessing may not work on all platforms.
     spat_diag    : boolean
-                   if True, include spatial diagnostics
+                   if True, include spatial diagnostics (not implemented yet)
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -226,8 +225,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     Open data baltim.dbf using pysal and create the variables matrices and weights matrix.
 
     >>> import numpy as np
-    >>> import libpysal.api as lps
-    >>> db =  ps.open(ps.examples.get_path("baltim.dbf"),'r')
+    >>> import libpysal
+    >>> from libpysal import examples
+    >>> db =  libpysal.io.open(examples.get_path("baltim.dbf"),'r')
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T
@@ -318,7 +318,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
 
         if regime_lag_sep == True:
             if not (set(cols2regi) == set([True]) and constant_regi == 'many'):
-                raise Exception, "All variables must vary by regimes if regime_lag_sep = True."
+                raise Exception("All variables must vary by regimes if regime_lag_sep = True.")
             cols2regi += [True]
             w_i, regi_ids, warn = REGI.w_regimes(
                 w, regimes, self.regimes_set, transform=True, get_ids=True, min_n=len(cols2regi) + 1)
@@ -459,8 +459,8 @@ def _test():
 if __name__ == "__main__":
     _test()
     import numpy as np
-    import libpysal.api as lps
-    db = ps.open(ps.examples.get_path("baltim.dbf"), 'r')
+    import libpysal
+    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), 'r')
     ds_name = "baltim.dbf"
     y_name = "PRICE"
     y = np.array(db.by_col(y_name)).T
@@ -478,4 +478,4 @@ if __name__ == "__main__":
     mllag = ML_Lag_Regimes(y, x, regimes, w=w, method='full', name_y=y_name, name_x=x_names,
                            name_w=w_name, name_ds=ds_name, regime_lag_sep=True, constant_regi='many',
                            name_regimes="CITCOU")
-    print mllag.summary
+    print(mllag.summary)

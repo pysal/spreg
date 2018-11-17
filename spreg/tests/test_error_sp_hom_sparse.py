@@ -3,7 +3,7 @@ Unittests for spreg.error_sp_hom module
 
 '''
 import unittest
-import libpysal.api as lps
+import libpysal
 from spreg import error_sp_hom as HOM
 from scipy import sparse
 import numpy as np
@@ -11,7 +11,7 @@ import spreg
 
 class BaseGM_Error_Hom_Tester(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -20,7 +20,7 @@ class BaseGM_Error_Hom_Tester(unittest.TestCase):
         self.X = np.array(X).T
         self.X = np.hstack((np.ones(self.y.shape),self.X))
         self.X = sparse.csr_matrix(self.X)
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         reg = HOM.BaseGM_Error_Hom(self.y, self.X, self.w.sparse, A1='hom_sc')
@@ -34,8 +34,8 @@ class BaseGM_Error_Hom_Tester(unittest.TestCase):
         i_s = 'Maximum number of iterations reached.'
         self.assertAlmostEqual(reg.iter_stop,i_s,7)
         np.testing.assert_array_almost_equal(reg.predy[0],np.array([ 53.000269]),6)
-        self.assertAlmostEquals(reg.n,49,7)
-        self.assertAlmostEquals(reg.k,3,7)
+        self.assertAlmostEqual(reg.n,49,7)
+        self.assertAlmostEqual(reg.k,3,7)
         sig2 = 189.94459439729718
         self.assertAlmostEqual(reg.sig2,sig2)
         vm = np.array([[  1.51340717e+02,  -5.29057506e+00,  -1.85654540e+00, -2.39139054e-03], [ -5.29057506e+00,   2.46669610e-01, 5.14259101e-02, 3.19241302e-04], [ -1.85654540e+00,   5.14259101e-02, 3.20510550e-02,  -5.95640240e-05], [ -2.39139054e-03,   3.19241302e-04, -5.95640240e-05,  3.36690159e-02]])
@@ -45,7 +45,7 @@ class BaseGM_Error_Hom_Tester(unittest.TestCase):
 
 class GM_Error_Hom_Tester(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -53,7 +53,7 @@ class GM_Error_Hom_Tester(unittest.TestCase):
         X.append(db.by_col("CRIME"))
         self.X = np.array(X).T
         self.X = sparse.csr_matrix(self.X)
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         reg = HOM.GM_Error_Hom(self.y, self.X, self.w, A1='hom_sc')
@@ -65,8 +65,8 @@ class GM_Error_Hom_Tester(unittest.TestCase):
         np.testing.assert_array_almost_equal(reg.u[0],np.array([27.46673388]),6)
         np.testing.assert_array_almost_equal(reg.e_filtered[0],np.array([ 32.37298547]),7)
         np.testing.assert_array_almost_equal(reg.predy[0],np.array([ 53.00026912]),6)
-        self.assertAlmostEquals(reg.n,49,7)
-        self.assertAlmostEquals(reg.k,3,7)
+        self.assertAlmostEqual(reg.n,49,7)
+        self.assertAlmostEqual(reg.k,3,7)
         vm = np.array([[  1.51340717e+02,  -5.29057506e+00,  -1.85654540e+00, -2.39139054e-03], [ -5.29057506e+00,   2.46669610e-01, 5.14259101e-02, 3.19241302e-04], [ -1.85654540e+00,   5.14259101e-02, 3.20510550e-02,  -5.95640240e-05], [ -2.39139054e-03,   3.19241302e-04, -5.95640240e-05,  3.36690159e-02]])
         np.testing.assert_array_almost_equal(reg.vm,vm,6)
         i_s = 'Maximum number of iterations reached.'
@@ -90,7 +90,7 @@ class GM_Error_Hom_Tester(unittest.TestCase):
 
 class BaseGM_Endog_Error_Hom_Tester(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -104,7 +104,7 @@ class BaseGM_Endog_Error_Hom_Tester(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         reg = HOM.BaseGM_Endog_Error_Hom(self.y, self.X, self.yd, self.q, self.w.sparse, A1='hom_sc')
@@ -126,8 +126,8 @@ class BaseGM_Endog_Error_Hom_Tester(unittest.TestCase):
         np.testing.assert_array_almost_equal(reg.e_filtered[0],np.array([ 31.74114306]),7)
         predy = np.array([ 53.91309361])
         np.testing.assert_array_almost_equal(reg.predy[0],predy,6)
-        self.assertAlmostEquals(reg.n,49,7)
-        self.assertAlmostEquals(reg.k,3,7)
+        self.assertAlmostEqual(reg.n,49,7)
+        self.assertAlmostEqual(reg.k,3,7)
         sig2 = 190.59435238060928
         self.assertAlmostEqual(reg.sig2,sig2)
         vm = np.array([[  5.52064057e+02,  -1.61264555e+01,  -8.86360735e+00, 1.04251912e+00], [ -1.61264555e+01,   5.44898242e-01, 2.39518645e-01, -1.88092950e-02], [ -8.86360735e+00,   2.39518645e-01, 1.55501840e-01, -2.18638648e-02], [  1.04251912e+00, -1.88092950e-02, -2.18638648e-02, 3.71222222e-02]])
@@ -147,7 +147,7 @@ class BaseGM_Endog_Error_Hom_Tester(unittest.TestCase):
 
 class GM_Endog_Error_Hom_Tester(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
@@ -160,7 +160,7 @@ class GM_Endog_Error_Hom_Tester(unittest.TestCase):
         q = []
         q.append(db.by_col("DISCBD"))
         self.q = np.array(q).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         reg = HOM.GM_Endog_Error_Hom(self.y, self.X, self.yd, self.q, self.w, A1='hom_sc')
@@ -182,8 +182,8 @@ class GM_Endog_Error_Hom_Tester(unittest.TestCase):
         np.testing.assert_array_almost_equal(reg.e_filtered[0],np.array([ 31.74114306]),7)
         predy = np.array([ 53.91309361])
         np.testing.assert_array_almost_equal(reg.predy[0],predy,6)
-        self.assertAlmostEquals(reg.n,49,7)
-        self.assertAlmostEquals(reg.k,3,7)
+        self.assertAlmostEqual(reg.n,49,7)
+        self.assertAlmostEqual(reg.k,3,7)
         vm = np.array([[  5.52064057e+02,  -1.61264555e+01,  -8.86360735e+00, 1.04251912e+00], [ -1.61264555e+01,   5.44898242e-01, 2.39518645e-01, -1.88092950e-02], [ -8.86360735e+00,   2.39518645e-01, 1.55501840e-01, -2.18638648e-02], [  1.04251912e+00, -1.88092950e-02, -2.18638648e-02, 3.71222222e-02]])
         np.testing.assert_array_almost_equal(reg.vm,vm,6)
         i_s = 'Maximum number of iterations reached.'
@@ -207,13 +207,13 @@ class GM_Endog_Error_Hom_Tester(unittest.TestCase):
 
 class BaseGM_Combo_Hom_Tester(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         self.X = np.array(X).T
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         yd2, q2 = spreg.utils.set_endog(self.y, self.X, self.w, None, None, 1, True)
@@ -228,8 +228,8 @@ class BaseGM_Combo_Hom_Tester(unittest.TestCase):
         np.testing.assert_array_almost_equal(reg.u[0],np.array([34.3450723]),7)
         np.testing.assert_array_almost_equal(reg.e_filtered[0],np.array([ 36.6149682]),7)
         np.testing.assert_array_almost_equal(reg.predy[0],np.array([ 46.1219307]),7)
-        self.assertAlmostEquals(reg.n,49,7)
-        self.assertAlmostEquals(reg.k,3,7)
+        self.assertAlmostEqual(reg.n,49,7)
+        self.assertAlmostEqual(reg.k,3,7)
         vm = np.array([[  2.33694742e+02,  -6.66856869e-01,  -5.58304254e+00, 4.85488380e+00], [ -6.66856869e-01,   1.94241504e-01, -5.42327138e-02, 5.37225570e-02], [ -5.58304254e+00,  -5.42327138e-02, 1.63860721e-01, -1.44425498e-01], [  4.85488380e+00, 5.37225570e-02, -1.44425498e-01, 1.78622255e-01]])
         np.testing.assert_array_almost_equal(reg.vm,vm,6)
         z = np.array([  1.       ,  19.531    ,  35.4585005])
@@ -256,14 +256,14 @@ class BaseGM_Combo_Hom_Tester(unittest.TestCase):
 
 class GM_Combo_Hom_Tester(unittest.TestCase):
     def setUp(self):
-        db=lps.open(lps.get_path("columbus.dbf"),"r")
+        db=libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
         y = np.array(db.by_col("HOVAL"))
         self.y = np.reshape(y, (49,1))
         X = []
         X.append(db.by_col("INC"))
         self.X = np.array(X).T
         self.X = sparse.csr_matrix(self.X)
-        self.w = lps.rook_from_shapefile(lps.get_path("columbus.shp"))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
     def test_model(self):
         reg = HOM.GM_Combo_Hom(self.y, self.X, w=self.w, A1='hom_sc')
@@ -277,8 +277,8 @@ class GM_Combo_Hom_Tester(unittest.TestCase):
         np.testing.assert_array_almost_equal(reg.e_pred[0],np.array([ 32.90372983]),7)
         np.testing.assert_array_almost_equal(reg.predy[0],np.array([ 46.1219307]),7)
         np.testing.assert_array_almost_equal(reg.predy_e[0],np.array([47.56327317]),7)
-        self.assertAlmostEquals(reg.n,49,7)
-        self.assertAlmostEquals(reg.k,3,7)
+        self.assertAlmostEqual(reg.n,49,7)
+        self.assertAlmostEqual(reg.k,3,7)
         z = np.array([  1.       ,  19.531    ,  35.4585005])
         np.testing.assert_array_almost_equal(reg.z[0].toarray()[0],z,7)
         h = np.array([  1.   ,  19.531,  18.594])
