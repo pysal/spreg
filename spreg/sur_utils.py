@@ -78,7 +78,7 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
         n_eq = len(tt1)
         tt2 = list(tt1)
         tt2.sort()
-        tt3 = [str(int(a)+1) for a in tt2]
+        tt3 = [str(int(a)) for a in tt2]
         n = bign/n_eq
         try:
             longx = np.array([db[name] for name in x_vars[0]]).T            
@@ -92,8 +92,8 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
         bigy_vars = {}
         bigX_vars = {}
         for r in range(n_eq):
-            k0 = r * n
-            ke = r * n + n
+            k0 = int(r * n)
+            ke = int(r * n + n)
             bigy[r] = y[k0:ke,:]
             bigy_vars[r] = y_vars[0] + "_" + tt3[r]
             bigX[r] = longxc[k0:ke,:]
@@ -157,7 +157,7 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
         n_eq = len(tt1)
         tt2 = list(tt1)
         tt2.sort()
-        tt3 = [str(int(a)+1) for a in tt2]
+        tt3 = [str(int(a)) for a in tt2]
         n = bign/n_eq
         try:
             longz = np.array([db[name] for name in z_vars[0]]).T
@@ -170,8 +170,8 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
         bigZ = {}
         bigZ_names = {}
         for r in range(n_eq):
-            k0 = r * n
-            ke = r * n + n
+            k0 = int(r * n)
+            ke = int(r * n + n)
             bigZ[r] = longz[k0:ke,:]
             bzvars = [i + "_" + tt3[r] for i in zvars]
             bigZ_names[r] = bzvars
