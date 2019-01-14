@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Index &#8212; spreg v1.0.4 Manual</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pysal-styles.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="installation.html">Installation</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html#spatial-regression-models">Spatial Regression Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.OLS.html">spreg.OLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.ML_Lag.html">spreg.ML_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.ML_Error.html">spreg.ML_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Lag.html">spreg.GM_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Error.html">spreg.GM_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Error_Het.html">spreg.GM_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Error_Hom.html">spreg.GM_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Combo.html">spreg.GM_Combo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Combo_Het.html">spreg.GM_Combo_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Combo_Hom.html">spreg.GM_Combo_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Endog_Error.html">spreg.GM_Endog_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Endog_Error_Het.html">spreg.GM_Endog_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.GM_Endog_Error_Hom.html">spreg.GM_Endog_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.TSLS.html">spreg.TSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/spreg.ThreeSLS.html">spreg.ThreeSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#diagnostics">Diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics_sp.AKtest.html#spreg.diagnostics_sp.AKtest.__init__">__init__() (spreg.diagnostics_sp.AKtest method)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Combo.html#spreg.GM_Combo.__init__">(spreg.GM_Combo method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het.__init__">(spreg.GM_Combo_Het method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes.__init__">(spreg.GM_Combo_Het_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom.__init__">(spreg.GM_Combo_Hom method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes.__init__">(spreg.GM_Combo_Hom_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes.__init__">(spreg.GM_Combo_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error.__init__">(spreg.GM_Endog_Error method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het.__init__">(spreg.GM_Endog_Error_Het method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes.__init__">(spreg.GM_Endog_Error_Het_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom.__init__">(spreg.GM_Endog_Error_Hom method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes.__init__">(spreg.GM_Endog_Error_Hom_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes.__init__">(spreg.GM_Endog_Error_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error.html#spreg.GM_Error.__init__">(spreg.GM_Error method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het.__init__">(spreg.GM_Error_Het method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes.__init__">(spreg.GM_Error_Het_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom.__init__">(spreg.GM_Error_Hom method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes.__init__">(spreg.GM_Error_Hom_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes.__init__">(spreg.GM_Error_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.__init__">(spreg.GM_Lag method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.__init__">(spreg.GM_Lag_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.__init__">(spreg.ML_Error method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.__init__">(spreg.ML_Error_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.__init__">(spreg.ML_Lag method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.__init__">(spreg.ML_Lag_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.__init__">(spreg.OLS method)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.__init__">(spreg.OLS_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.SUR.html#spreg.SUR.__init__">(spreg.SUR method)</a>
+</li>
+        <li><a href="generated/spreg.SURerrorGM.html#spreg.SURerrorGM.__init__">(spreg.SURerrorGM method)</a>
+</li>
+        <li><a href="generated/spreg.SURerrorML.html#spreg.SURerrorML.__init__">(spreg.SURerrorML method)</a>
+</li>
+        <li><a href="generated/spreg.SURlagIV.html#spreg.SURlagIV.__init__">(spreg.SURlagIV method)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.__init__">(spreg.TSLS method)</a>
+</li>
+        <li><a href="generated/spreg.ThreeSLS.html#spreg.ThreeSLS.__init__">(spreg.ThreeSLS method)</a>
+</li>
+        <li><a href="generated/spreg.diagnostics_sp.LMtests.html#spreg.diagnostics_sp.LMtests.__init__">(spreg.diagnostics_sp.LMtests method)</a>
+</li>
+        <li><a href="generated/spreg.diagnostics_sp.MoranRes.html#spreg.diagnostics_sp.MoranRes.__init__">(spreg.diagnostics_sp.MoranRes method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.akaike.html#spreg.diagnostics.akaike">akaike() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics_sp.AKtest.html#spreg.diagnostics_sp.AKtest">AKtest (class in spreg.diagnostics_sp)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics.ar2.html#spreg.diagnostics.ar2">ar2() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.breusch_pagan.html#spreg.diagnostics.breusch_pagan">breusch_pagan() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.condition_index.html#spreg.diagnostics.condition_index">condition_index() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.f_stat.html#spreg.diagnostics.f_stat">f_stat() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.GM_Combo.html#spreg.GM_Combo">GM_Combo (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het">GM_Combo_Het (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes">GM_Combo_Het_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom">GM_Combo_Hom (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes">GM_Combo_Hom_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes">GM_Combo_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error">GM_Endog_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het">GM_Endog_Error_Het (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes">GM_Endog_Error_Het_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom">GM_Endog_Error_Hom (class in spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes">GM_Endog_Error_Hom_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes">GM_Endog_Error_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error.html#spreg.GM_Error">GM_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het">GM_Error_Het (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes">GM_Error_Het_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom">GM_Error_Hom (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes">GM_Error_Hom_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes">GM_Error_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag">GM_Lag (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes">GM_Lag_Regimes (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.jarque_bera.html#spreg.diagnostics.jarque_bera">jarque_bera() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.koenker_bassett.html#spreg.diagnostics.koenker_bassett">koenker_bassett() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics_sur.lam_setp.html#spreg.diagnostics_sur.lam_setp">lam_setp() (in module spreg.diagnostics_sur)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics.likratiotest.html#spreg.diagnostics.likratiotest">likratiotest() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics_sp.LMtests.html#spreg.diagnostics_sp.LMtests">LMtests (class in spreg.diagnostics_sp)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics.log_likelihood.html#spreg.diagnostics.log_likelihood">log_likelihood() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error">ML_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes">ML_Error_Regimes (class in spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag">ML_Lag (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes">ML_Lag_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics_sp.MoranRes.html#spreg.diagnostics_sp.MoranRes">MoranRes (class in spreg.diagnostics_sp)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.OLS.html#spreg.OLS">OLS (class in spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes">OLS_Regimes (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.r2.html#spreg.diagnostics.r2">r2() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.schwarz.html#spreg.diagnostics.schwarz">schwarz() (in module spreg.diagnostics)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics.se_betas.html#spreg.diagnostics.se_betas">se_betas() (in module spreg.diagnostics)</a>
+</li>
+      <li><a href="generated/spreg.SUR.html#spreg.SUR">SUR (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics_sur.sur_lmtest.html#spreg.diagnostics_sur.sur_lmtest">sur_lmtest() (in module spreg.diagnostics_sur)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics_sur.sur_lrtest.html#spreg.diagnostics_sur.sur_lrtest">sur_lrtest() (in module spreg.diagnostics_sur)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics_sur.sur_setp.html#spreg.diagnostics_sur.sur_setp">sur_setp() (in module spreg.diagnostics_sur)</a>
+</li>
+      <li><a href="generated/spreg.SURerrorGM.html#spreg.SURerrorGM">SURerrorGM (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.SURerrorML.html#spreg.SURerrorML">SURerrorML (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.SURlagIV.html#spreg.SURlagIV">SURlagIV (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics_sur.surLMe.html#spreg.diagnostics_sur.surLMe">surLMe() (in module spreg.diagnostics_sur)</a>
+</li>
+      <li><a href="generated/spreg.diagnostics_sur.surLMlag.html#spreg.diagnostics_sur.surLMlag">surLMlag() (in module spreg.diagnostics_sur)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.t_stat.html#spreg.diagnostics.t_stat">t_stat() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.ThreeSLS.html#spreg.ThreeSLS">ThreeSLS (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.TSLS.html#spreg.TSLS">TSLS (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.vif.html#spreg.diagnostics.vif">vif() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.diagnostics.white.html#spreg.diagnostics.white">white() (in module spreg.diagnostics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

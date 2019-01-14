@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>spreg.diagnostics_sp.AKtest &#8212; spreg v1.0.4 Manual</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="spreg.diagnostics_sur.sur_setp" href="spreg.diagnostics_sur.sur_setp.html" />
+    <link rel="prev" title="spreg.diagnostics_sp.MoranRes" href="spreg.diagnostics_sp.MoranRes.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="spreg.OLS.html">spreg.OLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.ML_Lag.html">spreg.ML_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.ML_Error.html">spreg.ML_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Lag.html">spreg.GM_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Error.html">spreg.GM_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Error_Het.html">spreg.GM_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Error_Hom.html">spreg.GM_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Combo.html">spreg.GM_Combo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Combo_Het.html">spreg.GM_Combo_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Combo_Hom.html">spreg.GM_Combo_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Endog_Error.html">spreg.GM_Endog_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Endog_Error_Het.html">spreg.GM_Endog_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Endog_Error_Hom.html">spreg.GM_Endog_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.TSLS.html">spreg.TSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.ThreeSLS.html">spreg.ThreeSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">spreg.diagnostics_sp.AKtest</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="spreg-diagnostics-sp-aktest">
+<h1>spreg.diagnostics_sp.AKtest<a class="headerlink" href="#spreg-diagnostics-sp-aktest" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="spreg.diagnostics_sp.AKtest">
+<em class="property">class </em><code class="descclassname">spreg.diagnostics_sp.</code><code class="descname">AKtest</code><span class="sig-paren">(</span><em>iv</em>, <em>w</em>, <em>case='nosp'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/diagnostics_sp.html#AKtest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spreg.diagnostics_sp.AKtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moran’s I test of spatial autocorrelation for IV estimation.
+Implemented following the original reference Anselin and Kelejian
+(1997) [Anselin1997]
+…</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>iv</strong> <span class="classifier-delimiter">:</span> <span class="classifier">TSLS</span></dt>
+<dd><p class="first last">Regression object from TSLS class</p>
+</dd>
+<dt><strong>w</strong> <span class="classifier-delimiter">:</span> <span class="classifier">W</span></dt>
+<dd><p class="first last">Spatial weights instance</p>
+</dd>
+<dt><strong>case</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Flag for special cases (default to ‘nosp’):</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>‘nosp’: Only NO spatial end. reg.</li>
+<li>‘gen’: General case (spatial lag + end. reg.)</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>We first need to import the needed modules. Numpy is needed to convert the
+data we read into arrays that <code class="docutils literal notranslate"><span class="pre">spreg</span></code> understands and <code class="docutils literal notranslate"><span class="pre">pysal</span></code> to
+perform all the analysis. The TSLS is required to run the model on
+which we will perform the tests.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">libpysal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">twosls</span> <span class="k">import</span> <span class="n">TSLS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">twosls_sp</span> <span class="k">import</span> <span class="n">GM_Lag</span>
+</pre></div>
+</div>
+<p>Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
+This is the DBF associated with the Columbus shapefile.  Note that
+libpysal.io.open() also reads data in CSV format; since the actual class
+requires data to be passed in as numpy arrays, the user can read their
+data in using any method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.dbf&quot;</span><span class="p">),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Before being able to apply the diagnostics, we have to run a model and,
+for that, we need the input variables. Extract the CRIME column (crime
+rates) from the DBF file and make it the dependent variable for the
+regression. Note that PySAL requires this to be an numpy array of shape
+(n, 1) as opposed to the also common shape of (n, ) that other packages
+accept.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s2">&quot;CRIME&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="mi">49</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Extract INC (income) vector from the DBF to be used as
+independent variables in the regression.  Note that PySAL requires this to
+be an nxj numpy array, where j is the number of independent variables (not
+including a constant). By default this model adds a vector of ones to the
+independent variables passed in, but this can be overridden by passing
+constant=False.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s2">&quot;INC&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>In this case, we consider HOVAL (home value) as an endogenous regressor,
+so we acknowledge that by reading it in a different category.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">yd</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">yd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s2">&quot;HOVAL&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">yd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yd</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>In order to properly account for the endogeneity, we have to pass in the
+instruments. Let us consider DISCBD (distance to the CBD) is a good one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s2">&quot;DISCBD&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>Now we are good to run the model. It is an easy one line task.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reg</span> <span class="o">=</span> <span class="n">TSLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">yd</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we are concerned with whether our non-spatial model presents spatial
+autocorrelation in the residuals. To assess this possibility, we can run
+the Anselin-Kelejian test, which is a version of the classical LM error
+test adapted for the case of residuals from an instrumental variables (IV)
+regression. First we need an extra object, the weights matrix, which
+includes the spatial configuration of the observations
+into the error component of the model. To do that, we can open an already
+existing gal file or create a new one. In this case, we will create one
+from <code class="docutils literal notranslate"><span class="pre">columbus.shp</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">Rook</span><span class="o">.</span><span class="n">from_shapefile</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.shp&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Unless there is a good reason not to do it, the weights have to be
+row-standardized so every row of the matrix sums to one. Among other
+things, this allows to interpret the spatial lag of a variable as the
+average value of the neighboring observations. In PySAL, this can be
+easily performed in the following way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+</pre></div>
+</div>
+<p>We are good to run the test. It is a very simple task:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span> <span class="o">=</span> <span class="n">AKtest</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And explore the information obtained:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;AK test: </span><span class="si">%f</span><span class="s1">      P-value: </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">ak</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+<span class="go">AK test: 4.642895      P-value: 0.031182</span>
+</pre></div>
+</div>
+<p>The test also accomodates the case when the residuals come from an IV
+regression that includes a spatial lag of the dependent variable. The only
+requirement needed is to modify the <code class="docutils literal notranslate"><span class="pre">case</span></code> parameter when we call
+<code class="docutils literal notranslate"><span class="pre">AKtest</span></code>. First, let us run a spatial lag model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reg_lag</span> <span class="o">=</span> <span class="n">GM_Lag</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">yd</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And now we can run the AK test and obtain similar information as in the
+non-spatial model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_sp</span> <span class="o">=</span> <span class="n">AKtest</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;AK test: </span><span class="si">%f</span><span class="s1">      P-value: </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ak_sp</span><span class="o">.</span><span class="n">ak</span><span class="p">,</span> <span class="n">ak_sp</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+<span class="go">AK test: 1.157593      P-value: 0.281965</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>mi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Moran’s I statistic for IV residuals</p>
+</dd>
+<dt><strong>ak</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first">Square of corrected Moran’s I for residuals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">math</span><span class="p">::</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>ak = dfrac{N   imes I^*}{phi^2}</p>
+</div></blockquote>
+<p class="last">Note: if case=’nosp’ then it simplifies to the LMerror</p>
+</dd>
+<dt><strong>p</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">P-value of the test</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="spreg.diagnostics_sp.AKtest.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>iv</em>, <em>w</em>, <em>case='nosp'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/diagnostics_sp.html#AKtest.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spreg.diagnostics_sp.AKtest.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#spreg.diagnostics_sp.AKtest.__init__" title="spreg.diagnostics_sp.AKtest.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(iv,&nbsp;w[,&nbsp;case])</td>
+<td>Initialize self.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/spreg.diagnostics_sp.AKtest.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
