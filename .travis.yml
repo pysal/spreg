@@ -55,6 +55,7 @@ notifications:
             - marynia.kolak@gmail.com
             - jgaboardi@gmail.com
             - phil.stphns@gmail.com
+            - pedrovma@gmail.com
         on_success: change
         on_failure: change
 
