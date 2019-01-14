@@ -8,7 +8,7 @@ API reference
 .. _models_api:
 
 Spatial Regression Models
--------------------------
+=========================
 
 These are the standard spatial regression models supported by the `spreg` package. Each of them contains a significant amount of detail in their docstring discussing how they're used, how they're fit, and how to interpret the results. 
 
@@ -66,3 +66,36 @@ Seeimingly-unrelated regression models are a generalization of linear regression
     spreg.SURerrorML
     spreg.SURlagIV
     spreg.ThreeSLS
+
+Diagnostics
+-----------
+
+Diagnostic tests are useful for identifying model fit, sufficiency, and specification correctness. 
+
+.. autosummary:: 
+    :toctree: generated/
+
+    spreg.diagnostics.f_stat 
+    spreg.diagnostics.t_stat 
+    spreg.diagnostics.r2 
+    spreg.diagnostics.ar2 
+    spreg.diagnostics.se_betas 
+    spreg.diagnostics.log_likelihood 
+    spreg.diagnostics.akaike 
+    spreg.diagnostics.schwarz
+    spreg.diagnostics.condition_index 
+    spreg.diagnostics.jarque_bera 
+    spreg.diagnostics.breusch_pagan 
+    spreg.diagnostics.white 
+    spreg.diagnostics.koenker_bassett 
+    spreg.diagnostics.vif 
+    spreg.diagnostics.likratiotest
+    spreg.diagnostics_sp.LMtests
+    spreg.diagnostics_sp.MoranRes
+    spreg.diagnostics_sp.AKtest
+    spreg.diagnostics_sur.sur_setp
+    spreg.diagnostics_sur.sur_lrtest
+    spreg.diagnostics_sur.sur_lmtest
+    spreg.diagnostics_sur.lam_setp
+    spreg.diagnostics_sur.surLMe
+    spreg.diagnostics_sur.surLMlag

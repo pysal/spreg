@@ -60,10 +60,26 @@
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.OLS.html">spreg.OLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.ML_Lag.html">spreg.ML_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.ML_Error.html">spreg.ML_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Lag.html">spreg.GM_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Error.html">spreg.GM_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Error_Het.html">spreg.GM_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Error_Hom.html">spreg.GM_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Combo.html">spreg.GM_Combo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Combo_Het.html">spreg.GM_Combo_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Combo_Hom.html">spreg.GM_Combo_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Endog_Error.html">spreg.GM_Endog_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Endog_Error_Het.html">spreg.GM_Endog_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Endog_Error_Hom.html">spreg.GM_Endog_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.TSLS.html">spreg.TSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.ThreeSLS.html">spreg.ThreeSLS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
@@ -109,8 +125,8 @@
       
   <h1>Source code for spreg.error_sp_hom</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Hom family of models based on: [Drukker2013]_ </span>
-<span class="sd">Following: [Anselin2011]_</span>
+<span class="sd">Hom family of models based on: :cite:`Drukker2013` </span>
+<span class="sd">Following: :cite:`Anselin2011`</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
 
@@ -137,7 +153,7 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    GMM method for a spatial error model with homoskedasticity (note: no</span>
 <span class="sd">    consistency checks, diagnostics or constant added); based on </span>
-<span class="sd">    Drukker et al. (2013) [Drukker2013]_, following Anselin (2011) [Anselin2011]_.</span>
+<span class="sd">    Drukker et al. (2013) :cite:`Drukker2013`, following Anselin (2011) :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -278,8 +294,8 @@
 
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    GMM method for a spatial error model with homoskedasticity, with results</span>
-<span class="sd">    and diagnostics; based on Drukker et al. (2013) [Drukker2013]_, following Anselin</span>
-<span class="sd">    (2011) [Anselin2011]_.</span>
+<span class="sd">    and diagnostics; based on Drukker et al. (2013) :cite:`Drukker2013`, following Anselin</span>
+<span class="sd">    (2011) :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -473,8 +489,8 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    GMM method for a spatial error model with homoskedasticity and</span>
 <span class="sd">    endogenous variables (note: no consistency checks, diagnostics or constant</span>
-<span class="sd">    added); based on Drukker et al. (2013) [Drukker2013]_, following Anselin (2011)</span>
-<span class="sd">    [Anselin2011]_.</span>
+<span class="sd">    added); based on Drukker et al. (2013) :cite:`Drukker2013`, following Anselin (2011)</span>
+<span class="sd">    :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -635,7 +651,7 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    GMM method for a spatial error model with homoskedasticity and endogenous</span>
 <span class="sd">    variables, with results and diagnostics; based on Drukker et al. (2013)</span>
-<span class="sd">    [Drukker2013]_, following Anselin (2011) [Anselin2011]_.</span>
+<span class="sd">    :cite:`Drukker2013`, following Anselin (2011) :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -883,8 +899,8 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    GMM method for a spatial lag and error model with homoskedasticity and</span>
 <span class="sd">    endogenous variables (note: no consistency checks, diagnostics or constant</span>
-<span class="sd">    added); based on Drukker et al. (2013) [Drukker2013]_, following Anselin (2011)</span>
-<span class="sd">    [Anselin2011]_.</span>
+<span class="sd">    added); based on Drukker et al. (2013) :cite:`Drukker2013`, following Anselin (2011)</span>
+<span class="sd">    :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1034,7 +1050,7 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    GMM method for a spatial lag and error model with homoskedasticity and</span>
 <span class="sd">    endogenous variables, with results and diagnostics; based on Drukker et</span>
-<span class="sd">    al. (2013) [Drukker2013]_, following Anselin (2011) [Anselin2011]_.</span>
+<span class="sd">    al. (2013) :cite:`Drukker2013`, following Anselin (2011) :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1312,7 +1328,7 @@
 <span class="k">def</span> <span class="nf">moments_hom</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">wA1</span><span class="p">,</span> <span class="n">wA2</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Compute G and g matrices for the spatial error model with homoscedasticity</span>
-<span class="sd">    as in Anselin [Anselin2011]_ (2011).</span>
+<span class="sd">    as in Anselin :cite:`Anselin2011` (2011).</span>
 <span class="sd">    ...</span>
 
 <span class="sd">    Parameters</span>
@@ -1353,7 +1369,7 @@
 <span class="k">def</span> <span class="nf">get_vc_hom</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">wA1</span><span class="p">,</span> <span class="n">wA2</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">lambdapar</span><span class="p">,</span> <span class="n">z_s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">for_omegaOLS</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    VC matrix \psi of Spatial error with homoscedasticity. As in </span>
-<span class="sd">    Anselin (2011) [Anselin2011]_ (p. 20)</span>
+<span class="sd">    Anselin (2011) :cite:`Anselin2011` (p. 20)</span>
 <span class="sd">    ...</span>
 
 <span class="sd">    Parameters</span>
@@ -1442,7 +1458,7 @@
 <span class="k">def</span> <span class="nf">get_omega_hom</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">wA1</span><span class="p">,</span> <span class="n">wA2</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">lamb</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Omega VC matrix for Hom models with endogenous variables computed as in</span>
-<span class="sd">    Anselin (2011) [Anselin2011]_ (p. 21).</span>
+<span class="sd">    Anselin (2011) :cite:`Anselin2011` (p. 21).</span>
 <span class="sd">    ...</span>
 
 <span class="sd">    Parameters</span>
@@ -1489,7 +1505,7 @@
 <span class="k">def</span> <span class="nf">get_omega_hom_ols</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">wA1</span><span class="p">,</span> <span class="n">wA2</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">lamb</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Omega VC matrix for Hom models without endogenous variables (OLS) computed</span>
-<span class="sd">    as in Anselin (2011) [Anselin2011]_.</span>
+<span class="sd">    as in Anselin (2011) :cite:`Anselin2011`.</span>
 <span class="sd">    ...</span>
 
 <span class="sd">    Parameters</span>

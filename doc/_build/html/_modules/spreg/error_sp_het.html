@@ -60,10 +60,26 @@
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.OLS.html">spreg.OLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.ML_Lag.html">spreg.ML_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.ML_Error.html">spreg.ML_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Lag.html">spreg.GM_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Error.html">spreg.GM_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Error_Het.html">spreg.GM_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Error_Hom.html">spreg.GM_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Combo.html">spreg.GM_Combo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Combo_Het.html">spreg.GM_Combo_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Combo_Hom.html">spreg.GM_Combo_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Endog_Error.html">spreg.GM_Endog_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Endog_Error_Het.html">spreg.GM_Endog_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.GM_Endog_Error_Hom.html">spreg.GM_Endog_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.TSLS.html">spreg.TSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/spreg.ThreeSLS.html">spreg.ThreeSLS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
@@ -137,7 +153,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GMM method for a spatial error model with heteroskedasticity (note: no</span>
 <span class="sd">    consistency checks, diagnostics or constant added); based on Arraiz</span>
-<span class="sd">    et al [Arraiz2010]_, following Anselin [Anselin2011]_.</span>
+<span class="sd">    et al :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -268,8 +284,8 @@
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GMM method for a spatial error model with heteroskedasticity, with results</span>
-<span class="sd">    and diagnostics; based on Arraiz et al [Arraiz2010]_, following Anselin</span>
-<span class="sd">    [Anselin2011]_.</span>
+<span class="sd">    and diagnostics; based on Arraiz et al :cite:`Arraiz2010`, following Anselin</span>
+<span class="sd">    :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -463,8 +479,8 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GMM method for a spatial error model with heteroskedasticity and</span>
 <span class="sd">    endogenous variables (note: no consistency checks, diagnostics or constant</span>
-<span class="sd">    added); based on Arraiz et al [Arraiz2010]_, following Anselin</span>
-<span class="sd">    [Anselin2011]_.</span>
+<span class="sd">    added); based on Arraiz et al :cite:`Arraiz2010`, following Anselin</span>
+<span class="sd">    :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -630,7 +646,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GMM method for a spatial error model with heteroskedasticity and</span>
 <span class="sd">    endogenous variables, with results and diagnostics; based on Arraiz et al</span>
-<span class="sd">    [Arraiz2010]_, following Anselin [Anselin2011]_.</span>
+<span class="sd">    :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -877,7 +893,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GMM method for a spatial lag and error model with heteroskedasticity and</span>
 <span class="sd">    endogenous variables (note: no consistency checks, diagnostics or constant</span>
-<span class="sd">    added); based on Arraiz et al [Arraiz2010]_, following Anselin [Anselin2011]_.</span>
+<span class="sd">    added); based on Arraiz et al :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1024,7 +1040,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    GMM method for a spatial lag and error model with heteroskedasticity and</span>
 <span class="sd">    endogenous variables, with results and diagnostics; based on Arraiz et al</span>
-<span class="sd">    [Arraiz2010]_, following Anselin [Anselin2011]_.</span>
+<span class="sd">    :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1326,7 +1342,7 @@
 
 <span class="k">def</span> <span class="nf">get_vc_het</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">wA1</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the VC matrix Psi based on lambda as in Arraiz et al [Arraiz2010]_:</span>
+<span class="sd">    Computes the VC matrix Psi based on lambda as in Arraiz et al :cite:`Arraiz2010`:</span>
 
 <span class="sd">    ..math::</span>
 
@@ -1368,7 +1384,7 @@
 <span class="k">def</span> <span class="nf">get_vm_het</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">lamb</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">psi</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the variance-covariance matrix Omega as in Arraiz et al</span>
-<span class="sd">    [Arraiz2010]_:</span>
+<span class="sd">    :cite:`Arraiz2010`:</span>
 <span class="sd">    ...</span>
 
 <span class="sd">    Parameters</span>
@@ -1426,7 +1442,7 @@
 <span class="k">def</span> <span class="nf">get_a1a2</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">wA1</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">lambdapar</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">inv_method</span><span class="p">,</span> <span class="n">filt</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the a1 in psi assuming residuals come from original regression.</span>
-<span class="sd">    [Anselin2011]_</span>
+<span class="sd">    :cite:`Anselin2011`</span>
 <span class="sd">    ...</span>
 
 <span class="sd">    Parameters</span>
