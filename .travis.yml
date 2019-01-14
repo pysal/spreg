@@ -36,7 +36,6 @@ install:
     fi;
   - conda install --yes --file requirements.txt;
   - pip install -r requirements_dev.txt
-  - travis_wait mvn install
 
 script:
   - python setup.py sdist >/dev/null
