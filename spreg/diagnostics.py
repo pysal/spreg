@@ -392,7 +392,7 @@ def log_likelihood(reg):
 
 def akaike(reg):
     """
-    Calculates the Akaike Information Criterion. [Akaike1974]_
+    Calculates the Akaike Information Criterion. :cite:`Akaike1974`
 
     Parameters
     ----------
@@ -456,7 +456,7 @@ def akaike(reg):
 
 def schwarz(reg):
     """
-    Calculates the Schwarz Information Criterion. [Schwarz1978]_
+    Calculates the Schwarz Information Criterion. :cite:`Schwarz1978`
 
     Parameters
     ----------
@@ -587,7 +587,7 @@ def condition_index(reg):
 
 def jarque_bera(reg):
     """
-    Jarque-Bera test for normality in the residuals. [Jarque1980]_ 
+    Jarque-Bera test for normality in the residuals. :cite:`Jarque1980`
 
     Parameters
     ----------
@@ -674,7 +674,7 @@ def jarque_bera(reg):
 def breusch_pagan(reg, z=None):
     """
     Calculates the Breusch-Pagan test statistic to check for
-    heteroscedasticity. [Breusch1979]_ 
+    heteroscedasticity. :cite:`Breusch1979`
 
     Parameters
     ----------
@@ -824,7 +824,7 @@ def breusch_pagan(reg, z=None):
 
 def white(reg):
     """
-    Calculates the White test to check for heteroscedasticity. [White1980]_
+    Calculates the White test to check for heteroscedasticity. :cite:`White1980`
 
     Parameters
     ----------
@@ -980,7 +980,7 @@ def white(reg):
 def koenker_bassett(reg, z=None):
     """
     Calculates the Koenker-Bassett test statistic to check for
-    heteroscedasticity. [Koenker1982]_ :cite:`Greene2003`
+    heteroscedasticity. :cite:`Koenker1982,Greene2003`
 
     Parameters
     ----------
