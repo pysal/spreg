@@ -3,20 +3,21 @@ sudo: false
 branches:
 only:
   - master
-python:
-    - 3.5
-    - 3.6
-env: 
-    - PYSAL_PYPI=true
-    - PYSAL_PYPI=false
+
 matrix:
-  allow_failures:
-      - python: 3.5
-        env: PYSAL_PYPI=false
-      - python: 3.6
-        env: PYSAL_PYPI=false
-      - python: 3.7
-        env: PYSAL_PYPI=false
+  include:
+    - python: 3.6
+      env: PYSAL_PLUS=false
+    - python: 3.6
+      env: PYSAL_PLUS=true
+    - python: 3.7
+      dist: xenial
+      sudo: true
+      env: PYSAL_PLUS=false
+    - python: 3.7
+      dist: xenial
+      sudo: true
+      env: PYSAL_PLUS=true
 
 before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
