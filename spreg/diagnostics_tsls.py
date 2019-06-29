@@ -214,8 +214,13 @@ def pr2_aspatial(tslsreg):
 
     y = tslsreg.y
     predy = tslsreg.predy
+    n,k = y.shape
+    y.shape = (n,)
+    predy.shape = (n,)
     pr = pearsonr(y, predy)[0]
     pr2_result = float(pr ** 2)
+    y.shape = (n,1)
+    predy.shape = (n,1)
     return pr2_result
 
 
@@ -322,8 +327,13 @@ def pr2_spatial(tslsreg):
 
     y = tslsreg.y
     predy_e = tslsreg.predy_e
+    n,k = y.shape
+    y.shape = (n,)
+    predy_e.shape=(n,)
     pr = pearsonr(y, predy_e)[0]
     pr2_result = float(pr ** 2)
+    y.shape = (n,1)
+    predy_e.shape = (n,1)
     return pr2_result
 
 
