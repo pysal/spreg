@@ -283,7 +283,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
 class ML_Error(BaseML_Error):
 
     """
-    ML estimation of the spatial lag model with all results and diagnostics;
+    ML estimation of the spatial error model with all results and diagnostics;
     Anselin (1988) [Anselin1988]_
 
     Parameters
