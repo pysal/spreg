@@ -50,7 +50,6 @@ install:
   - if "PYSAL_PLUS"; then
         echo 'testing PLUS' && conda install --file requirements_plus.txt;
     fi;
-  - pip install -r requirements_dev.txt
 
 script:
   - python setup.py sdist >/dev/null
