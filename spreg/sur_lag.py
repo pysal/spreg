@@ -17,161 +17,196 @@ from .sur_utils import check_k
 __all__ = ["SURlagIV"]
 
 class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
-    """ User class for spatial lag estimation using IV
+    """
+    User class for spatial lag estimation using IV
     
-        Parameters
-        ----------
-        
-        bigy       : dictionary with vector for dependent variable by equation
-        bigX       : dictionary with matrix of explanatory variables by equation
-                     (note, already includes constant term)
-        bigyend    : dictionary with matrix of endogenous variables by equation
-                     (optional)
-        bigq       : dictionary with matrix of instruments by equation
-                     (optional)
-        w          : spatial weights object, required
-        vm         : boolean
-                     listing of full variance-covariance matrix, default = False
-        w_lags     : integer
-                     order of spatial lags for WX instruments, default = 1
-        lag_q      : boolean
-                     flag to apply spatial lag to other instruments,
-                     default = True
-        nonspat_diag : boolean; flag for non-spatial diagnostics, default = True
-        spat_diag    : boolean; flag for spatial diagnostics, default = False
-        name_bigy  : dictionary with name of dependent variable for each equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-        name_bigX  : dictionary with names of explanatory variables for each
-                     equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-        name_bigyend : dictionary with names of endogenous variables for each
-                       equation
-                       default = None, but should be spedified
-                       is done when sur_stackZ is used
-        name_bigq  : dictionary with names of instrumental variables for each
-                     equations
-                     default = None, but should be specified
-                     is done when sur_stackZ is used
-        name_ds    : string; name for the data set
-        name_w     : string; name for the spatial weights
+    Parameters
+    ----------
+    bigy       : dictionary
+                 with vector for dependent variable by equation
+    bigX       : dictionary
+                 with matrix of explanatory variables by equation
+                 (note, already includes constant term)
+    bigyend    : dictionary
+                 with matrix of endogenous variables by equation
+                 (optional)
+    bigq       : dictionary
+                 with matrix of instruments by equation
+                 (optional)
+    w          : spatial weights object, required
+    vm         : boolean
+                 listing of full variance-covariance matrix, default = False
+    w_lags     : integer
+                 order of spatial lags for WX instruments, default = 1
+    lag_q      : boolean
+                 flag to apply spatial lag to other instruments,
+                 default = True
+    nonspat_diag : boolean
+                   flag for non-spatial diagnostics, default = True
+    spat_diag    : boolean
+                   flag for spatial diagnostics, default = False
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation.
+                 default = None, but should be specified.
+                 is done when sur_stackxy is used.
+    name_bigX  : dictionary
+                 with names of explanatory variables for each
+                 equation.
+                 default = None, but should be specified.
+                 is done when sur_stackxy is used.
+    name_bigyend : dictionary
+                   with names of endogenous variables for each
+                   equation.
+                   default = None, but should be specified.
+                   is done when sur_stackZ is used.
+    name_bigq  : dictionary
+                 with names of instrumental variables for each
+                 equations.
+                 default = None, but should be specified.
+                 is done when sur_stackZ is used.
+    name_ds    : string
+                 name for the data set
+    name_w     : string
+                 name for the spatial weights
 
-                     
-        Attributes
-        ----------
-        
-        w           : spatial weights object
-        bigy        : dictionary with y values
-        bigZ        : dictionary with matrix of exogenous and endogenous variables
-                      for each equation
-        bigyend     : dictionary with matrix of endogenous variables for each
-                      equation; contains Wy only if no other endogenous specified
-        bigq        : dictionary with matrix of instrumental variables for each
-                      equation; contains WX only if no other endogenous specified
-        bigZHZH     : dictionary with matrix of cross products Zhat_r'Zhat_s
-        bigZHy      : dictionary with matrix of cross products Zhat_r'y_end_s
-        n_eq        : number of equations
-        n           : number of observations in each cross-section
-        bigK        : vector with number of explanatory variables (including constant,
-                      exogenous and endogenous) for each equation
-        b2SLS       : dictionary with 2SLS regression coefficients for each equation
-        tslsE       : N x n_eq array with OLS residuals for each equation
-        b3SLS       : dictionary with 3SLS regression coefficients for each equation
-        varb        : variance-covariance matrix
-        sig         : Sigma matrix of inter-equation error covariances
-        resids      : n by n_eq array of residuals
-        corr        : inter-equation 3SLS error correlation matrix
-        tsls_inf    : dictionary with standard error, asymptotic t and p-value,
-                      one for each equation
-        joinrho     : test on joint significance of spatial autoregressive coefficient
-                      tuple with test statistic, degrees of freedom, p-value
-        surchow     : list with tuples for Chow test on regression coefficients
-                      each tuple contains test value, degrees of freedom, p-value
-        name_w     : string; name for the spatial weights
-        name_ds    : string; name for the data set
-        name_bigy  : dictionary with name of dependent variable for each equation
-        name_bigX  : dictionary with names of explanatory variables for each
-                     equation
-        name_bigyend : dictionary with names of endogenous variables for each
-                       equation
-        name_bigq  : dictionary with names of instrumental variables for each
-                     equations
+    Attributes
+    ----------
+    w           : spatial weights object
+    bigy        : dictionary
+                  with y values
+    bigZ        : dictionary
+                  with matrix of exogenous and endogenous variables
+                  for each equation
+    bigyend     : dictionary
+                  with matrix of endogenous variables for each
+                  equation; contains Wy only if no other endogenous specified
+    bigq        : dictionary
+                  with matrix of instrumental variables for each
+                  equation; contains WX only if no other endogenous specified
+    bigZHZH     : dictionary
+                  with matrix of cross products Zhat_r'Zhat_s
+    bigZHy      : dictionary
+                  with matrix of cross products Zhat_r'y_end_s
+    n_eq        : int
+                  number of equations
+    n           : int
+                  number of observations in each cross-section
+    bigK        : array
+                  vector with number of explanatory variables (including constant,
+                  exogenous and endogenous) for each equation
+    b2SLS       : dictionary
+                  with 2SLS regression coefficients for each equation
+    tslsE       : array
+                  N x n_eq array with OLS residuals for each equation
+    b3SLS       : dictionary
+                  with 3SLS regression coefficients for each equation
+    varb        : array
+                  variance-covariance matrix
+    sig         : array
+                  Sigma matrix of inter-equation error covariances
+    resids      : array
+                  n by n_eq array of residuals
+    corr        : array
+                  inter-equation 3SLS error correlation matrix
+    tsls_inf    : dictionary
+                  with standard error, asymptotic t and p-value,
+                  one for each equation
+    joinrho     : tuple
+                  test on joint significance of spatial autoregressive coefficient.
+                  tuple with test statistic, degrees of freedom, p-value
+    surchow     : array
+                  list with tuples for Chow test on regression coefficients
+                  each tuple contains test value, degrees of freedom, p-value
+    name_w     : string
+                 name for the spatial weights
+    name_ds    : string
+                 name for the data set
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation
+    name_bigX  : dictionary
+                 with names of explanatory variables for each
+                 equation
+    name_bigyend : dictionary
+                   with names of endogenous variables for each
+                   equation
+    name_bigq  : dictionary
+                 with names of instrumental variables for each
+                 equations
 
 
-        Examples
-        --------
+    Examples
+    --------
 
-        First import libpysal to load the spatial analysis tools.
+    First import libpysal to load the spatial analysis tools.
 
-        >>> import libpysal
+    >>> import libpysal
 
-        Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open(). 
-        This is the DBF associated with the NAT shapefile. Note that libpysal.io.open() 
-        also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
+    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
+    also reads data in CSV format.
 
-        >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
-        The specification of the model to be estimated can be provided as lists.
-        Each equation should be listed separately. Although not required,
-        in this example we will specify additional endogenous regressors.
-        Equation 1 has HR80 as dependent variable, PS80 and UE80 as exogenous regressors,
-        RD80 as endogenous regressor and FP79 as additional instrument.
-        For equation 2, HR90 is the dependent variable, PS90 and UE90 the
-        exogenous regressors, RD90 as endogenous regressor and FP99 as 
-        additional instrument
+    The specification of the model to be estimated can be provided as lists.
+    Each equation should be listed separately. Although not required,
+    in this example we will specify additional endogenous regressors.
+    Equation 1 has HR80 as dependent variable, PS80 and UE80 as exogenous regressors,
+    RD80 as endogenous regressor and FP79 as additional instrument.
+    For equation 2, HR90 is the dependent variable, PS90 and UE90 the
+    exogenous regressors, RD90 as endogenous regressor and FP99 as
+    additional instrument
 
-        >>> y_var = ['HR80','HR90']
-        >>> x_var = [['PS80','UE80'],['PS90','UE90']]
-        >>> yend_var = [['RD80'],['RD90']]
-        >>> q_var = [['FP79'],['FP89']]
+    >>> y_var = ['HR80','HR90']
+    >>> x_var = [['PS80','UE80'],['PS90','UE90']]
+    >>> yend_var = [['RD80'],['RD90']]
+    >>> q_var = [['FP79'],['FP89']]
 
-        The SUR method requires data to be provided as dictionaries. PySAL
-        provides two tools to create these dictionaries from the list of variables: 
-        sur_dictxy and sur_dictZ. The tool sur_dictxy can be used to create the
-        dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
-        additional instruments (q).
+    The SUR method requires data to be provided as dictionaries. PySAL
+    provides two tools to create these dictionaries from the list of variables:
+    sur_dictxy and sur_dictZ. The tool sur_dictxy can be used to create the
+    dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
+    additional instruments (q).
 
-        >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
-        >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
-        >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
+    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+    >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
+    >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
 
-        To run a spatial lag model, we need to specify the spatial weights matrix. 
-        To do that, we can open an already existing gal file or create a new one.
-        In this example, we will create a new one from NAT.shp and transform it to
-        row-standardized.
+    To run a spatial lag model, we need to specify the spatial weights matrix.
+    To do that, we can open an already existing gal file or create a new one.
+    In this example, we will create a new one from NAT.shp and transform it to
+    row-standardized.
 
-        >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
-        >>> w.transform='r'
+    >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w.transform='r'
 
-        We can now run the regression and then have a summary of the output by typing:
-        print(reg.summary)
+    We can now run the regression and then have a summary of the output by typing:
+    print(reg.summary)
 
-        Alternatively, we can just check the betas and standard errors, asymptotic t 
-        and p-value of the parameters:        
+    Alternatively, we can just check the betas and standard errors, asymptotic t
+    and p-value of the parameters:
 
-        >>> reg = SURlagIV(bigy,bigX,bigyend,bigq,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT",name_w="nat_queen")
-        >>> reg.b3SLS
-        {0: array([[ 6.95472387],
-               [ 1.44044301],
-               [-0.00771893],
-               [ 3.65051153],
-               [ 0.00362663]]), 1: array([[ 5.61101925],
-               [ 1.38716801],
-               [-0.15512029],
-               [ 3.1884457 ],
-               [ 0.25832185]])}
+    >>> reg = SURlagIV(bigy,bigX,bigyend,bigq,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg.b3SLS
+    {0: array([[ 6.95472387],
+           [ 1.44044301],
+           [-0.00771893],
+           [ 3.65051153],
+           [ 0.00362663]]), 1: array([[ 5.61101925],
+           [ 1.38716801],
+           [-0.15512029],
+           [ 3.1884457 ],
+           [ 0.25832185]])}
 
-        >>> reg.tsls_inf
-        {0: array([[  0.49128435,  14.15620899,   0.        ],
-               [  0.11516292,  12.50787151,   0.        ],
-               [  0.03204088,  -0.2409087 ,   0.80962588],
-               [  0.1876025 ,  19.45875745,   0.        ],
-               [  0.05450628,   0.06653605,   0.94695106]]), 1: array([[  0.44969956,  12.47726211,   0.        ],
-               [  0.10440241,  13.28674277,   0.        ],
-               [  0.04150243,  -3.73761961,   0.00018577],
-               [  0.19133145,  16.66451427,   0.        ],
-               [  0.04394024,   5.87893596,   0.        ]])}
+    >>> reg.tsls_inf
+    {0: array([[  0.49128435,  14.15620899,   0.        ],
+           [  0.11516292,  12.50787151,   0.        ],
+           [  0.03204088,  -0.2409087 ,   0.80962588],
+           [  0.1876025 ,  19.45875745,   0.        ],
+           [  0.05450628,   0.06653605,   0.94695106]]), 1: array([[  0.44969956,  12.47726211,   0.        ],
+           [  0.10440241,  13.28674277,   0.        ],
+           [  0.04150243,  -3.73761961,   0.00018577],
+           [  0.19133145,  16.66451427,   0.        ],
+           [  0.04394024,   5.87893596,   0.        ]])}
     """
 
     def __init__(self,bigy,bigX,bigyend=None,bigq=None,w=None,regimes=None,vm=False,\

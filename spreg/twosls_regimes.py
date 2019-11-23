@@ -19,7 +19,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.
 class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
 
     """
-    Two stage least squares (2SLS) with regimes
+    Two stage least squares (2SLS) with regimes.
 
     Parameters
     ----------
@@ -38,13 +38,13 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -52,8 +52,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                    If a list, k booleans indicating for each variable the
                    option (True if one per regime, False to be held constant).
                    If 'all' (default), all the variables vary by regime.
-    regime_err_sep : boolean
-                   If True, a separate regression is run for each regime.
+    regime_err_sep: boolean
+                    If True, a separate regression is run for each regime.
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.
@@ -126,10 +126,10 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                    Ignored if regimes=False. Constant option for regimes.
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi    : list, 'all'
                    Ignored if regimes=False. Argument indicating whether each
                    column of x should be considered as different per regime
@@ -137,8 +137,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                    If a list, k booleans indicating for each variable the
                    option (True if one per regime, False to be held constant).
                    If 'all', all the variables vary by regime.
-    regime_err_sep : boolean
-                   If True, a separate regression is run for each regime.
+    regime_err_sep: boolean
+                    If True, a separate regression is run for each regime.
     kr           : int
                    Number of variables/columns to be "regimized" or subject
                    to change by regime. These will result in one parameter

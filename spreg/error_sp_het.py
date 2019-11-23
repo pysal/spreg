@@ -26,8 +26,8 @@ class BaseGM_Error_Het(RegressionPropsY):
 
     """
     GMM method for a spatial error model with heteroskedasticity (note: no
-    consistency checks, diagnostics or constant added); based on Arraiz
-    et al :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.
+    consistency checks, diagnostics or constant added); based on
+    :cite:`Arraiz2010`, following :cite:`Anselin2011`.
 
     Parameters
     ----------
@@ -39,14 +39,15 @@ class BaseGM_Error_Het(RegressionPropsY):
     w            : Sparse matrix
                    Spatial weights sparse matrix 
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
 
     Attributes
     ----------
@@ -70,9 +71,9 @@ class BaseGM_Error_Het(RegressionPropsY):
                    independent (exogenous) variable, including the constant
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -155,10 +156,9 @@ class BaseGM_Error_Het(RegressionPropsY):
 
 
 class GM_Error_Het(BaseGM_Error_Het):
-
     """
     GMM method for a spatial error model with heteroskedasticity, with results
-    and diagnostics; based on Arraiz et al :cite:`Arraiz2010`, following Anselin
+    and diagnostics; based on :cite:`Arraiz2010`, following
     :cite:`Anselin2011`.
 
     Parameters
@@ -171,14 +171,15 @@ class GM_Error_Het(BaseGM_Error_Het):
     w            : pysal W object
                    Spatial weights object   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
+                   Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -216,9 +217,9 @@ class GM_Error_Het(BaseGM_Error_Het):
                    independent (exogenous) variable, including the constant
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -233,7 +234,7 @@ class GM_Error_Het(BaseGM_Error_Het):
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
     xtx          : float
-                   X'X
+                   :math:`X'X`
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -247,7 +248,6 @@ class GM_Error_Het(BaseGM_Error_Het):
 
     Examples
     --------
-
     We first need to import the needed modules, namely numpy to convert the
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis.
@@ -353,8 +353,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     """
     GMM method for a spatial error model with heteroskedasticity and
     endogenous variables (note: no consistency checks, diagnostics or constant
-    added); based on Arraiz et al :cite:`Arraiz2010`, following Anselin
-    :cite:`Anselin2011`.
+    added); based on :cite:`Arraiz2010`, following :cite:`Anselin2011`.
 
     Parameters
     ----------
@@ -373,14 +372,15 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     w            : Sparse matrix
                    Spatial weights sparse matrix   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     inv_method   : string
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
@@ -419,9 +419,9 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -429,7 +429,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     vm           : array
                    Variance covariance matrix (kxk)
     hth          : float
-                   H'H
+                   :math:`H'H`
 
     Examples
     --------
@@ -519,8 +519,8 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
 
     """
     GMM method for a spatial error model with heteroskedasticity and
-    endogenous variables, with results and diagnostics; based on Arraiz et al
-    :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.
+    endogenous variables, with results and diagnostics; based on
+    :cite:`Arraiz2010`, following :cite:`Anselin2011`.
 
     Parameters
     ----------
@@ -539,14 +539,15 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     w            : pysal W object
                    Spatial weights object   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     inv_method   : string
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
@@ -602,9 +603,9 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -638,7 +639,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     title         : string
                     Name of the regression method used
     hth          : float
-                   H'H
+                   :math:`H'H`
 
     Examples
     --------
@@ -767,7 +768,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     """
     GMM method for a spatial lag and error model with heteroskedasticity and
     endogenous variables (note: no consistency checks, diagnostics or constant
-    added); based on Arraiz et al :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.
+    added); based on :cite:`Arraiz2010`, following :cite:`Anselin2011`.
 
     Parameters
     ----------
@@ -793,14 +794,15 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
                    If True, then include spatial lags of the additional 
                    instruments (q).
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     inv_method   : string
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
@@ -839,9 +841,9 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -849,7 +851,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     vm           : array
                    Variance covariance matrix (kxk)
     hth          : float
-                   H'H
+                   :math:`H'H`
 
     Examples
     --------
@@ -913,8 +915,8 @@ class GM_Combo_Het(BaseGM_Combo_Het):
 
     """
     GMM method for a spatial lag and error model with heteroskedasticity and
-    endogenous variables, with results and diagnostics; based on Arraiz et al
-    :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.
+    endogenous variables, with results and diagnostics; based on
+    :cite:`Arraiz2010`, following :cite:`Anselin2011`.
 
     Parameters
     ----------
@@ -940,14 +942,15 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                    If True, then include spatial lags of the additional 
                    instruments (q).
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     inv_method   : string
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
@@ -1007,9 +1010,9 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -1046,7 +1049,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     title         : string
                     Name of the regression method used
     hth          : float
-                   H'H
+                   :math:`H'H`
 
     Examples
     --------
@@ -1317,23 +1320,19 @@ def get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt):
     """
     Computes the a1 in psi assuming residuals come from original regression.
     :cite:`Anselin2011`
-    ...
+
 
     Parameters
     ----------
-
     w           : Sparse matrix
-                  Spatial weights sparse matrix 
-
+                  Spatial weights sparse matrix
     reg         : TSLS
                   Two stage least quare regression instance
-
     lambdapar   : float
                   Spatial autoregressive parameter
 
     Returns
     -------
-
     [a1, a2]    : list
                   a1 and a2 are two nx1 array in psi equation
 
@@ -1373,17 +1372,13 @@ def get_vc_het_tsls(w, wA1, reg, lambdapar, P, zs, inv_method, filt=True, save_a
 def get_Omega_GS2SLS(w, lamb, reg, G, psi, P):
     """
     Computes the variance-covariance matrix for GS2SLS:
-    ...
 
     Parameters
     ----------
-
     w           : Sparse matrix
-                  Spatial weights sparse matrix 
-
+                  Spatial weights sparse matrix
     lamb        : float
                   Spatial autoregressive parameter
-
     reg         : GSTSLS
                   Generalized Spatial two stage least quare regression instance
     G           : array
@@ -1393,7 +1388,6 @@ def get_Omega_GS2SLS(w, lamb, reg, G, psi, P):
 
     Returns
     -------
-
     omega       : array
                   (k+1)x(k+1)                 
     """

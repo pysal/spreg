@@ -387,8 +387,7 @@ class ML_Lag(BaseML_Lag):
                    Name of the regression method used
 
     Examples
-    ________
-
+    --------
     >>> import numpy as np
     >>> import libpysal
     >>> db =  libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')

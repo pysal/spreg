@@ -18,17 +18,21 @@ __all__ = ['sur_setp','sur_lrtest','sur_lmtest','lam_setp','surLMe','surLMlag']
 
 
 def sur_setp(bigB,varb):
-    ''' Utility to compute standard error, t and p-value
+    '''
+    Utility to compute standard error, t and p-value
 
     Parameters
     ----------
-    bigB    : dictionary of regression coefficient estimates,
+    bigB    : dictionary
+              of regression coefficient estimates,
               one vector by equation
-    varb    : variance-covariance matrix of coefficients
+    varb    : array
+              variance-covariance matrix of coefficients
 
     Returns
     -------
-    surinfdict : dictionary with standard error, t-value, and
+    surinfdict : dictionary
+                 with standard error, t-value, and
                  p-value array, one for each equation
 
     '''
@@ -47,19 +51,23 @@ def sur_setp(bigB,varb):
     return surinfdict
 
 def lam_setp(lam,vm):
-    """Standard errors, t-test and p-value for lambda in SUR Error ML
+    """
+    Standard errors, t-test and p-value for lambda in SUR Error ML
 
     Parameters
     ----------
-    lam        : n_eq x 1 array with ML estimates for spatial error
+    lam        : array
+                 n_eq x 1 array with ML estimates for spatial error
                  autoregressive coefficient
-    vm         : n_eq x n_eq subset of variance-covariance matrix for
+    vm         : array
+                 n_eq x n_eq subset of variance-covariance matrix for
                  lambda and Sigma in SUR Error ML
                  (needs to be subset from full vm)
 
     Returns
     -------
-               : tuple with arrays for standard error, t-value and p-value
+               : tuple
+                 with arrays for standard error, t-value and p-value
                  (each element in the tuple is an n_eq x 1 array)
 
     """
@@ -71,20 +79,26 @@ def lam_setp(lam,vm):
     return (se,t,tp)
 
 def sur_lrtest(n,n_eq,ldetS0,ldetS1):
-    ''' Likelihood Ratio test on off-diagonal elements of Sigma
+    '''
+    Likelihood Ratio test on off-diagonal elements of Sigma
 
-        Parameters
-        ----------
-        n        : cross-sectional dimension (number of observations for an equation)
-        n_eq     : number of equations
-        ldetS0   : log determinant of Sigma for OLS case
-        ldetS1   : log determinant of Sigma for SUR case (should be iterated)
+    Parameters
+    ----------
+    n        : int
+               cross-sectional dimension (number of observations for an equation)
+    n_eq     : int
+               number of equations
+    ldetS0   : float
+               log determinant of Sigma for OLS case
+    ldetS1   : float
+               log determinant of Sigma for SUR case (should be iterated)
 
-        Returns
-        -------
-        (lrtest,M,pvalue) : tupel with value of test statistic (lrtest),
-                            degrees of freedom (M, as an integer)
-                            p-value
+    Returns
+    -------
+    (lrtest,M,pvalue) : tuple
+                        with value of test statistic (lrtest),
+                        degrees of freedom (M, as an integer)
+                        p-value
 
     '''
     M = n_eq * (n_eq - 1)/2.0
@@ -94,20 +108,24 @@ def sur_lrtest(n,n_eq,ldetS0,ldetS1):
 
 
 def sur_lmtest(n,n_eq,sig):
-    ''' Lagrange Multiplier test on off-diagonal elements of Sigma
+    '''
+    Lagrange Multiplier test on off-diagonal elements of Sigma
 
-        Parameters
-        ----------
-        n        : cross-sectional dimension (number of observations for an equation)
-        n_eq     : number of equations
-        sig      : inter-equation covariance matrix for null model (OLS)
+    Parameters
+    ----------
+    n        : int
+               cross-sectional dimension (number of observations for an equation)
+    n_eq     : int
+               number of equations
+    sig      : array
+               inter-equation covariance matrix for null model (OLS)
 
-        Returns
-        -------
-        (lmtest,M,pvalue) : tupel with value of test statistic (lmtest),
-                            degrees of freedom (M, as an integer)
-                            p-value
-
+    Returns
+    -------
+    (lmtest,M,pvalue) : tuple
+                        with value of test statistic (lmtest),
+                        degrees of freedom (M, as an integer)
+                        p-value
     '''
     R = sur_corr(sig)
     tr = np.trace(np.dot(R.T,R))
@@ -118,18 +136,24 @@ def sur_lmtest(n,n_eq,sig):
 
 
 def surLMe(n_eq,WS,bigE,sig):
-    """Lagrange Multiplier test on error spatial autocorrelation in SUR
+    """
+    Lagrange Multiplier test on error spatial autocorrelation in SUR
 
     Parameters
     ----------
-    n_eq       : number of equations
-    WS         : spatial weights matrix in sparse form
-    bigE       : n x n_eq matrix of residuals by equation
-    sig        : cross-equation error covariance matrix
+    n_eq       : int
+                 number of equations
+    WS         : array
+                 spatial weights matrix in sparse form
+    bigE       : array
+                 n x n_eq matrix of residuals by equation
+    sig        : array
+                 cross-equation error covariance matrix
 
     Returns
     -------
-    (LMe,n_eq,pvalue) : tupel with value of statistic (LMe), degrees
+    (LMe,n_eq,pvalue) : tuple
+                        with value of statistic (LMe), degrees
                         of freedom (n_eq) and p-value
 
     """
@@ -166,22 +190,31 @@ def surLMe(n_eq,WS,bigE,sig):
     return (LMe,n_eq,pvalue)
 
 def surLMlag(n_eq,WS,bigy,bigX,bigE,bigYP,sig,varb):
-    """Lagrange Multiplier test on lag spatial autocorrelation in SUR
+    """
+    Lagrange Multiplier test on lag spatial autocorrelation in SUR
 
     Parameters
     ----------
-    n_eq       : number of equations
+    n_eq       : int
+                 number of equations
     WS         : spatial weights matrix in sparse form
-    bigy       : dictionary with y values
-    bigX       : dictionary with X values
-    bigE       : n x n_eq matrix of residuals by equation
-    bigYP      : n x n_eq matrix of predicted values by equation
-    sig        : cross-equation error covariance matrix
-    varb       : variance-covariance matrix for b coefficients (inverse of Ibb)
+    bigy       : dictionary
+                 with y values
+    bigX       : dictionary
+                 with X values
+    bigE       : array
+                 n x n_eq matrix of residuals by equation
+    bigYP      : array
+                 n x n_eq matrix of predicted values by equation
+    sig        : array
+                 cross-equation error covariance matrix
+    varb       : array
+                 variance-covariance matrix for b coefficients (inverse of Ibb)
 
     Returns
     -------
-    (LMlag,n_eq,pvalue) : tupel with value of statistic (LMlag), degrees
+    (LMlag,n_eq,pvalue) : tuple
+                          with value of statistic (LMlag), degrees
                           of freedom (n_eq) and p-value
 
     """
@@ -230,27 +263,33 @@ def surLMlag(n_eq,WS,bigy,bigX,bigE,bigYP,sig,varb):
     return (LMlag,n_eq,pvalue)
 
 def sur_chow(n_eq,bigK,bSUR,varb):
-    """test on constancy of regression coefficients across equations in
-       a SUR specification
+    """
+    test on constancy of regression coefficients across equations in
+    a SUR specification
 
-       Note: requires a previous check on constancy of number of coefficients
-             across equations; no other checks are carried out, so it is possible
-             that the results are meaningless if the variables are not listed in
-             the same order in each equation.
+    Note: requires a previous check on constancy of number of coefficients
+    across equations; no other checks are carried out, so it is possible
+    that the results are meaningless if the variables are not listed in
+    the same order in each equation.
 
-       Parameters
-       ----------
-       n_eq       : integer, number of equations
-       bigK       : array with the number of variables by equation (includes constant)
-       bSUR       : dictionary with the SUR regression coefficients by equation
-       varb       : array with the variance-covariance matrix for the SUR regression
-                    coefficients
+   Parameters
+   ----------
+   n_eq       : int
+                number of equations
+   bigK       : array
+                with the number of variables by equation (includes constant)
+   bSUR       : dictionary
+                with the SUR regression coefficients by equation
+   varb       : array
+                the variance-covariance matrix for the SUR regression
+                coefficients
 
-       Returns
-       -------
-       test       : a list with for each coefficient (in order) a tuple with the
-                    value of the test statistic, the degrees of freedom, and the
-                    p-value
+   Returns
+   -------
+   test       : array
+                a list with for each coefficient (in order) a tuple with the
+                value of the test statistic, the degrees of freedom, and the
+                p-value
 
     """
     kr = bigK[0][0]
@@ -266,21 +305,27 @@ def sur_chow(n_eq,bigK,bSUR,varb):
     return test
 
 def sur_joinrho(n_eq,bigK,bSUR,varb):
-    """Test on joint significance of spatial autoregressive coefficient in SUR
+    """
+    Test on joint significance of spatial autoregressive coefficient in SUR
 
-       Parameters
-       ----------
-       n_eq       : integer, number of equations
-       bigK       : n_eq x 1 array with number of variables by equation
-                    (includes constant term, exogenous and endogeneous and
-                    spatial lag)
-       bSUR       : dictionary with regression coefficients by equation, with
-                    the spatial autoregressive term as last
-       varb       : variance-covariance matrix for regression coefficients
+   Parameters
+   ----------
+   n_eq       : int
+                number of equations
+   bigK       : array
+                n_eq x 1 array with number of variables by equation
+                (includes constant term, exogenous and endogeneous and
+                spatial lag)
+   bSUR       : dictionary
+                with regression coefficients by equation, with
+                the spatial autoregressive term as last
+   varb       : array
+                variance-covariance matrix for regression coefficients
 
-       Returns
-       -------
-                  : tuple with test statistic, degrees of freedom, p-value
+   Returns
+   -------
+              : tuple
+                with test statistic, degrees of freedom, p-value
 
     """
     bb = sur_dict2mat(bSUR)

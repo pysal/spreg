@@ -36,13 +36,13 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
                    Spatial weights object   
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default)
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -51,9 +51,9 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    option (True if one per regime, False to be held constant).
                    If 'all' (default), all the variables vary by regime.
     regime_err_sep: boolean
-                   If True, a separate regression is run for each regime.
-    regime_lag_sep : boolean
-                   Always False, kept for consistency, ignored.
+                    If True, a separate regression is run for each regime.
+    regime_lag_sep: boolean
+                    Always False, kept for consistency, ignored.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from Arraiz
                    et al. Note: epsilon provides an additional stop condition.
@@ -110,11 +110,11 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    (see 'multi' below for details)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     mean_y       : float
@@ -157,14 +157,14 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Ignored if regimes=False. Constant option for regimes.
                    Switcher controlling the constant term setup. It may take
-                   the following values:                    
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime
+                   the following values:
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime
     cols2regi    : list, 'all'
                    Ignored if regimes=False. Argument indicating whether each
                    column of x should be considered as different per regime
@@ -172,8 +172,8 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    If a list, k booleans indicating for each variable the
                    option (True if one per regime, False to be held constant).
                    If 'all', all the variables vary by regime.
-    regime_err_sep : boolean
-                   If True, a separate regression is run for each regime.
+    regime_err_sep: boolean
+                    If True, a separate regression is run for each regime.
     kr           : int
                    Number of variables/columns to be "regimized" or subject
                    to change by regime. These will result in one parameter
@@ -470,13 +470,13 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
                    Spatial weights object   
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -485,18 +485,18 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    option (True if one per regime, False to be held constant).
                    If 'all' (default), all the variables vary by regime.
     regime_err_sep : boolean
-                   If True, a separate regression is run for each regime.
+                     If True, a separate regression is run for each regime.
     regime_lag_sep : boolean
                      Always False, kept for consistency, ignored.
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     inv_method   : string
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
@@ -540,7 +540,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Number of observations
     k            : integer
                    Number of variables for which coefficients are estimated
-                   (including the constant)
+                   (including the constant).
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     y            : array
@@ -570,11 +570,11 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    (see 'multi' below for details)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     mean_y       : float
@@ -617,19 +617,19 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     Name of regimes variable for use in output
     title         : string
                     Name of the regression method used
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    Only available in dictionary 'multi' when multiple regressions
+                    (see 'multi' below for details)
     regimes       : list
                     List of n values with the mapping of each
                     observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi : ['one', 'many']
+    constant_regi : string
                     Ignored if regimes=False. Constant option for regimes.
                     Switcher controlling the constant term setup. It may take
                     the following values:
-                      *  'one': a vector of ones is appended to x and held
-                                constant across regimes
-                      * 'many': a vector of ones is appended to x and considered
-                                different per regime
+
+                    * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                    * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi     : list, 'all'
                     Ignored if regimes=False. Argument indicating whether each
                     column of x should be considered as different per regime
@@ -997,13 +997,13 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
                    Spatial weights object (always needed)   
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -1016,7 +1016,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
     regime_lag_sep   : boolean
                    If True, the spatial parameter for spatial lag is also
                    computed according to different regimes. If False (default), 
-                   the spatial parameter is fixed accross regimes.
+                   the spatial parameter is fixed across regimes.
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
@@ -1025,14 +1025,14 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
                    If True, then include spatial lags of the additional 
                    instruments (q).
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     step1c       : boolean
-                   If True, then include Step 1c from Arraiz et al. 
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     inv_method   : string
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
@@ -1110,11 +1110,11 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
                    (see 'multi' below for details)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     mean_y       : float
@@ -1162,19 +1162,19 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
                     Name of regimes variable for use in output
     title         : string
                     Name of the regression method used
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    Only available in dictionary 'multi' when multiple regressions
+                    (see 'multi' below for details)
     regimes       : list
                     List of n values with the mapping of each
                     observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi : ['one', 'many']
+    constant_regi : string
                     Ignored if regimes=False. Constant option for regimes.
                     Switcher controlling the constant term setup. It may take
                     the following values:
-                      *  'one': a vector of ones is appended to x and held
-                                constant across regimes
-                      * 'many': a vector of ones is appended to x and considered
-                                different per regime
+
+                    * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                    * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi     : list, 'all'
                     Ignored if regimes=False. Argument indicating whether each
                     column of x should be considered as different per regime
@@ -1187,7 +1187,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
     regime_lag_sep: boolean
                     If True, the spatial parameter for spatial lag is also
                     computed according to different regimes. If False (default), 
-                    the spatial parameter is fixed accross regimes.
+                    the spatial parameter is fixed across regimes.
     kr            : int
                     Number of variables/columns to be "regimized" or subject
                     to change by regime. These will result in one parameter

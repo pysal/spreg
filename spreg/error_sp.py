@@ -357,6 +357,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
 
     >>> import libpysal
     >>> import numpy as np
+    >>> from spreg import BaseGM_Endog_Error
     >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array([dbf.by_col('CRIME')]).T
     >>> x = np.array([dbf.by_col('INC')]).T
@@ -575,6 +576,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Endog_Error
     >>> model = GM_Endog_Error(y, x, yend, q, w=w, name_x=['inc'], name_y='crime', name_yend=['hoval'], name_q=['discbd'], name_ds='columbus')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -693,6 +695,8 @@ class BaseGM_Combo(BaseGM_Endog_Error):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
+    >>> from spreg import BaseGM_Combo
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))

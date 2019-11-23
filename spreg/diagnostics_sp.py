@@ -20,8 +20,6 @@ class LMtests:
     """
     Lagrange Multiplier tests. Implemented as presented in :cite:`Anselin1996a`
 
-    ...
-
     Attributes
     ----------
 
@@ -33,11 +31,11 @@ class LMtests:
                   Lists of strings with the tests desired to be performed.
                   Values may be:
 
-                   * 'all': runs all the options (default)
-                   * 'lme': LM error test
-                   * 'rlme': Robust LM error test
-                   * 'lml' : LM lag test
-                   * 'rlml': Robust LM lag test
+                  * 'all': runs all the options (default)
+                  * 'lme': LM error test
+                  * 'rlme': Robust LM error test
+                  * 'lml' : LM lag test
+                  * 'rlml': Robust LM lag test
 
     Parameters
     ----------
@@ -145,11 +143,9 @@ class MoranRes:
     """
     Moran's I for spatial autocorrelation in residuals from OLS regression
 
-    ...
 
     Parameters
     ----------
-
     ols         : OLS
                   OLS regression object
     w           : W
@@ -243,11 +239,10 @@ class MoranRes:
 
 
 class AKtest:
-
     """
     Moran's I test of spatial autocorrelation for IV estimation.
     Implemented following the original reference :cite:`Anselin1997`
-    ...
+
 
     Parameters
     ----------
@@ -259,8 +254,8 @@ class AKtest:
     case        : string
                   Flag for special cases (default to 'nosp'):
 
-                   * 'nosp': Only NO spatial end. reg.
-                   * 'gen': General case (spatial lag + end. reg.)
+                  * 'nosp': Only NO spatial end. reg.
+                  * 'gen': General case (spatial lag + end. reg.)
 
     Attributes
     ----------
@@ -268,12 +263,8 @@ class AKtest:
     mi          : float
                   Moran's I statistic for IV residuals
     ak          : float
-                  Square of corrected Moran's I for residuals::
-
-                  .. math::
-
-                        ak = \dfrac{N \times I^*}{\phi^2}
-
+                  Square of corrected Moran's I for residuals
+                  :math:`ak = \dfrac{N \times I^*}{\phi^2}`.
                   Note: if case='nosp' then it simplifies to the LMerror
     p           : float
                   P-value of the test
@@ -418,36 +409,18 @@ class spDcache:
 
     j           : array
                   1x1 array with the result from:
-
-                  .. math::
-
-                        J = \dfrac{1}{[(WX\beta)' M (WX\beta) + T \sigma^2]}
-
+                  :math:`J = \dfrac{1}{[(WX\beta)' M (WX\beta) + T \sigma^2]}`
     wu          : array
                   nx1 array with spatial lag of the residuals
-
     utwuDs      : array
                   1x1 array with the result from:
-
-                  .. math::
-
-                        utwuDs = \dfrac{u' W u}{\tilde{\sigma^2}}
-
+                  :math:`utwuDs = \dfrac{u' W u}{\tilde{\sigma^2}}`
     utwyDs      : array
                   1x1 array with the result from:
-
-                  .. math::
-
-                        utwyDs = \dfrac{u' W y}{\tilde{\sigma^2}}
-
-
+                  :math:`utwyDs = \dfrac{u' W y}{\tilde{\sigma^2}}`
     t           : array
                   1x1 array with the result from :
-
-                  .. math::
-
-                        T = tr[(W' + W) W]
-
+                  :math:` T = tr[(W' + W) W]`
     trA         : float
                   Trace of A as in Cliff & Ord (1981)
 
@@ -525,12 +498,10 @@ class spDcache:
 def lmErr(reg, w, spDcache):
     """
     LM error test. Implemented as presented in eq. (9) of Anselin et al.
-    (1996) [Anselin1996a]_
-    ...
+    (1996) :cite:`Anselin1996a`.
 
     Attributes
     ----------
-
     reg         : OLS_dev, TSLS_dev, STSLS_dev
                   Instance from a regression class
     w           : W
@@ -540,7 +511,6 @@ def lmErr(reg, w, spDcache):
 
     Returns
     -------
-
     lme         : tuple
                   Pair of statistic and p-value for the LM error test.
 
@@ -553,22 +523,19 @@ def lmErr(reg, w, spDcache):
 def lmLag(ols, w, spDcache):
     """
     LM lag test. Implemented as presented in eq. (13) of Anselin et al.
-    (1996) [Anselin1996a]_
-    ...
+    (1996) :cite:`Anselin1996a`.
 
     Attributes
     ----------
-
     ols         : OLS_dev
                   Instance from an OLS_dev regression
     w           : W
                   Spatial weights instance
     spDcache     : spDcache
-                  Instance of spDcache class
+                   Instance of spDcache class
 
     Returns
     -------
-
     lml         : tuple
                   Pair of statistic and p-value for the LM lag test.
 
@@ -581,24 +548,22 @@ def lmLag(ols, w, spDcache):
 def rlmErr(ols, w, spDcache):
     """
     Robust LM error test. Implemented as presented in eq. (8) of Anselin et
-    al. (1996) [Anselin1996a]_
+    al. (1996) :cite:`Anselin1996a`.
 
-    NOTE: eq. (8) has an errata, the power -1 in the denominator should be inside the square bracket.
-    ...
+    NOTE: eq. (8) has an errata, the power -1 in the denominator
+    should be inside the square bracket.
 
     Attributes
     ----------
-
     ols         : OLS_dev
                   Instance from an OLS_dev regression
     w           : W
                   Spatial weights instance
-    spDcache     : spDcache
+    spDcache    : spDcache
                   Instance of spDcache class
 
     Returns
     -------
-
     rlme        : tuple
                   Pair of statistic and p-value for the Robust LM error test.
 
@@ -614,12 +579,10 @@ def rlmErr(ols, w, spDcache):
 def rlmLag(ols, w, spDcache):
     """
     Robust LM lag test. Implemented as presented in eq. (12) of Anselin et al.
-    (1996) [Anselin1996a]_
-    ...
+    (1996) :cite:`Anselin1996a`.
 
     Attributes
     ----------
-
     ols             : OLS_dev
                       Instance from an OLS_dev regression
     w               : W
@@ -629,7 +592,6 @@ def rlmLag(ols, w, spDcache):
 
     Returns
     -------
-
     rlml            : tuple
                       Pair of statistic and p-value for the Robust LM lag test.
 
@@ -643,12 +605,10 @@ def rlmLag(ols, w, spDcache):
 def lmSarma(ols, w, spDcache):
     """
     LM error test. Implemented as presented in eq. (15) of Anselin et al.
-    (1996) [Anselin1996a]_
-    ...
+    (1996) :cite:`Anselin1996a`.
 
     Attributes
     ----------
-
     ols         : OLS_dev
                   Instance from an OLS_dev regression
     w           : W
@@ -658,7 +618,6 @@ def lmSarma(ols, w, spDcache):
 
     Returns
     -------
-
     sarma       : tuple
                   Pair of statistic and p-value for the LM sarma test.
 
@@ -675,12 +634,10 @@ def lmSarma(ols, w, spDcache):
 def get_mI(reg, w, spDcache):
     """
     Moran's I statistic of spatial autocorrelation as showed in Cliff & Ord
-    (1981) [Cliff1981]_, p. 201-203
-    ...
+    (1981) :cite:`clifford1981`, p. 201-203
 
     Attributes
     ----------
-
     reg             : OLS_dev, TSLS_dev, STSLS_dev
                       Instance from a regression class
     w               : W
@@ -690,7 +647,6 @@ def get_mI(reg, w, spDcache):
 
     Returns
     -------
-
     moran           : float
                       Statistic Moran's I test.
 
@@ -701,7 +657,7 @@ def get_mI(reg, w, spDcache):
 
 def get_vI(ols, w, ei, spDcache):
     """
-    Moran's I variance coded as in Cliff & Ord 1981 (p. 201-203) and R's spdep
+    Moran's I variance coded as in :cite:`clifford1981` (p. 201-203) and R's spdep
     """
     A = spDcache.AB[0]
     trA2 = np.dot(A, A)
@@ -736,7 +692,6 @@ def get_zI(I, ei, vi):
 def akTest(iv, w, spDcache):
     """
     Computes AK-test for the general case (end. reg. + sp. lag)
-    ...
 
     Parameters
     ----------
@@ -745,7 +700,7 @@ def akTest(iv, w, spDcache):
                   Instance from spatial 2SLS regression
     w           : W
                   Spatial weights instance
-   spDcache     : spDcache
+    spDcache    : spDcache
                   Instance of spDcache class
 
     Attributes
@@ -753,11 +708,8 @@ def akTest(iv, w, spDcache):
     mi          : float
                   Moran's I statistic for IV residuals
     ak          : float
-                  Square of corrected Moran's I for residuals::
-
-                  .. math::
-                        ak = \dfrac{N \times I^*}{\phi^2}
-
+                  Square of corrected Moran's I for residuals:
+                  :math:`ak = \dfrac{N \times I^*}{\phi^2}`
     p           : float
                   P-value of the test
 

@@ -18,7 +18,7 @@ __all__ = [
 def f_stat(reg):
     """
     Calculates the f-statistic and associated p-value of the
-    regression. :cite:`Greene2003`
+    regression. :cite:`Greene2003`.
     (For two stage least squares see f_stat_tsls)
 
     Parameters
@@ -1283,9 +1283,10 @@ def likratiotest(reg0, reg1):
 
     Parameters
     ----------
-
-    reg0         : regression object for constrained model (H0)
-    reg1         : regression object for unconstrained model (H1)
+    reg0         : regression object
+                   for constrained model (H0)
+    reg1         : regression object
+                   for unconstrained model (H1)
 
     Returns
     -------

@@ -280,9 +280,9 @@ class OLS(BaseOLS):
     sig2n_k      : float
                    Sigma squared (computed with n-k in the denominator)
     xtx          : float
-                   X'X
+                   :math:`X'X`
     xtxi         : float
-                   (X'X)^-1
+                   :math:`(X'X)^{-1}`
 
 
     Examples

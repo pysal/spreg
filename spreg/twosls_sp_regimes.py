@@ -19,7 +19,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
     """
     Spatial two stage least squares (S2SLS) with regimes; 
-    Anselin (1988) [Anselin1988]_
+    :cite:`Anselin1988`
 
     Parameters
     ----------
@@ -39,13 +39,13 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    external exogenous variable to use as instruments (note: 
                    this should not contain any variables from x); cannot be
                    used in combination with h
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default).
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -63,12 +63,12 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    If True, then include spatial lags of the additional 
                    instruments (q).
     regime_lag_sep: boolean
-                   If True (default), the spatial parameter for spatial lag is also
-                   computed according to different regimes. If False, 
-                   the spatial parameter is fixed accross regimes.
-                   Option valid only when regime_err_sep=True
+                    If True (default), the spatial parameter for spatial lag is also
+                    computed according to different regimes. If False,
+                    the spatial parameter is fixed accross regimes.
+                    Option valid only when regime_err_sep=True
     regime_err_sep: boolean
-                   If True, a separate regression is run for each regime.
+                    If True, a separate regression is run for each regime.
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.
@@ -228,19 +228,19 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     sig2n_k      : float
                    Sigma squared (computed with n-k in the denominator)
     hth          : float
-                   H'H
+                   :math:`H'H`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     hthi         : float
-                   (H'H)^-1
+                   :math:`(H'H)^{-1}`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     varb         : array
-                   (Z'H (H'H)^-1 H'Z)^-1
+                   :math:`(Z'H (H'H)^{-1} H'Z)^{-1}`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     zthhthi      : array
-                   Z'H(H'H)^-1
+                   :math:`Z'H(H'H)^{-1}`.
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     pfora1a2     : array
@@ -250,14 +250,14 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Ignored if regimes=False. Constant option for regimes.
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime.
     cols2regi    : list, 'all'
                    Ignored if regimes=False. Argument indicating whether each
                    column of x should be considered as different per regime
@@ -265,12 +265,12 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    If a list, k booleans indicating for each variable the
                    option (True if one per regime, False to be held constant).
                    If 'all', all the variables vary by regime.
-    regime_lag_sep   : boolean
-                   If True, the spatial parameter for spatial lag is also
-                   computed according to different regimes. If False (default), 
-                   the spatial parameter is fixed accross regimes.
-    regime_err_sep  : boolean
-                   If True, a separate regression is run for each regime.
+    regime_lag_sep: boolean
+                    If True, the spatial parameter for spatial lag is also
+                    computed according to different regimes. If False (default),
+                    the spatial parameter is fixed accross regimes.
+    regime_err_sep: boolean
+                    If True, a separate regression is run for each regime.
     kr           : int
                    Number of variables/columns to be "regimized" or subject
                    to change by regime. These will result in one parameter
