@@ -47,7 +47,7 @@ install:
         echo 'testing git libpysal';
         pip install https://github.com/pysal/libpysal/archive/master.zip;
     fi;
-  - if "PYSAL_PLUS"; then
+  - if "$PYSAL_PLUS"; then
         echo 'testing PLUS' && conda install --file requirements_plus.txt;
     fi;
 
