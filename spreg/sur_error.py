@@ -34,30 +34,44 @@ class BaseSURerrorGM():
                  
     Parameters
     ----------
-    bigy       : dictionary with vectors of dependent variable, one for
-                 each equation
-    bigX       : dictionary with matrices of explanatory variables,
-                 one for each equation
+    bigy       : dictionary
+                 with vector for dependent variable by equation
+    bigX       : dictionary
+                 with matrix of explanatory variables by equation
+                 (note, already includes constant term)
     w          : spatial weights object
        
     Attributes
     ----------
-    n          : number of observations in each cross-section
-    n_eq       : number of equations
-    bigy       : dictionary with vectors of dependent variable, one for
+    n_eq       : int
+                 number of equations
+    n          : int
+                 number of observations in each cross-section
+    bigy       : dictionary
+                 with vectors of dependent variable, one for
                  each equation
-    bigX       : dictionary with matrices of explanatory variables,
+    bigX       : dictionary
+                 with matrices of explanatory variables,
                  one for each equation
-    bigK       : n_eq x 1 array with number of explanatory variables
+    bigK       : array
+                 n_eq x 1 array with number of explanatory variables
                  by equation
-    bigylag    : spatially lagged dependent variable
-    bigXlag    : spatially lagged explanatory variable
-    lamsur     : spatial autoregressive coefficient in GM SUR Error
-    bSUR       : beta coefficients in GM SUR Error
-    varb       : variance of beta coefficients in GM SUR Error
-    sig        : error variance-covariance matrix in GM SUR Error
-    corr       : error correlation matrix
-    bigE       : n by n_eq matrix of vectors of residuals for each equation
+    bigylag    : dictionary
+                 spatially lagged dependent variable
+    bigXlag    : dictionary
+                 spatially lagged explanatory variable
+    lamsur     : float
+                 spatial autoregressive coefficient in GM SUR Error
+    bSUR       : array
+                 beta coefficients in GM SUR Error
+    varb       : array
+                 variance of beta coefficients in GM SUR Error
+    sig        : array
+                 error variance-covariance matrix in GM SUR Error
+    corr       : array
+                 error correlation matrix
+    bigE       : array
+                 n by n_eq matrix of vectors of residuals for each equation
       
     """    
     def __init__(self,bigy,bigX,w):
@@ -130,59 +144,88 @@ def _momentsGM_sur_Error(w, u):
     return moments
 
 class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
-    """User class for SUR Error estimation by Maximum Likelihood
+    """
+    User class for SUR Error estimation by Maximum Likelihood
     
     Parameters
     ----------
-    bigy         : dictionary with vectors of dependent variable, one for
+    bigy         : dictionary
+                   with vectors of dependent variable, one for
                    each equation
-    bigX         : dictionary with matrices of explanatory variables,
+    bigX         : dictionary
+                   with matrices of explanatory variables,
                    one for each equation
     w            : spatial weights object
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    nonspat_diag : boolean; flag for non-spatial diagnostics, default = False
-    spat_diag    : boolean; flag for spatial diagnostics, default = False (to be implemented)
-    vm           : boolean; flag for asymptotic variance for lambda and Sigma,
+    nonspat_diag : boolean
+                   flag for non-spatial diagnostics, default = False
+    spat_diag    : boolean
+                   flag for spatial diagnostics, default = False (to be implemented)
+    vm           : boolean
+                   flag for asymptotic variance for lambda and Sigma,
                    default = False (to be implemented)
-    name_bigy    : dictionary with name of dependent variable for each equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-    name_bigX    : dictionary with names of explanatory variables for each
-                     equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-    name_ds      : string; name for the data set
-    name_w       : string; name for the weights file
-    name_regimes : string; name of regime variable for use in the output
+    name_bigy    : dictionary
+                   with name of dependent variable for each equation.
+                   default = None, but should be specified is done when
+                   sur_stackxy is used
+    name_bigX    : dictionary
+                   with names of explanatory variables for each equation.
+                   default = None, but should be specified is done when
+                   sur_stackxy is used
+    name_ds      : string
+                   name for the data set
+    name_w       : string
+                   name for the weights file
+    name_regimes : string
+                   name of regime variable for use in the output
        
     Attributes
     ----------
-    n          : number of observations in each cross-section
-    n_eq       : number of equations
-    bigy       : dictionary with vectors of dependent variable, one for
+    n          : int
+                 number of observations in each cross-section
+    n_eq       : int
+                 number of equations
+    bigy       : dictionary
+                 with vectors of dependent variable, one for
                  each equation
-    bigX       : dictionary with matrices of explanatory variables,
+    bigX       : dictionary
+                 with matrices of explanatory variables,
                  one for each equation
-    bigK       : n_eq x 1 array with number of explanatory variables
+    bigK       : array
+                 n_eq x 1 array with number of explanatory variables
                  by equation
-    bigylag    : spatially lagged dependent variable
-    bigXlag    : spatially lagged explanatory variable
-    lamsur     : spatial autoregressive coefficient in ML SUR Error
-    bSUR       : beta coefficients in ML SUR Error
-    varb       : variance of beta coefficients in ML SUR Error
-    sig        : error variance-covariance matrix in ML SUR Error
-    bigE       : n by n_eq matrix of vectors of residuals for each equation
-    sur_inf    : inference for regression coefficients, stand. error, t, p
-    surchow    : list with tuples for Chow test on regression coefficients
+    bigylag    : dictionary
+                 spatially lagged dependent variable
+    bigXlag    : dictionary
+                 spatially lagged explanatory variable
+    lamsur     : float
+                 spatial autoregressive coefficient in ML SUR Error
+    bSUR       : array
+                 beta coefficients in ML SUR Error
+    varb       : array
+                 variance of beta coefficients in ML SUR Error
+    sig        : array
+                 error variance-covariance matrix in ML SUR Error
+    bigE       : array
+                 n by n_eq matrix of vectors of residuals for each equation
+    sur_inf    : array
+                 inference for regression coefficients, stand. error, t, p
+    surchow    : array
+                 list with tuples for Chow test on regression coefficients.
                  each tuple contains test value, degrees of freedom, p-value
-    name_bigy  : dictionary with name of dependent variable for each equation
-    name_bigX  : dictionary with names of explanatory variables for each
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation
+    name_bigX  : dictionary
+                 with names of explanatory variables for each
                  equation
-    name_ds    : string; name for the data set
-    name_w     : string; name for the weights file      
-    name_regimes : string; name of regime variable for use in the output
+    name_ds    : string
+                 name for the data set
+    name_w     : string
+                 name for the weights file
+    name_regimes : string
+                   name of regime variable for use in the output
 
 
     Examples
@@ -319,47 +362,69 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
 
 
 class BaseSURerrorML():
-    """Base class for SUR Error estimation by Maximum Likelihood
+    """
+    Base class for SUR Error estimation by Maximum Likelihood
     
-       requires: scipy.optimize.minimize_scalar and 
-                 scipy.optimize.minimize
+    requires: scipy.optimize.minimize_scalar and scipy.optimize.minimize
                  
     Parameters
     ----------
-    bigy       : dictionary with vectors of dependent variable, one for
+    bigy       : dictionary
+                 with vectors of dependent variable, one for
                  each equation
-    bigX       : dictionary with matrices of explanatory variables,
+    bigX       : dictionary
+                 with matrices of explanatory variables,
                  one for each equation
     w          : spatial weights object
-    epsilon    : convergence criterion for ML iterations
+    epsilon    : float
+                 convergence criterion for ML iterations
                  default 0.0000001
        
     Attributes
     ----------
-    n          : number of observations in each cross-section
-    n2         : n/2
-    n_eq       : number of equations
-    bigy       : dictionary with vectors of dependent variable, one for
+    n          : int
+                 number of observations in each cross-section
+    n2         : int
+                 n/2
+    n_eq       : int
+                 number of equations
+    bigy       : dictionary
+                 with vectors of dependent variable, one for
                  each equation
-    bigX       : dictionary with matrices of explanatory variables,
+    bigX       : dictionary
+                 with matrices of explanatory variables,
                  one for each equation
-    bigK       : n_eq x 1 array with number of explanatory variables
+    bigK       : array
+                 n_eq x 1 array with number of explanatory variables
                  by equation
-    bigylag    : spatially lagged dependent variable
-    bigXlag    : spatially lagged explanatory variable
-    lamols     : spatial autoregressive coefficients from equation by
+    bigylag    : dictionary
+                 spatially lagged dependent variable
+    bigXlag    : dictionary
+                 spatially lagged explanatory variable
+    lamols     : array
+                 spatial autoregressive coefficients from equation by
                  equation ML-Error estimation
-    clikerr    : concentrated log-likelihood from equation by equation
+    clikerr    : float
+                 concentrated log-likelihood from equation by equation
                  ML-Error estimation (no constant)
-    bSUR0      : SUR estimation for betas without spatial autocorrelation
-    llik       : log-likelihood for classic SUR estimation (includes constant)
-    lamsur     : spatial autoregressive coefficient in ML SUR Error
-    bSUR       : beta coefficients in ML SUR Error
-    varb       : variance of beta coefficients in ML SUR Error
-    sig        : error variance-covariance matrix in ML SUR Error
-    corr       : error correlation matrix
-    bigE       : n by n_eq matrix of vectors of residuals for each equation
-    cliksurerr : concentrated log-likelihood from ML SUR Error (no constant) 
+    bSUR0      : array
+                 SUR estimation for betas without spatial autocorrelation
+    llik       : float
+                 log-likelihood for classic SUR estimation (includes constant)
+    lamsur     : float
+                 spatial autoregressive coefficient in ML SUR Error
+    bSUR       : array
+                 beta coefficients in ML SUR Error
+    varb       : array
+                 variance of beta coefficients in ML SUR Error
+    sig        : array
+                 error variance-covariance matrix in ML SUR Error
+    corr       : array
+                 error correlation matrix
+    bigE       : array
+                 n by n_eq matrix of vectors of residuals for each equation
+    cliksurerr : float
+                 concentrated log-likelihood from ML SUR Error (no constant)
       
     """    
     def __init__(self,bigy,bigX,w,epsilon=0.0000001):
@@ -431,79 +496,124 @@ class BaseSURerrorML():
         self.cliksurerr = -fun1  #negative because use in min, no constant
         
 class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
-    """User class for SUR Error estimation by Maximum Likelihood
+    """
+    User class for SUR Error estimation by Maximum Likelihood
     
     Parameters
     ----------
-    bigy         : dictionary with vectors of dependent variable, one for
+    bigy         : dictionary
+                   with vectors of dependent variable, one for
                    each equation
-    bigX         : dictionary with matrices of explanatory variables,
+    bigX         : dictionary
+                   with matrices of explanatory variables,
                    one for each equation
     w            : spatial weights object
-    regimes      : list; default = None
+    regimes      : list
+                   default = None.
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    epsilon      : convergence criterion for ML iterations
+    epsilon      : float
+                   convergence criterion for ML iterations.
                    default 0.0000001
-    nonspat_diag : boolean; flag for non-spatial diagnostics, default = True
-    spat_diag    : boolean; flag for spatial diagnostics, default = False
-    vm           : boolean; flag for asymptotic variance for lambda and Sigma,
+    nonspat_diag : boolean
+                   flag for non-spatial diagnostics, default = True
+    spat_diag    : boolean
+                   flag for spatial diagnostics, default = False
+    vm           : boolean
+                   flag for asymptotic variance for lambda and Sigma,
                    default = False
-    name_bigy    : dictionary with name of dependent variable for each equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-    name_bigX    : dictionary with names of explanatory variables for each
-                     equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-    name_ds      : string; name for the data set
-    name_w       : string; name for the weights file
-    name_regimes : string; name of regime variable for use in the output
+    name_bigy    : dictionary
+                   with name of dependent variable for each equation.
+                   default = None, but should be specified is done when
+                   sur_stackxy is used
+    name_bigX    : dictionary
+                   with names of explanatory variables for each equation.
+                   default = None, but should be specified is done when
+                   sur_stackxy is used
+    name_ds      : string
+                   name for the data set
+    name_w       : string
+                   name for the weights file
+    name_regimes : string
+                   name of regime variable for use in the output
        
     Attributes
     ----------
-    n          : number of observations in each cross-section
-    n2         : n/2
-    n_eq       : number of equations
-    bigy       : dictionary with vectors of dependent variable, one for
+    n          : int
+                 number of observations in each cross-section
+    n2         : int
+                 n/2
+    n_eq       : int
+                 number of equations
+    bigy       : dictionary
+                 with vectors of dependent variable, one for
                  each equation
-    bigX       : dictionary with matrices of explanatory variables,
+    bigX       : dictionary
+                 with matrices of explanatory variables,
                  one for each equation
-    bigK       : n_eq x 1 array with number of explanatory variables
+    bigK       : array
+                 n_eq x 1 array with number of explanatory variables
                  by equation
-    bigylag    : spatially lagged dependent variable
-    bigXlag    : spatially lagged explanatory variable
-    lamols     : spatial autoregressive coefficients from equation by
+    bigylag    : dictionary
+                 spatially lagged dependent variable
+    bigXlag    : dictionary
+                 spatially lagged explanatory variable
+    lamols     : array
+                 spatial autoregressive coefficients from equation by
                  equation ML-Error estimation
-    clikerr    : concentrated log-likelihood from equation by equation
+    clikerr    : float
+                 concentrated log-likelihood from equation by equation
                  ML-Error estimation (no constant)
-    bSUR0      : SUR estimation for betas without spatial autocorrelation
-    llik       : log-likelihood for classic SUR estimation (includes constant)
-    lamsur     : spatial autoregressive coefficient in ML SUR Error
-    bSUR       : beta coefficients in ML SUR Error
-    varb       : variance of beta coefficients in ML SUR Error
-    sig        : error variance-covariance matrix in ML SUR Error
-    bigE       : n by n_eq matrix of vectors of residuals for each equation
-    cliksurerr : concentrated log-likelihood from ML SUR Error (no constant) 
-    sur_inf    : inference for regression coefficients, stand. error, t, p
-    errllik    : log-likelihood for error model without SUR (with constant)
-    surerrllik : log-likelihood for SUR error model (with constant)
-    lrtest     : likelihood ratio test for off-diagonal Sigma elements
-    likrlambda : likelihood ratio test on spatial autoregressive coefficients
-    vm         : asymptotic variance matrix for lambda and Sigma (only for vm=True)
-    lamsetp    : inference for lambda, stand. error, t, p (only for vm=True)
-    lamtest    : tuple with test for constancy of lambda across equations
+    bSUR0      : array
+                 SUR estimation for betas without spatial autocorrelation
+    llik       : float
+                 log-likelihood for classic SUR estimation (includes constant)
+    lamsur     : float
+                 spatial autoregressive coefficient in ML SUR Error
+    bSUR       : array
+                 beta coefficients in ML SUR Error
+    varb       : array
+                 variance of beta coefficients in ML SUR Error
+    sig        : array
+                 error variance-covariance matrix in ML SUR Error
+    bigE       : array
+                 n by n_eq matrix of vectors of residuals for each equation
+    cliksurerr : float
+                 concentrated log-likelihood from ML SUR Error (no constant)
+    sur_inf    : array
+                 inference for regression coefficients, stand. error, t, p
+    errllik    : float
+                 log-likelihood for error model without SUR (with constant)
+    surerrllik : float
+                 log-likelihood for SUR error model (with constant)
+    lrtest     : tuple
+                 likelihood ratio test for off-diagonal Sigma elements
+    likrlambda : tuple
+                 likelihood ratio test on spatial autoregressive coefficients
+    vm         : array
+                 asymptotic variance matrix for lambda and Sigma (only for vm=True)
+    lamsetp    : array
+                 inference for lambda, stand. error, t, p (only for vm=True)
+    lamtest    : tuple
+                 with test for constancy of lambda across equations
                  (test value, degrees of freedom, p-value)
-    joinlam    : tuple with test for joint significance of lambda across 
+    joinlam    : tuple
+                 with test for joint significance of lambda across
                  equations (test value, degrees of freedom, p-value)
-    surchow    : list with tuples for Chow test on regression coefficients
+    surchow    : list
+                 with tuples for Chow test on regression coefficients.
                  each tuple contains test value, degrees of freedom, p-value
-    name_bigy  : dictionary with name of dependent variable for each equation
-    name_bigX  : dictionary with names of explanatory variables for each
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation
+    name_bigX  : dictionary
+                 with names of explanatory variables for each
                  equation
-    name_ds    : string; name for the data set
-    name_w     : string; name for the weights file      
-    name_regimes : string; name of regime variable for use in the output
+    name_ds    : string
+                 name for the data set
+    name_w     : string
+                 name for the weights file
+    name_regimes : string
+                   name of regime variable for use in the output
 
 
     Examples
@@ -712,22 +822,29 @@ def jacob(lam,n_eq,I,WS):
     return logjac
 
 def clik(lam,n,n2,n_eq,bigE,I,WS):
-    """ Concentrated (negative) log-likelihood for SUR Error model
+    """
+    Concentrated (negative) log-likelihood for SUR Error model
     
     Parameters
     ----------
-    lam         : n_eq x 1 array of spatial autoregressive parameters
-    n           : number of observations in each cross-section
-    n2          : n/2
-    n_eq        : number of equations
-    bigE        : n by n_eq matrix with vectors of residuals for 
+    lam         : array
+                  n_eq x 1 array of spatial autoregressive parameters
+    n           : int
+                  number of observations in each cross-section
+    n2          : int
+                  n/2
+    n_eq        : int
+                  number of equations
+    bigE        : array
+                  n by n_eq matrix with vectors of residuals for
                   each equation
     I           : sparse Identity matrix
     WS          : sparse spatial weights matrix
     
     Returns
     -------
-    -clik       : negative (for minimize) of the concentrated
+    -clik       : float
+                  negative (for minimize) of the concentrated
                   log-likelihood function
     
     """
@@ -740,22 +857,28 @@ def clik(lam,n,n2,n_eq,bigE,I,WS):
     return -clik  # negative for minimize
 
 def surerrvm(n,n_eq,w,lam,sig):
-    """Asymptotic variance matrix for lambda and Sigma in
-       ML SUR Error estimation
+    """
+    Asymptotic variance matrix for lambda and Sigma in
+    ML SUR Error estimation
        
-       Source: Anselin (1988), Chapter 10.
+    Source: Anselin (1988) :cite:`Anselin1988`, Chapter 10.
        
     Parameters
     ----------
-    n         : scalar, number of cross-sectional observations
-    n_eq      : scalar, number of equations
+    n         : int
+                number of cross-sectional observations
+    n_eq      : int
+                number of equations
     w         : spatial weights object
-    lam       : n_eq by 1 vector with spatial autoregressive coefficients
-    sig       : n_eq by n_eq matrix with cross-equation error covariances
+    lam       : array
+                n_eq by 1 vector with spatial autoregressive coefficients
+    sig       : array
+                n_eq by n_eq matrix with cross-equation error covariances
     
     Returns
     -------
-    vm        : asymptotic variance-covariance matrix for spatial autoregressive
+    vm        : array
+                asymptotic variance-covariance matrix for spatial autoregressive
                 coefficients and the upper triangular elements of Sigma
                 n_eq + n_eq x (n_eq + 1) / 2 coefficients
     

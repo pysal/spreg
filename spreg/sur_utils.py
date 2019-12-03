@@ -15,21 +15,28 @@ __all__ = ['sur_dictxy','sur_dictZ','sur_mat2dict','sur_dict2mat',\
 
 
 def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
-    """Stack X and y matrices and variable names as dictionaries by equation
+    """
+    Stack X and y matrices and variable names as dictionaries by equation
     
     Parameters
     ----------
-    db          : data object created by libpysal.io.open
-    y_vars      : list of lists with variable name(s) for dependent var
+    db          : data object
+                  created by libpysal.io.open
+    y_vars      : array
+                  list of lists with variable name(s) for dependent var
                   (Note must be a list of lists, even in splm case)
-    x_vars      : list of lists with variable names for explanatory vars
-    space_id    : variable with space ID, used for splm format
-    time_id     : variable with time ID, used for splm format
+    x_vars      : array
+                  list of lists with variable names for explanatory vars
+    space_id    : variable with space ID
+                  used for splm format
+    time_id     : variable with time ID
+                  used for splm format
     
     Return
     ------
     (bigy,bigX,bigy_vars,bigX_vars) 
-                : tuple with dictionaries for y and X, one for
+                : tuple
+                  with dictionaries for y and X, one for
                   each equation, bigy and bigX
                   Note: bigX already includes the constant term
                   dictionaries with y and X variables, by equation
@@ -125,24 +132,31 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
         
 
 def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
-    """Generic stack data matrices and variable names as dictionaries by equation
+    """
+    Generic stack data matrices and variable names as dictionaries by equation
     
     Parameters
     ----------
-    db          : data object created by libpysal.io.open
-    varnames    : list of lists with variable name(s)
+    db          : data object
+                  created by libpysal.io.open
+    varnames    : array
+                  list of lists with variable name(s)
                   (Note must be a list of lists, even in splm case)
-    form        : format used for data set
-                  default="spreg": cross-sectional format
-                  form="plm"     : plm (R) compatible using space and time id
+    form        : string
+                  format used for data set.
+                  default="spreg": cross-sectional format;
+                  form="plm"     : plm (R) compatible using space and time id.
     const       : boolean
                   flag for constant term, default = "False"
-    space_id    : variable with space ID, used for plm format
-    time_id     : variable with time ID, used for plm format
+    space_id    : variable with space ID
+                  used for plm format
+    time_id     : variable with time ID
+                  used for plm format
     
     Return
     ------
-    (bigZ,bigZ_names) : tuple with dictionaries variables and variable
+    (bigZ,bigZ_names) : tuple
+                        with dictionaries variables and variable
                         names, one for each equation
                         Note: bigX already includes the constant term
  
@@ -219,18 +233,22 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
 
         
 def sur_mat2dict(mat,ndim):
-    """ Utility to convert a vector or matrix to a dictionary with ndim keys,
-        one for each equation
+    """
+    Utility to convert a vector or matrix to a dictionary with ndim keys,
+    one for each equation
         
-        Parameters
-        ----------
-        mat      : vector or matrix with elements to be converted
-        ndim     : vector with number of elements (rows) to belong to each
-                   dict
-                   
-        Returns
-        -------
-        dicts    : dictionary with len(ndim) keys, from 0 to len(ndim)-1
+    Parameters
+    ----------
+    mat      : array
+               vector or matrix with elements to be converted
+    ndim     : array
+               vector with number of elements (rows) to belong to each
+               dict
+
+    Returns
+    -------
+    dicts    : dictionary
+               with len(ndim) keys, from 0 to len(ndim)-1
     
     
     """
@@ -244,16 +262,19 @@ def sur_mat2dict(mat,ndim):
     return(dicts)
 
 def sur_dict2mat(dicts):
-    """ Utility to stack the elements of a dictionary of vectors
+    """
+    Utility to stack the elements of a dictionary of vectors
     
     Parameters
     ----------
-    dicts    : dictionary of vectors or matrices with same number
+    dicts    : dictionary
+               dictionary of vectors or matrices with same number
                of columns (no checks yet!)
     
     Returns
     -------
-    mat     : a vector or matrix of vertically stacked vectors
+    mat     : array
+              a vector or matrix of vertically stacked vectors
     
     
     """
@@ -262,17 +283,18 @@ def sur_dict2mat(dicts):
     return(mat)
     
 def sur_corr(sig):
-    """SUR error correlation matrix
+    """
+    SUR error correlation matrix
          
-        Parameters
-        ----------
-            
-        sig      : Sigma cross-equation covariance matrix
-            
-        Returns
-        -------
-            
-        corr  : correlation matrix corresponding to sig
+    Parameters
+    ----------
+    sig      : array
+               Sigma cross-equation covariance matrix
+
+    Returns
+    -------
+    corr  : array
+            correlation matrix corresponding to sig
             
     """
     v = sig.diagonal()
@@ -283,25 +305,26 @@ def sur_corr(sig):
     return corr
     
 def sur_crossprod(bigZ,bigy):
-    '''Creates dictionaries of cross products by time period for both SUR and 3SLS
+    '''
+    Creates dictionaries of cross products by time period for both SUR and 3SLS
     
-        Parameters
-        ----------
-       
-        bigZ       : dictionary with matrix of explanatory variables,
-                     including constant, exogenous and endogenous, one
-                     for each equation
-        bigy       : dictionary with vectors of dependent variable, one
-                     for each equation
-           
-                
-        Returns
-        -------
-    
-        bigZy      : dictionary of all r,s cross-products
-                     of Z_r'y_s 
-        bigZZ      : dictionary of all r,s cross-products
-                     of Z_r'Z_s    
+    Parameters
+    ----------
+
+    bigZ       : dictionary
+                 with matrix of explanatory variables,
+                 including constant, exogenous and endogenous, one
+                 for each equation
+    bigy       : dictionary
+                 with vectors of dependent variable, one
+                 for each equation
+
+    Returns
+    -------
+    bigZy      : dictionary
+                 of all r,s cross-products of Z_r'y_s
+    bigZZ      : dictionary
+                 of all r,s cross-products of Z_r'Z_s
     '''
     bigZZ = {}
     n_eq = len(bigy.keys())
@@ -316,24 +339,30 @@ def sur_crossprod(bigZ,bigy):
     
     
 def sur_est(bigXX,bigXy,bigE,bigK):
-    ''' Basic SUR estimation equations for both SUR and 3SLS
+    '''
+    Basic SUR estimation equations for both SUR and 3SLS
 
-        
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        bigXX        : dictionary of cross-product matrices X_t'X_r
-                       (created by sur_crossprod)
-        bigXy        : dictionary of cross-product matrices X_t'y_r
-                       (created by sur_crossprod)
-        bigE     : n by n_eq array of residuals
-              
-        Returns
-        -------
-        
-        bSUR   : dictionary with regression coefficients by equation
-        varb   : variance-covariance matrix for the regression coefficients
-        sig    : residual covariance matrix (using previous residuals)
+    bigXX        : dictionary
+                   of cross-product matrices X_t'X_r
+                   (created by sur_crossprod)
+    bigXy        : dictionary
+                   of cross-product matrices X_t'y_r
+                   (created by sur_crossprod)
+    bigE     : array
+               n by n_eq array of residuals
+
+    Returns
+    -------
+
+    bSUR   : dictionary
+             with regression coefficients by equation
+    varb   : array
+             variance-covariance matrix for the regression coefficients
+    sig    : array
+             residual covariance matrix (using previous residuals)
     
     '''
     n = bigE.shape[0]
@@ -359,20 +388,23 @@ def sur_est(bigXX,bigXy,bigE,bigK):
         
 
 def sur_resids(bigy,bigX,beta):
-    ''' Computation of a matrix with residuals by equation
-    
-        Parameters
-        ----------
+    '''
+    Computation of a matrix with residuals by equation
 
-        bigy        : dictionary with vector of dependent variable, one for each equation
-        bigX        : dictionary with matrix of explanatory variables, one for
-                      each equation
-        beta        : dictionary with estimation coefficients by 
-                       equation
-    
-        Returns
-        -------
-        bigE     : a n x n_eq matrix of vectors of residuals
+    Parameters
+    ----------
+    bigy        : dictionary
+                  with vector of dependent variable, one for each equation
+    bigX        : dictionary
+                  with matrix of explanatory variables, one for
+                  each equation
+    beta        : dictionary
+                  with estimation coefficients by equation
+
+    Returns
+    -------
+    bigE     : array
+               a n x n_eq matrix of vectors of residuals
     
     '''
     n_eq = len(bigy.keys())
@@ -380,20 +412,24 @@ def sur_resids(bigy,bigX,beta):
     return(bigE) 
     
 def sur_predict(bigy,bigX,beta):
-    ''' Computation of a matrix with predicted values by equation
+    '''
+    Computation of a matrix with predicted values by equation
     
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        bigy        : dictionary with vector of dependent variable, one for each equation
-        bigX        : dictionary with matrix of explanatory variables, one for
-                      each equation
-        beta        : dictionary with estimation coefficients by 
-                       equation
-    
-        Returns
-        -------
-        bigYP     : a n x n_eq matrix of vectors of predicted values
+    bigy        : dictionary
+                  with vector of dependent variable, one for each equation
+    bigX        : dictionary
+                  with matrix of explanatory variables, one for
+                  each equation
+    beta        : dictionary
+                  with estimation coefficients by equation
+
+    Returns
+    -------
+    bigYP     : array
+                a n x n_eq matrix of vectors of predicted values
     
     '''
     n_eq = len(bigy.keys())
@@ -402,19 +438,24 @@ def sur_predict(bigy,bigX,beta):
     
     
 def filter_dict(lam,bigZ,bigZlag):
-    """Dictionary of spatially filtered variables for use in SUR
+    """
+    Dictionary of spatially filtered variables for use in SUR
     
     Parameters
     ----------
-    lam        : n_eq x 1 array of spatial autoregressive parameters
-    bigZ       : dictionary of vector or matrix of variables, one for
+    lam        : array
+                 n_eq x 1 array of spatial autoregressive parameters
+    bigZ       : dictionary
+                 of vector or matrix of variables, one for
                  each equation
-    bigZlag    : dictionaly of vector or matrix of spatially lagged
+    bigZlag    : dictionary
+                 of vector or matrix of spatially lagged
                  variables, one for each equation
     
     Returns
     -------
-    Zfilt      : dictionary with spatially filtered variables
+    Zfilt      : dictionary
+                 with spatially filtered variables
                  Z - lam*WZ, one for each equation
     
     """
@@ -428,11 +469,13 @@ def filter_dict(lam,bigZ,bigZlag):
     return Zfilt
 
 def check_k(bigK):
-    """Check on equality of number of variables by equation
+    """
+    Check on equality of number of variables by equation
     
     Parameter
     ---------
-    bigK     : n_eq x 1 array of number of variables (includes constant)
+    bigK     : array
+               n_eq x 1 array of number of variables (includes constant)
     
     Returns
     -------

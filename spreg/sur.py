@@ -23,50 +23,74 @@ __all__ = ['SUR','ThreeSLS']
 
 
 class BaseSUR():
-    """ Base class for SUR estimation, both two step as well as iterated
+    """
+    Base class for SUR estimation, both two step as well as iterated
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        bigy       : dictionary with vector for dependent variable by equation
-        bigX       : dictionary with matrix of explanatory variables by equation
-                     (note, already includes constant term)
-        iter       : whether or not to use iterated estimation
-                     default = False
-        maxiter    : maximum iterations; default = 5
-        epsilon    : precision criterion to end iterations
-                     default = 0.00001
-        verbose    : flag to print out iteration number and value of log det(sig)
-                     at the beginning and the end of the iteration
+    bigy       : dictionary
+                 with vector for dependent variable by equation
+    bigX       : dictionary
+                 with matrix of explanatory variables by equation
+                 (note, already includes constant term)
+    iter       : boolean
+                 whether or not to use iterated estimation.
+                 default = False
+    maxiter    : int
+                 maximum iterations; default = 5
+    epsilon    : float
+                 precision criterion to end iterations.
+                 default = 0.00001
+    verbose    : boolean
+                 flag to print out iteration number and value of log det(sig)
+                 at the beginning and the end of the iteration
 
-
-        Attributes
-        ----------
-
-        bigy        : dictionary with y values
-        bigX        : dictionary with X values
-        bigXX       : dictionary with X_t'X_r cross-products
-        bigXy       : dictionary with X_t'y_r cross-products
-        n_eq        : number of equations
-        n           : number of observations in each cross-section
-        bigK        : vector with number of explanatory variables (including constant)
-                      for each equation
-        bOLS        : dictionary with OLS regression coefficients for each equation
-        olsE        : N x n_eq array with OLS residuals for each equation
-        bSUR        : dictionary with SUR regression coefficients for each equation
-        varb        : variance-covariance matrix
-        bigE        : N x n_eq array with SUR residuals for each equation
-        bigYP       : N x n_eq array with SUR predicted values for each equation
-        sig         : Sigma matrix of inter-equation error covariances
-        ldetS1      : log det(Sigma) for SUR model
-        resids      : n by n_eq array of residuals
-        sig_ols     : Sigma matrix for OLS residuals
-        ldetS0      : log det(Sigma) for null model (OLS by equation, diagonals only)
-        niter       : number of iterations (=0 for iter=False)
-        corr        : inter-equation SUR error correlation matrix
-        llik        : log-likelihood (including the constant pi)
-
-
+    Attributes
+    ----------
+    bigy        : dictionary
+                  with y values
+    bigX        : dictionary
+                  with X values
+    bigXX       : dictionary
+                  with :math:`X_t'X_r` cross-products
+    bigXy       : dictionary
+                  with :math:`X_t'y_r` cross-products
+    n_eq        : int
+                  number of equations
+    n           : int
+                  number of observations in each cross-section
+    bigK        : array
+                  vector with number of explanatory variables (including constant)
+                  for each equation
+    bOLS        : dictionary
+                  with OLS regression coefficients for each equation
+    olsE        : array
+                  N x n_eq array with OLS residuals for each equation
+    bSUR        : dictionary
+                  with SUR regression coefficients for each equation
+    varb        : array
+                  variance-covariance matrix
+    bigE        : array
+                  N x n_eq array with SUR residuals for each equation
+    bigYP       : array
+                  N x n_eq array with SUR predicted values for each equation
+    sig         : array
+                  Sigma matrix of inter-equation error covariances
+    ldetS1      : float
+                  log det(Sigma) for SUR model
+    resids      : array
+                  n by n_eq array of residuals
+    sig_ols     : array
+                  Sigma matrix for OLS residuals
+    ldetS0      : float
+                  log det(Sigma) for null model (OLS by equation, diagonals only)
+    niter       : int
+                  number of iterations (=0 for iter=False)
+    corr        : array
+                  inter-equation SUR error correlation matrix
+    llik        : float
+                  log-likelihood (including the constant pi)
     """
     def __init__(self,bigy,bigX,iter=False,maxiter=5,epsilon=0.00001,verbose=False):
         # setting up the cross-products
@@ -116,18 +140,19 @@ class BaseSUR():
 
 
 def _sur_ols(reg):
-    '''OLS estimation of SUR equations
+    '''
+    OLS estimation of SUR equations
 
-       Parameters
-       ----------
+   Parameters
+   ----------
+   reg  : BaseSUR object
 
-       reg  : BaseSUR object
-
-       Creates
-       -------
-
-       reg.bOLS    : dictionary with regression coefficients for each equation
-       reg.olsE    : N x n_eq array with OLS residuals for each equation
+   Return
+   -------
+   reg.bOLS    : dictionary
+                 with regression coefficients for each equation
+   reg.olsE    : array
+                 N x n_eq array with OLS residuals for each equation
 
     '''
     reg.bOLS = {}
@@ -137,184 +162,223 @@ def _sur_ols(reg):
     return reg
 
 class SUR(BaseSUR, REGI.Regimes_Frame):
-    """ User class for SUR estimation, both two step as well as iterated
+    """
+    User class for SUR estimation, both two step as well as iterated
 
-        Parameters
-        ----------
+    Parameters
+    ----------
+    bigy       : dictionary
+                 with vector for dependent variable by equation
+    bigX       : dictionary
+                 with matrix of explanatory variables by equation
+                 (note, already includes constant term)
+    w          : spatial weights object
+                 default = None
+    regimes    : list
+                 default = None.
+                 List of n values with the mapping of each
+                 observation to a regime. Assumed to be aligned with 'x'.
+    nonspat_diag: boolean
+                  flag for non-spatial diagnostics, default = True
+    spat_diag  : boolean
+                 flag for spatial diagnostics, default = False
+    iter       : boolean
+                 whether or not to use iterated estimation.
+                 default = False
+    maxiter    : int
+                 maximum iterations; default = 5
+    epsilon    : float
+                 precision criterion to end iterations.
+                 default = 0.00001
+    verbose    : boolean
+                 flag to print out iteration number and value
+                 of log det(sig) at the beginning and the end of the iteration
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation.
+                 default = None, but should be specified
+                 is done when sur_stackxy is used
+    name_bigX  : dictionary
+                 with names of explanatory variables for each equation.
+                 default = None, but should be specified
+                 is done when sur_stackxy is used
+    name_ds    : string
+                 name for the data set
+    name_w     : string
+                 name for the weights file
+    name_regimes : string
+                   name of regime variable for use in the output
 
-        bigy       : dictionary with vector for dependent variable by equation
-        bigX       : dictionary with matrix of explanatory variables by equation
-                     (note, already includes constant term)
-        w          : spatial weights object, default = None
-        regimes    : list; default = None
-                     List of n values with the mapping of each
-                     observation to a regime. Assumed to be aligned with 'x'.
-        nonspat_diag : boolean; flag for non-spatial diagnostics, default = True
-        spat_diag  : boolean; flag for spatial diagnostics, default = False
-        iter       : boolean; whether or not to use iterated estimation
-                     default = False
-        maxiter    : integer; maximum iterations; default = 5
-        epsilon    : float; precision criterion to end iterations
-                     default = 0.00001
-        verbose    : boolean; flag to print out iteration number and value
-                     of log det(sig) at the beginning and the end of the iteration
-        name_bigy  : dictionary with name of dependent variable for each equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-        name_bigX  : dictionary with names of explanatory variables for each
-                     equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-        name_ds    : string; name for the data set
-        name_w     : string; name for the weights file
-        name_regimes : string; name of regime variable for use in the output
-
-        Attributes
-        ----------
-
-        bigy        : dictionary with y values
-        bigX        : dictionary with X values
-        bigXX       : dictionary with X_t'X_r cross-products
-        bigXy       : dictionary with X_t'y_r cross-products
-        n_eq        : number of equations
-        n           : number of observations in each cross-section
-        bigK        : vector with number of explanatory variables (including constant)
-                      for each equation
-        bOLS        : dictionary with OLS regression coefficients for each equation
-        olsE        : N x n_eq array with OLS residuals for each equation
-        bSUR        : dictionary with SUR regression coefficients for each equation
-        varb        : variance-covariance matrix
-        sig         : Sigma matrix of inter-equation error covariances
-        ldetS1      : log det(Sigma) for SUR model
-        bigE        : n by n_eq array of residuals
-        sig_ols     : Sigma matrix for OLS residuals (diagonal)
-        ldetS0      : log det(Sigma) for null model (OLS by equation)
-        niter       : number of iterations (=0 for iter=False)
-        corr        : inter-equation error correlation matrix
-        llik        : log-likelihood (including the constant pi)
-        sur_inf     : dictionary with standard error, asymptotic t and p-value,
-                      one for each equation
-        lrtest      : Likelihood Ratio test on off-diagonal elements of sigma
-                      (tuple with test,df,p-value)
-        lmtest      : Lagrange Multipler test on off-diagonal elements of sigma
-                      (tuple with test,df,p-value)
-        lmEtest     : Lagrange Multiplier test on error spatial autocorrelation in SUR
-                      (tuple with test, df, p-value)
-        lmlagtest   : Lagrange Multiplier test on spatial lag autocorrelation in SUR
-                      (tuple with test, df, p-value)
-        surchow     : list with tuples for Chow test on regression coefficients
-                      each tuple contains test value, degrees of freedom, p-value
-        name_bigy   : dictionary with name of dependent variable for each equation
-        name_bigX   : dictionary with names of explanatory variables for each
-                      equation
-        name_ds     : string; name for the data set
-        name_w      : string; name for the weights file
-        name_regimes : string; name of regime variable for use in the output
+    Attributes
+    ----------
+    bigy        : dictionary
+                  with y values
+    bigX        : dictionary
+                  with X values
+    bigXX       : dictionary
+                  with :math:`X_t'X_r` cross-products
+    bigXy       : dictionary
+                  with :math:`X_t'y_r` cross-products
+    n_eq        : int
+                  number of equations
+    n           : int
+                  number of observations in each cross-section
+    bigK        : array
+                  vector with number of explanatory variables (including constant)
+                  for each equation
+    bOLS        : dictionary
+                  with OLS regression coefficients for each equation
+    olsE        : array
+                  N x n_eq array with OLS residuals for each equation
+    bSUR        : dictionary
+                  with SUR regression coefficients for each equation
+    varb        : array
+                  variance-covariance matrix
+    bigE        : array
+                  n by n_eq array of residuals
+    sig_ols     : array
+                  Sigma matrix for OLS residuals (diagonal)
+    ldetS0      : float
+                  log det(Sigma) for null model (OLS by equation)
+    niter       : int
+                  number of iterations (=0 for iter=False)
+    corr        : array
+                  inter-equation error correlation matrix
+    llik        : float
+                  log-likelihood (including the constant pi)
+    sur_inf     : dictionary
+                  with standard error, asymptotic t and p-value,
+                  one for each equation
+    lrtest      : tuple
+                  Likelihood Ratio test on off-diagonal elements of sigma
+                  (tuple with test,df,p-value)
+    lmtest      : tuple
+                  Lagrange Multipler test on off-diagonal elements of sigma
+                  (tuple with test,df,p-value)
+    lmEtest     : tuple
+                  Lagrange Multiplier test on error spatial autocorrelation in SUR
+                  (tuple with test, df, p-value)
+    lmlagtest   : tuple
+                  Lagrange Multiplier test on spatial lag autocorrelation in SUR
+                  (tuple with test, df, p-value)
+    surchow     : array
+                  list with tuples for Chow test on regression coefficients.
+                  each tuple contains test value, degrees of freedom, p-value
+    name_bigy   : dictionary
+                  with name of dependent variable for each equation
+    name_bigX   : dictionary
+                  with names of explanatory variables for each
+                  equation
+    name_ds     : string
+                  name for the data set
+    name_w      : string
+                  name for the weights file
+    name_regimes : string
+                   name of regime variable for use in the output
 
 
-        Examples
-        --------
+    Examples
+    --------
 
-        First import libpysal to load the spatial analysis tools.
+    First import libpysal to load the spatial analysis tools.
 
-        >>> import libpysal
+    >>> import libpysal
 
-        Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
-        This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
-        also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
+    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
+    also reads data in CSV format.
 
-        >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
-        The specification of the model to be estimated can be provided as lists.
-        Each equation should be listed separately. In this example, equation 1
-        has HR80 as dependent variable and PS80 and UE80 as exogenous regressors.
-        For equation 2, HR90 is the dependent variable, and PS90 and UE90 the
-        exogenous regressors.
+    The specification of the model to be estimated can be provided as lists.
+    Each equation should be listed separately. In this example, equation 1
+    has HR80 as dependent variable and PS80 and UE80 as exogenous regressors.
+    For equation 2, HR90 is the dependent variable, and PS90 and UE90 the
+    exogenous regressors.
 
-        >>> y_var = ['HR80','HR90']
-        >>> x_var = [['PS80','UE80'],['PS90','UE90']]
+    >>> y_var = ['HR80','HR90']
+    >>> x_var = [['PS80','UE80'],['PS90','UE90']]
 
-        Although not required for this method, we can load a weights matrix file
-        to allow for spatial diagnostics.
+    Although not required for this method, we can load a weights matrix file
+    to allow for spatial diagnostics.
 
-        >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
-        >>> w.transform='r'
+    >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w.transform='r'
 
-        The SUR method requires data to be provided as dictionaries. PySAL
-        provides the tool sur_dictxy to create these dictionaries from the
-        list of variables. The line below will create four dictionaries
-        containing respectively the dependent variables (bigy), the regressors
-        (bigX), the dependent variables' names (bigyvars) and regressors' names
-        (bigXvars). All these will be created from th database (db) and lists
-        of variables (y_var and x_var) created above.
+    The SUR method requires data to be provided as dictionaries. PySAL
+    provides the tool sur_dictxy to create these dictionaries from the
+    list of variables. The line below will create four dictionaries
+    containing respectively the dependent variables (bigy), the regressors
+    (bigX), the dependent variables' names (bigyvars) and regressors' names
+    (bigXvars). All these will be created from th database (db) and lists
+    of variables (y_var and x_var) created above.
 
-        >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
 
-        We can now run the regression and then have a summary of the output by typing:
-        'print(reg.summary)'
+    We can now run the regression and then have a summary of the output by typing:
+    'print(reg.summary)'
 
-        >>> reg = SUR(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,spat_diag=True,name_ds="nat")
-        >>> print(reg.summary)
-        REGRESSION
-        ----------
-        SUMMARY OF OUTPUT: SEEMINGLY UNRELATED REGRESSIONS (SUR)
-        --------------------------------------------------------
-        Data set            :         nat
-        Weights matrix      :     unknown
-        Number of Equations :           2                Number of Observations:        3085
-        Log likelihood (SUR):  -19902.966                Number of Iterations  :           1
-        ----------
-        <BLANKLINE>
-        SUMMARY OF EQUATION 1
-        ---------------------
-        Dependent Variable  :        HR80                Number of Variables   :           3
-        Mean dependent var  :      6.9276                Degrees of Freedom    :        3082
-        S.D. dependent var  :      6.8251
-        <BLANKLINE>
-        ------------------------------------------------------------------------------------
-                    Variable     Coefficient       Std.Error     z-Statistic     Probability
-        ------------------------------------------------------------------------------------
-                  Constant_1       5.1390718       0.2624673      19.5798587       0.0000000
-                        PS80       0.6776481       0.1219578       5.5564132       0.0000000
-                        UE80       0.2637240       0.0343184       7.6846277       0.0000000
-        ------------------------------------------------------------------------------------
-        <BLANKLINE>
-        SUMMARY OF EQUATION 2
-        ---------------------
-        Dependent Variable  :        HR90                Number of Variables   :           3
-        Mean dependent var  :      6.1829                Degrees of Freedom    :        3082
-        S.D. dependent var  :      6.6403
-        <BLANKLINE>
-        ------------------------------------------------------------------------------------
-                    Variable     Coefficient       Std.Error     z-Statistic     Probability
-        ------------------------------------------------------------------------------------
-                  Constant_2       3.6139403       0.2534996      14.2561949       0.0000000
-                        PS90       1.0260715       0.1121662       9.1477755       0.0000000
-                        UE90       0.3865499       0.0341996      11.3027760       0.0000000
-        ------------------------------------------------------------------------------------
-        <BLANKLINE>
-        <BLANKLINE>
-        REGRESSION DIAGNOSTICS
-                                             TEST         DF       VALUE           PROB
-                                 LM test on Sigma         1      680.168           0.0000
-                                 LR test on Sigma         1      768.385           0.0000
-        <BLANKLINE>
-        OTHER DIAGNOSTICS - CHOW TEST BETWEEN EQUATIONS
-                                        VARIABLES         DF       VALUE           PROB
-                           Constant_1, Constant_2         1       26.729           0.0000
-                                       PS80, PS90         1        8.241           0.0041
-                                       UE80, UE90         1        9.384           0.0022
-        <BLANKLINE>
-        DIAGNOSTICS FOR SPATIAL DEPENDENCE
-        TEST                              DF       VALUE           PROB
-        Lagrange Multiplier (error)       2        1333.586        0.0000
-        Lagrange Multiplier (lag)         2        1275.821        0.0000
-        <BLANKLINE>
-        ERROR CORRELATION MATRIX
-          EQUATION 1  EQUATION 2
-            1.000000    0.469548
-            0.469548    1.000000
-        ================================ END OF REPORT =====================================
+    >>> reg = SUR(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,spat_diag=True,name_ds="nat")
+    >>> print(reg.summary)
+    REGRESSION
+    ----------
+    SUMMARY OF OUTPUT: SEEMINGLY UNRELATED REGRESSIONS (SUR)
+    --------------------------------------------------------
+    Data set            :         nat
+    Weights matrix      :     unknown
+    Number of Equations :           2                Number of Observations:        3085
+    Log likelihood (SUR):  -19902.966                Number of Iterations  :           1
+    ----------
+    <BLANKLINE>
+    SUMMARY OF EQUATION 1
+    ---------------------
+    Dependent Variable  :        HR80                Number of Variables   :           3
+    Mean dependent var  :      6.9276                Degrees of Freedom    :        3082
+    S.D. dependent var  :      6.8251
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     z-Statistic     Probability
+    ------------------------------------------------------------------------------------
+              Constant_1       5.1390718       0.2624673      19.5798587       0.0000000
+                    PS80       0.6776481       0.1219578       5.5564132       0.0000000
+                    UE80       0.2637240       0.0343184       7.6846277       0.0000000
+    ------------------------------------------------------------------------------------
+    <BLANKLINE>
+    SUMMARY OF EQUATION 2
+    ---------------------
+    Dependent Variable  :        HR90                Number of Variables   :           3
+    Mean dependent var  :      6.1829                Degrees of Freedom    :        3082
+    S.D. dependent var  :      6.6403
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     z-Statistic     Probability
+    ------------------------------------------------------------------------------------
+              Constant_2       3.6139403       0.2534996      14.2561949       0.0000000
+                    PS90       1.0260715       0.1121662       9.1477755       0.0000000
+                    UE90       0.3865499       0.0341996      11.3027760       0.0000000
+    ------------------------------------------------------------------------------------
+    <BLANKLINE>
+    <BLANKLINE>
+    REGRESSION DIAGNOSTICS
+                                         TEST         DF       VALUE           PROB
+                             LM test on Sigma         1      680.168           0.0000
+                             LR test on Sigma         1      768.385           0.0000
+    <BLANKLINE>
+    OTHER DIAGNOSTICS - CHOW TEST BETWEEN EQUATIONS
+                                    VARIABLES         DF       VALUE           PROB
+                       Constant_1, Constant_2         1       26.729           0.0000
+                                   PS80, PS90         1        8.241           0.0041
+                                   UE80, UE90         1        9.384           0.0022
+    <BLANKLINE>
+    DIAGNOSTICS FOR SPATIAL DEPENDENCE
+    TEST                              DF       VALUE           PROB
+    Lagrange Multiplier (error)       2        1333.586        0.0000
+    Lagrange Multiplier (lag)         2        1275.821        0.0000
+    <BLANKLINE>
+    ERROR CORRELATION MATRIX
+      EQUATION 1  EQUATION 2
+        1.000000    0.469548
+        0.469548    1.000000
+    ================================ END OF REPORT =====================================
     """
 
     def __init__(self,bigy,bigX,w=None,regimes=None,nonspat_diag=True,spat_diag=False,\
@@ -484,133 +548,162 @@ class BaseThreeSLS():
 
 
 class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
-    """ User class for 3SLS estimation
+    """
+    User class for 3SLS estimation
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        bigy       : dictionary with vector for dependent variable by equation
-        bigX       : dictionary with matrix of explanatory variables by equation
-                     (note, already includes constant term)
-        bigyend    : dictionary with matrix of endogenous variables by equation
-        bigq       : dictionary with matrix of instruments by equation
-        regimes    : list
-                     List of n values with the mapping of each
-                     observation to a regime. Assumed to be aligned with 'x'.
-        nonspat_diag : boolean; flag for non-spatial diagnostics, default = True
-        name_bigy  : dictionary with name of dependent variable for each equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-        name_bigX  : dictionary with names of explanatory variables for each
-                     equation
-                     default = None, but should be specified
-                     is done when sur_stackxy is used
-        name_bigyend : dictionary with names of endogenous variables for each
-                       equation
-                       default = None, but should be specified
-                       is done when sur_stackZ is used
-        name_bigq  : dictionary with names of instrumental variables for each
-                     equation
-                     default = None, but should be specified
-                     is done when sur_stackZ is used
-        name_ds    : string; name for the data set
-        name_regimes : string; name of regime variable for use in the output
+    bigy       : dictionary
+                 with vector for dependent variable by equation
+    bigX       : dictionary
+                 with matrix of explanatory variables by equation
+                 (note, already includes constant term)
+    bigyend    : dictionary
+                 with matrix of endogenous variables by equation
+    bigq       : dictionary
+                 with matrix of instruments by equation
+    regimes    : list
+                 List of n values with the mapping of each
+                 observation to a regime. Assumed to be aligned with 'x'.
+    nonspat_diag: boolean
+                  flag for non-spatial diagnostics, default = True.
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation.
+                 default = None, but should be specified.
+                 is done when sur_stackxy is used
+    name_bigX  : dictionary
+                 with names of explanatory variables for each equation.
+                 default = None, but should be specified.
+                 is done when sur_stackxy is used
+    name_bigyend : dictionary
+                   with names of endogenous variables for each equation.
+                   default = None, but should be specified.
+                   is done when sur_stackZ is used
+    name_bigq  : dictionary
+                 with names of instrumental variables for each equation.
+                 default = None, but should be specified.
+                 is done when sur_stackZ is used.
+    name_ds    : string
+                 name for the data set.
+    name_regimes : string
+                   name of regime variable for use in the output.
+
+    Attributes
+    ----------
+
+    bigy        : dictionary
+                  with y values
+    bigZ        : dictionary
+                  with matrix of exogenous and endogenous variables
+                  for each equation
+    bigZHZH     : dictionary
+                  with matrix of cross products Zhat_r'Zhat_s
+    bigZHy      : dictionary
+                  with matrix of cross products Zhat_r'y_end_s
+    n_eq        : int
+                  number of equations
+    n           : int
+                  number of observations in each cross-section
+    bigK        : array
+                  vector with number of explanatory variables (including constant,
+                  exogenous and endogenous) for each equation
+    b2SLS       : dictionary
+                  with 2SLS regression coefficients for each equation
+    tslsE       : array
+                  N x n_eq array with OLS residuals for each equation
+    b3SLS       : dictionary
+                  with 3SLS regression coefficients for each equation
+    varb        : array
+                  variance-covariance matrix
+    sig         : array
+                  Sigma matrix of inter-equation error covariances
+    bigE        : array
+                  n by n_eq array of residuals
+    corr        : array
+                  inter-equation 3SLS error correlation matrix
+    tsls_inf    : dictionary
+                  with standard error, asymptotic t and p-value,
+                  one for each equation
+    surchow     : array
+                  list with tuples for Chow test on regression coefficients
+                  each tuple contains test value, degrees of freedom, p-value
+    name_ds    : string
+                 name for the data set
+    name_bigy  : dictionary
+                 with name of dependent variable for each equation
+    name_bigX  : dictionary
+                 with names of explanatory variables for each
+                 equation
+    name_bigyend : dictionary
+                   with names of endogenous variables for each
+                   equation
+    name_bigq  : dictionary
+                 with names of instrumental variables for each
+                 equations
+    name_regimes : string
+                   name of regime variable for use in the output
 
 
-        Attributes
-        ----------
+    Examples
+    --------
+    First import libpysal to load the spatial analysis tools.
 
-        bigy        : dictionary with y values
-        bigZ        : dictionary with matrix of exogenous and endogenous variables
-                      for each equation
-        bigZHZH     : dictionary with matrix of cross products Zhat_r'Zhat_s
-        bigZHy      : dictionary with matrix of cross products Zhat_r'y_end_s
-        n_eq        : number of equations
-        n           : number of observations in each cross-section
-        bigK        : vector with number of explanatory variables (including constant,
-                      exogenous and endogenous) for each equation
-        b2SLS       : dictionary with 2SLS regression coefficients for each equation
-        tslsE       : N x n_eq array with OLS residuals for each equation
-        b3SLS       : dictionary with 3SLS regression coefficients for each equation
-        varb        : variance-covariance matrix
-        sig         : Sigma matrix of inter-equation error covariances
-        bigE        : n by n_eq array of residuals
-        corr        : inter-equation 3SLS error correlation matrix
-        tsls_inf    : dictionary with standard error, asymptotic t and p-value,
-                      one for each equation
-        surchow     : list with tuples for Chow test on regression coefficients
-                      each tuple contains test value, degrees of freedom, p-value
-        name_ds    : string; name for the data set
-        name_bigy  : dictionary with name of dependent variable for each equation
-        name_bigX  : dictionary with names of explanatory variables for each
-                     equation
-        name_bigyend : dictionary with names of endogenous variables for each
-                       equation
-        name_bigq  : dictionary with names of instrumental variables for each
-                     equations
-        name_regimes : string; name of regime variable for use in the output
+    >>> import libpysal
 
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
+    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
+    also reads data in CSV format.
 
-        Examples
-        --------
+    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
 
-        First import libpysal to load the spatial analysis tools.
+    The specification of the model to be estimated can be provided as lists.
+    Each equation should be listed separately. In this example, equation 1
+    has HR80 as dependent variable, PS80 and UE80 as exogenous regressors,
+    RD80 as endogenous regressor and FP79 as additional instrument.
+    For equation 2, HR90 is the dependent variable, PS90 and UE90 the
+    exogenous regressors, RD90 as endogenous regressor and FP99 as
+    additional instrument
 
-        >>> import libpysal
+    >>> y_var = ['HR80','HR90']
+    >>> x_var = [['PS80','UE80'],['PS90','UE90']]
+    >>> yend_var = [['RD80'],['RD90']]
+    >>> q_var = [['FP79'],['FP89']]
 
-        Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
-        This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
-        also reads data in CSV format.
+    The SUR method requires data to be provided as dictionaries. PySAL
+    provides two tools to create these dictionaries from the list of variables:
+    sur_dictxy and sur_dictZ. The tool sur_dictxy can be used to create the
+    dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
+    additional instruments (q).
 
-        >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+    >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
+    >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
 
-        The specification of the model to be estimated can be provided as lists.
-        Each equation should be listed separately. In this example, equation 1
-        has HR80 as dependent variable, PS80 and UE80 as exogenous regressors,
-        RD80 as endogenous regressor and FP79 as additional instrument.
-        For equation 2, HR90 is the dependent variable, PS90 and UE90 the
-        exogenous regressors, RD90 as endogenous regressor and FP99 as
-        additional instrument
+    We can now run the regression and then have a summary of the output by typing:
+    print(reg.summary)
 
-        >>> y_var = ['HR80','HR90']
-        >>> x_var = [['PS80','UE80'],['PS90','UE90']]
-        >>> yend_var = [['RD80'],['RD90']]
-        >>> q_var = [['FP79'],['FP89']]
+    Alternatively, we can just check the betas and standard errors, asymptotic t
+    and p-value of the parameters:
 
-        The SUR method requires data to be provided as dictionaries. PySAL
-        provides two tools to create these dictionaries from the list of variables:
-        sur_dictxy and sur_dictZ. The tool sur_dictxy can be used to create the
-        dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
-        additional instruments (q).
+    >>> reg = ThreeSLS(bigy,bigX,bigyend,bigq,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT")
+    >>> reg.b3SLS
+    {0: array([[ 6.92426353],
+           [ 1.42921826],
+           [ 0.00049435],
+           [ 3.5829275 ]]), 1: array([[ 7.62385875],
+           [ 1.65031181],
+           [-0.21682974],
+           [ 3.91250428]])}
 
-        >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
-        >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
-        >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
-
-        We can now run the regression and then have a summary of the output by typing:
-        print(reg.summary)
-
-        Alternatively, we can just check the betas and standard errors, asymptotic t
-        and p-value of the parameters:
-
-        >>> reg = ThreeSLS(bigy,bigX,bigyend,bigq,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT")
-        >>> reg.b3SLS
-        {0: array([[ 6.92426353],
-               [ 1.42921826],
-               [ 0.00049435],
-               [ 3.5829275 ]]), 1: array([[ 7.62385875],
-               [ 1.65031181],
-               [-0.21682974],
-               [ 3.91250428]])}
-
-        >>> reg.tsls_inf
-        {0: array([[  0.23220853,  29.81916157,   0.        ],
-               [  0.10373417,  13.77770036,   0.        ],
-               [  0.03086193,   0.01601807,   0.98721998],
-               [  0.11131999,  32.18584124,   0.        ]]), 1: array([[  0.28739415,  26.52753638,   0.        ],
-               [  0.09597031,  17.19606554,   0.        ],
-               [  0.04089547,  -5.30204786,   0.00000011],
-               [  0.13586789,  28.79638723,   0.        ]])}
+    >>> reg.tsls_inf
+    {0: array([[  0.23220853,  29.81916157,   0.        ],
+           [  0.10373417,  13.77770036,   0.        ],
+           [  0.03086193,   0.01601807,   0.98721998],
+           [  0.11131999,  32.18584124,   0.        ]]), 1: array([[  0.28739415,  26.52753638,   0.        ],
+           [  0.09597031,  17.19606554,   0.        ],
+           [  0.04089547,  -5.30204786,   0.00000011],
+           [  0.13586789,  28.79638723,   0.        ]])}
 
     """
 
@@ -703,18 +796,21 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
         SUMMARY.SUR(reg=self, tsls=True, ml=False, nonspat_diag=nonspat_diag, regimes=regimes)
 
 def _sur_2sls(reg):
-    '''2SLS estimation of SUR equations
+    '''
+    2SLS estimation of SUR equations
 
-       Parameters
-       ----------
+   Parameters
+   ----------
 
-       reg  : BaseSUR object
+   reg  : BaseSUR object
 
-       Creates
-       -------
+   Return
+   ------
 
-       reg.b2SLS    : dictionary with regression coefficients for each equation
-       reg.tslsE    : N x n_eq array with OLS residuals for each equation
+   reg.b2SLS    : dictionary
+                  with regression coefficients for each equation
+   reg.tslsE    : array
+                  N x n_eq array with OLS residuals for each equation
 
     '''
     reg.b2SLS = {}

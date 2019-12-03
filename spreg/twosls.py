@@ -92,15 +92,15 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
     sig2n_k      : float
                    Sigma squared (computed with n-k in the denominator)
     hth          : float
-                   H'H
+                   :math:`H'H`
     hthi         : float
-                   (H'H)^-1
+                   :math:`(H'H)^{-1}`
     varb         : array
-                   (Z'H (H'H)^-1 H'Z)^-1
+                   :math:`(Z'H (H'H)^{-1} H'Z)^{-1}`
     zthhthi      : array
-                   Z'H(H'H)^-1
+                   :math:`Z'H(H'H)^{-1}`
     pfora1a2     : array
-                   n(zthhthi)'varb
+                   :math:`n(zthhthi)'varb`
 
 
     Examples
@@ -351,15 +351,15 @@ class TSLS(BaseTSLS):
     sig2n_k      : float
                    Sigma squared (computed with n-k in the denominator)
     hth          : float
-                   H'H
+                   :math:`H'H`
     hthi         : float
-                   (H'H)^-1
+                   :math:`(H'H)^{-1}`
     varb         : array
-                   (Z'H (H'H)^-1 H'Z)^-1
+                   :math:`(Z'H (H'H)^{-1} H'Z)^{-1}`
     zthhthi      : array
-                   Z'H(H'H)^-1
+                   :math:`Z'H(H'H)^{-1}`
     pfora1a2     : array
-                   n(zthhthi)'varb
+                   :math:`n(zthhthi)'varb`
 
 
     Examples

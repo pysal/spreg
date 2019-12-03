@@ -21,7 +21,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
 
     """
     ML estimation of the spatial lag model with regimes (note no consistency 
-    checks, diagnostics or constants added); Anselin (1988) [Anselin1988]_
+    checks, diagnostics or constants added) :cite:`Anselin1988`.
 
     Parameters
     ----------
@@ -33,13 +33,13 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi: ['one', 'many']
+    constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default)
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -56,9 +56,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     epsilon      : float
                    tolerance criterion in mimimize_scalar function and inverse_product
     regime_lag_sep: boolean
-                   If True, the spatial parameter for spatial lag is also
-                   computed according to different regimes. If False (default), 
-                   the spatial parameter is fixed accross regimes.
+                    If True, the spatial parameter for spatial lag is also
+                    computed according to different regimes. If False (default),
+                    the spatial parameter is fixed accross regimes.
     cores        : boolean
                    Specifies if multiprocessing is to be used
                    Default: no multiprocessing, cores = False
@@ -109,7 +109,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     method       : string
-                   log Jacobian method
+                   log Jacobian method.
                    if 'full': brute force (full matrix computations)
                    if 'ord', Ord eigenvalue method
                    if 'LU', LU sparse matrix decomposition
@@ -184,10 +184,10 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    Ignored if regimes=False. Constant option for regimes.
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime
     cols2regi    : list, 'all'
                    Ignored if regimes=False. Argument indicating whether each
                    column of x should be considered as different per regime
@@ -195,13 +195,13 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    If a list, k booleans indicating for each variable the
                    option (True if one per regime, False to be held constant).
                    If 'all', all the variables vary by regime.
-    regime_lag_sep   : boolean
-                   If True, the spatial parameter for spatial lag is also
-                   computed according to different regimes. If False (default), 
-                   the spatial parameter is fixed accross regimes.
-    regime_err_sep  : boolean
-                   always set to False - kept for compatibility with other
-                   regime models
+    regime_lag_sep: boolean
+                    If True, the spatial parameter for spatial lag is also
+                    computed according to different regimes. If False (default),
+                    the spatial parameter is fixed accross regimes.
+    regime_err_sep: boolean
+                    always set to False - kept for compatibility with other
+                    regime models
     kr           : int
                    Number of variables/columns to be "regimized" or subject
                    to change by regime. These will result in one parameter
@@ -220,7 +220,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    Contains all attributes of each individual regression
 
     Examples
-    ________
+    --------
 
     Open data baltim.dbf using pysal and create the variables matrices and weights matrix.
 

@@ -1,6 +1,9 @@
 .. documentation master file
 
-`spreg`, short for "spatial regression," is a python package to estimate simutaneous autoregressive spatial regression models. These models are useful when modeling processes where observations interact with one another. For more information on these models, consult the Spatial Regression short course by Luc Anselin (Spring, 2017), with the Center for Spatial Data Science at the University of Chicago:
+Spatial Regression Models (spreg)
+=================================
+
+`spreg`, short for "spatial regression," is a python package to estimate simultaneous autoregressive spatial regression models. These models are useful when modeling processes where observations interact with one another. For more information on these models, consult the Spatial Regression short course by Luc Anselin (Spring, 2017), with the Center for Spatial Data Science at the University of Chicago:
 
 ----
 

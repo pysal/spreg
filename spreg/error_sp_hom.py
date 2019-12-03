@@ -39,17 +39,17 @@ class BaseGM_Error_Hom(RegressionPropsY):
     w            : Sparse matrix
                    Spatial weights sparse matrix   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
+                   Note: epsilon provides an additional stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     A1           : string
-                   If A1='het', then the matrix A1 is defined as in Arraiz et
-                   al. If A1='hom', then as in Anselin (2011) (default).  If
-                   A1='hom_sc' (default), then as in Drukker, Egger and Prucha (2010)
-                   and Drukker, Prucha and Raciborski (2010).
+                   If A1='het', then the matrix A1 is defined as in :cite:`Arraiz2010`.
+                   If A1='hom', then as in :cite:`Anselin2011` (default).  If
+                   A1='hom_sc' (default), then as in :cite:`Drukker2013`
+                   and :cite:`Drukker:2013aa`.
 
     Attributes
     ----------
@@ -73,9 +73,9 @@ class BaseGM_Error_Hom(RegressionPropsY):
                    independent (exogenous) variable, including the constant
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -85,7 +85,7 @@ class BaseGM_Error_Hom(RegressionPropsY):
     sig2         : float
                    Sigma squared used in computations
     xtx          : float
-                   X'X
+                   :math:`X'X`
 
     Examples
     --------
@@ -181,17 +181,17 @@ class GM_Error_Hom(BaseGM_Error_Hom):
     w            : pysal W object
                    Spatial weights object   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
+                   Note: epsilon provides an additional stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     A1           : string
                    If A1='het', then the matrix A1 is defined as in Arraiz et
-                   al. If A1='hom', then as in Anselin (2011).  If
-                   A1='hom_sc' (default), then as in Drukker, Egger and Prucha (2010)
-                   and Drukker, Prucha and Raciborski (2010).
+                   al. If A1='hom', then as in :cite:`Anselin2011`.  If
+                   A1='hom_sc' (default), then as in :cite:`Drukker2013`
+                   and :cite:`Drukker:2013aa`.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -230,7 +230,7 @@ class GM_Error_Hom(BaseGM_Error_Hom):
                    independent (exogenous) variable, including the constant
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
                    Number of iterations of steps 2a and 2b from Arraiz et al.
     mean_y       : float
@@ -249,7 +249,7 @@ class GM_Error_Hom(BaseGM_Error_Hom):
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
     xtx          : float
-                   X'X
+                   :math:`X'X`
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -383,17 +383,18 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
     w            : Sparse matrix
                    Spatial weights sparse matrix   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     A1           : string
                    If A1='het', then the matrix A1 is defined as in Arraiz et
-                   al. If A1='hom', then as in Anselin (2011).  If
-                   A1='hom_sc' (default), then as in Drukker, Egger and Prucha (2010)
-                   and Drukker, Prucha and Raciborski (2010).
+                   al. If A1='hom', then as in :cite:`Anselin2011`.  If
+                   A1='hom_sc' (default), then as in :cite:`Drukker2013`
+                   and :cite:`Drukker:2013aa`.
 
     Attributes
     ----------
@@ -427,9 +428,9 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -544,17 +545,17 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
     w            : pysal W object
                    Spatial weights object   
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     A1           : string
-                   If A1='het', then the matrix A1 is defined as in Arraiz et
-                   al. If A1='hom', then as in Anselin (2011).  If
-                   A1='hom_sc' (default), then as in Drukker, Egger and Prucha (2010)
-                   and Drukker, Prucha and Raciborski (2010).
+                   If A1='het', then the matrix A1 is defined as in :cite:`Arraiz2010`.
+                   If A1='hom', then as in :cite:`Anselin2011`. If
+                   A1='hom_sc' (default), then as in :cite:`Drukker2013`
+                   and :cite:`Drukker:2013aa`.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -606,9 +607,9 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -644,7 +645,7 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
     title         : string
                     Name of the regression method used
     hth          : float
-                   H'H
+                   :math:`H'H`
 
 
     Examples
@@ -800,17 +801,17 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
                    If True, then include spatial lags of the additional 
                    instruments (q).
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
+                   Note: epsilon provides an additional stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     A1           : string
                    If A1='het', then the matrix A1 is defined as in Arraiz et
-                   al. If A1='hom', then as in Anselin (2011).  If
-                   A1='hom_sc' (default), then as in Drukker, Egger and Prucha (2010)
-                   and Drukker, Prucha and Raciborski (2010).
+                   al. If A1='hom', then as in :cite:`Anselin2011`.  If
+                   A1='hom_sc' (default), then as in :cite:`Drukker2013`
+                   and :cite:`Drukker:2013aa`.
 
 
     Attributes
@@ -845,9 +846,9 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -857,7 +858,7 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
     sig2         : float
                    Sigma squared used in computations
     hth          : float
-                   H'H
+                   :math:`H'H`
 
 
     Examples
@@ -950,17 +951,18 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
                    If True, then include spatial lags of the additional 
                    instruments (q).
     max_iter     : int
-                   Maximum number of iterations of steps 2a and 2b from Arraiz
-                   et al. Note: epsilon provides an additional stop condition.
+                   Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`. Note: epsilon provides an additional
+                   stop condition.
     epsilon      : float
                    Minimum change in lambda required to stop iterations of
-                   steps 2a and 2b from Arraiz et al. Note: max_iter provides
+                   steps 2a and 2b from :cite:`Arraiz2010`. Note: max_iter provides
                    an additional stop condition.
     A1           : string
-                   If A1='het', then the matrix A1 is defined as in Arraiz et
-                   al. If A1='hom', then as in Anselin (2011).  If
-                   A1='hom_sc' (default), then as in Drukker, Egger and Prucha (2010)
-                   and Drukker, Prucha and Raciborski (2010).
+                   If A1='het', then the matrix A1 is defined as in :cite:`Arraiz2010`.
+                   If A1='hom', then as in :cite:`Anselin2011`.  If
+                   A1='hom_sc' (default), then as in :cite:`Drukker2013`
+                   and :cite:`Drukker:2013aa`.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -1016,9 +1018,9 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
                    nxl array of instruments (combination of x and q)
     iter_stop    : string
                    Stop criterion reached during iteration of steps 2a and 2b
-                   from Arraiz et al.
+                   from :cite:`Arraiz2010`.
     iteration    : integer
-                   Number of iterations of steps 2a and 2b from Arraiz et al.
+                   Number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -1058,7 +1060,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
     title         : string
                     Name of the regression method used
     hth          : float
-                   H'H
+                   :math:`H'H`
 
 
     Examples
@@ -1264,7 +1266,6 @@ def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
 
     Returns
     -------
-
     psi         : array
                   2x2 VC matrix
     a1          : array

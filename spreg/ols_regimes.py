@@ -59,13 +59,13 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
-    constant_regi: ['one', 'many']
+    constant_regi: string, optional
                    Switcher controlling the constant term setup. It may take
                    the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+
+                   *  'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default)
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -185,46 +185,40 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                     (float); 'df': degrees of freedom (int)  
                     Only available in dictionary 'multi' when multiple regressions
                     (see 'multi' below for details)
-    koenker_bassett : dictionary
-                      'kb': Koenker-Bassett statistic (float); 'pvalue':
-                      p-value (float); 'df': degrees of freedom (int)  
-                      Only available in dictionary 'multi' when multiple regressions
-                      (see 'multi' below for details)
+    koenker_bassett: dictionary
+                     'kb': Koenker-Bassett statistic (float); 'pvalue': p-value (float);
+                     'df': degrees of freedom (int). Only available in dictionary
+                     'multi' when multiple regressions (see 'multi' below for details).
     white         : dictionary
                     'wh': White statistic (float); 'pvalue': p-value (float);
-                    'df': degrees of freedom (int)  
+                    'df': degrees of freedom (int).
                     Only available in dictionary 'multi' when multiple regressions
                     (see 'multi' below for details)
     lm_error      : tuple
                     Lagrange multiplier test for spatial error model; tuple
                     contains the pair (statistic, p-value), where each is a
-                    float 
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    float. Only available in dictionary 'multi' when multiple
+                    regressions (see 'multi' below for details)
     lm_lag        : tuple
                     Lagrange multiplier test for spatial lag model; tuple
                     contains the pair (statistic, p-value), where each is a
-                    float 
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    float. Only available in dictionary 'multi' when multiple
+                    regressions (see 'multi' below for details)
     rlm_error     : tuple
                     Robust lagrange multiplier test for spatial error model;
                     tuple contains the pair (statistic, p-value), where each
-                    is a float
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    is a float. Only available in dictionary 'multi' when multiple
+                    regressions (see 'multi' below for details)
     rlm_lag       : tuple
                     Robust lagrange multiplier test for spatial lag model;
                     tuple contains the pair (statistic, p-value), where each
-                    is a float
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    is a float. Only available in dictionary 'multi' when
+                    multiple regressions (see 'multi' below for details)
     lm_sarma      : tuple
                     Lagrange multiplier test for spatial SARMA model; tuple
                     contains the pair (statistic, p-value), where each is a
-                    float
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
+                    float. Only available in dictionary 'multi' when multiple
+                    regressions (see 'multi' below for details)
     moran_res     : tuple
                     Moran's I for the residuals; tuple containing the triple
                     (Moran's I, standardized Moran's I, p-value)
@@ -238,44 +232,42 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                     Name of kernel weights matrix for use in output
     name_ds       : string
                     Name of dataset for use in output
-    name_regimes : string
-                   Name of regime variable for use in the output
+    name_regimes  : string
+                    Name of regime variable for use in the output
     title         : string
-                    Name of the regression method used
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
-    sig2n        : float
-                   Sigma squared (computed with n in the denominator)
-    sig2n_k      : float
-                   Sigma squared (computed with n-k in the denominator)
-    xtx          : float
-                   X'X
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
-    xtxi         : float
-                   (X'X)^-1
-                   Only available in dictionary 'multi' when multiple regressions
-                   (see 'multi' below for details)
-    regimes      : list
-                   List of n values with the mapping of each
-                   observation to a regime. Assumed to be aligned with 'x'.
-    constant_regi: ['one', 'many']
-                   Ignored if regimes=False. Constant option for regimes.
-                   Switcher controlling the constant term setup. It may take
-                   the following values:
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime
-    cols2regi    : list, 'all'
+                    Name of the regression method used.
+                    Only available in dictionary 'multi' when multiple regressions
+                    (see 'multi' below for details)
+    sig2n         : float
+                    Sigma squared (computed with n in the denominator)
+    sig2n_k       : float
+                    Sigma squared (computed with n-k in the denominator)
+    xtx           : float
+                    :math:`X'X`. Only available in dictionary 'multi' when multiple
+                    regressions (see 'multi' below for details)
+    xtxi          : float
+                    :math:`(X'X)^{-1}`. Only available in dictionary 'multi' when multiple
+                    regressions (see 'multi' below for details)
+    regimes       : list
+                    List of n values with the mapping of each observation to
+                    a regime. Assumed to be aligned with 'x'.
+    constant_regi : string
+                    Ignored if regimes=False. Constant option for regimes.
+                    Switcher controlling the constant term setup. It may take
+                    the following values:
+
+                    *  'one': a vector of ones is appended to x and held constant across regimes.
+
+                    * 'many': a vector of ones is appended to x and considered different per regime.
+    cols2regi    : list
                    Ignored if regimes=False. Argument indicating whether each
                    column of x should be considered as different per regime
                    or held constant across regimes (False).
                    If a list, k booleans indicating for each variable the
                    option (True if one per regime, False to be held constant).
                    If 'all', all the variables vary by regime.
-    regime_err_sep  : boolean
-                   If True, a separate regression is run for each regime.
+    regime_err_sep: boolean
+                    If True, a separate regression is run for each regime.
     kr           : int
                    Number of variables/columns to be "regimized" or subject
                    to change by regime. These will result in one parameter
@@ -284,14 +276,14 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     kf           : int
                    Number of variables/columns to be considered fixed or
                    global across regimes and hence only obtain one parameter
-                   estimate
+                   estimate.
     nr           : int
-                   Number of different regimes in the 'regimes' list
+                   Number of different regimes in the 'regimes' list.
     multi        : dictionary
                    Only available when multiple regressions are estimated,
                    i.e. when regime_err_sep=True and no variable is fixed
                    across regimes.
-                   Contains all attributes of each individual regression
+                   Contains all attributes of each individual regression.
 
     Examples
     --------
