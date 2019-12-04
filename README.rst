@@ -13,6 +13,10 @@ PySAL Spatial Econometrics Package
 .. image:: https://zenodo.org/badge/132629781.svg
    :target: https://zenodo.org/badge/latestdoi/132629781
 
+.. image:: https://readthedocs.org/projects/spreg/badge/?version=latest
+   :target: https://spreg.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 This package is part of a `refactoring of PySAL
 <https://github.com/pysal/pysal/wiki/PEP-13:-Refactor-PySAL-Using-Submodules>`_.
 
