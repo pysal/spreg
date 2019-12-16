@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>spreg.diagnostics_sp.MoranRes &#8212; spreg v1.1.0 Manual</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="spreg.diagnostics_sp.AKtest" href="spreg.diagnostics_sp.AKtest.html" />
+    <link rel="prev" title="spreg.diagnostics_sp.LMtests" href="spreg.diagnostics_sp.LMtests.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="spreg.OLS.html">spreg.OLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.ML_Lag.html">spreg.ML_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.ML_Error.html">spreg.ML_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Lag.html">spreg.GM_Lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Error.html">spreg.GM_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Error_Het.html">spreg.GM_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Error_Hom.html">spreg.GM_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Combo.html">spreg.GM_Combo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Combo_Het.html">spreg.GM_Combo_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Combo_Hom.html">spreg.GM_Combo_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Endog_Error.html">spreg.GM_Endog_Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Endog_Error_Het.html">spreg.GM_Endog_Error_Het</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.GM_Endog_Error_Hom.html">spreg.GM_Endog_Error_Hom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.TSLS.html">spreg.TSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spreg.ThreeSLS.html">spreg.ThreeSLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">spreg.diagnostics_sp.MoranRes</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="spreg-diagnostics-sp-moranres">
+<h1>spreg.diagnostics_sp.MoranRes<a class="headerlink" href="#spreg-diagnostics-sp-moranres" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="spreg.diagnostics_sp.MoranRes">
+<em class="property">class </em><code class="sig-prename descclassname">spreg.diagnostics_sp.</code><code class="sig-name descname">MoranRes</code><span class="sig-paren">(</span><em class="sig-param">ols</em>, <em class="sig-param">w</em>, <em class="sig-param">z=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/diagnostics_sp.html#MoranRes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spreg.diagnostics_sp.MoranRes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moran’s I for spatial autocorrelation in residuals from OLS regression</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ols</strong><span class="classifier">OLS</span></dt><dd><p>OLS regression object</p>
+</dd>
+<dt><strong>w</strong><span class="classifier">W</span></dt><dd><p>Spatial weights instance</p>
+</dd>
+<dt><strong>z</strong><span class="classifier">boolean</span></dt><dd><p>If set to True computes attributes eI, vI and zI. Due to computational burden of vI, defaults to False.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">libpysal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ols</span> <span class="k">import</span> <span class="n">OLS</span>
+</pre></div>
+</div>
+<p>Open the csv file to access the data for analysis</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">csv</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;columbus.dbf&#39;</span><span class="p">),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pull out from the csv the files we need (‘HOVAL’ as dependent as well as
+‘INC’ and ‘CRIME’ as independent) and directly transform them into nx1 and
+nx2 arrays, respectively</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">csv</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s1">&#39;HOVAL&#39;</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">csv</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s1">&#39;INC&#39;</span><span class="p">),</span> <span class="n">csv</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s1">&#39;CRIME&#39;</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>Create the weights object from existing .gal file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;columbus.gal&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Row-standardize the weight object (not required although desirable in some
+cases)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">transform</span><span class="o">=</span><span class="s1">&#39;r&#39;</span>
+</pre></div>
+</div>
+<p>Run an OLS regression</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ols</span> <span class="o">=</span> <span class="n">OLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run Moran’s I test for residual spatial autocorrelation in an OLS model.
+This computes the traditional statistic applying a correction in the
+expectation and variance to account for the fact it comes from residuals
+instead of an independent variable</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">diagnostics_sp</span><span class="o">.</span><span class="n">MoranRes</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Value of the Moran’s I statistic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">I</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">0.1713</span>
+</pre></div>
+</div>
+<p>Value of the Moran’s I expectation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">eI</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">-0.0345</span>
+</pre></div>
+</div>
+<p>Value of the Moran’s I variance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">vI</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">0.0081</span>
+</pre></div>
+</div>
+<p>Value of the Moran’s I standardized value. This is
+distributed as a standard Normal(0, 1)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">zI</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">2.2827</span>
+</pre></div>
+</div>
+<p>P-value of the standardized Moran’s I value (z):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">p_norm</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">0.0224</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>I</strong><span class="classifier">float</span></dt><dd><p>Moran’s I statistic</p>
+</dd>
+<dt><strong>eI</strong><span class="classifier">float</span></dt><dd><p>Moran’s I expectation</p>
+</dd>
+<dt><strong>vI</strong><span class="classifier">float</span></dt><dd><p>Moran’s I variance</p>
+</dd>
+<dt><strong>zI</strong><span class="classifier">float</span></dt><dd><p>Moran’s I standardized value</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="spreg.diagnostics_sp.MoranRes.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ols</em>, <em class="sig-param">w</em>, <em class="sig-param">z=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/diagnostics_sp.html#MoranRes.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spreg.diagnostics_sp.MoranRes.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.diagnostics_sp.MoranRes.__init__" title="spreg.diagnostics_sp.MoranRes.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self, ols, w[, z])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/spreg.diagnostics_sp.MoranRes.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

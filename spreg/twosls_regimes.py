@@ -181,6 +181,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Rook
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
@@ -188,7 +190,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -234,7 +237,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     an already existing gal file or create a new one. In this case, we will
     create one from ``NAT.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = Rook.from_shapefile(nat.get_path("natregimes.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -249,6 +252,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors of the
     parameters:
 
+    >>> from spreg import TSLS_Regimes
     >>> tslsr = TSLS_Regimes(y, x, yd, q, regimes, w=w, constant_regi='many', spat_diag=False, name_y=y_var, name_x=x_var, name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='NAT', name_w='NAT.shp')
 
     >>> tslsr.betas
@@ -262,8 +266,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
            [ 3.68718119]])
 
     >>> np.sqrt(tslsr.vm.diagonal())
-    array([ 0.38389901,  0.09963973,  0.04672091,  0.22725012,  0.49181223,
-            0.19630774,  0.07784587,  0.25529011])
+    array([0.38389901, 0.09963973, 0.04672091, 0.22725012, 0.49181223,
+           0.19630774, 0.07784587, 0.25529011])
 
     """
 
@@ -497,6 +501,7 @@ if __name__ == '__main__':
     _test()
     import numpy as np
     import libpysal
+    from libpysal.examples import load_example
     db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
     y_var = 'HR60'
     y = np.array([db.by_col(y_var)]).T

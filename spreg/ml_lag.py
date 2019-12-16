@@ -97,7 +97,14 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> db =  libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')
+    >>> from libpysal.examples import load_example
+    >>> import geopandas as gpd
+    >>> from libpysal.weights import Queen
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> baltimore = load_example('Baltimore')
+    >>> db =  libpysal.io.open(baltimore.get_path("baltim.dbf"),'r')
+    >>> df = gpd.read_file(baltimore.get_path("baltim.shp"))
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T
@@ -105,12 +112,10 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
     >>> x_names = ["NROOM","NBATH","PATIO","FIREPL","AC","GAR","AGE","LOTSZ","SQFT"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
     >>> x = np.hstack((np.ones((len(y),1)),x))
-    >>> ww = ps.open(ps.examples.get_path("baltim_q.gal"))
-    >>> w = ww.read()
-    >>> ww.close()
+    >>> w = Queen.from_dataframe(df)
     >>> w.transform = 'r'
     >>> w_name = "baltim_q.gal"
-    >>> mllag = BaseML_Lag(y,x,w,method='ord') #doctest: +SKIP
+    >>> mllag = spreg.ml_lag.BaseML_Lag(y,x,w,method='ord') #doctest: +SKIP
     >>> "{0:.6f}".format(mllag.rho) #doctest: +SKIP
     '0.425885'
     >>> np.around(mllag.betas, decimals=4) #doctest: +SKIP
@@ -139,7 +144,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
     '151.458698'
     >>> "{0:.6f}".format(mllag.logll) #doctest: +SKIP
     '-832.937174'
-    >>> mllag = BaseML_Lag(y,x,w) #doctest: +SKIP
+    >>> mllag = spreg.ml_lag.BaseML_Lag(y,x,w) #doctest: +SKIP
     >>> "{0:.6f}".format(mllag.rho) #doctest: +SKIP
     '0.425885'
     >>> np.around(mllag.betas, decimals=4) #doctest: +SKIP
@@ -390,16 +395,22 @@ class ML_Lag(BaseML_Lag):
     --------
     >>> import numpy as np
     >>> import libpysal
-    >>> db =  libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> from spreg import ML_Error_Regimes
+    >>> import geopandas as gpd
+    >>> from spreg import ML_Lag
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> baltimore = load_example('Baltimore')
+    >>> db = libpysal.io.open(baltimore.get_path("baltim.dbf"),'r')
+    >>> df = gpd.read_file(baltimore.get_path("baltim.shp"))
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T
     >>> y.shape = (len(y),1)
     >>> x_names = ["NROOM","NBATH","PATIO","FIREPL","AC","GAR","AGE","LOTSZ","SQFT"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
-    >>> ww = ps.open(ps.examples.get_path("baltim_q.gal"))
-    >>> w = ww.read()
-    >>> ww.close()
+    >>> w = Queen.from_dataframe(df)
     >>> w_name = "baltim_q.gal"
     >>> w.transform = 'r'
     >>> mllag = ML_Lag(y,x,w,name_y=y_name,name_x=x_names,\

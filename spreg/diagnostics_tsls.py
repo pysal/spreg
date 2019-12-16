@@ -41,9 +41,8 @@ def t_stat(reg, z_stat=False):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import spreg.diagnostics as diagnostics
-    >>> from spreg.ols import OLS
-    >>> from twosls import TSLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
@@ -82,9 +81,9 @@ def t_stat(reg, z_stat=False):
 
     Now we can perform a t-statistic on the model:
 
-    >>> testresult = diagnostics.t_stat(reg)
+    >>> testresult = spreg.t_stat(reg)
     >>> print("%12.12f"%testresult[0][0], "%12.12f"%testresult[0][1], "%12.12f"%testresult[1][0], "%12.12f"%testresult[1][1], "%12.12f"%testresult[2][0], "%12.12f"%testresult[2][1])
-    ('14.490373143689', '0.000000000000', '-4.780496191297', '0.000018289595', '-2.654408642718', '0.010874504910')
+    14.490373143689 0.000000000000 -4.780496191297 0.000018289595 -2.654408642718 0.010874504910
 
     We can also use the z-stat. For that, we re-build the model so we consider
     HOVAL as endogenous, instrument for it using DISCBD and carry out two
@@ -103,13 +102,13 @@ def t_stat(reg, z_stat=False):
     Once the variables are read as different objects, we are good to run the
     model.
 
-    >>> reg = TSLS(y, X, yd, q)
+    >>> reg = spreg.TSLS(y, X, yd, q)
 
     With the output of the TSLS regression, we can perform a z-statistic:
 
-    >>> testresult = diagnostics.t_stat(reg, z_stat=True)
+    >>> testresult = spreg.t_stat(reg, z_stat=True)
     >>> print("%12.10f"%testresult[0][0], "%12.10f"%testresult[0][1], "%12.10f"%testresult[1][0], "%12.10f"%testresult[1][1], "%12.10f"%testresult[2][0], "%12.10f"%testresult[2][1])
-    ('5.8452644705', '0.0000000051', '0.3676015668', '0.7131703463', '-1.9946891308', '0.0460767956')
+    5.8452644705 0.0000000051 0.3676015668 0.7131703463 -1.9946891308 0.0460767956
     """
 
     k = reg.k           # (scalar) number of ind. vas (includes constant)
@@ -152,7 +151,7 @@ def pr2_aspatial(tslsreg):
     which we will perform the tests.
 
     >>> import numpy as np
-    >>> from twosls import TSLS
+    >>> from spreg import TSLS, pr2_aspatial
     >>> import libpysal
     >>> from libpysal import examples
 
@@ -253,8 +252,8 @@ def pr2_spatial(tslsreg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import spreg.diagnostics as D
-    >>> from twosls_sp import GM_Lag
+    >>> import spreg as D
+    >>> from spreg import GM_Lag
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that

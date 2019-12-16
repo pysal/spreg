@@ -231,15 +231,20 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     Examples
     --------
 
-    First import pysal to load the spatial analysis tools.
+    First import libpysal to load the spatial analysis tools.
 
-    >>> import pysal
+    >>> import libpysal
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
 
     Open data on NCOVR US County Homicides (3085 areas) using pysal.open(). 
     This is the DBF associated with the NAT shapefile. Note that pysal.open() 
     also reads data in CSV format.
 
-    >>> db = pysal.open(pysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. Equation 1 has HR80 as dependent 
@@ -260,14 +265,14 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     (bigXvars). All these will be created from th database (db) and lists
     of variables (y_var and x_var) created above.
 
-    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
 
     To run a spatial error model, we need to specify the spatial weights matrix. 
     To do that, we can open an already existing gal file or create a new one.
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = pysal.queen_from_shapefile(pysal.examples.get_path("NAT.shp"))
+    >>> w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -276,19 +281,19 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t 
     and p-value of the parameters:        
 
-    >>> reg = SURerrorGM(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg = spreg.SURerrorGM(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_ds="NAT",name_w="nat_queen")
     >>> reg.bSUR
-    {0: array([[ 3.9774686 ],
-           [ 0.8902122 ],
-           [ 0.43050364]]), 1: array([[ 2.93679118],
-           [ 1.11002827],
-           [ 0.48761542]])}
+    {0: array([[3.97746866],
+           [0.89021219],
+           [0.43050363]]), 1: array([[2.93679119],
+           [1.11002826],
+           [0.48761542]])}
     >>> reg.sur_inf
-    {0: array([[  0.37251477,  10.67734473,   0.        ],
-           [  0.14224297,   6.25839157,   0.        ],
-           [  0.04322388,   9.95985619,   0.        ]]), 1: array([[  0.33694902,   8.71583239,   0.        ],
-           [  0.13413626,   8.27537784,   0.        ],
-           [  0.04033105,  12.09032295,   0.        ]])}
+    {0: array([[ 0.37251476, 10.67734504,  0.        ],
+           [ 0.14224297,  6.25839153,  0.        ],
+           [ 0.04322388,  9.95985608,  0.        ]]), 1: array([[ 0.33694902,  8.71583245,  0.        ],
+           [ 0.13413626,  8.27537783,  0.        ],
+           [ 0.04033105, 12.09032288,  0.        ]])}
     """
     def __init__(self,bigy,bigX,w,regimes=None,nonspat_diag=True,spat_diag=False,vm=False,\
         name_bigy=None,name_bigX=None,name_ds=None,name_w=None,name_regimes=None):
@@ -622,12 +627,17 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
     First import libpysal to load the spatial analysis tools.
 
     >>> import libpysal
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open(). 
     This is the DBF associated with the NAT shapefile. Note that libpysal.io.open() 
     also reads data in CSV format.
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. Equation 1 has HR80 as dependent 
@@ -648,14 +658,14 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
     (bigXvars). All these will be created from th database (db) and lists
     of variables (y_var and x_var) created above.
 
-    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
 
     To run a spatial error model, we need to specify the spatial weights matrix. 
     To do that, we can open an already existing gal file or create a new one.
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -664,20 +674,20 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t 
     and p-value of the parameters:        
 
-    >>> reg = SURerrorML(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg = spreg.SURerrorML(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_ds="NAT",name_w="nat_queen")
     >>> reg.bSUR
-    {0: array([[ 4.0222855 ],
-           [ 0.88489646],
-           [ 0.42402853]]), 1: array([[ 3.04923009],
-           [ 1.10972634],
-           [ 0.47075682]])}
+    {0: array([[4.02228606],
+           [0.88489637],
+           [0.42402845]]), 1: array([[3.04923031],
+           [1.10972632],
+           [0.47075678]])}
 
     >>> reg.sur_inf
-    {0: array([[  0.36692181,  10.96224141,   0.        ],
-           [  0.14129077,   6.26294579,   0.        ],
-           [  0.04267954,   9.93517021,   0.        ]]), 1: array([[  0.33139969,   9.20106497,   0.        ],
-           [  0.13352591,   8.31094371,   0.        ],
-           [  0.04004097,  11.756878  ,   0.        ]])}
+    {0: array([[ 0.36692175, 10.96224484,  0.        ],
+           [ 0.14129077,  6.26294545,  0.        ],
+           [ 0.04267954,  9.93516909,  0.        ]]), 1: array([[ 0.33139967,  9.20106629,  0.        ],
+           [ 0.13352591,  8.31094381,  0.        ],
+           [ 0.04004097, 11.75687747,  0.        ]])}
            
     """        
     def __init__(self,bigy,bigX,w,regimes=None,nonspat_diag=True,spat_diag=False,\
@@ -801,14 +811,19 @@ def jacob(lam,n_eq,I,WS):
     
     Parameters
     ----------
-    lam      : n_eq by 1 array of spatial autoregressive parameters
-    n_eq     : number of equations
-    I        : sparse Identity matrix
-    WS       : sparse spatial weights matrix
+    lam      : array
+               n_eq by 1 array of spatial autoregressive parameters
+    n_eq     : int
+               number of equations
+    I        : sparse matrix
+               sparse Identity matrix
+    WS       : sparse matrix
+               sparse spatial weights matrix
     
     Returns
     -------
-    logjac   : the log Jacobian
+    logjac   : float
+               the log Jacobian
     
     """
     logjac = 0.0
@@ -980,11 +995,14 @@ if __name__ == '__main__':
     import numpy as np
     import libpysal
     from .sur_utils import sur_dictxy,sur_dictZ
+    from libpysal.examples import load_example
+    from libpysal.weights import Queen
 
-    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
+    nat = load_example('Natregimes')
+    db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
     y_var = ['HR80','HR90']
     x_var = [['PS80','UE80'],['PS90','UE90']]
-    w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
     w.transform='r'
     bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(db,y_var,x_var)
     reg0 = SURerrorML(bigy0,bigX0,w,regimes=regimes,name_bigy=bigyvars0,name_bigX=bigXvars0,\

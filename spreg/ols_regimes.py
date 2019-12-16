@@ -289,6 +289,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     --------
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import OLS_Regimes
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
@@ -330,15 +331,15 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
 
     >>> olsr = OLS_Regimes(y, x, regimes, nonspat_diag=False, name_y=y_var, name_x=['PS90','UE90'], name_regimes=r_var, name_ds='NAT')
     >>> olsr.betas
-    array([[ 0.39642899],
-           [ 0.65583299],
-           [ 0.48703937],
-           [ 5.59835   ],
-           [ 1.16210453],
-           [ 0.53163886]])
+    array([[0.39642899],
+           [0.65583299],
+           [0.48703937],
+           [5.59835   ],
+           [1.16210453],
+           [0.53163886]])
     >>> np.sqrt(olsr.vm.diagonal())
-    array([ 0.24816345,  0.09662678,  0.03628629,  0.46894564,  0.21667395,
-            0.05945651])
+    array([0.24816345, 0.09662678, 0.03628629, 0.46894564, 0.21667395,
+           0.05945651])
     >>> olsr.cols2regi
     'all'
     """

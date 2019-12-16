@@ -99,19 +99,20 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
+    >>> from libpysal.examples import load_example
+    >>> import spreg
     >>> np.set_printoptions(suppress=True) #prevent scientific format
-    >>> db = libpysal.io.open(examples.get_path("south.dbf"),'r')
+    >>> south = load_example('South')
+    >>> db = libpysal.io.open(south.get_path("south.dbf"),'r')
     >>> y_name = "HR90"
     >>> y = np.array(db.by_col(y_name))
     >>> y.shape = (len(y),1)
     >>> x_names = ["RD90","PS90","UE90","DV90"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
     >>> x = np.hstack((np.ones((len(y),1)),x))
-    >>> ww = libpysal.io.open(libpysal.examples.get_path("south_q.gal"))
-    >>> w = ww.read()
-    >>> ww.close()
+    >>> w = libpysal.weights.Queen.from_shapefile(south.get_path("south.shp"))
     >>> w.transform = 'r'
-    >>> mlerr = BaseML_Error(y,x,w) #doctest: +SKIP
+    >>> mlerr = spreg.ml.error.BaseML_Error(y,x,w) #doctest: +SKIP
     >>> "{0:.6f}".format(mlerr.lam) #doctest: +SKIP
     '0.299078'
     >>> np.around(mlerr.betas, decimals=4) #doctest: +SKIP
@@ -379,17 +380,18 @@ class ML_Error(BaseML_Error):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> from libpysal import examples
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> from spreg import ML_Error
     >>> np.set_printoptions(suppress=True) #prevent scientific format
-    >>> db = libpysal.io.open(examples.get_path("south.dbf"),'r')
+    >>> south = load_example('South')
+    >>> db = libpysal.io.open(south.get_path("south.dbf"),'r')
     >>> y_name = "HR90"
     >>> y = np.array(db.by_col(y_name))
     >>> y.shape = (len(y),1)
     >>> x_names = ["RD90","PS90","UE90","DV90"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
-    >>> ww = libpysal.io.open(libpysal.examples.get_path("south_q.gal"))
-    >>> w = ww.read()
-    >>> ww.close()
+    >>> w = Queen.from_shapefile(south.get_path("south.shp"))
     >>> w_name = "south_q.gal"
     >>> w.transform = 'r'
     >>> mlerr = ML_Error(y,x,w,name_y=y_name,name_x=x_names,\

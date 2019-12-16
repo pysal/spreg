@@ -10,7 +10,6 @@ def spdot(a, b, array_out=True):
 
     Parameters
     ----------
-
     a           : array
                   first multiplication factor. Can either be sparse or dense.
     b           : array
@@ -20,7 +19,6 @@ def spdot(a, b, array_out=True):
 
     Returns
     -------
-
     ab : array
          product of a times b. Sparse if a and b are sparse. Dense otherwise.
     """
@@ -45,7 +43,6 @@ def spmultiply(a, b, array_out=True):
 
     Parameters
     ----------
-
     a           : array
                   first multiplication factor. Can either be sparse or dense.
     b           : array
@@ -56,10 +53,10 @@ def spmultiply(a, b, array_out=True):
 
     Returns
     -------
-
     ab : array
          elementwise multiplied object. Sparse if a is sparse. Dense otherwise.
     """
+
     if type(a).__name__ == 'ndarray' and type(b).__name__ == 'ndarray':
         ab = a * b
     elif (type(a).__name__ == 'csr_matrix' or type(a).__name__ == 'csc_matrix') \
@@ -80,7 +77,6 @@ def sphstack(a, b, array_out=False):
 
     Parameters
     ----------
-
     a           : array or sparse matrix
                   First object.
     b           : array or sparse matrix
@@ -92,7 +88,6 @@ def sphstack(a, b, array_out=False):
 
     Returns
     -------
-
     ab          : array or sparse matrix
                   Horizontally stacked objects
     """
@@ -116,7 +111,6 @@ def spbroadcast(a, b, array_out=False):
 
     Parameters
     ----------
-
     a           : array or sparse matrix
                   Object with one or more columns.
     b           : array
@@ -128,7 +122,6 @@ def spbroadcast(a, b, array_out=False):
 
     Returns
     -------
-
     ab          : array or sparse matrix
                   Element-wise multiplication of a and b
     """
@@ -153,13 +146,11 @@ def spmin(a):
 
     Parameters
     ----------
-
     a           : array or sparse matrix
                   Object with one or more columns.
 
     Returns
     -------
-
     min a       : int or float
                   minimum value in a
     """
@@ -171,13 +162,11 @@ def spmax(a):
 
     Parameters
     ----------
-
     a           : array or sparse matrix
                   Object with one or more columns.
 
     Returns
     -------
-
     max a       : int or float
                   maximum value in a
     """
@@ -189,13 +178,11 @@ def splogdet(a):
 
     Parameters
     ----------
-
     a       :   array or sparse matrix
                 Object with one or more columns
 
     Returns
     -------
-
     log determinant of a    :   int or float
                                 logged determinant of a
     """
@@ -210,7 +197,6 @@ def splogdet(a):
 def spfill_diagonal(a, val):
     """
     Fill the diagonal of a sparse or dense matrix
-
     Parameters
     ----------
 
@@ -221,8 +207,8 @@ def spfill_diagonal(a, val):
 
     Returns
     -------
-
-    a with val on each element of the diagonal
+    a       :   array or sparse matrix
+                with val on each element of the diagonal
     """
     if SP.issparse(a):
         a.setdiag(val)
@@ -236,14 +222,13 @@ def spinv(a):
 
     Parameters
     ----------
-
     a       :   array or sparse matrix
                 Object with one or more columns
     
     Returns
     -------
-
-    ai, the inverse of a
+    ai      :   array or sparse matrix
+                the inverse of a
     """
     if SP.issparse(a):
         ai = SPla.inv(a)
@@ -262,7 +247,8 @@ def spisfinite(a):
 
     Returns
     -------
-    bool denoting whether or not the array contains any NaN or inf
+        :   bool
+            denoting whether or not the array contains any NaN or inf
     """
     return np.isfinite(a.sum())
 

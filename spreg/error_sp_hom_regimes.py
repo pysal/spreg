@@ -266,6 +266,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Error_Hom_Regimes
     >>> reg = GM_Error_Hom_Regimes(y, x, regimes, w=w, name_y=y_var, name_x=x_var, name_ds='NAT')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -277,22 +278,21 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     standard errors, which you calculate taking the square root of the
     diagonal of the variance-covariance matrix of the parameters. Alternatively,
     we can have a summary of the output by typing: model.summary
-    >>> print reg.name_x
+    >>> print(reg.name_x)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', 'lambda']
 
-    >>> print np.around(reg.betas,4)
-    [[ 0.069 ]
-     [ 0.7885]
-     [ 0.5398]
-     [ 5.0948]
-     [ 1.1965]
-     [ 0.6018]
-     [ 0.4104]]
+    >>> print(np.around(reg.betas,4))
+    [[0.069 ]
+     [0.7885]
+     [0.5398]
+     [5.0948]
+     [1.1965]
+     [0.6018]
+     [0.4104]]
 
-    >>> print np.sqrt(reg.vm.diagonal())
-    [ 0.39105854  0.15664624  0.05254328  0.48379958  0.20018799  0.05834139
-      0.01882401]
-
+    >>> print(np.sqrt(reg.vm.diagonal()))
+    [0.39105853 0.15664624 0.05254328 0.48379958 0.20018799 0.05834139
+     0.01882401]
     '''
 
     def __init__(self, y, x, regimes, w,
@@ -685,6 +685,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from libpysal.examples import load_example
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
@@ -692,7 +693,8 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -732,7 +734,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     existing gal file or create a new one. In this case, we will create one 
     from ``NAT.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -748,6 +750,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Endog_Error_Hom_Regimes
     >>> reg = GM_Endog_Error_Hom_Regimes(y, x, yend, q, regimes, w=w, A1='hom_sc', name_y=y_var, name_x=x_var, name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='NAT.dbf')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -760,10 +763,10 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     variance-covariance matrix. Alternatively, we can have a summary of the
     output by typing: model.summary
 
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', '0_RD90', '1_RD90', 'lambda']
 
-    >>> print np.around(reg.betas,4)
+    >>> print(np.around(reg.betas,4))
     [[ 3.5973]
      [ 1.0652]
      [ 0.1582]
@@ -774,8 +777,8 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
      [ 3.5796]
      [ 0.2541]]
 
-    >>> print np.around(np.sqrt(reg.vm.diagonal()),4)
-    [ 0.5204  0.1371  0.0629  0.4721  0.1824  0.0725  0.2992  0.2395  0.024 ]
+    >>> print(np.around(np.sqrt(reg.vm.diagonal()),4))
+    [0.5204 0.1371 0.0629 0.4721 0.1824 0.0725 0.2992 0.2395 0.024 ]
 
     '''
 
@@ -1233,6 +1236,7 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from libpysal.examples import load_example
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
@@ -1240,7 +1244,8 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -1269,9 +1274,9 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
     Since we want to run a spatial combo model, we need to specify
     the spatial weights matrix that includes the spatial configuration of the
     observations. To do that, we can open an already existing gal file or 
-    create a new one. In this case, we will create one from ``NAT.shp``.
+    create a new one. In this case, we will create one from ``natregimes.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -1297,10 +1302,11 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
     summary of the output by typing: model.summary 
     Alternatively, we can check the betas:
 
+    >>> from spreg import GM_Combo_Hom_Regimes
     >>> reg = GM_Combo_Hom_Regimes(y, x, regimes, w=w, A1='hom_sc', name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT')
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', '_Global_W_HR90', 'lambda']
-    >>> print np.around(reg.betas,4)
+    >>> print(np.around(reg.betas,4))
     [[ 1.4607]
      [ 0.9579]
      [ 0.5658]
@@ -1326,9 +1332,9 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
     And then we can run and explore the model analogously to the previous combo:
 
     >>> reg = GM_Combo_Hom_Regimes(y, x, regimes, yd, q, w=w, A1='hom_sc', name_y=y_var, name_x=x_var, name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='NAT')
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', '0_RD90', '1_RD90', '_Global_W_HR90', 'lambda']
-    >>> print reg.betas
+    >>> print(reg.betas)
     [[ 3.4196478 ]
      [ 1.04065595]
      [ 0.16630304]
@@ -1339,11 +1345,11 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
      [ 3.61656899]
      [ 0.03315061]
      [ 0.22636055]]
-    >>> print np.sqrt(reg.vm.diagonal())
-    [ 0.53989913  0.13506086  0.06143434  0.77049956  0.18089997  0.07246848
-      0.29218837  0.25378655  0.06184801  0.06323236]
-    >>> print 'lambda: ', np.around(reg.betas[-1], 4)
-    lambda:  [ 0.2264]
+    >>> print(np.sqrt(reg.vm.diagonal()))
+    [0.53989913 0.13506086 0.06143434 0.77049956 0.18089997 0.07246848
+     0.29218837 0.25378655 0.06184801 0.06323236]
+    >>> print('lambda: ', np.around(reg.betas[-1], 4))
+    lambda:  [0.2264]
 
     '''
 

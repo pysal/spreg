@@ -2,6 +2,7 @@ __version__ = "1.1.0"
 from .ols import *
 from .diagnostics import *
 from .diagnostics_sp import *
+from .diagnostics_tsls import *
 from .user_output import *
 from .twosls import *
 from .twosls_sp import *
@@ -23,3 +24,5 @@ from .sur import *
 from .sur_error import *
 from .sur_lag import *
 from .sur_utils import *
+from .utils import *
+from .regimes import *

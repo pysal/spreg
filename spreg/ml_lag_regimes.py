@@ -227,16 +227,21 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> db =  libpysal.io.open(examples.get_path("baltim.dbf"),'r')
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> from spreg import ML_Lag_Regimes
+    >>> import geopandas as gpd
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> baltimore = load_example('Baltimore')
+    >>> db = libpysal.io.open(baltimore.get_path("baltim.dbf"),'r')
+    >>> df = gpd.read_file(baltimore.get_path("baltim.shp"))
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T
     >>> y.shape = (len(y),1)
     >>> x_names = ["NROOM","AGE","SQFT"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
-    >>> ww = ps.open(ps.examples.get_path("baltim_q.gal"))
-    >>> w = ww.read()
-    >>> ww.close()
+    >>> w = Queen.from_dataframe(df)
     >>> w_name = "baltim_q.gal"
     >>> w.transform = 'r'    
 
@@ -251,35 +256,35 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     >>> mllag = ML_Lag_Regimes(y,x,regimes,w=w,name_y=y_name,name_x=x_names,\
                name_w=w_name,name_ds=ds_name,name_regimes="CITCOU")
     >>> np.around(mllag.betas, decimals=4)
-    array([[-15.0059],
-           [  4.496 ],
-           [ -0.0318],
-           [  0.35  ],
-           [ -4.5404],
-           [  3.9219],
-           [ -0.1702],
-           [  0.8194],
-           [  0.5385]])
+    array([[-14.5158],
+           [  4.4923],
+           [ -0.0336],
+           [  0.3541],
+           [ -3.601 ],
+           [  3.8736],
+           [ -0.1747],
+           [  0.8238],
+           [  0.525 ]])
     >>> "{0:.6f}".format(mllag.rho)
-    '0.538503'
+    '0.524971'
     >>> "{0:.6f}".format(mllag.mean_y)
     '44.307180'
     >>> "{0:.6f}".format(mllag.std_y)
     '23.606077'
     >>> np.around(np.diag(mllag.vm1), decimals=4)
-    array([  47.42  ,    2.3953,    0.0051,    0.0648,   69.6765,    3.2066,
-              0.0116,    0.0486,    0.004 ,  390.7274])
+    array([ 48.6818,   2.4524,   0.0052,   0.0663,  71.4439,   3.2837,
+             0.0118,   0.0498,   0.0042, 409.1225])
     >>> np.around(np.diag(mllag.vm), decimals=4)
-    array([ 47.42  ,   2.3953,   0.0051,   0.0648,  69.6765,   3.2066,
-             0.0116,   0.0486,   0.004 ])
+    array([48.6818,  2.4524,  0.0052,  0.0663, 71.4439,  3.2837,  0.0118,
+            0.0498,  0.0042])
     >>> "{0:.6f}".format(mllag.sig2)
-    '200.044334'
+    '204.827093'
     >>> "{0:.6f}".format(mllag.logll)
-    '-864.985056'
+    '-867.086467'
     >>> "{0:.6f}".format(mllag.aic)
-    '1747.970112'
+    '1752.172934'
     >>> "{0:.6f}".format(mllag.schwarz)
-    '1778.136835'
+    '1782.339657'
     >>> mllag.title
     'MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES (METHOD = full)'
     """

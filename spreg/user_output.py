@@ -10,7 +10,6 @@ from . import diagnostics
 from . import sputils as spu
 from libpysal import weights 
 from scipy.sparse.csr import csr_matrix
-__all__ = []
 
 
 def set_name_ds(name_ds):
@@ -40,13 +39,11 @@ def set_name_y(name_y):
 
     Parameters
     ----------
-
     name_ds     : string
                   User provided dataset name.
 
     Returns
     -------
-
     name_ds     : string
 
     """
@@ -61,7 +58,6 @@ def set_name_x(name_x, x, constant=False):
 
     Parameters
     ----------
-
     name_x      : list of string
                   User provided exogenous variable names.
 
@@ -73,7 +69,6 @@ def set_name_x(name_x, x, constant=False):
 
     Returns
     -------
-
     name_x      : list of strings
 
     """
@@ -92,13 +87,11 @@ def set_name_yend(name_yend, yend):
 
     Parameters
     ----------
-
     name_yend   : list of strings
                   User provided exogenous variable names.
 
     Returns
     -------
-
     name_yend   : list of strings
 
     """
@@ -117,7 +110,6 @@ def set_name_q(name_q, q):
 
     Parameters
     ----------
-
     name_q      : string
                   User provided instrument names.
     q           : array
@@ -125,7 +117,6 @@ def set_name_q(name_q, q):
 
     Returns
     -------
-
     name_q      : list of strings
 
     """
@@ -144,13 +135,11 @@ def set_name_yend_sp(name_y):
 
     Parameters
     ----------
-
     name_y      : string
                   User provided dependent variable name.
 
     Returns
     -------
-
     name_yend_sp : string
 
     """
@@ -163,16 +152,13 @@ def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
 
     Parameters
     ----------
-
     name_x      : list of strings
                   User provided exogenous variable names.
-
     w_lags      : int
                   User provided number of spatial instruments lags
 
     Returns
     -------
-
     name_q_sp   : list of strings
 
     """
@@ -198,7 +184,6 @@ def set_name_h(name_x, name_q):
 
     Parameters
     ----------
-
     name_x      : list of strings
                   User provided exogenous variable names.
     name_q      : list of strings
@@ -206,7 +191,6 @@ def set_name_h(name_x, name_q):
 
     Returns
     -------
-
     name_h      : list of strings
 
     """
@@ -220,13 +204,11 @@ def set_robust(robust):
 
     Parameters
     ----------
-
     robust      : string or None
                   Object passed by the user to a regression class
 
     Returns
     -------
-
     robust      : string
 
     """
@@ -242,7 +224,6 @@ def set_name_w(name_w, w):
 
     Parameters
     ----------
-
     name_w      : string
                   Name passed in by user. Default is None.
     w           : W object
@@ -250,7 +231,6 @@ def set_name_w(name_w, w):
 
     Returns
     -------
-
     name_w      : string
 
     """
@@ -267,7 +247,6 @@ def set_name_multi(multireg, multi_set, name_multiID, y, x, name_y, name_x, name
 
     Parameters
     ----------
-
     endog       : tuple
                   If the regression object contains endogenous variables, endog must have the
                   following parameters in the following order: (yend, q, name_yend, name_q)
@@ -312,14 +291,12 @@ def check_arrays(*arrays):
 
     Parameters
     ----------
-
     *arrays : anything
               Objects passed by the user to a regression class; any type
               object can be passed and any number of objects can be passed
 
     Returns
     -------
-
     Returns : int
               number of observations
 
@@ -328,6 +305,7 @@ def check_arrays(*arrays):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import check_arrays
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
@@ -337,7 +315,7 @@ def check_arrays(*arrays):
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
     >>> n = check_arrays(y, X)
-    >>> print n
+    >>> print(n)
     49
 
     """
@@ -370,7 +348,6 @@ def check_y(y, n):
 
     Parameters
     ----------
-
     y       : anything
               Object passed by the user to a regression class; any type
               object can be passed
@@ -380,7 +357,6 @@ def check_y(y, n):
 
     Returns
     -------
-
     Returns : nothing
               Nothing is returned
 
@@ -389,12 +365,16 @@ def check_y(y, n):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import check_y
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
-    >>> # Extract CRIME column from the dbf file
+
+    # Extract CRIME column from the dbf file
+
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
     >>> check_y(y, 49)
-    >>> # should not raise an exception
+
+    # should not raise an exception
 
     """
     if not isinstance(y, np.ndarray):
@@ -416,7 +396,6 @@ def check_weights(w, y, w_required=False):
 
     Parameters
     ----------
-
     w       : any python object
               Object passed by the user to a regression class; any type
               object can be passed
@@ -426,15 +405,14 @@ def check_weights(w, y, w_required=False):
 
     Returns
     -------
-
     Returns : nothing
               Nothing is returned
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import check_weights
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
@@ -445,7 +423,8 @@ def check_weights(w, y, w_required=False):
     >>> X = np.array(X).T
     >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> check_weights(w, y)
-    >>> # should not raise an exception
+
+    # should not raise an exception
 
     """
     if w_required == True or w != None:
@@ -471,7 +450,6 @@ def check_robust(robust, wk):
 
     Parameters
     ----------
-
     robust  : string or None
               Object passed by the user to a regression class
     w       : any python object
@@ -480,15 +458,14 @@ def check_robust(robust, wk):
 
     Returns
     -------
-
     Returns : nothing
               Nothing is returned
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import check_robust
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
@@ -499,7 +476,8 @@ def check_robust(robust, wk):
     >>> X = np.array(X).T
     >>> wk = None
     >>> check_robust('White', wk)
-    >>> # should not raise an exception
+
+    # should not raise an exception
 
     """
     if robust:
@@ -538,7 +516,6 @@ def check_spat_diag(spat_diag, w):
 
     Parameters
     ----------
-
     spat_diag   : boolean
                   Value passed by a used to a regression class
     w           : any python object
@@ -547,15 +524,14 @@ def check_spat_diag(spat_diag, w):
 
     Returns
     -------
-
     Returns : nothing
               Nothing is returned
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import check_spat_diag
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> # Extract CRIME column from the dbf file
     >>> y = np.array(db.by_col("CRIME"))
@@ -566,7 +542,8 @@ def check_spat_diag(spat_diag, w):
     >>> X = np.array(X).T
     >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> check_spat_diag(True, w)
-    >>> # should not raise an exception
+
+    # should not raise an exception
 
     """
     if spat_diag:
@@ -579,13 +556,11 @@ def check_regimes(reg_set, N=None, K=None):
 
     Parameters
     ----------
-
     reg_set     : list
                   List of the regimes IDs
 
     Returns
     -------
-
     Returns : nothing
               Nothing is returned
 
@@ -602,21 +577,19 @@ def check_constant(x):
 
     Parameters
     ----------
-
     x           : array
                   Value passed by a used to a regression class
 
     Returns
     -------
-
     Returns : nothing
               Nothing is returned
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import check_constant
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> X = []
     >>> X.append(db.by_col("INC"))

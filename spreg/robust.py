@@ -37,8 +37,8 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> from ols import OLS
-    >>> from twosls import TSLS
+    >>> from spreg import OLS
+    >>> from spreg import TSLS
     >>> db=libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),"r")
     >>> y = np.array(db.by_col("HR90"))
     >>> y = np.reshape(y, (y.shape[0],1))

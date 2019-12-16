@@ -874,12 +874,12 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> w_lags = 1
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
 
     Example only with spatial lag
 
-    >>> reg = BaseGM_Combo_Hom(y, X, yend=yd2, q=q2, w=w.sparse, A1='hom_sc')
+    >>> reg = spreg.error_sp_hom.BaseGM_Combo_Hom(y, X, yend=yd2, q=q2, w=w.sparse, A1='hom_sc')
     >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
     [[10.1254 15.2871]
      [ 1.5683  0.4407]
@@ -898,9 +898,9 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> reg = BaseGM_Combo_Hom(y, X, yd2, q2, w=w.sparse, A1='hom_sc')
+    >>> reg = spreg.error_sp_hom.BaseGM_Combo_Hom(y, X, yd2, q2, w=w.sparse, A1='hom_sc')
     >>> betas = np.array([['CONSTANT'],['inc'],['crime'],['W_hoval'],['lambda']])
     >>> print(np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5))))
     [['CONSTANT' '111.77057' '67.75191']
@@ -1124,6 +1124,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Combo_Hom
     >>> reg = GM_Combo_Hom(y, X, w=w, A1='hom_sc', name_x=['inc'],\
             name_y='hoval', name_yend=['crime'], name_q=['discbd'],\
             name_ds='columbus')
@@ -1205,7 +1206,6 @@ def moments_hom(w, wA1, wA2, u):
     '''
     Compute G and g matrices for the spatial error model with homoscedasticity
     as in Anselin :cite:`Anselin2011` (2011).
-    ...
 
     Parameters
     ----------
@@ -1244,7 +1244,7 @@ def moments_hom(w, wA1, wA2, u):
 
 def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
     '''
-    VC matrix \psi of Spatial error with homoscedasticity. As in 
+    VC matrix \psi of Spatial error with homoscedasticity. As in
     Anselin (2011) :cite:`Anselin2011` (p. 20)
     ...
 

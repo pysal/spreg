@@ -238,6 +238,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Error_Regimes
     >>> model = GM_Error_Regimes(y, x, regimes, w=w, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT.dbf')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -665,6 +666,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Endog_Error_Regimes
     >>> model = GM_Endog_Error_Regimes(y, x, yend, q, regimes, w=w, name_y=y_var, name_x=x_var, name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='NAT.dbf')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -1144,6 +1146,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Combo_Regimes
     >>> model = GM_Combo_Regimes(y, x, regimes, w=w, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT')
 
     Once we have run the model, we can explore a little bit the output. The

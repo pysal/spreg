@@ -352,6 +352,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     to have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Lag_Regimes
     >>> model=GM_Lag_Regimes(y, x, regimes, w=w, regime_lag_sep=False, regime_err_sep=False, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT', name_w='NAT.shp')
     >>> model.betas
     array([[ 1.28897623],
@@ -367,8 +368,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     the coefficient estimates by calling:
 
     >>> model.std_err
-    array([ 0.44682888,  0.14358192,  0.05655124,  1.06044865,  0.20184548,
-            0.06118262,  0.12387232])
+    array([0.44682888, 0.14358192, 0.05655124, 1.06044865, 0.20184548,
+           0.06118262, 0.12387232])
 
     In the example above, all coefficients but the spatial lag vary
     according to the regime. It is also possible to have the spatial lag
@@ -377,15 +378,15 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     models, the argument regime_lag_sep must be set to True:
 
     >>> model=GM_Lag_Regimes(y, x, regimes, w=w, regime_lag_sep=True, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT', name_w='NAT.shp')
-    >>> print np.hstack((np.array(model.name_z).reshape(8,1),model.betas,np.sqrt(model.vm.diagonal().reshape(8,1))))
-    [['0_CONSTANT' '1.36584769' '0.39854720']
-     ['0_PS90' '0.80875730' '0.11324884']
-     ['0_UE90' '0.56946813' '0.04625087']
-     ['0_W_HR90' '-0.4342438' '0.13350159']
-     ['1_CONSTANT' '7.90731073' '1.63601874']
-     ['1_PS90' '1.27465703' '0.24709870']
-     ['1_UE90' '0.60167693' '0.07993322']
-     ['1_W_HR90' '-0.2960338' '0.19934459']]
+    >>> print(np.hstack((np.array(model.name_z).reshape(8,1),model.betas,np.sqrt(model.vm.diagonal().reshape(8,1)))))
+    [['0_CONSTANT' '1.3658476998618099' '0.3985472089832652']
+     ['0_PS90' '0.8087573074246643' '0.11324884794883601']
+     ['0_UE90' '0.5694681319188577' '0.04625087717092595']
+     ['0_W_HR90' '-0.43424389464634316' '0.13350159258670305']
+     ['1_CONSTANT' '7.90731073341874' '1.6360187416950998']
+     ['1_PS90' '1.2746570332609135' '0.2470987049452741']
+     ['1_UE90' '0.6016769336173784' '0.07993322102145078']
+     ['1_W_HR90' '-0.2960338343846942' '0.19934459782427025']]
 
     Alternatively, we can type: 'model.summary' to see the organized results output.
     The class is flexible enough to accomodate a spatial lag model that,
@@ -418,8 +419,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     model.summary
 
     >>> model.std_err
-    array([ 0.49163311,  0.12237382,  0.05633464,  0.72555909,  0.17250521,
-            0.06749131,  0.27370369,  0.25106224,  0.05804213])
+    array([0.49163311, 0.12237382, 0.05633464, 0.72555909, 0.17250521,
+           0.06749131, 0.27370369, 0.25106224, 0.05804213])
     """
 
     def __init__(self, y, x, regimes, yend=None, q=None,

@@ -73,12 +73,12 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
     xtxi         : float
                    (X'X)^-1
 
-
     Examples
     --------
-
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
@@ -87,15 +87,15 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
     >>> X.append(db.by_col("CRIME"))
     >>> X = np.array(X).T
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> ols=BaseOLS(y,X)
+    >>> ols = spreg.ols.BaseOLS(y,X)
     >>> ols.betas
-    array([[ 46.42818268],
-           [  0.62898397],
-           [ -0.48488854]])
+    array([[46.42818268],
+           [ 0.62898397],
+           [-0.48488854]])
     >>> ols.vm
-    array([[ 174.02245348,   -6.52060364,   -2.15109867],
-           [  -6.52060364,    0.28720001,    0.06809568],
-           [  -2.15109867,    0.06809568,    0.03336939]])
+    array([[174.02245348,  -6.52060364,  -2.15109867],
+           [ -6.52060364,   0.28720001,   0.06809568],
+           [ -2.15109867,   0.06809568,   0.03336939]])
     """
 
     def __init__(self, y, x, robust=None, gwk=None, sig2n_k=True):
@@ -123,7 +123,6 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
 
 
 class OLS(BaseOLS):
-
     """
     Ordinary least squares with results and diagnostics.
 
@@ -289,6 +288,7 @@ class OLS(BaseOLS):
     --------
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import OLS
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
@@ -335,25 +335,26 @@ class OLS(BaseOLS):
     of 0.01087.
 
     >>> ols.betas
-    array([[ 46.42818268],
-           [  0.62898397],
-           [ -0.48488854]])
-    >>> print round(ols.t_stat[2][0],3)
+    array([[46.42818268],
+           [ 0.62898397],
+           [-0.48488854]])
+    >>> print(round(ols.t_stat[2][0],3))
     -2.654
-    >>> print round(ols.t_stat[2][1],3)
+    >>> print(round(ols.t_stat[2][1],3))
     0.011
-    >>> print round(ols.r2,3)
+    >>> print(round(ols.r2,3))
     0.35
 
     Or we can easily obtain a full summary of all the results nicely formatted and
     ready to be printed:
 
-    >>> print ols.summary
+    >>> print(ols.summary)
     REGRESSION
     ----------
     SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES
     -----------------------------------------
     Data set            :    columbus
+    Weights matrix      :        None
     Dependent Variable  :  home value                Number of Observations:          49
     Mean dependent var  :     38.4362                Number of Variables   :           3
     S.D. dependent var  :     18.4661                Degrees of Freedom    :          46
@@ -369,8 +370,8 @@ class OLS(BaseOLS):
                 Variable     Coefficient       Std.Error     t-Statistic     Probability
     ------------------------------------------------------------------------------------
                 CONSTANT      46.4281827      13.1917570       3.5194844       0.0009867
-                   crime      -0.4848885       0.1826729      -2.6544086       0.0108745
                   income       0.6289840       0.5359104       1.1736736       0.2465669
+                   crime      -0.4848885       0.1826729      -2.6544086       0.0108745
     ------------------------------------------------------------------------------------
     <BLANKLINE>
     REGRESSION DIAGNOSTICS
@@ -405,14 +406,15 @@ class OLS(BaseOLS):
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> ols = OLS(y, X, w, spat_diag=True, moran=True, name_y='home value', name_x=['income','crime'], name_ds='columbus')
     >>> ols.betas
-    array([[ 46.42818268],
-           [  0.62898397],
-           [ -0.48488854]])
-    >>> print round(ols.moran_res[0],3)
+    array([[46.42818268],
+           [ 0.62898397],
+           [-0.48488854]])
+
+    >>> print(round(ols.moran_res[0],3))
     0.204
-    >>> print round(ols.moran_res[1],3)
+    >>> print(round(ols.moran_res[1],3))
     2.592
-    >>> print round(ols.moran_res[2],4)
+    >>> print(round(ols.moran_res[2],4))
     0.0095
 
     """
