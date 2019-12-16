@@ -502,7 +502,9 @@ if __name__ == '__main__':
     import numpy as np
     import libpysal
     from libpysal.examples import load_example
-    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
+
+    nat = load_example('Natregimes')
+    db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
     y_var = 'HR60'
     y = np.array([db.by_col(y_var)]).T
     x_var = ['PS60', 'DV60', 'RD60']
