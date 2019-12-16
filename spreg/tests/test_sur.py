@@ -15,7 +15,7 @@ class Test_SUR(unittest.TestCase):
     def setUp(self):
         nat = load_example('Natregimes')
         self.db = libpysal.io.open(nat.get_path('natregimes.dbf'),'r')
-        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("natregimes.shp"))
+        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
         self.w.transform = 'r'
 
 
