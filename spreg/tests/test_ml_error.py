@@ -1,6 +1,7 @@
 import unittest
 import libpysal
 from libpysal.examples import load_example
+from libpysal.weights import Queen
 import numpy as np
 from scipy import sparse
 from ..ml_error import ML_Error
@@ -18,9 +19,7 @@ class TestMLError(unittest.TestCase):
         self.y.shape = (len(self.y),1)
         self.x_names = ["RD90","PS90","UE90","DV90"]
         self.x = np.array([db.by_col(var) for var in self.x_names]).T
-        ww = libpysal.io.open(south.get_path("south_q.gal"))
-        self.w = ww.read()
-        ww.close()
+        self.w = Queen.from_shapefile(south.get_path("south.shp"))
         self.w.transform = 'r'
 
     def _estimate_and_compare(self, method='FULL', RTOL=RTOL):
