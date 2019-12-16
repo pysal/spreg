@@ -3,9 +3,8 @@ import numpy as np
 from ..sur_utils import sur_dictxy, sur_dictZ
 from ..sur import SUR, ThreeSLS
 import libpysal
+from libpysal.examples import load_example
 from libpysal.common import RTOL
-
-PEGP = libpysal.examples.get_path
 
 def dict_compare(actual, desired, rtol, atol=1e-7):
     for i in actual.keys():
@@ -14,8 +13,9 @@ def dict_compare(actual, desired, rtol, atol=1e-7):
 
 class Test_SUR(unittest.TestCase):
     def setUp(self):
-        self.db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
-        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+        nat = load_example('Natregimes')
+        self.db = libpysal.io.open(nat.get_path('natregimes.dbf'),'r')
+        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("natregimes.shp"))
         self.w.transform = 'r'
 
 
