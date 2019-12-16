@@ -22,7 +22,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
     """
     ML estimation of the spatial error model with regimes (note no consistency 
-    checks, diagnostics or constants added); Anselin (1988) [Anselin1988]_
+    checks, diagnostics or constants added); :cite:`Anselin1988`
 
     Parameters
     ----------
@@ -209,16 +209,21 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"),'r')
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> from spreg import ML_Error_Regimes
+    >>> import geopandas as gpd
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> baltimore = load_example('Baltimore')
+    >>> db = libpysal.io.open(baltimore.get_path("baltim.dbf"),'r')
+    >>> df = gpd.read_file(baltimore.get_path("baltim.shp"))
     >>> ds_name = "baltim.dbf"
     >>> y_name = "PRICE"
     >>> y = np.array(db.by_col(y_name)).T
     >>> y.shape = (len(y),1)
     >>> x_names = ["NROOM","AGE","SQFT"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
-    >>> ww = ps.open(ps.examples.get_path("baltim_q.gal"))
-    >>> w = ww.read()
-    >>> ww.close()
+    >>> w = Queen.from_dataframe(df)
     >>> w_name = "baltim_q.gal"
     >>> w.transform = 'r'    
 
@@ -233,35 +238,35 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
     >>> mlerr = ML_Error_Regimes(y,x,regimes,w=w,name_y=y_name,name_x=x_names,\
                name_w=w_name,name_ds=ds_name,name_regimes="CITCOU")
     >>> np.around(mlerr.betas, decimals=4)
-    array([[ -2.3949],
-           [  4.8738],
-           [ -0.0291],
-           [  0.3328],
-           [ 31.7962],
-           [  2.981 ],
-           [ -0.2371],
-           [  0.8058],
-           [  0.6177]])
+    array([[-2.076 ],
+           [ 4.8615],
+           [-0.0295],
+           [ 0.3355],
+           [32.3457],
+           [ 2.8708],
+           [-0.2401],
+           [ 0.799 ],
+           [ 0.6   ]])
     >>> "{0:.6f}".format(mlerr.lam)
-    '0.617707'
+    '0.599951'
     >>> "{0:.6f}".format(mlerr.mean_y)
     '44.307180'
     >>> "{0:.6f}".format(mlerr.std_y)
     '23.606077'
     >>> np.around(mlerr.vm1, decimals=4)
-    array([[   0.005 ,   -0.3535],
-           [  -0.3535,  441.3039]])
+    array([[  0.0053,  -0.3643],
+           [ -0.3643, 465.3559]])
     >>> np.around(np.diag(mlerr.vm), decimals=4)
-    array([ 58.5055,   2.4295,   0.0072,   0.0639,  80.5925,   3.161 ,
-             0.012 ,   0.0499,   0.005 ])
+    array([58.7121,  2.5036,  0.0074,  0.0659, 81.9796,  3.2676,  0.0124,
+            0.0514,  0.0053])
     >>> np.around(mlerr.sig2, decimals=4)
-    array([[ 209.6064]])
+    array([[215.554]])
     >>> "{0:.6f}".format(mlerr.logll)
-    '-870.333106'
+    '-872.860883'
     >>> "{0:.6f}".format(mlerr.aic)
-    '1756.666212'
+    '1761.721765'
     >>> "{0:.6f}".format(mlerr.schwarz)
-    '1783.481077'
+    '1788.536630'
     >>> mlerr.title
     'MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIMES (METHOD = full)'
     """
