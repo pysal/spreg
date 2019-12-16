@@ -200,14 +200,16 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from libpysal.examples import load_example
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -238,7 +240,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     observations. To do that, we can open an already existing gal file or 
     create a new one. In this case, we will create one from ``NAT.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -263,19 +265,19 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     parameter. Alternatively, we can have a summary of the
     output by typing: model.summary
 
-    >>> print reg.name_x
+    >>> print(reg.name_x)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', 'lambda']
     >>> np.around(reg.betas, decimals=6)
-    array([[ 0.009121],
-           [ 0.812973],
-           [ 0.549355],
-           [ 5.00279 ],
-           [ 1.200929],
-           [ 0.614681],
-           [ 0.429277]])
+    array([[0.009121],
+           [0.812973],
+           [0.549355],
+           [5.00279 ],
+           [1.200929],
+           [0.614681],
+           [0.429277]])
     >>> np.around(reg.std_err, decimals=6)
-    array([ 0.355844,  0.221743,  0.059276,  0.686764,  0.35843 ,  0.092788,
-            0.02524 ])
+    array([0.355844, 0.221743, 0.059276, 0.686764, 0.35843 , 0.092788,
+           0.02524 ])
 
     """
 
@@ -665,6 +667,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from libpysal.examples import load_example
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
@@ -672,7 +675,8 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -712,7 +716,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     existing gal file or create a new one. In this case, we will create one 
     from ``NAT.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -740,10 +744,10 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     variance-covariance matrix Alternatively, we can have a summary of the
     output by typing: model.summary
 
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', '0_RD90', '1_RD90', 'lambda']
 
-    >>> print np.around(reg.betas,4)
+    >>> print(np.around(reg.betas,4))
     [[ 3.5944]
      [ 1.065 ]
      [ 0.1587]
@@ -754,8 +758,8 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
      [ 3.5756]
      [ 0.2908]]
 
-    >>> print np.around(np.sqrt(reg.vm.diagonal()),4)
-    [ 0.5043  0.2132  0.0581  0.6681  0.3504  0.0999  0.3686  0.3402  0.028 ]
+    >>> print(np.around(np.sqrt(reg.vm.diagonal()),4))
+    [0.5043 0.2132 0.0581 0.6681 0.3504 0.0999 0.3686 0.3402 0.028 ]
 
     """
 
@@ -1214,6 +1218,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from libpysal.examples import load_example
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile.  Note that
@@ -1221,7 +1226,8 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
 
     Extract the HR90 column (homicide rates in 1990) from the DBF file and make it the
     dependent variable for the regression. Note that PySAL requires this to be
@@ -1252,7 +1258,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
     observations. To do that, we can open an already existing gal file or 
     create a new one. In this case, we will create one from ``NAT.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -1279,9 +1285,9 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
     Alternatively, we can check the betas:
 
     >>> reg = GM_Combo_Het_Regimes(y, x, regimes, w=w, step1c=True, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT')
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', '_Global_W_HR90', 'lambda']
-    >>> print np.around(reg.betas,4)
+    >>> print(np.around(reg.betas,4))
     [[ 1.4613]
      [ 0.9587]
      [ 0.5658]
@@ -1307,9 +1313,9 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
     And then we can run and explore the model analogously to the previous combo:
 
     >>> reg = GM_Combo_Het_Regimes(y, x, regimes, yd, q, w=w, step1c=True, name_y=y_var, name_x=x_var, name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='NAT')
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['0_CONSTANT', '0_PS90', '0_UE90', '1_CONSTANT', '1_PS90', '1_UE90', '0_RD90', '1_RD90', '_Global_W_HR90', 'lambda']
-    >>> print reg.betas
+    >>> print(reg.betas)
     [[ 3.41936197]
      [ 1.04071048]
      [ 0.16747219]
@@ -1320,11 +1326,11 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
      [ 3.61328423]
      [ 0.03132164]
      [ 0.29544224]]
-    >>> print np.sqrt(reg.vm.diagonal())
-    [ 0.53103804  0.20835827  0.05755679  1.00496234  0.34332131  0.10259525
-      0.3454436   0.37932794  0.07611667  0.07067059]
-    >>> print 'lambda: ', np.around(reg.betas[-1], 4)
-    lambda:  [ 0.2954]
+    >>> print(np.sqrt(reg.vm.diagonal()))
+    [0.53103804 0.20835827 0.05755679 1.00496234 0.34332131 0.10259525
+     0.3454436  0.37932794 0.07611667 0.07067059]
+    >>> print('lambda: ', np.around(reg.betas[-1], 4))
+    lambda:  [0.2954]
 
     """
 
