@@ -12,7 +12,8 @@ from .utils import spmultiply, sphstack, spmin, spmax
 
 __all__ = [
     "f_stat", "t_stat", "r2", "ar2", "se_betas", "log_likelihood", "akaike", "schwarz",
-    "condition_index", "jarque_bera", "breusch_pagan", "white", "koenker_bassett", "vif", "likratiotest"]
+    "condition_index", "jarque_bera", "breusch_pagan", "white", "koenker_bassett", "vif", "likratiotest",
+    "constant_check"]
 
 
 def f_stat(reg):
@@ -36,8 +37,8 @@ def f_stat(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data. 
 
@@ -61,12 +62,12 @@ def f_stat(reg):
 
     Calculate the F-statistic for the regression. 
 
-    >>> testresult = diagnostics.f_stat(reg)
+    >>> testresult = spreg.f_stat(reg)
 
     Print the results tuple, including the statistic and its significance.
 
     >>> print("%12.12f"%testresult[0],"%12.12f"%testresult[1])
-    ('28.385629224695', '0.000000009341')
+    28.385629224695 0.000000009341
 
     """
     k = reg.k            # (scalar) number of ind. vars (includes constant)
@@ -105,12 +106,12 @@ def t_stat(reg, z_stat=False):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data. 
 
-    >>> db = libpysal.open(libpysal.examples.get_path("columbus.dbf"),"r")
+    >>> db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
 
     Create the dependent variable vector. 
 
@@ -130,12 +131,12 @@ def t_stat(reg, z_stat=False):
 
     Calculate t-statistics for the regression coefficients. 
 
-    >>> testresult = diagnostics.t_stat(reg)
+    >>> testresult = spreg.t_stat(reg)
 
     Print the tuples that contain the t-statistics and their significances.
 
     >>> print("%12.12f"%testresult[0][0], "%12.12f"%testresult[0][1], "%12.12f"%testresult[1][0], "%12.12f"%testresult[1][1], "%12.12f"%testresult[2][0], "%12.12f"%testresult[2][1])
-    ('14.490373143689', '0.000000000000', '-4.780496191297', '0.000018289595', '-2.654408642718', '0.010874504910')
+    14.490373143689 0.000000000000 -4.780496191297 0.000018289595 -2.654408642718 0.010874504910
     """
 
     k = reg.k           # (scalar) number of ind. vars (includes constant)
@@ -173,8 +174,8 @@ def r2(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -198,7 +199,7 @@ def r2(reg):
 
     Calculate the R^2 value for the regression. 
 
-    >>> testresult = diagnostics.r2(reg)
+    >>> testresult = spreg.r2(reg)
 
     Print the result. 
 
@@ -235,8 +236,8 @@ def ar2(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -259,7 +260,7 @@ def ar2(reg):
     >>> reg = OLS(y,X)
 
     Calculate the adjusted R^2 value for the regression. 
-    >>> testresult = diagnostics.ar2(reg)
+    >>> testresult = spreg.ar2(reg)
 
     Print the result. 
 
@@ -292,8 +293,8 @@ def se_betas(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data. 
 
@@ -317,12 +318,12 @@ def se_betas(reg):
 
     Calculate the standard errors of the regression coefficients. 
 
-    >>> testresult = diagnostics.se_betas(reg)
+    >>> testresult = spreg.se_betas(reg)
 
     Print the vector of standard errors. 
 
     >>> testresult
-    array([ 4.73548613,  0.33413076,  0.10319868])
+    array([4.73548613, 0.33413076, 0.10319868])
 
     """
     vm = reg.vm         # (array) coefficients of variance matrix (k x k)
@@ -350,8 +351,8 @@ def log_likelihood(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data. 
 
@@ -375,7 +376,7 @@ def log_likelihood(reg):
 
     Calculate the log-likelihood for the regression. 
 
-    >>> testresult = diagnostics.log_likelihood(reg)
+    >>> testresult = spreg.log_likelihood(reg)
 
     Print the result. 
 
@@ -410,8 +411,8 @@ def akaike(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -435,7 +436,7 @@ def akaike(reg):
 
     Calculate the Akaike Information Criterion (AIC). 
 
-    >>> testresult = diagnostics.akaike(reg)
+    >>> testresult = spreg.akaike(reg)
 
     Print the result. 
 
@@ -474,8 +475,8 @@ def schwarz(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -499,12 +500,12 @@ def schwarz(reg):
 
     Calculate the Schwarz Information Criterion. 
 
-    >>> testresult = diagnostics.schwarz(reg)
+    >>> testresult = spreg.schwarz(reg)
 
     Print the results. 
 
-    >>> testresult
-    386.42993851863008
+    >>> np.round(testresult, 5)
+    386.42994
 
     """
     n = reg.n      # (scalar) number of observations
@@ -539,8 +540,8 @@ def condition_index(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -564,7 +565,7 @@ def condition_index(reg):
 
     Calculate the condition index to check for multicollinearity.
 
-    >>> testresult = diagnostics.condition_index(reg)
+    >>> testresult = spreg.condition_index(reg)
 
     Print the result.
 
@@ -612,8 +613,8 @@ def jarque_bera(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -637,7 +638,7 @@ def jarque_bera(reg):
 
     Calculate the Jarque-Bera test for normality of residuals.
 
-    >>> testresult = diagnostics.jarque_bera(reg)
+    >>> testresult = spreg.jarque_bera(reg)
 
     Print the degrees of freedom for the test.
 
@@ -712,8 +713,8 @@ def breusch_pagan(reg, z=None):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -737,7 +738,7 @@ def breusch_pagan(reg, z=None):
 
     Calculate the Breusch-Pagan test for heteroscedasticity.
 
-    >>> testresult = diagnostics.breusch_pagan(reg)
+    >>> testresult = spreg.breusch_pagan(reg)
 
     Print the degrees of freedom for the test.
 
@@ -855,8 +856,8 @@ def white(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -880,11 +881,11 @@ def white(reg):
 
     Calculate the White test for heteroscedasticity.
 
-    >>> testresult = diagnostics.white(reg)
+    >>> testresult = spreg.white(reg)
 
     Print the degrees of freedom for the test.
 
-    >>> print testresult['df']
+    >>> print(testresult['df'])
     5
 
     Print the test statistic.
@@ -1018,8 +1019,8 @@ def koenker_bassett(reg, z=None):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -1043,7 +1044,7 @@ def koenker_bassett(reg, z=None):
 
     Calculate the Koenker-Bassett test for heteroscedasticity.
 
-    >>> testresult = diagnostics.koenker_bassett(reg)
+    >>> testresult = spreg.koenker_bassett(reg)
 
     Print the degrees of freedom for the test.
 
@@ -1157,8 +1158,8 @@ def vif(reg):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
 
     Read the DBF associated with the Columbus data.
 
@@ -1181,7 +1182,7 @@ def vif(reg):
     >>> reg = OLS(y,X)
 
     Calculate the variance inflation factor (VIF). 
-    >>> testresult = diagnostics.vif(reg)
+    >>> testresult = spreg.vif(reg)
 
     Select the tuple for the income variable. 
 
@@ -1250,8 +1251,8 @@ def constant_check(array):
     >>> import numpy as np
     >>> import libpysal
     >>> from libpysal import examples
-    >>> import diagnostics
-    >>> from ols import OLS
+    >>> import spreg
+    >>> from spreg import OLS
     >>> db = libpysal.io.open(examples.get_path("columbus.dbf"),"r")
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -1260,7 +1261,7 @@ def constant_check(array):
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
     >>> reg = OLS(y,X)
-    >>> diagnostics.constant_check(reg.x)
+    >>> spreg.constant_check(reg.x)
     True
 
     """
@@ -1308,7 +1309,8 @@ def likratiotest(reg0, reg1):
     >>> import libpysal
     >>> from libpysal import examples
     >>> import scipy.stats as stats
-    >>> import spreg.ml_lag as lag
+    >>> from spreg import ML_Lag, OLS
+    >>> from spreg import likratiotest
 
     Use the baltim sample data set
 
@@ -1318,22 +1320,22 @@ def likratiotest(reg0, reg1):
     >>> y.shape = (len(y),1)
     >>> x_names = ["NROOM","NBATH","PATIO","FIREPL","AC","GAR","AGE","LOTSZ","SQFT"]
     >>> x = np.array([db.by_col(var) for var in x_names]).T
-    >>> ww = ps.open(ps.examples.get_path("baltim_q.gal"))
+    >>> ww = libpysal.io.open(examples.get_path("baltim_q.gal"))
     >>> w = ww.read()
     >>> ww.close()
     >>> w.transform = 'r'
 
     OLS regression
 
-    >>> ols1 = ps.spreg.OLS(y,x)
+    >>> ols1 = OLS(y,x)
 
     ML Lag regression
 
-    >>> mllag1 = lag.ML_Lag(y,x,w)
+    >>> mllag1 = ML_Lag(y,x,w)
 
     >>> lr = likratiotest(ols1,mllag1)
 
-    >>> print "Likelihood Ratio Test: {0:.4f}       df: {1}        p-value: {2:.4f}".format(lr["likr"],lr["df"],lr["p-value"])
+    >>> print("Likelihood Ratio Test: {0:.4f}       df: {1}        p-value: {2:.4f}".format(lr["likr"],lr["df"],lr["p-value"]))
     Likelihood Ratio Test: 44.5721       df: 1        p-value: 0.0000
 
     """
