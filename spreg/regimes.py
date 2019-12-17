@@ -29,12 +29,17 @@ class Chow:
               Regression object from PySAL.spreg which is assumed to have the
               following attributes (or attributes list in this order):
 
-                    * kr    : Number of variables varying across regimes
-                    * kf    : Number of variables fixed (global) across regimes
-                    * kryd  : Number of endogenous variables varying across regimes
-                    * nr    : Number of regimes
-                    * betas : coefficient estimates
-                    * vm    : variance covariance matrix of betas
+              * kr    : Number of variables varying across regimes
+
+              * kf    : Number of variables fixed (global) across regimes
+
+              * kryd  : Number of endogenous variables varying across regimes
+
+              * nr    : Number of regimes
+
+              * betas : coefficient estimates
+
+              * vm    : variance covariance matrix of betas
 
     Attributes
     ----------
@@ -135,9 +140,12 @@ class Wald:
 class Regimes_Frame:
     '''
     Setup framework to work with regimes. Basically it involves:
-        * Dealing with the constant in a regimes world
-        * Creating a sparse representation of X 
-        * Generating a list of names of X taking into account regimes
+
+    * Dealing with the constant in a regimes world
+
+    * Creating a sparse representation of X
+
+    * Generating a list of names of X taking into account regimes
 
     Parameters
     ----------
@@ -151,11 +159,11 @@ class Regimes_Frame:
                    Switcher controlling the constant term setup. It may take
                    the following values:
 
-                     *  False: no constant term is appended in any way
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+                   *  False: no constant term is appended in any way
+
+                   *  'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default)
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -367,11 +375,11 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
                   Switcher controlling the constant term setup. It may take
                   the following values:
 
-                    *  False: no constant term is appended in any way
-                    *  'one': a vector of ones is appended to x and held
-                              constant across regimes
-                    * 'many': a vector of ones is appended to x and considered
-                              different per regime
+                  *  False: no constant term is appended in any way
+
+                  *  'one': a vector of ones is appended to x and held constant across regimes
+
+                  * 'many': a vector of ones is appended to x and considered different per regime
 
     Returns
     -------
@@ -420,11 +428,11 @@ def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
                       Switcher controlling the constant term setup. It may take
                       the following values:
 
-                         *  False: no constant term is appended in any way
-                         *  'one': a vector of ones is appended to x and held
-                                   constant across regimes
-                         * 'many': a vector of ones is appended to x and considered
-                                   different per regime
+                      *  False: no constant term is appended in any way
+
+                      *  'one': a vector of ones is appended to x and held constant across regimes
+
+                      * 'many': a vector of ones is appended to x and considered different per regime
     cols2regi       : list
                       List of k booleans indicating whether each column should be
                       considered as different per regime (True) or held constant

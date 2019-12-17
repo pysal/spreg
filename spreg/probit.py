@@ -606,9 +606,11 @@ class Probit(BaseProbit):
 
     The diagnostics for spatial dependence currently implemented are:
 
-        * Pinkse Error :cite:`Pinkse2004`
-        * Kelejian and Prucha Moran's I :cite:`Kelejian2001`
-        * Pinkse & Slade Error :cite:`Pinkse1998`
+    * Pinkse Error :cite:`Pinkse2004`
+
+    * Kelejian and Prucha Moran's I :cite:`Kelejian2001`
+
+    * Pinkse & Slade Error :cite:`Pinkse1998`
 
     Parameters
     ----------
@@ -703,34 +705,34 @@ class Probit(BaseProbit):
     --------
 
     We first need to import the needed modules, namely numpy to convert the
-    data we read into arrays that ``spreg`` understands and ``pysal`` to
+    data we read into arrays that ``spreg`` understands and ``libpysal`` to
     perform all the analysis.
 
     >>> import numpy as np
     >>> import libpysal
     >>> np.set_printoptions(suppress=True) #prevent scientific format
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
     >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
     Extract the CRIME column (crime) from the DBF file and make it the
-    dependent variable for the regression. Note that PySAL requires this to be
+    dependent variable for the regression. Note that libpysal requires this to be
     an numpy array of shape (n, 1) as opposed to the also common shape of (n, )
     that other packages accept. Since we want to run a probit model and for this
     example we use the Columbus data, we also need to transform the continuous
-    CRIME variable into a binary variable. As in [McMillen1992]_, we define
+    CRIME variable into a binary variable. As in :cite:`McMillen1992`, we define
     y = 1 if CRIME > 40.
 
     >>> y = np.array([dbf.by_col('CRIME')]).T
     >>> y = (y>40).astype(float)
 
     Extract HOVAL (home values) and INC (income) vectors from the DBF to be used as
-    independent variables in the regression.  Note that PySAL requires this to
+    independent variables in the regression.  Note that libpysal requires this to
     be an nxj numpy array, where j is the number of independent variables (not
     including a constant). By default this class adds a vector of ones to the
     independent variables passed in.
@@ -750,7 +752,7 @@ class Probit(BaseProbit):
     >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
 
     Unless there is a good reason not to do it, the weights have to be
-    row-standardized so every row of the matrix sums to one. In PySAL, this
+    row-standardized so every row of the matrix sums to one. In libpysal, this
     can be easily performed in the following way:
 
     >>> w.transform='r'
