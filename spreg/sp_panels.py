@@ -164,7 +164,7 @@ class GM_KKP(BaseGM_KKP):
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis.
 
-    >>> import spreg
+    >>> from spreg import GM_KKP
     >>> import numpy as np
     >>> import libpysal
 
