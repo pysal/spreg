@@ -392,7 +392,7 @@ def check_y(y, n):
         raise Exception("y must be a single column array matching the length of other arrays")
 
 
-def check_weights(w, y, w_required=False):
+def check_weights(w, y, w_required=False, time=False):
     """Check if the w parameter passed by the user is a libpysal.W object and
     check that its dimensionality matches the y parameter.  Note that this
     check is not performed if w set to None.
@@ -405,6 +405,11 @@ def check_weights(w, y, w_required=False):
     y       : numpy array
               Any shape numpy array can be passed. Note: if y passed
               check_arrays, then it will be valid for this function
+    w_required : boolean
+                 True if a W matrix is required, False (default) if not.
+    time    : boolean
+              True if data contains a time dimension.
+              False (default) if not.
 
     Returns
     -------
@@ -436,7 +441,7 @@ def check_weights(w, y, w_required=False):
         if not isinstance(w, weights.W):
             from warnings import warn
             warn("w must be API-compatible pysal weights object")
-        if w.n != y.shape[0]:
+        if w.n != y.shape[0] and time == False:
             raise Exception("y must be nx1, and w must be an nxn PySAL W object")
         diag = w.sparse.diagonal()
         # check to make sure all entries equal 0
