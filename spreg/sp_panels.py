@@ -14,7 +14,7 @@ from . import summary_output as SUMMARY
 #import warnings
 
 
-#__all__ = ["GM_KKP"]
+__all__ = ["GM_KKP"]
 
 
 class BaseGM_KKP(RegressionPropsY):
@@ -261,7 +261,7 @@ class GM_KKP(BaseGM_KKP):
         self.title = "GM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, bigx)
         self.name_x.extend(['lambda',' sigma2_v', 'sigma2_1'])
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Panels(reg=self, w=w, vm=vm)
