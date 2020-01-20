@@ -140,12 +140,17 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
     First import libpysal to load the spatial analysis tools.
 
     >>> import libpysal
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
     also reads data in CSV format.
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. Although not required,
@@ -167,16 +172,16 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
     dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
     additional instruments (q).
 
-    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
-    >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
-    >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
+    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
+    >>> bigyend,bigyendvars = spreg.sur_dictZ(db,yend_var)
+    >>> bigq,bigqvars = spreg.sur_dictZ(db,q_var)
 
     To run a spatial lag model, we need to specify the spatial weights matrix.
     To do that, we can open an already existing gal file or create a new one.
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -185,7 +190,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t
     and p-value of the parameters:
 
-    >>> reg = SURlagIV(bigy,bigX,bigyend,bigq,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg = spreg.SURlagIV(bigy,bigX,bigyend,bigq,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT",name_w="nat_queen")
     >>> reg.b3SLS
     {0: array([[ 6.95472387],
            [ 1.44044301],
@@ -198,15 +203,15 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
            [ 0.25832185]])}
 
     >>> reg.tsls_inf
-    {0: array([[  0.49128435,  14.15620899,   0.        ],
-           [  0.11516292,  12.50787151,   0.        ],
-           [  0.03204088,  -0.2409087 ,   0.80962588],
-           [  0.1876025 ,  19.45875745,   0.        ],
-           [  0.05450628,   0.06653605,   0.94695106]]), 1: array([[  0.44969956,  12.47726211,   0.        ],
-           [  0.10440241,  13.28674277,   0.        ],
-           [  0.04150243,  -3.73761961,   0.00018577],
-           [  0.19133145,  16.66451427,   0.        ],
-           [  0.04394024,   5.87893596,   0.        ]])}
+    {0: array([[ 0.49128435, 14.15620899,  0.        ],
+           [ 0.11516292, 12.50787151,  0.        ],
+           [ 0.03204088, -0.2409087 ,  0.80962588],
+           [ 0.1876025 , 19.45875745,  0.        ],
+           [ 0.05450628,  0.06653605,  0.94695106]]), 1: array([[ 0.44969956, 12.47726211,  0.        ],
+           [ 0.10440241, 13.28674277,  0.        ],
+           [ 0.04150243, -3.73761961,  0.00018577],
+           [ 0.19133145, 16.66451427,  0.        ],
+           [ 0.04394024,  5.87893596,  0.        ]])}
     """
 
     def __init__(self,bigy,bigX,bigyend=None,bigq=None,w=None,regimes=None,vm=False,\
@@ -428,9 +433,12 @@ if __name__ == '__main__':
     import numpy as np
     import libpysal
     from .sur_utils import sur_dictxy
+    from libpysal.examples import load_example
+    from libpysal.weights import Queen
 
-    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
-    w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    nat = load_example('Natregimes')
+    db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
+    w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
     w.transform='r'
     y_var0 = ['HR80','HR90']
     x_var0 = [['PS80','UE80'],['PS90','UE90']]

@@ -115,7 +115,8 @@ class BaseGM_Lag(TSLS.BaseTSLS):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> import spreg.diagnostics as D
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
@@ -127,24 +128,24 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     >>> X.append(db.by_col("CRIME"))
     >>> X = np.array(X).T
     >>> w_lags = 2
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> reg=BaseGM_Lag(y, X, yend=yd2, q=q2, w=w.sparse, w_lags=w_lags)
+    >>> reg = spreg.twosls_sp.BaseGM_Lag(y, X, yend=yd2, q=q2, w=w.sparse, w_lags=w_lags)
     >>> reg.betas
-    array([[ 45.30170561],
-           [  0.62088862],
-           [ -0.48072345],
-           [  0.02836221]])
-    >>> D.se_betas(reg)
-    array([ 17.91278862,   0.52486082,   0.1822815 ,   0.31740089])
-    >>> reg=BaseGM_Lag(y, X, yend=yd2, q=q2, w=w.sparse, w_lags=w_lags, robust='white')
+    array([[45.30170561],
+           [ 0.62088862],
+           [-0.48072345],
+           [ 0.02836221]])
+    >>> spreg.se_betas(reg)
+    array([17.91278862,  0.52486082,  0.1822815 ,  0.31740089])
+    >>> reg = spreg.twosls_sp.BaseGM_Lag(y, X, yend=yd2, q=q2, w=w.sparse, w_lags=w_lags, robust='white')
     >>> reg.betas
-    array([[ 45.30170561],
-           [  0.62088862],
-           [ -0.48072345],
-           [  0.02836221]])
-    >>> D.se_betas(reg)
-    array([ 20.47077481,   0.50613931,   0.20138425,   0.38028295])
+    array([[45.30170561],
+           [ 0.62088862],
+           [-0.48072345],
+           [ 0.02836221]])
+    >>> spreg.se_betas(reg)
+    array([20.47077481,  0.50613931,  0.20138425,  0.38028295])
     >>> # instrument for HOVAL with DISCBD
     >>> X = np.array(db.by_col("INC"))
     >>> X = np.reshape(X, (49,1))
@@ -152,16 +153,16 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     >>> yd = np.reshape(yd, (49,1))
     >>> q = np.array(db.by_col("DISCBD"))
     >>> q = np.reshape(q, (49,1))
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> reg=BaseGM_Lag(y, X, w=w.sparse, yend=yd2, q=q2, w_lags=w_lags)
+    >>> reg = spreg.twosls_sp.BaseGM_Lag(y, X, w=w.sparse, yend=yd2, q=q2, w_lags=w_lags)
     >>> reg.betas
-    array([[ 100.79359082],
-           [  -0.50215501],
-           [  -1.14881711],
-           [  -0.38235022]])
-    >>> D.se_betas(reg)
-    array([ 53.0829123 ,   1.02511494,   0.57589064,   0.59891744])
+    array([[100.79359082],
+           [ -0.50215501],
+           [ -1.14881711],
+           [ -0.38235022]])
+    >>> spreg.se_betas(reg)
+    array([53.0829123 ,  1.02511494,  0.57589064,  0.59891744])
 
     """
 
@@ -176,7 +177,7 @@ class BaseGM_Lag(TSLS.BaseTSLS):
 class GM_Lag(BaseGM_Lag):
 
     """
-    Spatial two stage least squares (S2SLS) with results and diagnostics; 
+    Spatial two stage least squares (S2SLS) with results and diagnostics;
     Anselin (1988) :cite:`Anselin1988`
 
     Parameters
@@ -191,23 +192,23 @@ class GM_Lag(BaseGM_Lag):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x); cannot be
                    used in combination with h
     w            : pysal W object
-                   Spatial weights object 
+                   Spatial weights object
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
     lag_q        : boolean
-                   If True, then include spatial lags of the additional 
+                   If True, then include spatial lags of the additional
                    instruments (q).
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
                    HAC consistent estimator of the variance-covariance
-                   matrix is given. Default set to None. 
+                   matrix is given. Default set to None.
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
@@ -254,7 +255,7 @@ class GM_Lag(BaseGM_Lag):
                    Number of variables for which coefficients are estimated
                    (including the constant)
     kstar        : integer
-                   Number of endogenous variables. 
+                   Number of endogenous variables.
     y            : array
                    nx1 array for dependent variable
     x            : array
@@ -265,7 +266,7 @@ class GM_Lag(BaseGM_Lag):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable used as instruments 
+                   external exogenous variable used as instruments
     z            : array
                    nxk array of variables (combination of x and yend)
     h            : array
@@ -288,7 +289,7 @@ class GM_Lag(BaseGM_Lag):
     sig2         : float
                    Sigma squared used in computations
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -302,7 +303,7 @@ class GM_Lag(BaseGM_Lag):
     name_yend    : list of strings
                    Names of endogenous variables for use in output
     name_z       : list of strings
-                   Names of exogenous and endogenous variables for use in 
+                   Names of exogenous and endogenous variables for use in
                    output
     name_q       : list of strings
                    Names of external instruments
@@ -342,13 +343,13 @@ class GM_Lag(BaseGM_Lag):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> import spreg.diagnostics as D
+    >>> import spreg
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
 
@@ -392,20 +393,22 @@ class GM_Lag(BaseGM_Lag):
     the dependent variable on the right-hand side of the equation. If we want
     to have the names of the variables printed in the
     output summary, we will have to pass them in as well, although this is
-    optional. The default most basic model to be run would be: 
+    optional. The default most basic model to be run would be:
 
+    >>> from spreg import GM_Lag
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
     >>> reg=GM_Lag(y, X, w=w, w_lags=2, name_x=['inc', 'crime'], name_y='hoval', name_ds='columbus')
     >>> reg.betas
-    array([[ 45.30170561],
-           [  0.62088862],
-           [ -0.48072345],
-           [  0.02836221]])
+    array([[45.30170561],
+           [ 0.62088862],
+           [-0.48072345],
+           [ 0.02836221]])
 
     Once the model is run, we can obtain the standard error of the coefficient
     estimates by calling the diagnostics module:
 
-    >>> D.se_betas(reg)
-    array([ 17.91278862,   0.52486082,   0.1822815 ,   0.31740089])
+    >>> spreg.se_betas(reg)
+    array([17.91278862,  0.52486082,  0.1822815 ,  0.31740089])
 
     But we can also run models that incorporates corrected standard errors
     following the White procedure. For that, we will have to include the
@@ -413,15 +416,15 @@ class GM_Lag(BaseGM_Lag):
 
     >>> reg=GM_Lag(y, X, w=w, w_lags=2, robust='white', name_x=['inc', 'crime'], name_y='hoval', name_ds='columbus')
     >>> reg.betas
-    array([[ 45.30170561],
-           [  0.62088862],
-           [ -0.48072345],
-           [  0.02836221]])
+    array([[45.30170561],
+           [ 0.62088862],
+           [-0.48072345],
+           [ 0.02836221]])
 
     And we can access the standard errors from the model object:
 
     >>> reg.std_err
-    array([ 20.47077481,   0.50613931,   0.20138425,   0.38028295])
+    array([20.47077481,  0.50613931,  0.20138425,  0.38028295])
 
     The class is flexible enough to accomodate a spatial lag model that,
     besides the spatial lag of the dependent variable, includes other
@@ -441,16 +444,16 @@ class GM_Lag(BaseGM_Lag):
 
     >>> reg=GM_Lag(y, X, w=w, yend=yd, q=q, w_lags=2, name_x=['inc'], name_y='hoval', name_yend=['crime'], name_q=['discbd'], name_ds='columbus')
     >>> reg.betas
-    array([[ 100.79359082],
-           [  -0.50215501],
-           [  -1.14881711],
-           [  -0.38235022]])
+    array([[100.79359082],
+           [ -0.50215501],
+           [ -1.14881711],
+           [ -0.38235022]])
 
     Once the model is run, we can obtain the standard error of the coefficient
     estimates by calling the diagnostics module:
 
-    >>> D.se_betas(reg)
-    array([ 53.0829123 ,   1.02511494,   0.57589064,   0.59891744])
+    >>> spreg.se_betas(reg)
+    array([53.0829123 ,  1.02511494,  0.57589064,  0.59891744])
 
     """
 

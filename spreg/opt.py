@@ -20,20 +20,20 @@ def simport(modname):
     allow the module to be used without necessarily attaching it permanently in
     the global namespace:
     
-    >>> for t,mod in simport('pandas'):
-            if t:
-                mod.DataFrame()
-            else:
-                #do alternative behavior here
-            del mod #or don't del, your call
-
-    instead of:
-
-    >>> t, mod = simport('pandas')
-    >>> if t:
-            mod.DataFrame()
-        else:
-            #do alternative behavior here
+    # >>> for t,mod in simport('pandas'):
+    #         if t:
+    #             mod.DataFrame()
+    #         else:
+    #             #do alternative behavior here
+    #         del mod #or don't del, your call
+    #
+    # instead of:
+    #
+    # >>> t, mod = simport('pandas')
+    # >>> if t:
+    #         mod.DataFrame()
+    #     else:
+    #         #do alternative behavior here
 
     The first idiom makes it work kind of a like a with statement.
     """

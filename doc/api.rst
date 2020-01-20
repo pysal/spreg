@@ -31,6 +31,13 @@ These are the standard spatial regression models supported by the `spreg` packag
     spreg.TSLS
     spreg.ThreeSLS
 
+Discrete Choice Models
+----------------------
+.. autosummary::
+    :toctree: generated/
+
+    spreg.Probit
+
 Regimes Models
 ---------------
 
@@ -75,27 +82,28 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
 .. autosummary:: 
     :toctree: generated/
 
-    spreg.diagnostics.f_stat 
-    spreg.diagnostics.t_stat 
-    spreg.diagnostics.r2 
-    spreg.diagnostics.ar2 
-    spreg.diagnostics.se_betas 
-    spreg.diagnostics.log_likelihood 
-    spreg.diagnostics.akaike 
-    spreg.diagnostics.schwarz
-    spreg.diagnostics.condition_index 
-    spreg.diagnostics.jarque_bera 
-    spreg.diagnostics.breusch_pagan 
-    spreg.diagnostics.white 
-    spreg.diagnostics.koenker_bassett 
-    spreg.diagnostics.vif 
-    spreg.diagnostics.likratiotest
-    spreg.diagnostics_sp.LMtests
-    spreg.diagnostics_sp.MoranRes
-    spreg.diagnostics_sp.AKtest
-    spreg.diagnostics_sur.sur_setp
-    spreg.diagnostics_sur.sur_lrtest
-    spreg.diagnostics_sur.sur_lmtest
-    spreg.diagnostics_sur.lam_setp
-    spreg.diagnostics_sur.surLMe
-    spreg.diagnostics_sur.surLMlag
+    spreg.f_stat
+    spreg.t_stat
+    spreg.r2
+    spreg.ar2
+    spreg.se_betas
+    spreg.log_likelihood
+    spreg.akaike
+    spreg.schwarz
+    spreg.condition_index
+    spreg.jarque_bera
+    spreg.breusch_pagan
+    spreg.white
+    spreg.koenker_bassett
+    spreg.vif
+    spreg.likratiotest
+    spreg.LMtests
+    spreg.MoranRes
+    spreg.AKtest
+    spreg.sur_setp
+    spreg.sur_lrtest
+    spreg.sur_lmtest
+    spreg.lam_setp
+    spreg.surLMe
+    spreg.surLMlag
+    spreg.constant_check

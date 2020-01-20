@@ -61,7 +61,8 @@ class LMtests:
 
     >>> import numpy as np
     >>> import libpysal
-    >>> from ols import OLS
+    >>> from spreg import OLS
+    >>> import spreg
 
     Open the csv file to access the data for analysis
 
@@ -94,31 +95,31 @@ class LMtests:
     presence of a spatial error model (simple and robust version) and joint presence
     of both a spatial lag as well as a spatial error model.
 
-    >>> lms = spreg.diagnostics_sp.LMtests(ols, w)
+    >>> lms = spreg.LMtests(ols, w)
 
     LM error test:
 
-    >>> print round(lms.lme[0],4), round(lms.lme[1],4)
+    >>> print(round(lms.lme[0],4), round(lms.lme[1],4))
     3.0971 0.0784
 
     LM lag test:
 
-    >>> print round(lms.lml[0],4), round(lms.lml[1],4)
+    >>> print(round(lms.lml[0],4), round(lms.lml[1],4))
     0.9816 0.3218
 
     Robust LM error test:
 
-    >>> print round(lms.rlme[0],4), round(lms.rlme[1],4)
+    >>> print(round(lms.rlme[0],4), round(lms.rlme[1],4))
     3.2092 0.0732
 
     Robust LM lag test:
 
-    >>> print round(lms.rlml[0],4), round(lms.rlml[1],4)
+    >>> print(round(lms.rlml[0],4), round(lms.rlml[1],4))
     1.0936 0.2957
 
     LM SARMA test:
 
-    >>> print round(lms.sarma[0],4), round(lms.sarma[1],4)
+    >>> print(round(lms.sarma[0],4), round(lms.sarma[1],4))
     4.1907 0.123
     """
 
@@ -169,7 +170,8 @@ class MoranRes:
 
     >>> import numpy as np
     >>> import libpysal
-    >>> from ols import OLS
+    >>> from spreg import OLS
+    >>> import spreg
 
     Open the csv file to access the data for analysis
 
@@ -200,32 +202,32 @@ class MoranRes:
     expectation and variance to account for the fact it comes from residuals
     instead of an independent variable
 
-    >>> m = spreg.diagnostics_sp.MoranRes(ols, w, z=True)
+    >>> m = spreg.MoranRes(ols, w, z=True)
 
     Value of the Moran's I statistic:
 
-    >>> print round(m.I,4)
+    >>> print(round(m.I,4))
     0.1713
 
     Value of the Moran's I expectation:
 
-    >>> print round(m.eI,4)
+    >>> print(round(m.eI,4))
     -0.0345
 
     Value of the Moran's I variance:
 
-    >>> print round(m.vI,4)
+    >>> print(round(m.vI,4))
     0.0081
 
     Value of the Moran's I standardized value. This is
     distributed as a standard Normal(0, 1)
 
-    >>> print round(m.zI,4)
+    >>> print(round(m.zI,4))
     2.2827
 
     P-value of the standardized Moran's I value (z):
 
-    >>> print round(m.p_norm,4)
+    >>> print(round(m.p_norm,4))
     0.0224
     """
 
@@ -279,8 +281,7 @@ class AKtest:
 
     >>> import numpy as np
     >>> import libpysal
-    >>> from twosls import TSLS
-    >>> from twosls_sp import GM_Lag
+    >>> from spreg import TSLS, GM_Lag, AKtest
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that

@@ -87,6 +87,7 @@ class BaseGM_Error_Het(RegressionPropsY):
     --------
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
@@ -97,12 +98,12 @@ class BaseGM_Error_Het(RegressionPropsY):
     >>> X = np.hstack((np.ones(y.shape),X))
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
-    >>> reg = BaseGM_Error_Het(y, X, w.sparse, step1c=True)
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 47.9963  11.479 ]
-     [  0.7105   0.3681]
-     [ -0.5588   0.1616]
-     [  0.4118   0.168 ]]
+    >>> reg = spreg.error_sp_het.BaseGM_Error_Het(y, X, w.sparse, step1c=True)
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[47.9963 11.479 ]
+     [ 0.7105  0.3681]
+     [-0.5588  0.1616]
+     [ 0.4118  0.168 ]]
     """
 
     def __init__(self, y, x, w,
@@ -303,6 +304,7 @@ class GM_Error_Het(BaseGM_Error_Het):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Error_Het
     >>> reg = GM_Error_Het(y, X, w=w, step1c=True, name_y='home value', name_x=['income', 'crime'], name_ds='columbus')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -312,19 +314,18 @@ class GM_Error_Het(BaseGM_Error_Het):
     ``spreg.error_sp``, it allows for inference on the spatial
     parameter.
 
-    >>> print reg.name_x
+    >>> print(reg.name_x)
     ['CONSTANT', 'income', 'crime', 'lambda']
 
     Hence, we find the same number of betas as of standard errors,
     which we calculate taking the square root of the diagonal of the
     variance-covariance matrix:
 
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 47.9963  11.479 ]
-     [  0.7105   0.3681]
-     [ -0.5588   0.1616]
-     [  0.4118   0.168 ]]
-
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[47.9963 11.479 ]
+     [ 0.7105  0.3681]
+     [-0.5588  0.1616]
+     [ 0.4118  0.168 ]]
     """
 
     def __init__(self, y, x, w,
@@ -435,6 +436,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     --------
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
@@ -450,12 +452,12 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
     >>> q = np.array(q).T
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
-    >>> reg = BaseGM_Endog_Error_Het(y, X, yd, q, w=w.sparse, step1c=True)
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 55.3971  28.8901]
-     [  0.4656   0.7731]
-     [ -0.6704   0.468 ]
-     [  0.4114   0.1777]]
+    >>> reg = spreg.error_sp_het.BaseGM_Endog_Error_Het(y, X, yd, q, w=w.sparse, step1c=True)
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[55.3971 28.8901]
+     [ 0.4656  0.7731]
+     [-0.6704  0.468 ]
+     [ 0.4114  0.1777]]
     """
 
     def __init__(self, y, x, yend, q, w,
@@ -650,6 +652,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import GM_Endog_Error_Het
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
@@ -726,13 +729,13 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     which we calculate taking the square root of the diagonal of the
     variance-covariance matrix:
 
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['CONSTANT', 'inc', 'crime', 'lambda']
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 55.3971  28.8901]
-     [  0.4656   0.7731]
-     [ -0.6704   0.468 ]
-     [  0.4114   0.1777]]
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[55.3971 28.8901]
+     [ 0.4656  0.7731]
+     [-0.6704  0.468 ]
+     [ 0.4114  0.1777]]
 
     """
 
@@ -857,6 +860,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     --------
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
@@ -866,17 +870,17 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> w_lags = 1
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
 
     Example only with spatial lag
 
-    >>> reg = BaseGM_Combo_Het(y, X, yend=yd2, q=q2, w=w.sparse, step1c=True)
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[  9.9753  14.1435]
-     [  1.5742   0.374 ]
-     [  0.1535   0.3978]
-     [  0.2103   0.3924]]
+    >>> reg = spreg.error_sp_het.BaseGM_Combo_Het(y, X, yend=yd2, q=q2, w=w.sparse, step1c=True)
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[ 9.9753 14.1435]
+     [ 1.5742  0.374 ]
+     [ 0.1535  0.3978]
+     [ 0.2103  0.3924]]
 
     Example with both spatial lag and other endogenous variables
 
@@ -889,11 +893,11 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> reg = BaseGM_Combo_Het(y, X, yd2, q2, w=w.sparse, step1c=True)
+    >>> reg = spreg.error_sp_het.BaseGM_Combo_Het(y, X, yd2, q2, w=w.sparse, step1c=True)
     >>> betas = np.array([['CONSTANT'],['inc'],['crime'],['lag_hoval'],['lambda']])
-    >>> print np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5)))
+    >>> print(np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5))))
     [['CONSTANT' '113.91292' '64.38815']
      ['inc' '-0.34822' '1.18219']
      ['crime' '-1.35656' '0.72482']
@@ -1060,6 +1064,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import GM_Combo_Het
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
@@ -1121,13 +1126,13 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     which we calculate taking the square root of the diagonal of the
     variance-covariance matrix:
 
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['CONSTANT', 'income', 'W_hoval', 'lambda']
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[  9.9753  14.1435]
-     [  1.5742   0.374 ]
-     [  0.1535   0.3978]
-     [  0.2103   0.3924]]
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[ 9.9753 14.1435]
+     [ 1.5742  0.374 ]
+     [ 0.1535  0.3978]
+     [ 0.2103  0.3924]]
 
     This class also allows the user to run a spatial lag+error model with the
     extra feature of including non-spatial endogenous regressors. This means
@@ -1147,14 +1152,14 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     And then we can run and explore the model analogously to the previous combo:
 
     >>> reg = GM_Combo_Het(y, X, yd, q, w=w, step1c=True, name_x=['inc'], name_y='hoval', name_yend=['crime'], name_q=['discbd'], name_ds='columbus')
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['CONSTANT', 'inc', 'crime', 'W_hoval', 'lambda']
-    >>> print np.round(reg.betas,4)
-    [[ 113.9129]
-     [  -0.3482]
-     [  -1.3566]
-     [  -0.5766]
-     [   0.6561]]
+    >>> print(np.round(reg.betas,4))
+    [[113.9129]
+     [ -0.3482]
+     [ -1.3566]
+     [ -0.5766]
+     [  0.6561]]
 
     """
 
@@ -1261,8 +1266,7 @@ def get_vc_het(w, wA1, E):
 def get_vm_het(G, lamb, reg, w, psi):
     """
     Computes the variance-covariance matrix Omega as in Arraiz et al
-    :cite:`Arraiz2010`:
-    ...
+    :cite:`Arraiz2010`
 
     Parameters
     ----------
@@ -1320,7 +1324,6 @@ def get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt):
     """
     Computes the a1 in psi assuming residuals come from original regression.
     :cite:`Anselin2011`
-
 
     Parameters
     ----------

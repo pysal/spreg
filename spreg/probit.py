@@ -74,25 +74,21 @@ class BaseProbit(object):
                   Scale of the marginal effects.
     slopes      : array
                   Marginal effects of the independent variables (k-1x1)
-                  
-		  Note: Disregards the presence of dummies.
+		          Note: Disregards the presence of dummies.
     slopes_vm   : array
                   Variance-covariance matrix of the slopes (k-1xk-1)
     LR          : tuple
                   Likelihood Ratio test of all coefficients = 0
-                  
-		  (test statistics, p-value)
+		          (test statistics, p-value)
     Pinkse_error: float
                   Lagrange Multiplier test against spatial error correlation.
-                  
-		  Implemented as presented in [Pinkse2004]_              
+                  Implemented as presented in :cite:`Pinkse2004`.
     KP_error    : float
                   Moran's I type test against spatial error correlation.
-                  
-		  Implemented as presented in  [Kelejian2001]_
+                  Implemented as presented in  :cite:`Kelejian2001`.
     PS_error    : float
                   Lagrange Multiplier test against spatial error correlation.
-                  Implemented as presented in  [Pinkse1998]_
+                  Implemented as presented in :cite:`Pinkse1998`.
     warning     : boolean
                   if True Maximum number of iterations exceeded or gradient 
                   and/or function calls not changing.
@@ -100,28 +96,30 @@ class BaseProbit(object):
     Examples
     --------
     >>> import numpy as np
-    >>> import pysal
-    >>> dbf = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> import libpysal
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array([dbf.by_col('CRIME')]).T
     >>> x = np.array([dbf.by_col('INC'), dbf.by_col('HOVAL')]).T
     >>> x = np.hstack((np.ones(y.shape),x))
-    >>> w = pysal.open(pysal.examples.get_path("columbus.gal"), 'r').read()
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> w.transform='r'
-    >>> model = BaseProbit((y>40).astype(float), x, w=w)    
-    >>> np.around(model.betas, decimals=6)
-    array([[ 3.353811],
-           [-0.199653],
-           [-0.029514]])
+    >>> model = spreg.probit.BaseProbit((y>40).astype(float), x, w=w)
+    >>> print(np.around(model.betas, decimals=6))
+    [[ 3.353811]
+     [-0.199653]
+     [-0.029514]]
 
-    >>> np.around(model.vm, decimals=6)
-    array([[ 0.852814, -0.043627, -0.008052],
-           [-0.043627,  0.004114, -0.000193],
-           [-0.008052, -0.000193,  0.00031 ]])
+    >>> print(np.around(model.vm, decimals=6))
+    [[ 0.852814 -0.043627 -0.008052]
+     [-0.043627  0.004114 -0.000193]
+     [-0.008052 -0.000193  0.00031 ]]
 
     >>> tests = np.array([['Pinkse_error','KP_error','PS_error']])
     >>> stats = np.array([[model.Pinkse_error[0],model.KP_error[0],model.PS_error[0]]])
     >>> pvalue = np.array([[model.Pinkse_error[1],model.KP_error[1],model.PS_error[1]]])
-    >>> print np.hstack((tests.T,np.around(np.hstack((stats.T,pvalue.T)),6)))
+    >>> print(np.hstack((tests.T,np.around(np.hstack((stats.T,pvalue.T)),6))))
     [['Pinkse_error' '3.131719' '0.076783']
      ['KP_error' '1.721312' '0.085194']
      ['PS_error' '2.558166' '0.109726']]
@@ -608,9 +606,11 @@ class Probit(BaseProbit):
 
     The diagnostics for spatial dependence currently implemented are:
 
-        * Pinkse Error [Pinkse2004]_
-        * Kelejian and Prucha Moran's I [Kelejian2001]_
-        * Pinkse & Slade Error [Pinkse1998]_
+    * Pinkse Error :cite:`Pinkse2004`
+
+    * Kelejian and Prucha Moran's I :cite:`Kelejian2001`
+
+    * Pinkse & Slade Error :cite:`Pinkse1998`
 
     Parameters
     ----------
@@ -680,13 +680,13 @@ class Probit(BaseProbit):
                   (test statistics, p-value)
     Pinkse_error: float
                   Lagrange Multiplier test against spatial error correlation.
-                  Implemented as presented in  [Pinkse2004]_             
+                  Implemented as presented in :cite:`Pinkse2004`
     KP_error    : float
                   Moran's I type test against spatial error correlation.
-                  Implemented as presented in [Kelejian2001]_
+                  Implemented as presented in :cite:`Kelejian2001`
     PS_error    : float
                   Lagrange Multiplier test against spatial error correlation.
-                  Implemented as presented in [Pinkse1998]_
+                  Implemented as presented in :cite:`Pinkse1998`
     warning     : boolean
                   if True Maximum number of iterations exceeded or gradient 
                   and/or function calls not changing.
@@ -705,33 +705,34 @@ class Probit(BaseProbit):
     --------
 
     We first need to import the needed modules, namely numpy to convert the
-    data we read into arrays that ``spreg`` understands and ``pysal`` to
+    data we read into arrays that ``spreg`` understands and ``libpysal`` to
     perform all the analysis.
 
     >>> import numpy as np
-    >>> import pysal
+    >>> import libpysal
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
 
-    Open data on Columbus neighborhood crime (49 areas) using pysal.open().
+    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
-    pysal.open() also reads data in CSV format; since the actual class
+    libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
     data in using any method.  
 
-    >>> dbf = pysal.open(pysal.examples.get_path('columbus.dbf'),'r')
+    >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
     Extract the CRIME column (crime) from the DBF file and make it the
-    dependent variable for the regression. Note that PySAL requires this to be
+    dependent variable for the regression. Note that libpysal requires this to be
     an numpy array of shape (n, 1) as opposed to the also common shape of (n, )
     that other packages accept. Since we want to run a probit model and for this
     example we use the Columbus data, we also need to transform the continuous
-    CRIME variable into a binary variable. As in [McMillen1992]_, we define
+    CRIME variable into a binary variable. As in :cite:`McMillen1992`, we define
     y = 1 if CRIME > 40.
 
     >>> y = np.array([dbf.by_col('CRIME')]).T
     >>> y = (y>40).astype(float)
 
     Extract HOVAL (home values) and INC (income) vectors from the DBF to be used as
-    independent variables in the regression.  Note that PySAL requires this to
+    independent variables in the regression.  Note that libpysal requires this to
     be an nxj numpy array, where j is the number of independent variables (not
     including a constant). By default this class adds a vector of ones to the
     independent variables passed in.
@@ -748,10 +749,10 @@ class Probit(BaseProbit):
     Note that, in order to read the file, not only to open it, we need to
     append '.read()' at the end of the command.
 
-    >>> w = pysal.open(pysal.examples.get_path("columbus.gal"), 'r').read() 
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
 
     Unless there is a good reason not to do it, the weights have to be
-    row-standardized so every row of the matrix sums to one. In PySAL, this
+    row-standardized so every row of the matrix sums to one. In libpysal, this
     can be easily performed in the following way:
 
     >>> w.transform='r'
@@ -761,6 +762,7 @@ class Probit(BaseProbit):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional. 
 
+    >>> from spreg import Probit
     >>> model = Probit(y, x, w=w, name_y='crime', name_x=['income','home value'], name_ds='columbus', name_w='columbus.gal')
 
     Once we have run the model, we can explore a little bit the output. The
@@ -784,7 +786,7 @@ class Probit(BaseProbit):
     >>> tests = np.array([['Pinkse_error','KP_error','PS_error']])
     >>> stats = np.array([[model.Pinkse_error[0],model.KP_error[0],model.PS_error[0]]])
     >>> pvalue = np.array([[model.Pinkse_error[1],model.KP_error[1],model.PS_error[1]]])
-    >>> print np.hstack((tests.T,np.around(np.hstack((stats.T,pvalue.T)),6)))
+    >>> print(np.hstack((tests.T,np.around(np.hstack((stats.T,pvalue.T)),6))))
     [['Pinkse_error' '3.131719' '0.076783']
      ['KP_error' '1.721312' '0.085194']
      ['PS_error' '2.558166' '0.109726']]
@@ -859,7 +861,6 @@ def sp_tests(reg):
 
     Parameters
     ----------
-
     reg         : regression object
                   output instance from a probit model            
     """
@@ -933,12 +934,12 @@ def _test():
 if __name__ == '__main__':
     _test()
     import numpy as np
-    import pysal
-    dbf = pysal.open(pysal.examples.get_path('columbus.dbf'), 'r')
+    import libpysal
+    dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
     y = np.array([dbf.by_col('CRIME')]).T
     var_x = ['INC', 'HOVAL']
     x = np.array([dbf.by_col(name) for name in var_x]).T
-    w = pysal.open(pysal.examples.get_path("columbus.gal"), 'r').read()
+    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     w.transform = 'r'
     probit1 = Probit(
         (y > 40).astype(float), x, w=w, name_x=var_x, name_y="CRIME",

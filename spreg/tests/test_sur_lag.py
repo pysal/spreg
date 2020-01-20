@@ -5,13 +5,14 @@ from ..sur_lag import SURlagIV
 from .test_sur import dict_compare
 import libpysal
 from libpysal.common import RTOL
+from libpysal.examples import load_example
 
-PEGP = libpysal.examples.get_path
 
 class Test_SURlagIV(unittest.TestCase):
     def setUp(self):
-        self.db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
-        self.w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+        nat = load_example('Natregimes')
+        self.db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
+        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
         self.w.transform = 'r'
 
 

@@ -105,12 +105,12 @@ class BaseGM_Error_Hom(RegressionPropsY):
     Model commands
 
     >>> reg = BaseGM_Error_Hom(y, X, w=w.sparse, A1='hom_sc')
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 47.9479  12.3021]
-     [  0.7063   0.4967]
-     [ -0.556    0.179 ]
-     [  0.4129   0.1835]]
-    >>> print np.around(reg.vm, 4) #doctest: +SKIP
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[47.9479 12.3021]
+     [ 0.7063  0.4967]
+     [-0.556   0.179 ]
+     [ 0.4129  0.1835]]
+    >>> print(np.around(reg.vm, 4)) #doctest: +SKIP
     [[  1.51340700e+02  -5.29060000e+00  -1.85650000e+00  -2.40000000e-03]
      [ -5.29060000e+00   2.46700000e-01   5.14000000e-02   3.00000000e-04]
      [ -1.85650000e+00   5.14000000e-02   3.21000000e-02  -1.00000000e-04]
@@ -330,11 +330,11 @@ class GM_Error_Hom(BaseGM_Error_Hom):
     standard errors, which you calculate taking the square root of the
     diagonal of the variance-covariance matrix of the parameters:
 
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 47.9479  12.3021]
-     [  0.7063   0.4967]
-     [ -0.556    0.179 ]
-     [  0.4129   0.1835]]
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[47.9479 12.3021]
+     [ 0.7063  0.4967]
+     [-0.556   0.179 ]
+     [ 0.4129  0.1835]]
 
     '''
 
@@ -462,11 +462,11 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> reg = BaseGM_Endog_Error_Hom(y, X, yd, q, w=w.sparse, A1='hom_sc')
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 55.3658  23.496 ]
-     [  0.4643   0.7382]
-     [ -0.669    0.3943]
-     [  0.4321   0.1927]]
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[55.3658 23.496 ]
+     [ 0.4643  0.7382]
+     [-0.669   0.3943]
+     [ 0.4321  0.1927]]
 
 
     '''
@@ -733,14 +733,13 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
     which we calculate taking the square root of the diagonal of the
     variance-covariance matrix:
 
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['CONSTANT', 'inc', 'crime', 'lambda']
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 55.3658  23.496 ]
-     [  0.4643   0.7382]
-     [ -0.669    0.3943]
-     [  0.4321   0.1927]]
-
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[55.3658 23.496 ]
+     [ 0.4643  0.7382]
+     [-0.669   0.3943]
+     [ 0.4321  0.1927]]
     '''
 
     def __init__(self, y, x, yend, q, w,
@@ -865,6 +864,7 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
     --------
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("HOVAL"))
     >>> y = np.reshape(y, (49,1))
@@ -874,17 +874,17 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> w_lags = 1
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
 
     Example only with spatial lag
 
-    >>> reg = BaseGM_Combo_Hom(y, X, yend=yd2, q=q2, w=w.sparse, A1='hom_sc')
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 10.1254  15.2871]
-     [  1.5683   0.4407]
-     [  0.1513   0.4048]
-     [  0.2103   0.4226]]
+    >>> reg = spreg.error_sp_hom.BaseGM_Combo_Hom(y, X, yend=yd2, q=q2, w=w.sparse, A1='hom_sc')
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[10.1254 15.2871]
+     [ 1.5683  0.4407]
+     [ 0.1513  0.4048]
+     [ 0.2103  0.4226]]
 
 
     Example with both spatial lag and other endogenous variables
@@ -898,12 +898,12 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> reg = BaseGM_Combo_Hom(y, X, yd2, q2, w=w.sparse, A1='hom_sc')
+    >>> reg = spreg.error_sp_hom.BaseGM_Combo_Hom(y, X, yd2, q2, w=w.sparse, A1='hom_sc')
     >>> betas = np.array([['CONSTANT'],['inc'],['crime'],['W_hoval'],['lambda']])
-    >>> print np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5)))
-    [['CONSTANT' '111.7705' '67.75191']
+    >>> print(np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5))))
+    [['CONSTANT' '111.77057' '67.75191']
      ['inc' '-0.30974' '1.16656']
      ['crime' '-1.36043' '0.6841']
      ['W_hoval' '-0.52908' '0.84428']
@@ -1124,14 +1124,15 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional.
 
+    >>> from spreg import GM_Combo_Hom
     >>> reg = GM_Combo_Hom(y, X, w=w, A1='hom_sc', name_x=['inc'],\
             name_y='hoval', name_yend=['crime'], name_q=['discbd'],\
             name_ds='columbus')
-    >>> print np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)
-    [[ 10.1254  15.2871]
-     [  1.5683   0.4407]
-     [  0.1513   0.4048]
-     [  0.2103   0.4226]]
+    >>> print(np.around(np.hstack((reg.betas,np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))
+    [[10.1254 15.2871]
+     [ 1.5683  0.4407]
+     [ 0.1513  0.4048]
+     [ 0.2103  0.4226]]
 
     This class also allows the user to run a spatial lag+error model with the
     extra feature of including non-spatial endogenous regressors. This means
@@ -1154,8 +1155,8 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
     >>> reg = GM_Combo_Hom(y, X, yd, q, w=w, A1='hom_sc', \
             name_ds='columbus')
     >>> betas = np.array([['CONSTANT'],['inc'],['crime'],['W_hoval'],['lambda']])
-    >>> print np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5)))
-    [['CONSTANT' '111.7705' '67.75191']
+    >>> print(np.hstack((betas, np.around(np.hstack((reg.betas, np.sqrt(reg.vm.diagonal()).reshape(5,1))),5))))
+    [['CONSTANT' '111.77057' '67.75191']
      ['inc' '-0.30974' '1.16656']
      ['crime' '-1.36043' '0.6841']
      ['W_hoval' '-0.52908' '0.84428']
@@ -1205,7 +1206,6 @@ def moments_hom(w, wA1, wA2, u):
     '''
     Compute G and g matrices for the spatial error model with homoscedasticity
     as in Anselin :cite:`Anselin2011` (2011).
-    ...
 
     Parameters
     ----------
@@ -1244,7 +1244,7 @@ def moments_hom(w, wA1, wA2, u):
 
 def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
     '''
-    VC matrix \psi of Spatial error with homoscedasticity. As in 
+    VC matrix \psi of Spatial error with homoscedasticity. As in
     Anselin (2011) :cite:`Anselin2011` (p. 20)
     ...
 

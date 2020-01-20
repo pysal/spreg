@@ -108,6 +108,7 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> import spreg
     >>> db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -121,12 +122,12 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> reg = BaseTSLS(y, X, yd, q=q)
-    >>> print reg.betas
-    [[ 88.46579584]
-     [  0.5200379 ]
-     [ -1.58216593]]
-    >>> reg = BaseTSLS(y, X, yd, q=q, robust="white")
+    >>> reg = spreg.twosls.BaseTSLS(y, X, yd, q=q)
+    >>> print(reg.betas)
+     [[88.46579584]
+     [ 0.5200379 ]
+     [-1.58216593]]
+    >>> reg = spreg.twosls.BaseTSLS(y, X, yd, q=q, robust="white")
 
     """
 
@@ -218,7 +219,6 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
             self._cache['vm'] = val
 
 class TSLS(BaseTSLS):
-
     """
     Two stage least squares with results and diagnostics.
 
@@ -420,11 +420,12 @@ class TSLS(BaseTSLS):
     instruments. If we want to have the names of the variables printed in the
     output summary, we will have to pass them in as well, although this is optional.
 
+    >>> from spreg import TSLS
     >>> reg = TSLS(y, X, yd, q, name_x=['inc'], name_y='crime', name_yend=['hoval'], name_q=['discbd'], name_ds='columbus')
-    >>> print reg.betas
-    [[ 88.46579584]
-     [  0.5200379 ]
-     [ -1.58216593]]
+    >>> print(reg.betas)
+    [[88.46579584]
+     [ 0.5200379 ]
+     [-1.58216593]]
 
     """
 

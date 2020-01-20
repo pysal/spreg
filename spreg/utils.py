@@ -409,6 +409,7 @@ def get_spFilter(w, lamb, sf):
               spatial autoregressive parameter
     sf      : array
               the variable needed to compute the filter
+
     Returns
     --------
     rs      : array
@@ -416,15 +417,15 @@ def get_spFilter(w, lamb, sf):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import get_spFilter
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
     >>> w=libpysal.io.open(libpysal.examples.get_path("columbus.gal")).read()        
     >>> solu = get_spFilter(w,0.5,y)
-    >>> print solu[0:5]
+    >>> print(solu[0:5])
     [[  -8.9882875]
      [ -20.5685065]
      [ -28.196721 ]
@@ -501,8 +502,9 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
     Examples
     --------
 
-    >>> import numpy, pysal
+    >>> import numpy, libpysal
     >>> import numpy.linalg as la
+    >>> from spreg import inverse_prod
     >>> np.random.seed(10)
     >>> w = libpysal.weights.util.lat2W(5, 5)
     >>> w.transform = 'r'
@@ -510,7 +512,9 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
     >>> data.shape = (w.n, 1)
     >>> rho = 0.4
     >>> inv_pow = inverse_prod(w, data, rho, inv_method="power_exp")
-    >>> # true matrix inverse
+
+    # true matrix inverse
+
     >>> inv_reg = inverse_prod(w, data, rho, inv_method="true_inv")
     >>> np.allclose(inv_pow, inv_reg, atol=0.0001)
     True

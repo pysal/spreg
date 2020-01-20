@@ -272,24 +272,24 @@ def sur_chow(n_eq,bigK,bSUR,varb):
     that the results are meaningless if the variables are not listed in
     the same order in each equation.
 
-   Parameters
-   ----------
-   n_eq       : int
-                number of equations
-   bigK       : array
-                with the number of variables by equation (includes constant)
-   bSUR       : dictionary
-                with the SUR regression coefficients by equation
-   varb       : array
-                the variance-covariance matrix for the SUR regression
-                coefficients
+    Parameters
+    ----------
+    n_eq       : int
+                 number of equations
+    bigK       : array
+                 with the number of variables by equation (includes constant)
+    bSUR       : dictionary
+                 with the SUR regression coefficients by equation
+    varb       : array
+                 the variance-covariance matrix for the SUR regression
+                 coefficients
 
-   Returns
-   -------
-   test       : array
-                a list with for each coefficient (in order) a tuple with the
-                value of the test statistic, the degrees of freedom, and the
-                p-value
+    Returns
+    -------
+    test       : array
+                 a list with for each coefficient (in order) a tuple with the
+                 value of the test statistic, the degrees of freedom, and the
+                 p-value
 
     """
     kr = bigK[0][0]
@@ -308,24 +308,24 @@ def sur_joinrho(n_eq,bigK,bSUR,varb):
     """
     Test on joint significance of spatial autoregressive coefficient in SUR
 
-   Parameters
-   ----------
-   n_eq       : int
-                number of equations
-   bigK       : array
-                n_eq x 1 array with number of variables by equation
-                (includes constant term, exogenous and endogeneous and
-                spatial lag)
-   bSUR       : dictionary
-                with regression coefficients by equation, with
-                the spatial autoregressive term as last
-   varb       : array
-                variance-covariance matrix for regression coefficients
+    Parameters
+    ----------
+    n_eq       : int
+                 number of equations
+    bigK       : array
+                 n_eq x 1 array with number of variables by equation
+                 (includes constant term, exogenous and endogeneous and
+                 spatial lag)
+    bSUR       : dictionary
+                 with regression coefficients by equation, with
+                 the spatial autoregressive term as last
+    varb       : array
+                 variance-covariance matrix for regression coefficients
 
-   Returns
-   -------
-              : tuple
-                with test statistic, degrees of freedom, p-value
+    Returns
+    -------
+               : tuple
+                 with test statistic, degrees of freedom, p-value
 
     """
     bb = sur_dict2mat(bSUR)

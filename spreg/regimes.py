@@ -18,29 +18,31 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, \
 
 
 class Chow:
-
     '''
     Chow test of coefficient stability across regimes. The test is a
     particular case of the Wald statistic in which the constraint are setup
     according to the spatial or other type of regime structure
 
-    ...
-
     Parameters
-    ==========
+    ----------
     reg     : regression object or attributes list
               Regression object from PySAL.spreg which is assumed to have the
               following attributes (or attributes list in this order):
 
-                    * kr    : Number of variables varying across regimes
-                    * kf    : Number of variables fixed (global) across regimes
-                    * kryd  : Number of endogenous variables varying across regimes
-                    * nr    : Number of regimes
-                    * betas : coefficient estimates
-                    * vm    : variance covariance matrix of betas
+              * kr    : Number of variables varying across regimes
+
+              * kf    : Number of variables fixed (global) across regimes
+
+              * kryd  : Number of endogenous variables varying across regimes
+
+              * nr    : Number of regimes
+
+              * betas : coefficient estimates
+
+              * vm    : variance covariance matrix of betas
 
     Attributes
-    ==========
+    ----------
     joint   : tuple
               Pair of Wald statistic and p-value for the setup of global
               regime stability, that is all betas are the same across
@@ -52,10 +54,10 @@ class Chow:
               same parameter) of the beta.
 
     Examples
-    ========
+    --------
     >>> import numpy as np
     >>> import libpysal
-    >>> from ols_regimes import OLS_Regimes
+    >>> from spreg import OLS_Regimes
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y_var = 'CRIME'
     >>> y = np.array([db.by_col(y_var)]).reshape(49,1)
@@ -64,16 +66,16 @@ class Chow:
     >>> r_var = 'NSA'
     >>> regimes = db.by_col(r_var)
     >>> olsr = OLS_Regimes(y, x, regimes, constant_regi='many', nonspat_diag=False, spat_diag=False, name_y=y_var, name_x=x_var, name_ds='columbus', name_regimes=r_var, regime_err_sep=False)
-    >>> print olsr.name_x_r #x_var
+    >>> print(olsr.name_x_r) #x_var
     ['CONSTANT', 'INC', 'HOVAL']
-    >>> print olsr.chow.regi
-    [[ 0.01020844  0.91952121]
-     [ 0.46024939  0.49750745]
-     [ 0.55477371  0.45637369]]
-    >>> print 'Joint test:'
+    >>> print(olsr.chow.regi)
+    [[0.01020844 0.91952121]
+     [0.46024939 0.49750745]
+     [0.55477371 0.45637369]]
+    >>> print('Joint test:')
     Joint test:
-    >>> print olsr.chow.joint
-    (0.6339319928978806, 0.8886223520178802)
+    >>> print(olsr.chow.joint)
+    (0.6339319928978724, 0.8886223520178821)
     '''
 
     def __init__(self, reg):
@@ -104,25 +106,23 @@ def _chow_run(kr, kf, kryd, nr, betas, vm):
 
 
 class Wald:
-
     '''
     Chi sq. Wald statistic to test for restriction of coefficients.
     Implementation following Greene :cite:`Greene2003` eq. (17-24), p. 488
 
-    ...
 
     Parameters
-    ==========
+    ----------
     reg     : regression object
-              Regression object from PySAL.spreg
+              Regression object from spreg
     r       : array
               Array of dimension Rxk (R being number of restrictions) with constrain setup.
     q       : array
-              Rx1 array with constants in the constraint setup. See Greene
-              [1]_ for reference.
+              Rx1 array with constants in the constraint setup. See :cite:`Greene2003`
+              for reference.
 
     Attributes
-    ==========
+    ----------
     w       : float
               Wald statistic
     pvalue  : float
@@ -138,17 +138,17 @@ class Wald:
 
 
 class Regimes_Frame:
-
     '''
     Setup framework to work with regimes. Basically it involves:
-        * Dealing with the constant in a regimes world
-        * Creating a sparse representation of X 
-        * Generating a list of names of X taking into account regimes
 
-    ...
+    * Dealing with the constant in a regimes world
+
+    * Creating a sparse representation of X
+
+    * Generating a list of names of X taking into account regimes
 
     Parameters
-    ==========
+    ----------
     x            : array
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
@@ -159,11 +159,11 @@ class Regimes_Frame:
                    Switcher controlling the constant term setup. It may take
                    the following values:
 
-                     *  False: no constant term is appended in any way
-                     *  'one': a vector of ones is appended to x and held
-                               constant across regimes
-                     * 'many': a vector of ones is appended to x and considered
-                               different per regime (default)
+                   *  False: no constant term is appended in any way
+
+                   *  'one': a vector of ones is appended to x and held constant across regimes
+
+                   * 'many': a vector of ones is appended to x and considered different per regime (default)
     cols2regi    : list, 'all'
                    Argument indicating whether each
                    column of x should be considered as different per regime
@@ -175,7 +175,7 @@ class Regimes_Frame:
                    Names of independent variables for use in output
 
     Returns
-    =======
+    -------
     x            : csr sparse matrix
                    Sparse matrix containing X variables properly aligned for
                    regimes regression. 'xsp' is of dimension (n, k*r) where 'r'
@@ -247,10 +247,8 @@ def wald_test(betas, r, q, vm):
     Chi sq. Wald statistic to test for restriction of coefficients.
     Implementation following Greene :cite:`Greene2003` eq. (17-24), p. 488
 
-    ...
-
     Parameters
-    ==========
+    ----------
     betas   : array
               kx1 array with coefficient estimates
     r       : array
@@ -262,7 +260,7 @@ def wald_test(betas, r, q, vm):
               kxk variance-covariance matrix of coefficient estimates
 
     Returns
-    =======
+    -------
     w       : float
               Wald statistic
     pvalue  : float
@@ -286,10 +284,8 @@ def buildR(kr, kf, nr):
     
     Note: needs a placeholder for kryd in builR1var, set to 0
 
-    ...
-
     Parameters
-    ==========
+    ----------
     kr      : int
               Number of variables that vary across regimes ("regimized")
     kf      : int
@@ -299,7 +295,7 @@ def buildR(kr, kf, nr):
               Number of regimes
 
     Returns
-    =======
+    -------
     R       : array
               Array with constrain setup to test stability across regimes of
               one variable
@@ -314,10 +310,8 @@ def buildR1var(vari, kr, kf, kryd, nr):
     variable. The constraint setup reflects the null betas for variable 'vari'
     are the same across regimes
 
-    ...
-
     Parameters
-    ==========
+    ----------
     vari    : int
               Position of the variable to be tested (order in the sequence of
               variables per regime)
@@ -326,12 +320,13 @@ def buildR1var(vari, kr, kf, kryd, nr):
     kf      : int
               Number of variables that do not vary across regimes ("fixed" or
               global)
-    kryd    : Number of endogenous variables varying across regimes
+    kryd    : int
+              Number of endogenous variables varying across regimes
     nr      : int
               Number of regimes
 
     Returns
-    =======
+    -------
     R       : array
               Array with constrain setup to test stability across regimes of
               one variable
@@ -360,10 +355,9 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
     NOTE: constant term, if desired in the model, should be included in the x
     already
 
-    ...
 
     Parameters
-    ==========
+    ----------
     x           : np.array
                   Dense array of dimension (n, k) with values for all observations
                   IMPORTANT: constant term (if desired in the model) should be
@@ -381,14 +375,14 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
                   Switcher controlling the constant term setup. It may take
                   the following values:
 
-                    *  False: no constant term is appended in any way
-                    *  'one': a vector of ones is appended to x and held
-                              constant across regimes
-                    * 'many': a vector of ones is appended to x and considered
-                              different per regime
+                  *  False: no constant term is appended in any way
+
+                  *  'one': a vector of ones is appended to x and held constant across regimes
+
+                  * 'many': a vector of ones is appended to x and considered different per regime
 
     Returns
-    =======
+    -------
     xsp         : csr sparse matrix
                   Sparse matrix containing the full setup for a regimes model
                   as specified in the arguments passed
@@ -420,10 +414,8 @@ def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
     NOTE: constant term, if desired in the model, should be included in the x
     already
 
-    ...
-
     Parameters
-    ==========
+    ----------
     name_x          : list/None
                       If passed, list of strings with the names of the
                       variables aligned with the original dense array x
@@ -436,19 +428,20 @@ def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
                       Switcher controlling the constant term setup. It may take
                       the following values:
 
-                         *  False: no constant term is appended in any way
-                         *  'one': a vector of ones is appended to x and held
-                                   constant across regimes
-                         * 'many': a vector of ones is appended to x and considered
-                                   different per regime
+                      *  False: no constant term is appended in any way
+
+                      *  'one': a vector of ones is appended to x and held constant across regimes
+
+                      * 'many': a vector of ones is appended to x and considered different per regime
     cols2regi       : list
                       List of k booleans indicating whether each column should be
                       considered as different per regime (True) or held constant
                       across regimes (False)
     regimes_set     : list
                       List of ordered regimes tags
+
     Returns
-    =======
+    -------
     name_x_regi
     '''
     k = len(cols2regi)
@@ -474,10 +467,8 @@ def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):
     '''
     Returns the subset of W matrix according to a given regime ID
 
-    ...
-
-    Attributes
-    ==========
+    Parameters
+    ----------
     w           : pysal W object
                   Spatial weights object
     regi_ids    : list
@@ -486,7 +477,7 @@ def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):
                   The regime for which W will be subset
 
     Returns
-    =======
+    -------
     w_regi_i    : pysal W object
                   Subset of W for regime regi_i
     '''
@@ -508,10 +499,8 @@ def w_regimes(w, regimes, regimes_set, transform=True, get_ids=None, min_n=None)
     ######### DEPRECATED ##########
     Subsets W matrix according to regimes
 
-    ...
-
-    Attributes
-    ==========
+    Parameters
+    ----------
     w           : pysal W object
                   Spatial weights object
     regimes     : list
@@ -521,7 +510,7 @@ def w_regimes(w, regimes, regimes_set, transform=True, get_ids=None, min_n=None)
                   List of ordered regimes tags
 
     Returns
-    =======
+    -------
     w_regi      : dictionary
                   Dictionary containing the subsets of W according to regimes: [r1:w1, r2:w2, ..., rR:wR]
     '''
@@ -550,10 +539,8 @@ def w_regimes_union(w, w_regi_i, regimes_set):
     '''
     Combines the subsets of the W matrix according to regimes
 
-    ...
-
-    Attributes
-    ==========
+    Parameters
+    ----------
     w           : pysal W object
                   Spatial weights object
     w_regi_i    : dictionary
@@ -562,7 +549,7 @@ def w_regimes_union(w, w_regi_i, regimes_set):
                   List of ordered regimes tags
 
     Returns
-    =======
+    -------
     w_regi      : pysal W object
                   Spatial weights object containing the union of the subsets of W
     '''
@@ -583,10 +570,9 @@ def x2xsp(x, regimes, regimes_set):
     Convert X matrix with regimes into a sparse X matrix that accounts for the
     regimes
 
-    ...
 
-    Attributes
-    ==========
+    Parameters
+    ----------
     x           : np.array
                   Dense array of dimension (n, k) with values for all observations
     regimes     : list
@@ -595,7 +581,7 @@ def x2xsp(x, regimes, regimes_set):
     regimes_set : list
                   List of ordered regimes tags
     Returns
-    =======
+    -------
     xsp         : csr sparse matrix
                   Sparse matrix containing X variables properly aligned for
                   regimes regression. 'xsp' is of dimension (n, k*r) where 'r'

@@ -71,18 +71,19 @@ class BaseGM_Error(RegressionPropsY):
 
     >>> import libpysal
     >>> import numpy as np
+    >>> import spreg
     >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array([dbf.by_col('HOVAL')]).T
     >>> x = np.array([dbf.by_col('INC'), dbf.by_col('CRIME')]).T
     >>> x = np.hstack((np.ones(y.shape),x))
     >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
     >>> w.transform='r'
-    >>> model = BaseGM_Error(y, x, w=w.sparse)
+    >>> model = spreg.error_sp.BaseGM_Error(y, x, w=w.sparse)
     >>> np.around(model.betas, decimals=4)
-    array([[ 47.6946],
-           [  0.7105],
-           [ -0.5505],
-           [  0.3257]])
+    array([[47.6946],
+           [ 0.7105],
+           [-0.5505],
+           [ 0.3257]])
     """
 
     def __init__(self, y, x, w):
@@ -199,6 +200,7 @@ class GM_Error(BaseGM_Error):
 
     >>> import libpysal
     >>> import numpy as np
+    >>> from spreg import GM_Error
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
@@ -258,15 +260,15 @@ class GM_Error(BaseGM_Error):
     model.betas), you cannot perform inference on it (there are only three
     values in model.se_betas).
 
-    >>> print model.name_x
+    >>> print(model.name_x)
     ['CONSTANT', 'income', 'crime', 'lambda']
     >>> np.around(model.betas, decimals=4)
-    array([[ 47.6946],
-           [  0.7105],
-           [ -0.5505],
-           [  0.3257]])
+    array([[47.6946],
+           [ 0.7105],
+           [-0.5505],
+           [ 0.3257]])
     >>> np.around(model.std_err, decimals=4)
-    array([ 12.412 ,   0.5044,   0.1785])
+    array([12.412 ,  0.5044,  0.1785])
     >>> np.around(model.z_stat, decimals=6) #doctest: +SKIP
     array([[  3.84261100e+00,   1.22000000e-04],
            [  1.40839200e+00,   1.59015000e-01],
@@ -357,7 +359,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
 
     >>> import libpysal
     >>> import numpy as np
-    >>> from spreg import BaseGM_Endog_Error
+    >>> import spreg
     >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array([dbf.by_col('CRIME')]).T
     >>> x = np.array([dbf.by_col('INC')]).T
@@ -366,12 +368,12 @@ class BaseGM_Endog_Error(RegressionPropsY):
     >>> q = np.array([dbf.by_col('DISCBD')]).T
     >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
     >>> w.transform='r'
-    >>> model = BaseGM_Endog_Error(y, x, yend, q, w=w.sparse)
+    >>> model = spreg.error_sp.BaseGM_Endog_Error(y, x, yend, q, w=w.sparse)
     >>> np.around(model.betas, decimals=4)
-    array([[ 82.573 ],
-           [  0.581 ],
-           [ -1.4481],
-           [  0.3499]])
+    array([[82.573 ],
+           [ 0.581 ],
+           [-1.4481],
+           [ 0.3499]])
 
     '''
 
@@ -589,15 +591,15 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     squares estimation method that accounts for the endogeneity created by the
     endogenous variables included.
 
-    >>> print model.name_z
+    >>> print(model.name_z)
     ['CONSTANT', 'inc', 'hoval', 'lambda']
     >>> np.around(model.betas, decimals=4)
-    array([[ 82.573 ],
-           [  0.581 ],
-           [ -1.4481],
-           [  0.3499]])
+    array([[82.573 ],
+           [ 0.581 ],
+           [-1.4481],
+           [ 0.3499]])
     >>> np.around(model.std_err, decimals=4)
-    array([ 16.1381,   1.3545,   0.7862])
+    array([16.1381,  1.3545,  0.7862])
 
     '''
 
@@ -696,7 +698,6 @@ class BaseGM_Combo(BaseGM_Endog_Error):
     >>> import numpy as np
     >>> import libpysal
     >>> import spreg
-    >>> from spreg import BaseGM_Combo
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
@@ -706,23 +707,23 @@ class BaseGM_Combo(BaseGM_Endog_Error):
     >>> w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
     >>> w.transform = 'r'
     >>> w_lags = 1
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, None, None, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, None, None, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
 
     Example only with spatial lag
 
-    >>> reg = BaseGM_Combo(y, X, yend=yd2, q=q2, w=w.sparse)
+    >>> reg = spreg.error_sp.BaseGM_Combo(y, X, yend=yd2, q=q2, w=w.sparse)
 
     Print the betas
 
-    >>> print np.around(np.hstack((reg.betas[:-1],np.sqrt(reg.vm.diagonal()).reshape(3,1))),3)
-    [[ 39.059  11.86 ]
-     [ -1.404   0.391]
-     [  0.467   0.2  ]]
+    >>> print(np.around(np.hstack((reg.betas[:-1],np.sqrt(reg.vm.diagonal()).reshape(3,1))),3))
+    [[39.059 11.86 ]
+     [-1.404  0.391]
+     [ 0.467  0.2  ]]
 
     And lambda
 
-    >>> print 'Lamda: ', np.around(reg.betas[-1], 3)
+    >>> print('Lamda: ', np.around(reg.betas[-1], 3))
     Lamda:  [-0.048]
 
     Example with both spatial lag and other endogenous variables
@@ -736,11 +737,11 @@ class BaseGM_Combo(BaseGM_Endog_Error):
     >>> q = []
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
-    >>> yd2, q2 = spreg.utils.set_endog(y, X, w, yd, q, w_lags, True)
+    >>> yd2, q2 = spreg.set_endog(y, X, w, yd, q, w_lags, True)
     >>> X = np.hstack((np.ones(y.shape),X))
-    >>> reg = BaseGM_Combo(y, X, yd2, q2, w=w.sparse)
+    >>> reg = spreg.error_sp.BaseGM_Combo(y, X, yd2, q2, w=w.sparse)
     >>> betas = np.array([['CONSTANT'],['INC'],['HOVAL'],['W_CRIME']])
-    >>> print np.hstack((betas, np.around(np.hstack((reg.betas[:-1], np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)))
+    >>> print(np.hstack((betas, np.around(np.hstack((reg.betas[:-1], np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))))
     [['CONSTANT' '50.0944' '14.3593']
      ['INC' '-0.2552' '0.5667']
      ['HOVAL' '-0.6885' '0.3029']
@@ -880,6 +881,7 @@ class GM_Combo(BaseGM_Combo):
 
     >>> import numpy as np
     >>> import libpysal
+    >>> from spreg import GM_Combo
 
     Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
     This is the DBF associated with the Columbus shapefile.  Note that
@@ -942,16 +944,16 @@ class GM_Combo(BaseGM_Combo):
     squares estimation method that accounts for the endogeneity created by the
     spatial lag of the dependent variable. We can check the betas:
 
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['CONSTANT', 'income', 'W_crime', 'lambda']
-    >>> print np.around(np.hstack((reg.betas[:-1],np.sqrt(reg.vm.diagonal()).reshape(3,1))),3)
-    [[ 39.059  11.86 ]
-     [ -1.404   0.391]
-     [  0.467   0.2  ]]
+    >>> print(np.around(np.hstack((reg.betas[:-1],np.sqrt(reg.vm.diagonal()).reshape(3,1))),3))
+    [[39.059 11.86 ]
+     [-1.404  0.391]
+     [ 0.467  0.2  ]]
 
     And lambda:
 
-    >>> print 'lambda: ', np.around(reg.betas[-1], 3)
+    >>> print('lambda: ', np.around(reg.betas[-1], 3))
     lambda:  [-0.048]
 
     This class also allows the user to run a spatial lag+error model with the
@@ -972,17 +974,17 @@ class GM_Combo(BaseGM_Combo):
     And then we can run and explore the model analogously to the previous combo:
 
     >>> reg = GM_Combo(y, X, yd, q, w=w, name_x=['inc'], name_y='crime', name_yend=['hoval'], name_q=['discbd'], name_ds='columbus')
-    >>> print reg.name_z
+    >>> print(reg.name_z)
     ['CONSTANT', 'inc', 'hoval', 'W_crime', 'lambda']
     >>> names = np.array(reg.name_z).reshape(5,1)
-    >>> print np.hstack((names[0:4,:], np.around(np.hstack((reg.betas[:-1], np.sqrt(reg.vm.diagonal()).reshape(4,1))),4)))
+    >>> print(np.hstack((names[0:4,:], np.around(np.hstack((reg.betas[:-1], np.sqrt(reg.vm.diagonal()).reshape(4,1))),4))))
     [['CONSTANT' '50.0944' '14.3593']
      ['inc' '-0.2552' '0.5667']
      ['hoval' '-0.6885' '0.3029']
      ['W_crime' '0.4375' '0.2314']]
 
-    >>> print 'lambda: ', np.around(reg.betas[-1], 3)
-    lambda:  [ 0.254]
+    >>> print('lambda: ', np.around(reg.betas[-1], 3))
+    lambda:  [0.254]
 
     """
 

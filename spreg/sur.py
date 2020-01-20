@@ -143,15 +143,15 @@ def _sur_ols(reg):
     '''
     OLS estimation of SUR equations
 
-   Parameters
-   ----------
-   reg  : BaseSUR object
+    Parameters
+    ----------
+    reg  : BaseSUR object
 
-   Return
-   -------
-   reg.bOLS    : dictionary
+    Return
+    -------
+    reg.bOLS    : dictionary
                  with regression coefficients for each equation
-   reg.olsE    : array
+    reg.olsE    : array
                  N x n_eq array with OLS residuals for each equation
 
     '''
@@ -282,12 +282,16 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
     First import libpysal to load the spatial analysis tools.
 
     >>> import libpysal
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> from spreg import ML_Error_Regimes, sur_dictxy
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
     also reads data in CSV format.
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. In this example, equation 1
@@ -301,7 +305,7 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
     Although not required for this method, we can load a weights matrix file
     to allow for spatial diagnostics.
 
-    >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    >>> w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
     >>> w.transform='r'
 
     The SUR method requires data to be provided as dictionaries. PySAL
@@ -312,7 +316,7 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
     (bigXvars). All these will be created from th database (db) and lists
     of variables (y_var and x_var) created above.
 
-    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
+    >>> bigy,bigX,bigyvars,bigXvars = sur_dictxy(db,y_var,x_var)
 
     We can now run the regression and then have a summary of the output by typing:
     'print(reg.summary)'
@@ -477,43 +481,53 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         SUMMARY.SUR(reg=self, nonspat_diag=nonspat_diag, spat_diag=spat_diag, surlm=True, regimes=regimes)
 
 class BaseThreeSLS():
-    """ Base class for 3SLS estimation, two step
+    """
+    Base class for 3SLS estimation, two step
 
-        Parameters
-        ----------
+    Parameters
+    ----------
+    bigy       : dictionary
+                 with vector for dependent variable by equation
+    bigX       : dictionary
+                 with matrix of explanatory variables by equation
+                 (note, already includes constant term)
+    bigyend    : dictionary
+                 with matrix of endogenous variables by equation
+    bigq       : dictionary
+                 with matrix of instruments by equation
 
-        bigy       : dictionary with vector for dependent variable by equation
-        bigX       : dictionary with matrix of explanatory variables by equation
-                     (note, already includes constant term)
-        bigyend    : dictionary with matrix of endogenous variables by equation
-        bigq       : dictionary with matrix of instruments by equation
-
-
-        Attributes
-        ----------
-
-        bigy        : dictionary with y values
-        bigZ        : dictionary with matrix of exogenous and endogenous variables
-                      for each equation
-        bigZHZH     : dictionary with matrix of cross products Zhat_r'Zhat_s
-        bigZHy      : dictionary with matrix of cross products Zhat_r'y_end_s
-        n_eq        : number of equations
-        n           : number of observations in each cross-section
-        bigK        : vector with number of explanatory variables (including constant,
-                      exogenous and endogenous) for each equation
-        b2SLS       : dictionary with 2SLS regression coefficients for each equation
-        tslsE       : N x n_eq array with OLS residuals for each equation
-        b3SLS       : dictionary with 3SLS regression coefficients for each equation
-        varb        : variance-covariance matrix
-        sig         : Sigma matrix of inter-equation error covariances
-        bigE        : n by n_eq array of residuals
-        corr        : inter-equation 3SLS error correlation matrix
-
-
-        Methods
-        -------
-
-        tsls_2sls       : 2SLS estimation by equation
+    Attributes
+    ----------
+    bigy        : dictionary
+                  with y values
+    bigZ        : dictionary
+                  with matrix of exogenous and endogenous variables
+                  for each equation
+    bigZHZH     : dictionary
+                  with matrix of cross products Zhat_r'Zhat_s
+    bigZHy      : dictionary
+                  with matrix of cross products Zhat_r'y_end_s
+    n_eq        : int
+                  number of equations
+    n           : int
+                  number of observations in each cross-section
+    bigK        : array
+                  vector with number of explanatory variables (including constant,
+                  exogenous and endogenous) for each equation
+    b2SLS       : dictionary
+                  with 2SLS regression coefficients for each equation
+    tslsE       : array
+                  N x n_eq array with OLS residuals for each equation
+    b3SLS       : dictionary
+                  with 3SLS regression coefficients for each equation
+    varb        : array
+                  variance-covariance matrix
+    sig         : array
+                  Sigma matrix of inter-equation error covariances
+    bigE        : array
+                  n by n_eq array of residuals
+    corr        : array
+                  inter-equation 3SLS error correlation matrix
 
     """
     def __init__(self,bigy,bigX,bigyend,bigq):
@@ -650,12 +664,17 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
     First import libpysal to load the spatial analysis tools.
 
     >>> import libpysal
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Queen
+    >>> import spreg
+    >>> np.set_printoptions(suppress=True) #prevent scientific format
 
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
     also reads data in CSV format.
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"),'r')
+    >>> nat = load_example('Natregimes')
+    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. In this example, equation 1
@@ -676,9 +695,9 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
     dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
     additional instruments (q).
 
-    >>> bigy,bigX,bigyvars,bigXvars = pysal.spreg.sur_utils.sur_dictxy(db,y_var,x_var)
-    >>> bigyend,bigyendvars = pysal.spreg.sur_utils.sur_dictZ(db,yend_var)
-    >>> bigq,bigqvars = pysal.spreg.sur_utils.sur_dictZ(db,q_var)
+    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
+    >>> bigyend,bigyendvars = spreg.sur_dictZ(db,yend_var)
+    >>> bigq,bigqvars = spreg.sur_dictZ(db,q_var)
 
     We can now run the regression and then have a summary of the output by typing:
     print(reg.summary)
@@ -686,24 +705,24 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t
     and p-value of the parameters:
 
-    >>> reg = ThreeSLS(bigy,bigX,bigyend,bigq,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT")
+    >>> reg = spreg.ThreeSLS(bigy,bigX,bigyend,bigq,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT")
     >>> reg.b3SLS
-    {0: array([[ 6.92426353],
-           [ 1.42921826],
-           [ 0.00049435],
-           [ 3.5829275 ]]), 1: array([[ 7.62385875],
+    {0: array([[6.92426353],
+           [1.42921826],
+           [0.00049435],
+           [3.5829275 ]]), 1: array([[ 7.62385875],
            [ 1.65031181],
            [-0.21682974],
            [ 3.91250428]])}
 
     >>> reg.tsls_inf
-    {0: array([[  0.23220853,  29.81916157,   0.        ],
-           [  0.10373417,  13.77770036,   0.        ],
-           [  0.03086193,   0.01601807,   0.98721998],
-           [  0.11131999,  32.18584124,   0.        ]]), 1: array([[  0.28739415,  26.52753638,   0.        ],
-           [  0.09597031,  17.19606554,   0.        ],
-           [  0.04089547,  -5.30204786,   0.00000011],
-           [  0.13586789,  28.79638723,   0.        ]])}
+    {0: array([[ 0.23220853, 29.81916157,  0.        ],
+           [ 0.10373417, 13.77770036,  0.        ],
+           [ 0.03086193,  0.01601807,  0.98721998],
+           [ 0.11131999, 32.18584124,  0.        ]]), 1: array([[ 0.28739415, 26.52753638,  0.        ],
+           [ 0.09597031, 17.19606554,  0.        ],
+           [ 0.04089547, -5.30204786,  0.00000011],
+           [ 0.13586789, 28.79638723,  0.        ]])}
 
     """
 
@@ -845,15 +864,17 @@ if __name__ == '__main__':
     import numpy as np
     import libpysal
     from .sur_utils import sur_dictxy,sur_dictZ
+    from libpysal.examples import load_example
 
-    db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'), 'r')
+    nat = load_example('Natregimes')
+    db = libpysal.io.open(nat.get_path('NAT.dbf'), 'r')
     y_var = ['HR80','HR90']
     x_var = [['PS80','UE80'],['PS90','UE90']]
     regimes = db.by_col('SOUTH')
 
     #Example SUR
     #"""
-    w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+    w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
     w.transform='r'
     bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(db,y_var,x_var)
     reg0 = SUR(bigy0,bigX0,w=w,regimes=None,name_bigy=bigyvars0,name_bigX=bigXvars0,\
