@@ -63,7 +63,7 @@ Regimes models are variants of spatial regression models which allow for structu
 Seemingly-Unrelated Regressions
 --------------------------------
 
-Seeimingly-unrelated regression models are a generalization of linear regression. These models (and their spatial generalizations) allow for correlation in the residual terms between groups that use the same model. In spatial Seeimingly-Unrelated Regressions, the error terms across groups are allowed to exhibit a structured type of correlation: spatail correlation. 
+Seemingly-unrelated regression models are a generalization of linear regression. These models (and their spatial generalizations) allow for correlation in the residual terms between groups that use the same model. In spatial Seeimingly-Unrelated Regressions, the error terms across groups are allowed to exhibit a structured type of correlation: spatial correlation. 
 
 .. autosummary::
    :toctree: generated/
@@ -73,6 +73,16 @@ Seeimingly-unrelated regression models are a generalization of linear regression
     spreg.SURerrorML
     spreg.SURlagIV
     spreg.ThreeSLS
+
+Spatial Panel Models
+--------------------
+
+Spatial panel models allow for evaluating correlation in both spatial and time dimensions. 
+
+.. autosummary::
+   :toctree: generated/
+    
+    spreg.GM_KKP
 
 Diagnostics
 -----------

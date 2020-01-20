@@ -1,3 +1,4 @@
+
 __version__ = "1.1.1"
 from .ols import *
 from .diagnostics import *
@@ -28,3 +29,4 @@ from .sur_utils import *
 from .utils import *
 from .regimes import *
 from .sputils import *
+from .sp_panels import *
