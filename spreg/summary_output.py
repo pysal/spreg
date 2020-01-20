@@ -685,6 +685,20 @@ def SUR(reg, nonspat_diag=True, spat_diag=False, regimes=False,\
     summary_SUR(reg=reg)
 
 
+def GM_Panels(reg, vm, w, regimes=False):
+    reg.__summary = {}
+    # compute diagnostics and organize summary output
+    beta_diag(reg, None)
+    # build coefficients table body
+    beta_position = summary_coefs_somex(reg, reg.z_stat)
+    summary_coefs_lambda(reg, reg.z_stat)
+    if regimes:
+        summary_regimes(reg)
+    summary_warning(reg)
+    summary(reg=reg, vm=vm, instruments=False,
+            nonspat_diag=False, spat_diag=False)
+
+
 ##############################################################################
 
 
@@ -899,19 +913,19 @@ def summary_SUR(reg, short_intro=True):
     reg.summary = summary
 
 
-def _get_var_indices(reg, lambd=False):
+def _get_var_indices(reg, zt_stat, lambd=False):
     try:
         var_names = reg.name_z
     except:
         var_names = reg.name_x
     last_v = len(var_names)
     if lambd:
-        last_v += -1
+        last_v += len(zt_stat)-len(reg.betas)
     indices = []
     try:
         kf = reg.kf
         if lambd:
-            kf += -1
+            kf += -len(zt_stat)-len(reg.betas)
         krex = reg.kr - reg.kryd
         try:
             kfyd = reg.yend.shape[1] - reg.nr * reg.kryd
@@ -1016,7 +1030,7 @@ def summary_coefs_intro(reg):
 
 def summary_coefs_allx(reg, zt_stat, lambd=False):
     strSummary = ""
-    var_names, indices = _get_var_indices(reg, lambd)
+    var_names, indices = _get_var_indices(reg, zt_stat, lambd)
     for i in indices:
         strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"   \
             % (var_names[i], reg.betas[i][0], reg.std_err[i], zt_stat[i][0], zt_stat[i][1])
@@ -1073,7 +1087,7 @@ def summary_coefs_somex(reg, zt_stat):
     the lambda term
     """
     strSummary = ""
-    var_names, indices = _get_var_indices(reg, lambd=True)
+    var_names, indices = _get_var_indices(reg, zt_stat, lambd=True)
     for i in indices:
         strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"   \
             % (reg.name_x[i], reg.betas[i][0], reg.std_err[i], zt_stat[i][0], zt_stat[i][1])
@@ -1084,7 +1098,7 @@ def summary_coefs_somex(reg, zt_stat):
 '''
 def summary_coefs_yend(reg, zt_stat, lambd=False):
     strSummary = ""
-    indices = _get_var_indices(reg, lambd) 
+    indices = _get_var_indices(reg, zt_stat, lambd) 
     for i in indices:
         strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"   \
                      % (reg.name_z[i],reg.betas[i][0],reg.std_err[i],zt_stat[i][0],zt_stat[i][1])              
@@ -1101,8 +1115,11 @@ def summary_coefs_lambda(reg, zt_stat):
         reg.__summary['summary_coefs'] += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"   \
             % (name_var[-1], reg.betas[-1][0], reg.std_err[-1], zt_stat[-1][0], zt_stat[-1][1])
     else:
-        reg.__summary[
-            'summary_coefs'] += "%20s    %12.7f    \n" % (name_var[-1], reg.betas[-1][0])
+        n_coef = len(reg.betas) - len(zt_stat)
+        for i in range(n_coef):
+            k = i - n_coef
+            reg.__summary[
+            'summary_coefs'] += "%20s    %12.7f    \n" % (name_var[k], reg.betas[k][0])
 
 
 def summary_coefs_instruments(reg, sur=None):

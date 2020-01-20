@@ -392,6 +392,7 @@ def check_y(y, n):
         raise Exception("y must be a single column array matching the length of other arrays")
     return y
 
+
 def check_weights(w, y, w_required=False, time=False):
     """Check if the w parameter passed by the user is a libpysal.W object and
     check that its dimensionality matches the y parameter.  Note that this
