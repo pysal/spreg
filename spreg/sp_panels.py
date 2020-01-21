@@ -175,7 +175,8 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     data to be passed in as numpy arrays, hence the user can read their
     data in using any method.  
 
-    >>> db = libpysal.io.open(libpysal.examples.get_path('NAT.dbf'),'r')
+    >>> nat = libpysal.examples.load_example('NCOVR')
+    >>> db = libpysal.io.open(nat.get_path("NAT.dbf"),'r')
 
     Extract the HR (homicide rates) data in the 70's, 80's and 90's from the DBF file 
     and make it the dependent variable for the regression. Note that the data can also
@@ -228,6 +229,30 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     either request a printout of the results with the command print(reg.summary) or
     check out the individual attributes of GM_KKP:
 
+    >>> print(reg.summary)
+    REGRESSION
+    ----------
+    SUMMARY OF OUTPUT: GM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP)
+    ----------------------------------------------------------------------
+    Data set            :     unknown
+    Weights matrix      :     unknown
+    Dependent Variable  :          HR                Number of Observations:        3085
+    Mean dependent var  :      6.4983                Number of Variables   :           3
+    S.D. dependent var  :      6.9529                Degrees of Freedom    :        3082
+    Pseudo R-squared    :      0.3248
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     z-Statistic     Probability
+    ------------------------------------------------------------------------------------
+                CONSTANT       6.4922156       0.1126713      57.6208645       0.0000000
+                      RD       3.6244575       0.0877475      41.3055526       0.0000000
+                      PS       1.3118778       0.0852516      15.3883054       0.0000000
+                  lambda       0.4177759    
+                sigma2_v      22.8190821    
+                sigma2_1      39.9099294    
+    ------------------------------------------------------------------------------------
+    ================================ END OF REPORT =====================================
+
     >>> print(reg.name_x)
     ['CONSTANT', 'RD', 'PS', 'lambda', ' sigma2_v', 'sigma2_1']
 
@@ -264,17 +289,21 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
             self.regimes = regimes
             self.name_regimes = USER.set_name_ds(name_regimes)
             regimes_l = self._set_regimes(w, bigy.shape[0])
-            print(x_constant.shape, len(regimes_l))      
+            self.name_x_r = self.name_x
             x_constant, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
                                  regimes_l, constant_regi=False, cols2regi='all', names=self.name_x)
-            self.title += " WITH REGIMES"
 
         BaseGM_KKP.__init__(self, bigy, x_constant, w, full_weights=full_weights)
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x.extend(['lambda',' sigma2_v', 'sigma2_1'])
         self.name_w = USER.set_name_w(name_w, w)
-        SUMMARY.GM_Panels(reg=self, w=w, vm=vm)
+        if regimes is not None:
+            self.kf += 3
+            self.chow = REGI.Chow(self)
+            self.title += " WITH REGIMES"
+            regimes = True
+        SUMMARY.GM_Panels(reg=self, w=w, vm=vm, regimes=regimes)
 
     def _set_regimes(self,w,n_rows):
         self.constant_regi = 'many'
