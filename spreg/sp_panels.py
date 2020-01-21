@@ -11,6 +11,7 @@ from . import ols as OLS
 from .utils import optim_moments, RegressionPropsY, get_spFilter, spdot
 from . import user_output as USER
 from . import summary_output as SUMMARY
+from . import regimes as REGI
 #import warnings
 
 
@@ -106,7 +107,7 @@ class BaseGM_KKP(RegressionPropsY):
         self.n_eq, self.n = T, N
         self._cache = {}
 
-class GM_KKP(BaseGM_KKP):
+class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
 
     '''
     GMM method for a spatial random effects panel model based on
@@ -250,21 +251,43 @@ class GM_KKP(BaseGM_KKP):
     '''
 
     def __init__(self, y, x, w, full_weights=False,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+                 regimes=None, vm=False, name_y=None, name_x=None,
+                 name_w=None, name_ds=None, name_regimes=None):
         n_rows = USER.check_arrays(y, x)
         bigy, bigx, name_y, name_x = _get_panel_data(y, x, w, name_y, name_x)
         USER.check_weights(w, bigy, w_required=True, time=True)
         x_constant = USER.check_constant(bigx)
-        BaseGM_KKP.__init__(
-            self, bigy, x_constant, w, full_weights=full_weights)
         self.title = "GM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP)"
+        self.name_x = USER.set_name_x(name_x, bigx)
+
+        if regimes is not None:
+            self.regimes = regimes
+            self.name_regimes = USER.set_name_ds(name_regimes)
+            regimes_l = self._set_regimes(w, bigy.shape[0])
+            print(x_constant.shape, len(regimes_l))      
+            x_constant, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
+                                 regimes_l, constant_regi=False, cols2regi='all', names=self.name_x)
+            self.title += " WITH REGIMES"
+
+        BaseGM_KKP.__init__(self, bigy, x_constant, w, full_weights=full_weights)
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, bigx)
         self.name_x.extend(['lambda',' sigma2_v', 'sigma2_1'])
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Panels(reg=self, w=w, vm=vm)
+
+    def _set_regimes(self,w,n_rows):
+        self.constant_regi = 'many'
+        self.cols2regi = 'all'
+        self.regime_err_sep = False
+        self.regimes_set = REGI._get_regimes_set(self.regimes)
+        if len(self.regimes) == w.n:
+            regimes_l = self.regimes * (n_rows//w.n)
+        elif len(self.regimes) == n_rows:
+            regimes_l = self.regimes
+        else:
+            raise Exception("The lenght of 'regimes' must be either equal to n or n*t.")
+        return regimes_l
 
 def _moments_kkp(ws, u, i, trace_w2=None):
     '''
