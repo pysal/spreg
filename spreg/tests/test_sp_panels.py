@@ -79,6 +79,10 @@ class Test_GM_KKP(unittest.TestCase):
         np.testing.assert_allclose(np.sqrt(reg.vm.diagonal()),np.array([0.158986, 0.157543, 0.104128, 0.165254, 0.117737, 0.136666]),RTOL)
         np.testing.assert_equal(reg.name_x,  ['0_CONSTANT', '0_RD', '0_PS', '1_CONSTANT', '1_RD', '1_PS', 'lambda', ' sigma2_v', 'sigma2_1'])
         np.testing.assert_equal(reg.name_y,  'HR')
+        np.testing.assert_allclose(reg.chow.regi,np.array([[1.420430e+02, 9.516507e-33],
+       [7.311490e-02, 7.868543e-01],
+       [9.652492e+00, 1.890949e-03]]),RTOL)
+        np.testing.assert_allclose(reg.chow.joint[0],158.7225,RTOL)
 
 if __name__ == '__main__':
     unittest.main()
