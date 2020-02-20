@@ -6,7 +6,8 @@ from ..sur_utils import sur_dictxy
 from ..sur_error import SURerrorML, SURerrorGM
 from .test_sur import dict_compare
 from libpysal.common import RTOL
-ATOL = 1e-12
+from libpysal.common import ATOL
+
 
 
 class Test_SUR_error(unittest.TestCase):
