@@ -55,7 +55,7 @@ install:
 script:
   - python setup.py sdist >/dev/null
   - python setup.py install
-  - pytest --cov geosnap; 
+  - pytest --cov spreg; 
 notifications:
     email:
         recipients:
