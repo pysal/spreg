@@ -28,10 +28,10 @@ class BaseGM_KKP(RegressionPropsY):
     ----------
     y          : array
                  n*tx1 array for dependent variable
-    X          : array
+    x          : array
                  Two dimensional array with n*t rows and one column for each
                  independent (exogenous) variable
-                 (note,must already include constant term)
+                 (note: must already include constant term)
     w          : spatial weights object
                  Spatial weights matrix
     full_weights: boolean
@@ -41,16 +41,6 @@ class BaseGM_KKP(RegressionPropsY):
        
     Attributes
     ----------
-    n_eq       : int
-                 number of time periods
-    n          : int
-                 number of observations in each cross-section
-    bigy       : dictionary
-                 with vectors of dependent variable, one for
-                 each time period
-    bigX       : dictionary
-                 with matrices of explanatory variables,
-                 one for each time period
     betas        : array
                    kx1 array of estimated coefficients
     u            : array
@@ -59,17 +49,30 @@ class BaseGM_KKP(RegressionPropsY):
                    nx1 array of spatially filtered residuals
     predy        : array
                    nx1 array of predicted y values
-      
+    n            : integer
+                   Number of observations
+    t            : integer
+                   Number of time periods
+    k            : integer
+                   Number of variables for which coefficients are estimated
+                   (including the constant)
+    y            : array
+                   nx1 array for dependent variable
+    x            : array
+                   Two dimensional array with n rows and one column for each
+                   independent (exogenous) variable, including the constant
+    vm           : array
+                   Variance covariance matrix (kxk)   
     """  
     '''
 
-    def __init__(self,bigy,bigX,w,full_weights=False):
+    def __init__(self,y,x,w,full_weights=False):
 
         # 1a. OLS --> \tilde{\delta}
-        ols = OLS.BaseOLS(y=bigy, x=bigX)
+        ols = OLS.BaseOLS(y=y, x=x)
         self.x, self.y, self.n, self.k, self.xtx = ols.x, ols.y, ols.n, ols.k, ols.xtx
         N = w.n
-        T = bigy.shape[0]//N
+        T = y.shape[0]//N
         moments,trace_w2 = _moments_kkp(w.sparse, ols.u, 0)
         lambda1,sig_v = optim_moments(moments, all_par=True)
         Tw = SP.kron(SP.identity(T),w.sparse)
@@ -85,7 +88,7 @@ class BaseGM_KKP(RegressionPropsY):
         else:
             Tau = SP.identity(3)        
         Xi = SP.kron(Xi_a,Tau)
-        moments_b,trace_w2 = _moments_kkp(w.sparse, ols.u, 1,trace_w2)
+        moments_b,_ = _moments_kkp(w.sparse, ols.u, 1,trace_w2)
         G = np.vstack((np.hstack((moments[0],np.zeros((3,1)))),moments_b[0]))
         moments6 = [G,np.vstack((moments[1],moments_b[1]))]
         lambda2,sig_vb,sig_1b = optim_moments(moments6, vcX=Xi.toarray(), all_par=True, start=[lambda1,sig_v,sig_1])
@@ -95,8 +98,8 @@ class BaseGM_KKP(RegressionPropsY):
         gls_w = SP.identity(N*T) - theta*Q1
 
         #With omega
-        xs = gls_w.dot(get_spFilter(w, lambda2, bigX))
-        ys = gls_w.dot(get_spFilter(w, lambda2, bigy))
+        xs = gls_w.dot(get_spFilter(w, lambda2, x))
+        ys = gls_w.dot(get_spFilter(w, lambda2, y))
         ols_s = OLS.BaseOLS(y=ys, x=xs)
         self.predy = spdot(self.x, ols_s.betas)
         self.u = self.y - self.predy
@@ -104,7 +107,7 @@ class BaseGM_KKP(RegressionPropsY):
         self.betas = np.vstack((ols_s.betas, lambda2, sig_vb, sig_1b))
         self.e_filtered = self.u - lambda2 * SP.kron(SP.identity(T),
             w.sparse).dot(self.u)
-        self.n_eq, self.n = T, N
+        self.t, self.n = T, N
         self._cache = {}
 
 class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
@@ -117,7 +120,7 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     ----------
     y          : array
                  n*tx1 or nxt array for dependent variable
-    X          : array
+    x          : array
                  Two dimensional array with n*t rows and k columns for
                  independent (exogenous) variable or n rows and k*t columns
                  (note, must not include a constant term)
@@ -127,6 +130,12 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
                   Considers different weights for each of the 6 moment 
                   conditions if True or only 2 sets of weights for the
                   first 3 and the last 3 moment conditions if False (default)
+    regimes      : list
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'y'.
+    vm           : boolean
+                   If True, include variance-covariance matrix in summary
+                   results
     name_y       : string or list of strings
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -135,19 +144,11 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
                    Name of weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    name_regimes : string
+                   Name of regime variable for use in the output
        
     Attributes
     ----------
-    n_eq       : int
-                 number of time periods
-    n          : int
-                 number of observations in each cross-section
-    bigy       : dictionary
-                 with vectors of dependent variable, one for
-                 each time period
-    bigX       : dictionary
-                 with matrices of explanatory variables,
-                 one for each time period
     betas        : array
                    kx1 array of estimated coefficients
     u            : array
@@ -156,7 +157,38 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
                    nx1 array of spatially filtered residuals
     predy        : array
                    nx1 array of predicted y values
-      
+    n            : integer
+                   Number of observations
+    t            : integer
+                   Number of time periods
+    k            : integer
+                   Number of variables for which coefficients are estimated
+                   (including the constant)
+    y            : array
+                   nx1 array for dependent variable
+    x            : array
+                   Two dimensional array with n rows and one column for each
+                   independent (exogenous) variable, including the constant
+    vm           : array
+                   Variance covariance matrix (kxk)
+    chow         : tuple
+                   Contains 2 elements. 1: Pair of Wald statistic and p-value 
+                   for the setup of global regime stability. 2: array with Wald
+                   statistic (col 0) and its p-value (col 1) for each beta that 
+                   varies across regimes. 
+                   Exists only if regimes is not None.
+    name_y       : string
+                   Name of dependent variable for use in output
+    name_x       : list of strings
+                   Names of independent variables for use in output
+    name_w       : string
+                   Name of weights matrix for use in output
+    name_ds      : string
+                   Name of dataset for use in output
+    name_regimes : string
+                   Name of regime variable for use in the output
+    title        : string
+                   Name of the regression method used
     """  
 
     Examples
@@ -244,12 +276,12 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     ------------------------------------------------------------------------------------
                 Variable     Coefficient       Std.Error     z-Statistic     Probability
     ------------------------------------------------------------------------------------
-                CONSTANT       6.4922156       0.1126713      57.6208645       0.0000000
-                      RD       3.6244575       0.0877475      41.3055526       0.0000000
-                      PS       1.3118778       0.0852516      15.3883054       0.0000000
+                CONSTANT       6.4922156       0.1126713      57.6208690       0.0000000
+                      RD       3.6244575       0.0877475      41.3055536       0.0000000
+                      PS       1.3118778       0.0852516      15.3883058       0.0000000
                   lambda       0.4177759    
-                sigma2_v      22.8190821    
-                sigma2_1      39.9099294    
+                sigma2_v      22.8190822    
+                sigma2_1      39.9099323    
     ------------------------------------------------------------------------------------
     ================================ END OF REPORT =====================================
 
@@ -305,7 +337,7 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
             regimes = True
         SUMMARY.GM_Panels(reg=self, w=w, vm=vm, regimes=regimes)
 
-    def _set_regimes(self,w,n_rows):
+    def _set_regimes(self,w,n_rows): #Must add case for regime_err_sep = True
         self.constant_regi = 'many'
         self.cols2regi = 'all'
         self.regime_err_sep = False
@@ -334,14 +366,17 @@ def _moments_kkp(ws, u, i, trace_w2=None):
     
     i		    : integer
                   0 if Q0, 1 if Q1
+    trace_w2    : float
+                  trace of WW. Computed in 1st step and saved for step 2.
 
-    Attributes
-    ----------
+    Returns
+    -------
 
     moments     : list
                   List of two arrays corresponding to the matrices 'G' and
                   'g', respectively.
-
+    trace_w2    : float
+                  trace of WW. Computed in 1st step and saved for step 2.
 
     '''
     N = ws.shape[0]
@@ -377,6 +412,17 @@ def _moments_kkp(ws, u, i, trace_w2=None):
 
 
 def _get_Tau(ws, trace_w2):
+    '''
+    Computes Tau as in :cite:`KKP2007`.
+    ...
+    
+    Parameters
+    ----------
+    ws          : Sparse matrix
+                  Spatial weights sparse matrix   
+    trace_w2    : float
+                  trace of WW. Computed in 1st step of _moments_kkp
+    '''
     N = ws.shape[0]
     T12 = 2*trace_w2/N
     wtw = ws.T.dot(ws)
@@ -391,6 +437,20 @@ def _get_Tau(ws, trace_w2):
 def _get_panel_data(y, x, w, name_y, name_x):
     '''
     Performs some checks on the data structure and converts from wide to long if needed.
+    ...
+    
+    Parameters
+    ----------
+    y          : array
+                 n*tx1 or nxt array for dependent variable
+    x          : array
+                 Two dimensional array with n*t rows and k columns for
+                 independent (exogenous) variable or n rows and k*t columns
+                 (note, must not include a constant term)
+    name_y       : string or list of strings
+                   Name of dependent variable for use in output
+    name_x       : list of strings
+                   Names of independent variables for use in output
     '''
 
     if y.shape[0]/w.n != y.shape[0]//w.n:
