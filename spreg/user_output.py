@@ -382,9 +382,12 @@ def check_y(y, n):
         raise Exception("y must be a numpy array")
     shape = y.shape
     if len(shape) > 2:
-        raise Exception("all input arrays must have exactly two dimensions")
+        raise Exception("all input arrays must have two dimensions")
     if len(shape) == 1:
-        raise Exception("all input arrays must have exactly two dimensions")
+        try:
+            y = y.reshape(n,1)
+        except:
+            raise Exception("y must be a single column array matching the length of other arrays")
     if shape != (n, 1):
         raise Exception("y must be a single column array matching the length of other arrays")
 
