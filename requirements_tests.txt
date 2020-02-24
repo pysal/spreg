@@ -1,5 +1,4 @@
-nose
-nose-progressive
-nose-exclude
+pytest
+pytest-cov
 coverage
 coveralls
