@@ -1,4 +1,3 @@
-
 __version__ = "1.1.1"
 from .ols import *
 from .diagnostics import *
