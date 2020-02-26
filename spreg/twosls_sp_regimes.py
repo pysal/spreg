@@ -433,7 +433,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                  name_w=None, name_gwk=None, name_ds=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
