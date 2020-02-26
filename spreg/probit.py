@@ -802,7 +802,7 @@ class Probit(BaseProbit):
             spat_diag=False):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         if w != None:
             USER.check_weights(w, y)
             spat_diag = True

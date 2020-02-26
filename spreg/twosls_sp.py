@@ -465,7 +465,7 @@ class GM_Lag(BaseGM_Lag):
                  name_w=None, name_gwk=None, name_ds=None):
 
         n = USER.check_arrays(x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
         x_constant = USER.check_constant(x)        

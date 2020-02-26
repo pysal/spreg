@@ -551,7 +551,7 @@ class ML_Lag(BaseML_Lag):
                  spat_diag=False, vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None):
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant = USER.check_constant(x)
         method = method.upper()

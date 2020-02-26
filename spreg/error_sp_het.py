@@ -338,7 +338,7 @@ class GM_Error_Het(BaseGM_Error_Het):
                  name_w=None, name_ds=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant = USER.check_constant(x)
         BaseGM_Error_Het.__init__(
@@ -751,7 +751,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                  name_w=None, name_ds=None):
 
         n = USER.check_arrays(y, x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant = USER.check_constant(x)
         BaseGM_Endog_Error_Het.__init__(self, y=y, x=x_constant, yend=yend,
@@ -1176,7 +1176,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                  name_w=None, name_ds=None):
 
         n = USER.check_arrays(y, x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         yend2, q2 = set_endog(y, x, w, yend, q, w_lags, lag_q)
         x_constant = USER.check_constant(x)

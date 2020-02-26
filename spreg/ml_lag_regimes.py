@@ -296,7 +296,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                  name_w=None, name_ds=None, name_regimes=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_spat_diag(spat_diag, w)
         name_y = USER.set_name_y(name_y)
