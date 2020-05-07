@@ -442,13 +442,13 @@ class TSLS(BaseTSLS):
         USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
         BaseTSLS.__init__(self, y=y, x=x_constant, yend=yend, q=q,
                           robust=robust, gwk=gwk, sig2n_k=sig2n_k)
         self.title = "TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_q = USER.set_name_q(name_q, q)
