@@ -315,19 +315,20 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         self.n = n
         self.y = y
 
-        x_constant = USER.check_constant(x)
-        name_x = USER.set_name_x(name_x, x)
-        self.name_x_r = name_x
+        set_warn(self,warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)
+        self.name_x_r = USER.set_name_x(name_x, x_constant)
 
-        cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x)
+
+        cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant)
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
-        USER.check_regimes(self.regimes_set, self.n, x.shape[1])
+        USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
         self.regime_err_sep = regime_err_sep
 
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
-                self._error_regimes_multi(y, x, regimes, w, cores,
+                self._error_regimes_multi(y, x_constant, regimes, w, cores,
                                           max_iter, epsilon, A1, cols2regi, vm, name_x)
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
@@ -401,14 +402,16 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work_error,args=(y,x,regi_ids,r,w,max_iter,epsilon,A1,self.name_ds,self.name_y,name_x+['lambda'],self.name_w,self.name_regimes, ))
                 is_win = False
         """
-        for r in self.regimes_set:
+        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        self.name_x_r = name_x
+         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
                 results_p[r] = pool.apply_async(_work_error, args=(
-                    y, x, regi_ids, r, w, max_iter, epsilon, A1, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes, ))
+                    y, x_constant, regi_ids, r, w, max_iter, epsilon, A1, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes, ))
             else:
                 results_p[r] = _work_error(
-                    *(y, x, regi_ids, r, w, max_iter, epsilon, A1, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes))
+                    *(y, x_constant, regi_ids, r, w, max_iter, epsilon, A1, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes))
 
         self.kryd = 0
         self.kr = len(cols2regi) + 1
@@ -801,23 +804,26 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         self.n = n
         self.y = y
 
-        name_x = USER.set_name_x(name_x, x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
+        set_warn(self,warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)
+
         if summ:
             name_yend = USER.set_name_yend(name_yend, yend)
             self.name_y = USER.set_name_y(name_y)
             name_q = USER.set_name_q(name_q, q)
-        self.name_x_r = name_x + name_yend
+        self.name_x_r = USER.set_name_x(name_x, x_constant) + name_yend
 
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x, yend=yend)
+            constant_regi, cols2regi, x_constant, yend=yend)
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
-        USER.check_regimes(self.regimes_set, self.n, x.shape[1])
+        USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
         self.regime_err_sep = regime_err_sep
 
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
-                self._endog_error_regimes_multi(y, x, regimes, w, yend, q, cores,
+                self._endog_error_regimes_multi(y, x_constant, regimes, w, yend, q, cores,
                                                 max_iter, epsilon, A1, cols2regi, vm,
                                                 name_x, name_yend, name_q, add_lag)
             else:
@@ -919,13 +925,15 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work_endog_error,args=(y,x,yend,q,regi_ids,r,w,max_iter,epsilon,A1,self.name_ds,self.name_y,name_x,name_yend,name_q,self.name_w,self.name_regimes,add_lag, ))
                 is_win = False
         """
+        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        self.name_x_r = name_x
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
                 results_p[r] = pool.apply_async(_work_endog_error, args=(
-                    y, x, yend, q, regi_ids, r, w, max_iter, epsilon, A1, self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes, add_lag, ))
+                    y, x_constant, yend, q, regi_ids, r, w, max_iter, epsilon, A1, self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes, add_lag, ))
             else:
-                results_p[r] = _work_endog_error(*(y, x, yend, q, regi_ids, r, w, max_iter, epsilon, A1,
+                results_p[r] = _work_endog_error(*(y, x_constant, yend, q, regi_ids, r, w, max_iter, epsilon, A1,
                                                    self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes, add_lag))
 
         self.kryd, self.kf = 0, 0
@@ -1365,7 +1373,9 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        name_x = USER.set_name_x(name_x, x, constant=True)
+        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
+        set_warn(self,warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
@@ -1373,10 +1383,10 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
             USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
 
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x, yend=yend, add_cons=False)
+            constant_regi, cols2regi, x_constant, yend=yend, add_cons=False)
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
-        USER.check_regimes(self.regimes_set, n, x.shape[1])
+        USER.check_regimes(self.regimes_set, n, x_constant.shape[1])
         self.regime_err_sep = regime_err_sep
         self.regime_lag_sep = regime_lag_sep
 
@@ -1389,10 +1399,10 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
             add_lag = False
             if regime_err_sep == True:
                 raise Exception("For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes.")
-            yend, q = set_endog(y, x, w, yend, q, w_lags, lag_q)
+            yend, q = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
         name_yend.append(USER.set_name_yend_sp(self.name_y))
 
-        GM_Endog_Error_Hom_Regimes.__init__(self, y=y, x=x, yend=yend,
+        GM_Endog_Error_Hom_Regimes.__init__(self, y=y, x=x_constant, yend=yend,
                                             q=q, regimes=regimes, w=w, vm=vm, constant_regi=constant_regi,
                                             cols2regi=cols2regi, regime_err_sep=regime_err_sep,
                                             max_iter=max_iter, epsilon=epsilon, A1=A1, cores=cores,
@@ -1414,9 +1424,8 @@ def _work_error(y, x, regi_ids, r, w, max_iter, epsilon, A1, name_ds, name_y, na
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
-    x_constant = USER.check_constant(x_r)
     model = BaseGM_Error_Hom(
-        y_r, x_constant, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1)
+        y_r, x_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1)
     set_warn(model, warn)
     model.w = w_r
     model.title = "SPATIALLY WEIGHTED LEAST SQUARES ESTIMATION (HOM) - REGIME %s" % r
@@ -1439,10 +1448,10 @@ def _work_endog_error(y, x, yend, q, regi_ids, r, w, max_iter, epsilon, A1, name
         yend_r, q_r = None, None
     if add_lag != False:
         yend_r, q_r = set_endog(
-            y_r, x_r, w_r, yend_r, q_r, add_lag[0], add_lag[1])
+            y_r, x_r[:,1:], w_r, yend_r, q_r, add_lag[0], add_lag[1])
     x_constant = USER.check_constant(x_r)
     model = BaseGM_Endog_Error_Hom(
-        y_r, x_constant, yend_r, q_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1)
+        y_r, x_r, yend_r, q_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1)
     set_warn(model, warn)
     if add_lag != False:
         model.rho = model.betas[-2]
