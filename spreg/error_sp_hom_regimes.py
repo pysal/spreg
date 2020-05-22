@@ -13,6 +13,7 @@ from .utils import power_expansion, set_endog, iter_msg, sp_att
 from .utils import get_A1_hom, get_A2_hom, get_A1_het, optim_moments
 from .utils import get_spFilter, get_lags, _moments2eqs
 from .utils import spdot, RegressionPropsY, set_warn
+from .sputils import sphstack
 from .ols import BaseOLS
 from .twosls import BaseTSLS
 from .error_sp_hom import BaseGM_Error_Hom, BaseGM_Endog_Error_Hom, moments_hom, get_vc_hom, get_omega_hom, get_omega_hom_ols
@@ -315,6 +316,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         self.n = n
         self.y = y
 
+        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
         set_warn(self,warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.name_x_r = USER.set_name_x(name_x, x_constant)
@@ -333,6 +335,8 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant)
             if A1 == 'hom':
                 wA1 = get_A1_hom(w.sparse)
             elif A1 == 'hom_sc':
@@ -829,7 +833,8 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
-            x_constant = USER.check_constant(x)
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant)
             q, name_q = REGI.Regimes_Frame.__init__(self, q,
                                                     regimes, constant_regi=None, cols2regi='all', names=name_q)
             x, name_x = REGI.Regimes_Frame.__init__(self, x_constant,
@@ -838,7 +843,6 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             yend2, name_yend = REGI.Regimes_Frame.__init__(self, yend,
                                                            regimes, constant_regi=None,
                                                            cols2regi=cols2regi, yend=True, names=name_yend)
-
             if A1 == 'hom':
                 wA1 = get_A1_hom(w.sparse)
             elif A1 == 'hom_sc':
@@ -926,7 +930,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 is_win = False
         """
         x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
-        self.name_x_r = name_x
+        self.name_x_r = name_x + name_yend
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
@@ -1399,7 +1403,7 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
             add_lag = False
             if regime_err_sep == True:
                 raise Exception("For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes.")
-            yend, q = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
+            yend, q = set_endog(y, x_constant, w, yend, q, w_lags, lag_q)
         name_yend.append(USER.set_name_yend_sp(self.name_y))
 
         GM_Endog_Error_Hom_Regimes.__init__(self, y=y, x=x_constant, yend=yend,

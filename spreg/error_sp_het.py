@@ -15,7 +15,7 @@ from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import twosls as TSLS
 from . import utils as UTILS
-from .utils import RegressionPropsY, spdot, set_endog, sphstack
+from .utils import RegressionPropsY, spdot, set_endog, sphstack, set_warn
 from scipy import sparse as SP
 from libpysal.weights.spatial_lag import lag_spatial
 

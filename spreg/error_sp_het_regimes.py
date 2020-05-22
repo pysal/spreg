@@ -319,6 +319,8 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant)
             self.x, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
                                                               regimes, constant_regi=None, cols2regi=cols2regi, names=name_x)
             ols = BaseOLS(y=y, x=self.x)
@@ -811,6 +813,8 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant)
             q, name_q = REGI.Regimes_Frame.__init__(self, q,
                                                     regimes, constant_regi=None, cols2regi='all', names=name_q)
             x, name_x = REGI.Regimes_Frame.__init__(self, x_constant,
@@ -912,7 +916,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 is_win = False
         """
         x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
-        self.name_x_r = name_x
+        self.name_x_r = name_x + name_yend
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
@@ -1383,7 +1387,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
             add_lag = False
             if regime_err_sep == True:
                 raise Exception("For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes.")
-            yend, q = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
+            yend, q = set_endog(y, x_constant, w, yend, q, w_lags, lag_q)
         name_yend.append(USER.set_name_yend_sp(self.name_y))
 
         GM_Endog_Error_Het_Regimes.__init__(self, y=y, x=x_constant, yend=yend,
