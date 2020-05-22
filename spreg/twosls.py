@@ -3,7 +3,7 @@ import numpy.linalg as la
 from . import summary_output as SUMMARY
 from . import robust as ROBUST
 from . import user_output as USER
-from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM
+from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn
 
 __author__ = "Luc Anselin luc.anselin@asu.edu, David C. Folch david.folch@asu.edu, Jing Yao jingyao@asu.edu"
 __all__ = ["TSLS"]
@@ -443,6 +443,7 @@ class TSLS(BaseTSLS):
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
         x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseTSLS.__init__(self, y=y, x=x_constant, yend=yend, q=q,
                           robust=robust, gwk=gwk, sig2n_k=sig2n_k)
         self.title = "TWO STAGE LEAST SQUARES"

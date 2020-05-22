@@ -469,6 +469,7 @@ class GM_Lag(BaseGM_Lag):
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
         x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseGM_Lag.__init__(
             self, y=y, x=x_constant, w=w, yend=yend, q=q,
             w_lags=w_lags, robust=robust, gwk=gwk,
