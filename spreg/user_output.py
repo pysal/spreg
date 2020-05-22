@@ -613,12 +613,18 @@ def check_constant(x,name_x=None,just_rem=False):
 
     """
     x_constant = COPY.copy(x)
-    diffs = np.ptp(x_constant,axis=0)
     keep_x = COPY.copy(name_x)
     warn = None
+    if isinstance(x_constant, np.ndarray):
+        diffs = np.ptp(x_constant,axis=0)
+        if sum(diffs==0) > 0:
+            x_constant = np.delete(x_constant,np.nonzero(diffs==0),1)
+    else:
+        diffs = (x_constant.max(axis=0).toarray()-x_constant.min(axis=0).toarray())[0]
+        if sum(diffs==0) > 0:
+            x_constant = x_constant[:,np.nonzero(diffs>0)[0]]
 
     if sum(diffs==0) > 0:
-        x_constant = np.delete(x_constant,np.nonzero(diffs==0),1)
         if keep_x:
             rem_x = [keep_x[i] for i in np.nonzero(diffs==0)[0]]
             warn = 'Variable(s) '+str(rem_x)+' removed for being constant.'
