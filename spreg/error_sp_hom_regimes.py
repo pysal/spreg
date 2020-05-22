@@ -404,7 +404,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         """
         x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
         self.name_x_r = name_x
-         for r in self.regimes_set:
+        for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
                 results_p[r] = pool.apply_async(_work_error, args=(
