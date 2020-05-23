@@ -285,12 +285,13 @@ class GM_Error(BaseGM_Error):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseGM_Error.__init__(self, y=y, x=x_constant, w=w.sparse)
         self.title = "SPATIALLY WEIGHTED LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x.append('lambda')
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Error(reg=self, w=w, vm=vm)
@@ -611,13 +612,14 @@ class GM_Endog_Error(BaseGM_Endog_Error):
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseGM_Endog_Error.__init__(
             self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q)
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_z.append('lambda')
@@ -997,8 +999,9 @@ class GM_Combo(BaseGM_Combo):
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        yend2, q2 = set_endog(y, x, w, yend, q, w_lags, lag_q)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
+        yend2, q2 = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
         BaseGM_Combo.__init__(
             self, y=y, x=x_constant, w=w.sparse, yend=yend2, q=q2,
             w_lags=w_lags, lag_q=lag_q)
@@ -1009,7 +1012,7 @@ class GM_Combo(BaseGM_Combo):
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend

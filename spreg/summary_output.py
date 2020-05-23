@@ -83,7 +83,7 @@ def OLS_multi(reg, multireg, vm, nonspat_diag, spat_diag, moran, white_test, reg
             summary_regimes(mreg, chow=False)
         if sur:
             summary_sur(mreg)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
@@ -93,7 +93,7 @@ def OLS_multi(reg, multireg, vm, nonspat_diag, spat_diag, moran, white_test, reg
     if spat_diag:
         # compute global diagnostics and organize summary output
         spat_diag_ols(reg, w, moran)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm, instruments=False,
                   nonspat_diag=nonspat_diag, spat_diag=spat_diag)
 
@@ -129,7 +129,7 @@ def TSLS_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False):
             summary_regimes(mreg, chow=False)
         if sur:
             summary_sur(mreg)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
@@ -139,7 +139,7 @@ def TSLS_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False):
     if spat_diag:
         # compute global diagnostics and organize summary output
         spat_diag_instruments(reg, w)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=spat_diag)
 
@@ -177,7 +177,7 @@ def GM_Lag_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False
             summary_regimes(mreg, chow=False)
         if sur:
             summary_sur(mreg)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
@@ -186,7 +186,7 @@ def GM_Lag_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False
         pass
         # compute global diagnostics and organize summary output
         #spat_diag_instruments(reg, w)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=spat_diag)
 
@@ -227,12 +227,12 @@ def ML_Lag_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False
         summary_coefs_allx(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
         summary_chow(reg)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=False, nonspat_diag=False, spat_diag=False)
 
@@ -273,12 +273,12 @@ def ML_Error_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=Fal
         summary_coefs_allx(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
         summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=False, nonspat_diag=False, spat_diag=False)
 
@@ -308,11 +308,11 @@ def GM_Error_multi(reg, multireg, vm, regimes=False):
         summary_coefs_lambda(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     summary_chow(reg, lambd=False)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=False, nonspat_diag=False, spat_diag=False)
 
@@ -344,11 +344,11 @@ def GM_Endog_Error_multi(reg, multireg, vm, regimes=False):
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     summary_chow(reg, lambd=False)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=False)
 
@@ -380,11 +380,11 @@ def GM_Error_Hom_multi(reg, multireg, vm, regimes=False):
         summary_coefs_lambda(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=False, nonspat_diag=False, spat_diag=False)
 
@@ -418,11 +418,11 @@ def GM_Endog_Error_Hom_multi(reg, multireg, vm, regimes=False):
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=False)
 
@@ -454,11 +454,11 @@ def GM_Error_Het_multi(reg, multireg, vm, regimes=False):
         summary_coefs_lambda(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=False, nonspat_diag=False, spat_diag=False)
 
@@ -492,11 +492,11 @@ def GM_Endog_Error_Het_multi(reg, multireg, vm, regimes=False):
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=False)
 
@@ -529,12 +529,12 @@ def GM_Combo_multi(reg, multireg, vm, regimes=False):
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
         summary_chow(reg, lambd=False)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=False)
 
@@ -568,12 +568,12 @@ def GM_Combo_Hom_multi(reg, multireg, vm, regimes=False):
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
         summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=False)
 
@@ -607,12 +607,12 @@ def GM_Combo_Het_multi(reg, multireg, vm, regimes=False):
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
-        summary_warning(mreg)
+        summary_warning(mreg,reg)
         multireg[m].__summary = mreg.__summary
     reg.__summary = {}
     if regimes:
         summary_chow(reg, lambd=True)
-    summary_warning(reg)
+    #summary_warning(reg)
     summary_multi(reg=reg, multireg=multireg, vm=vm,
                   instruments=True, nonspat_diag=False, spat_diag=False)
 
@@ -1254,13 +1254,20 @@ def summary_chow(reg, lambd=False, sur=False):
         reg.__summary[eq]['summary_chow'] = sum_text
 
 
-def summary_warning(reg):
+def summary_warning(reg, global_reg=None):
     try:
         if reg.warning:
             try:
                 reg.__summary['summary_other_mid'] += reg.warning
             except:
                 reg.__summary['summary_other_mid'] = reg.warning
+    except:
+        pass
+    try:
+        try:
+            reg.__summary['summary_other_mid'] += global_reg.warning
+        except:
+            reg.__summary['summary_other_mid'] = global_reg.warning
     except:
         pass
 

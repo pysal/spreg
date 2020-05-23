@@ -7,7 +7,7 @@ import numpy.linalg as la
 from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import robust as ROBUST
-from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM
+from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn
 
 __all__ = ["OLS"]
 
@@ -431,13 +431,14 @@ class OLS(BaseOLS):
         USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseOLS.__init__(self, y=y, x=x_constant, robust=robust,
                          gwk=gwk, sig2n_k=sig2n_k)
         self.title = "ORDINARY LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
