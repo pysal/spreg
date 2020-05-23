@@ -278,7 +278,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                  name_w=None, name_ds=None, name_regimes=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi

@@ -288,7 +288,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                  name_ds=None, name_regimes=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -773,7 +773,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                  name_regimes=None, summ=True, add_lag=False):
 
         n = USER.check_arrays(y, x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -1346,7 +1346,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
 
         n = USER.check_arrays(y, x)
         self.step1c = step1c
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         name_x = USER.set_name_x(name_x, x, constant=True)
         self.name_y = USER.set_name_y(name_y)

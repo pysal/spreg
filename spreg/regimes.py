@@ -85,8 +85,8 @@ class Chow:
 def _chow_run(kr, kf, kryd, nr, betas, vm):
     if betas.shape[0] != vm.shape[0]:
         if kf > 0:
-            betas = betas[0:vm.shape[0], :]
-            kf = kf - 1
+            kf = kf - (betas.shape[0] - vm.shape[0])
+            betas = betas[0:vm.shape[0], :]           
         else:
             brange = []
             for i in range(nr):

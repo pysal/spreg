@@ -253,11 +253,8 @@ class TestBaseGMCombo(unittest.TestCase):
         np.testing.assert_allclose(reg.mean_y,my,RTOL)
         sy = 18.466069465206047
         np.testing.assert_allclose(reg.std_y,sy,RTOL)
-        vm = np.array([[ 522.43841148,   -6.07256915,   -1.91429117,   -8.97133162],
-       [  -6.07256915,    0.23801287,    0.0470161 ,    0.02809628],
-       [  -1.91429117,    0.0470161 ,    0.03209242,    0.00314973],
-       [  -8.97133162,    0.02809628,    0.00314973,    0.21575363]])
-        np.testing.assert_allclose(reg.vm,vm,RTOL)
+        vm = np.array([22.85691168,  0.48786563,  0.17914357,  0.46449287])
+        np.testing.assert_allclose(np.sqrt(reg.vm.diagonal()),vm,RTOL)
         sig2 = 181.78650186468832
         np.testing.assert_allclose(reg.sig2,sig2,RTOL)
 
@@ -304,12 +301,8 @@ class TestGMCombo(unittest.TestCase):
         np.testing.assert_allclose(reg.mean_y,my,RTOL)
         sy = 18.466069465206047
         np.testing.assert_allclose(reg.std_y,sy,RTOL)
-        vm = np.array([[ 522.43841148,   -6.07256915,   -1.91429117,   -8.97133162],
-       [  -6.07256915,    0.23801287,    0.0470161 ,    0.02809628],
-       [  -1.91429117,    0.0470161 ,    0.03209242,    0.00314973],
-       [  -8.97133162,    0.02809628,    0.00314973,    0.21575363]])
-        #np.testing.assert_allclose(reg.vm,vm,RTOL)
-        np.testing.assert_allclose(reg.vm, vm, RTOL)
+        vm = np.array([22.85691168,  0.48786563,  0.17914357,  0.46449287])
+        np.testing.assert_allclose(np.sqrt(reg.vm.diagonal()), vm, RTOL)
         sig2 = 181.78650186468832
         np.testing.assert_allclose(reg.sig2,sig2,RTOL)
         pr2 = 0.3018280166937799
