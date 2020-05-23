@@ -8,7 +8,7 @@ __author__ = "Luc Anselin anselin@uchicago.edu, Pedro Amaral pedroamaral@cedepla
 from scipy import sparse as SP
 import numpy as np
 from . import ols as OLS
-from .utils import optim_moments, RegressionPropsY, get_spFilter, spdot
+from .utils import optim_moments, RegressionPropsY, get_spFilter, spdot, set_warn
 from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import regimes as REGI
@@ -313,9 +313,10 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
         n_rows = USER.check_arrays(y, x)
         bigy, bigx, name_y, name_x = _get_panel_data(y, x, w, name_y, name_x)
         USER.check_weights(w, bigy, w_required=True, time=True)
-        x_constant = USER.check_constant(bigx)
+        x_constant,name_x,warn = USER.check_constant(bigx,name_x)
+        set_warn(self, warn)
         self.title = "GM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP)"
-        self.name_x = USER.set_name_x(name_x, bigx)
+        self.name_x = USER.set_name_x(name_x, x_constant)
 
         if regimes is not None:
             self.regimes = regimes
