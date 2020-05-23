@@ -2,7 +2,7 @@ import unittest
 import libpysal
 from scipy import sparse
 import numpy as np
-from ..ml_lag_regimes import ML_Lag_Regimes
+from spreg.ml_lag_regimes import ML_Lag_Regimes
 from libpysal.common import RTOL
 
 from warnings import filterwarnings

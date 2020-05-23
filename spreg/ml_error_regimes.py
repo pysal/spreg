@@ -12,6 +12,7 @@ from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import diagnostics as DIAG
 from .utils import set_warn
+from .sputils import sphstack
 from .ml_error import BaseML_Error
 from platform import system
 
@@ -278,7 +279,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                  name_w=None, name_ds=None, name_regimes=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -290,9 +291,10 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         self.n = n
         self.y = y
 
-        x_constant = USER.check_constant(x)
-        name_x = USER.set_name_x(name_x, x)
-        self.name_x_r = name_x
+        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
+        set_warn(self,warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)
+        self.name_x_r = USER.set_name_x(name_x, x_constant)
 
         cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x)
         self.regimes_set = REGI._get_regimes_set(regimes)
@@ -302,11 +304,13 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
-                self._error_regimes_multi(y, x, regimes, w, cores,
+                self._error_regimes_multi(y, x_constant, regimes, w, cores,
                                           method, epsilon, cols2regi, vm, name_x, spat_diag)
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant)
             regimes_att = {}
             regimes_att['x'] = x_constant
             regimes_att['regimes'] = regimes
@@ -345,14 +349,16 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work_error,args=(y,x,regi_ids,r,w,method,epsilon,self.name_ds,self.name_y,name_x+['lambda'],self.name_w,self.name_regimes, ))
                 is_win = False
         """
+        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        self.name_x_r = name_x
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
                 results_p[r] = pool.apply_async(_work_error, args=(
-                    y, x, regi_ids, r, w, method, epsilon, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes, ))
+                    y, x_constant, regi_ids, r, w, method, epsilon, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes, ))
             else:
                 results_p[r] = _work_error(
-                    *(y, x, regi_ids, r, w, method, epsilon, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes))
+                    *(y, x_constant, regi_ids, r, w, method, epsilon, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes))
 
         self.kryd = 0
         self.kr = len(cols2regi) + 1
@@ -407,9 +413,8 @@ def _work_error(y, x, regi_ids, r, w, method, epsilon, name_ds, name_y, name_x, 
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
-    x_constant = USER.check_constant(x_r)
     model = BaseML_Error(
-        y=y_r, x=x_constant, w=w_r, method=method, epsilon=epsilon)
+        y=y_r, x=x_r, w=w_r, method=method, epsilon=epsilon)
     set_warn(model, warn)
     model.w = w_r
     model.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIME " + \

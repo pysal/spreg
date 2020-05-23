@@ -433,11 +433,13 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                  name_w=None, name_gwk=None, name_ds=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
-        name_x = USER.set_name_x(name_x, x, constant=True)
+        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
+        set_warn(self,warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)
         name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
@@ -447,11 +449,11 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         self.constant_regi = constant_regi
         self.n = n
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x, yend=yend, add_cons=False)
+            constant_regi, cols2regi, x_constant, yend=yend, add_cons=False)
         self.cols2regi = cols2regi
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
-        USER.check_regimes(self.regimes_set, self.n, x.shape[1])
+        USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
         if regime_err_sep == True and robust == 'hac':
             set_warn(
                 self, "Error by regimes is incompatible with HAC estimation for Spatial Lag models. Hence, error and lag by regimes have been disabled for this model.")
@@ -472,7 +474,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
         if regime_err_sep == True and set(cols2regi) == set([True]) and constant_regi == 'many':
             self.y = y
-            self.GM_Lag_Regimes_Multi(y, x, w_i, w, regi_ids,
+            self.GM_Lag_Regimes_Multi(y, x_constant, w_i, w, regi_ids,
                                       yend=yend, q=q, w_lags=w_lags, lag_q=lag_q, cores=cores,
                                       robust=robust, gwk=gwk, sig2n_k=sig2n_k, cols2regi=cols2regi,
                                       spat_diag=spat_diag, vm=vm, name_y=name_y, name_x=name_x,
@@ -481,9 +483,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         else:
             if regime_lag_sep == True:
                 w = REGI.w_regimes_union(w, w_i, self.regimes_set)
-            yend2, q2 = set_endog(y, x, w, yend, q, w_lags, lag_q)
+            yend2, q2 = set_endog(y, x_constant, w, yend, q, w_lags, lag_q)
             name_yend.append(USER.set_name_yend_sp(name_y))
-            TSLS_Regimes.__init__(self, y=y, x=x, yend=yend2, q=q2,
+            TSLS_Regimes.__init__(self, y=y, x=x_constant, yend=yend2, q=q2,
                                   regimes=regimes, w=w, robust=robust, gwk=gwk,
                                   sig2n_k=sig2n_k, spat_diag=spat_diag, vm=vm,
                                   constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
@@ -510,7 +512,6 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                              name_w=None, name_gwk=None, name_ds=None):
         #        pool = mp.Pool(cores)
         self.name_ds = USER.set_name_ds(name_ds)
-        name_x = USER.set_name_x(name_x, x)
         name_yend.append(USER.set_name_yend_sp(name_y))
         self.name_w = USER.set_name_w(name_w, w_i)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
@@ -525,18 +526,20 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work,args=(y,x,regi_ids,r,yend,q,w_r,w_lags,lag_q,robust,sig2n_k,self.name_ds,name_y,name_x,name_yend,name_q,self.name_w,name_regimes, ))
                 is_win = False
         """
+        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        self.name_x_r = name_x
         for r in self.regimes_set:
             w_r = w_i[r].sparse
             if cores:
                 pool = mp.Pool(None)
                 results_p[r] = pool.apply_async(_work, args=(
-                    y, x, regi_ids, r, yend, q, w_r, w_lags, lag_q, robust, sig2n_k, self.name_ds, name_y, name_x, name_yend, name_q, self.name_w, name_regimes, ))
+                    y, x_constant, regi_ids, r, yend, q, w_r, w_lags, lag_q, robust, sig2n_k, self.name_ds, name_y, name_x, name_yend, name_q, self.name_w, name_regimes, ))
             else:
-                results_p[r] = _work(*(y, x, regi_ids, r, yend, q, w_r, w_lags, lag_q, robust,
+                results_p[r] = _work(*(y, x_constant, regi_ids, r, yend, q, w_r, w_lags, lag_q, robust,
                                        sig2n_k, self.name_ds, name_y, name_x, name_yend, name_q, self.name_w, name_regimes))
 
         self.kryd = 0
-        self.kr = len(cols2regi) + 1
+        self.kr = len(cols2regi)+1
         self.kf = 0
         self.nr = len(self.regimes_set)
         self.name_x_r = name_x + name_yend
@@ -621,8 +624,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
     def _get_spat_diag_props(self, y, x, w, yend, q, w_lags, lag_q):
         self._cache = {}
-        yend, q = set_endog(y, x, w, yend, q, w_lags, lag_q)
-        x = USER.check_constant(x)
+        yend, q = set_endog(y, x[:,1:], w, yend, q, w_lags, lag_q)
+        #x = USER.check_constant(x)
         x = REGI.regimeX_setup(
             x, self.regimes, [True] * x.shape[1], self.regimes_set)
         self.z = sphstack(x, REGI.regimeX_setup(
@@ -645,14 +648,14 @@ def _work(y, x, regi_ids, r, yend, q, w_r, w_lags, lag_q, robust, sig2n_k, name_
         q_r = q[regi_ids[r]]
     else:
         q_r = q
-    yend_r, q_r = set_endog_sparse(y_r, x_r, w_r, yend_r, q_r, w_lags, lag_q)
-    x_constant = USER.check_constant(x_r)
+    yend_r, q_r = set_endog_sparse(y_r, x_r[:,1:], w_r, yend_r, q_r, w_lags, lag_q)
+    #x_constant = USER.check_constant(x_r)
     if robust == 'hac' or robust == 'ogmm':
         robust2 = None
     else:
         robust2 = robust
     model = BaseTSLS(
-        y_r, x_constant, yend_r, q_r, robust=robust2, sig2n_k=sig2n_k)
+        y_r, x_r, yend_r, q_r, robust=robust2, sig2n_k=sig2n_k)
     model.title = "SPATIAL TWO STAGE LEAST SQUARES ESTIMATION - REGIME %s" % r
     if robust == 'ogmm':
         _optimal_weight(model, sig2n_k, warn=False)

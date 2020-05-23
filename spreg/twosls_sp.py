@@ -465,10 +465,11 @@ class GM_Lag(BaseGM_Lag):
                  name_w=None, name_gwk=None, name_ds=None):
 
         n = USER.check_arrays(x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
-        x_constant = USER.check_constant(x)        
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseGM_Lag.__init__(
             self, y=y, x=x_constant, w=w, yend=yend, q=q,
             w_lags=w_lags, robust=robust, gwk=gwk,
@@ -480,7 +481,7 @@ class GM_Lag(BaseGM_Lag):
         self.title = "SPATIAL TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend

@@ -4,7 +4,7 @@ from libpysal.examples import load_example
 from libpysal.weights import Queen
 import numpy as np
 from scipy import sparse
-from ..ml_error import ML_Error
+from spreg.ml_error import ML_Error
 from libpysal.common import RTOL, ATOL
 from warnings import filterwarnings
 filterwarnings('ignore', category=sparse.SparseEfficiencyWarning)

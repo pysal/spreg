@@ -15,7 +15,7 @@ from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import twosls as TSLS
 from . import utils as UTILS
-from .utils import RegressionPropsY, spdot, set_endog, sphstack
+from .utils import RegressionPropsY, spdot, set_endog, sphstack, set_warn
 from scipy import sparse as SP
 from libpysal.weights.spatial_lag import lag_spatial
 
@@ -334,16 +334,17 @@ class GM_Error_Het(BaseGM_Error_Het):
                  name_w=None, name_ds=None):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseGM_Error_Het.__init__(
             self, y, x_constant, w.sparse, max_iter=max_iter,
             step1c=step1c, epsilon=epsilon)
         self.title = "SPATIALLY WEIGHTED LEAST SQUARES (HET)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x.append('lambda')
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Error_Het(reg=self, w=w, vm=vm)
@@ -747,16 +748,17 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                  name_w=None, name_ds=None):
 
         n = USER.check_arrays(y, x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         BaseGM_Endog_Error_Het.__init__(self, y=y, x=x_constant, yend=yend,
                                         q=q, w=w.sparse, max_iter=max_iter,
                                         step1c=step1c, epsilon=epsilon, inv_method=inv_method)
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HET)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_z.append('lambda')  # listing lambda last
@@ -1172,10 +1174,11 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                  name_w=None, name_ds=None):
 
         n = USER.check_arrays(y, x, yend, q)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        yend2, q2 = set_endog(y, x, w, yend, q, w_lags, lag_q)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
+        yend2, q2 = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
         BaseGM_Combo_Het.__init__(self, y=y, x=x_constant, yend=yend2, q=q2,
                                   w=w.sparse, w_lags=w_lags,
                                   max_iter=max_iter, step1c=step1c, lag_q=lag_q,
@@ -1187,7 +1190,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HET)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend

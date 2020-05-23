@@ -10,7 +10,7 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
-from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod
+from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod, set_warn
 from .sputils import spdot, spfill_diagonal, spinv, spbroadcast
 from . import diagnostics as DIAG
 from . import user_output as USER
@@ -551,9 +551,10 @@ class ML_Lag(BaseML_Lag):
                  spat_diag=False, vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None):
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         method = method.upper()
         BaseML_Lag.__init__(
             self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon)

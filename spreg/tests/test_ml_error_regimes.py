@@ -2,8 +2,8 @@ import unittest
 import libpysal
 import numpy as np
 from scipy import sparse
-from ..ml_error_regimes import ML_Error_Regimes
-from ..ml_error import ML_Error
+from spreg.ml_error_regimes import ML_Error_Regimes
+from spreg.ml_error import ML_Error
 from libpysal.common import RTOL
 from warnings import filterwarnings
 

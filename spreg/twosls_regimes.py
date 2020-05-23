@@ -279,10 +279,13 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                  name_w=None, name_gwk=None, name_ds=None, summ=True):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
+        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
+        set_warn(self,warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
         self.name_ds = USER.set_name_ds(name_ds)
@@ -292,30 +295,28 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         self.name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
-        self.name_x_r = USER.set_name_x(name_x, x) + name_yend
+        self.name_x_r = USER.set_name_x(name_x, x_constant) + name_yend
         self.n = n
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x, yend=yend, add_cons=False)
+            constant_regi, cols2regi, x_constant, yend=yend, add_cons=False)
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
-        USER.check_regimes(self.regimes_set, self.n, x.shape[1])
+        USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
         if regime_err_sep == True and robust == 'hac':
             set_warn(
                 self, "Error by regimes is incompatible with HAC estimation for 2SLS models. Hence, the error by regimes has been disabled for this model.")
             regime_err_sep = False
         self.regime_err_sep = regime_err_sep
         if regime_err_sep == True and set(cols2regi) == set([True]) and constant_regi == 'many':
-            name_x = USER.set_name_x(name_x, x)
             self.y = y
             regi_ids = dict(
                 (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set)
-            self._tsls_regimes_multi(x, yend, q, w, regi_ids, cores,
+            self._tsls_regimes_multi(x_constant, yend, q, w, regi_ids, cores,
                                      gwk, sig2n_k, robust, spat_diag, vm, name_x, name_yend, name_q)
         else:
-            name_x = USER.set_name_x(name_x, x, constant=True)
             q, self.name_q = REGI.Regimes_Frame.__init__(self, q,
                                                          regimes, constant_regi=None, cols2regi='all', names=name_q)
-            x, self.name_x = REGI.Regimes_Frame.__init__(self, x,
+            x, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
                                                          regimes, constant_regi, cols2regi=cols2regi, names=name_x)
             yend, self.name_yend = REGI.Regimes_Frame.__init__(self, yend,
                                                                regimes, constant_regi=None,
@@ -348,17 +349,19 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work,args=(self.y,x,w,regi_ids,r,yend,q,robust,sig2n_k,self.name_ds,self.name_y,name_x,name_yend,name_q,self.name_w,self.name_regimes))
                 is_win = False
         """
+        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        self.name_x_r = name_x
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
                 results_p[r] = pool.apply_async(_work, args=(
-                    self.y, x, w, regi_ids, r, yend, q, robust, sig2n_k, self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes))
+                    self.y, x_constant, w, regi_ids, r, yend, q, robust, sig2n_k, self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes))
             else:
-                results_p[r] = _work(*(self.y, x, w, regi_ids, r, yend, q, robust, sig2n_k,
+                results_p[r] = _work(*(self.y, x_constant, w, regi_ids, r, yend, q, robust, sig2n_k,
                                        self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes))
 
         self.kryd = 0
-        self.kr = x.shape[1] + yend.shape[1] + 1
+        self.kr = x_constant.shape[1] + yend.shape[1]
         self.kf = 0
         self.nr = len(self.regimes_set)
         self.vm = np.zeros((self.nr * self.kr, self.nr * self.kr), float)
@@ -404,7 +407,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
             self.name_h += results[r].name_h
             counter += 1
         self.multi = results
-        self.hac_var = sphstack(x, q)
+        self.hac_var = sphstack(x_constant[:,1:], q)
         if robust == 'hac':
             hac_multi(self, gwk)
         if robust == 'ogmm':
@@ -412,13 +415,12 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 self, "Residuals treated as homoskedastic for the purpose of diagnostics.")
         self.chow = REGI.Chow(self)
         if spat_diag:
-            self._get_spat_diag_props(results, regi_ids, x, yend, q)
+            self._get_spat_diag_props(results, regi_ids, x_constant, yend, q)
         SUMMARY.TSLS_multi(
             reg=self, multireg=self.multi, vm=vm, spat_diag=spat_diag, regimes=True, w=w)
 
     def _get_spat_diag_props(self, results, regi_ids, x, yend, q):
         self._cache = {}
-        x = USER.check_constant(x)
         x = REGI.regimeX_setup(
             x, self.regimes, [True] * x.shape[1], self.regimes_set)
         self.z = sphstack(x, REGI.regimeX_setup(
@@ -435,13 +437,12 @@ def _work(y, x, w, regi_ids, r, yend, q, robust, sig2n_k, name_ds, name_y, name_
     x_r = x[regi_ids[r]]
     yend_r = yend[regi_ids[r]]
     q_r = q[regi_ids[r]]
-    x_constant = USER.check_constant(x_r)
     if robust == 'hac' or robust == 'ogmm':
         robust2 = None
     else:
         robust2 = robust
     model = BaseTSLS(
-        y_r, x_constant, yend_r, q_r, robust=robust2, sig2n_k=sig2n_k)
+        y_r, x_r, yend_r, q_r, robust=robust2, sig2n_k=sig2n_k)
     model.title = "TWO STAGE LEAST SQUARES ESTIMATION - REGIME %s" % r
     if robust == 'ogmm':
         _optimal_weight(model, sig2n_k, warn=False)

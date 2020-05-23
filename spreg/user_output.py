@@ -62,7 +62,7 @@ def set_name_x(name_x, x, constant=False):
                   User provided exogenous variable names.
 
     x           : array
-                  User provided exogenous variables.
+                  User provided exogenous variables including the constant.
     constant    : boolean
                   If False (default), constant name not included in name_x list yet
                   Append 'CONSTANT' at the front of the names
@@ -73,7 +73,7 @@ def set_name_x(name_x, x, constant=False):
 
     """
     if not name_x:
-        name_x = ['var_' + str(i + 1) for i in range(x.shape[1])]
+        name_x = ['var_' + str(i + 1) for i in range(x.shape[1]-1+int(constant))]
     else:
         name_x = name_x[:]
     if not constant:
@@ -327,9 +327,9 @@ def check_arrays(*arrays):
             raise Exception("all input data must be either numpy arrays or sparse csr matrices")
         shape = i.shape
         if len(shape) > 2:
-            raise Exception("all input arrays must have exactly two dimensions")
+            raise Exception("all input arrays must have two dimensions")
         if len(shape) == 1:
-            raise Exception("all input arrays must have exactly two dimensions")
+            shape = (shape[0],1)
         if shape[0] < shape[1]:
             raise Exception("one or more input arrays have more columns than rows")
         if not spu.spisfinite(i):
@@ -357,8 +357,8 @@ def check_y(y, n):
 
     Returns
     -------
-    Returns : nothing
-              Nothing is returned
+    y       : anything
+              Object passed by the user to a regression class
 
     Examples
     --------
@@ -372,7 +372,7 @@ def check_y(y, n):
 
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
-    >>> check_y(y, 49)
+    >>> y = check_y(y, 49)
 
     # should not raise an exception
 
@@ -390,9 +390,9 @@ def check_y(y, n):
             raise Exception("y must be a single column array matching the length of other arrays")
     if shape != (n, 1):
         raise Exception("y must be a single column array matching the length of other arrays")
+    return y
 
-
-def check_weights(w, y, w_required=False):
+def check_weights(w, y, w_required=False, time=False):
     """Check if the w parameter passed by the user is a libpysal.W object and
     check that its dimensionality matches the y parameter.  Note that this
     check is not performed if w set to None.
@@ -405,6 +405,11 @@ def check_weights(w, y, w_required=False):
     y       : numpy array
               Any shape numpy array can be passed. Note: if y passed
               check_arrays, then it will be valid for this function
+    w_required : boolean
+                 True if a W matrix is required, False (default) if not.
+    time    : boolean
+              True if data contains a time dimension.
+              False (default) if not.
 
     Returns
     -------
@@ -436,7 +441,7 @@ def check_weights(w, y, w_required=False):
         if not isinstance(w, weights.W):
             from warnings import warn
             warn("w must be API-compatible pysal weights object")
-        if w.n != y.shape[0]:
+        if w.n != y.shape[0] and time == False:
             raise Exception("y must be nx1, and w must be an nxn PySAL W object")
         diag = w.sparse.diagonal()
         # check to make sure all entries equal 0
@@ -574,20 +579,24 @@ def check_regimes(reg_set, N=None, K=None):
         raise Exception("There aren't enough observations for the given number of regimes and variables. Please check your regimes variable.")
 
 
-def check_constant(x):
-    """Check if the X matrix contains a constant, raise exception if it does
-    not
+def check_constant(x,name_x=None,just_rem=False):
+    """Check if the X matrix contains a constant. If it does, drop the constant and replace by a vector of ones.
 
     Parameters
     ----------
     x           : array
                   Value passed by a used to a regression class
-
+    name_x      : list of strings
+                  Names of independent variables
+    just_rem    : boolean
+                  If False (default), remove all constants and add a vector of ones
+                  If True, just remove all constants
     Returns
     -------
-    Returns : nothing
-              Nothing is returned
-
+    x_constant : array
+                 Matrix with independent variables plus constant
+    name_x     : list of strings
+                 Names of independent variables (updated if any variable droped)
     Examples
     --------
     >>> import numpy as np
@@ -598,17 +607,37 @@ def check_constant(x):
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
-    >>> x_constant = check_constant(X)
+    >>> x_constant,_ = check_constant(X)
     >>> x_constant.shape
     (49, 3)
 
     """
-    if diagnostics.constant_check(x):
-        raise Exception("x array cannot contain a constant vector; constant will be added automatically")
+    x_constant = COPY.copy(x)
+    keep_x = COPY.copy(name_x)
+    warn = None
+    if isinstance(x_constant, np.ndarray):
+        diffs = np.ptp(x_constant,axis=0)
+        if sum(diffs==0) > 0:
+            x_constant = np.delete(x_constant,np.nonzero(diffs==0),1)
     else:
-        x_constant = COPY.copy(x)
-        return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+        diffs = (x_constant.max(axis=0).toarray()-x_constant.min(axis=0).toarray())[0]
+        if sum(diffs==0) > 0:
+            x_constant = x_constant[:,np.nonzero(diffs>0)[0]]
 
+    if sum(diffs==0) > 0:
+        if keep_x:
+            rem_x = [keep_x[i] for i in np.nonzero(diffs==0)[0]]
+            warn = 'Variable(s) '+str(rem_x)+' removed for being constant.'
+            keep_x[:] = [keep_x[i] for i in np.nonzero(diffs>0)[0]]
+        else:
+            if sum(diffs==0) == 1:
+                warn = 'One variable has been removed for being constant.'           
+            else:
+                warn = str(sum(diffs==0))+' variables have been removed for being constant.'        
+    if not just_rem:
+        return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant),keep_x,warn
+    else:
+        return x_constant,keep_x,warn
 
 def _test():
     import doctest

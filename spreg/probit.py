@@ -10,7 +10,7 @@ chisqprob = chi2.sf
 import scipy.sparse as SP
 from . import user_output as USER
 from . import summary_output as SUMMARY
-from .utils import spdot, spbroadcast
+from .utils import spdot, spbroadcast, set_warn
 
 __all__ = ["Probit"]
 
@@ -802,14 +802,16 @@ class Probit(BaseProbit):
             spat_diag=False):
 
         n = USER.check_arrays(y, x)
-        USER.check_y(y, n)
+        y = USER.check_y(y, n)
         if w != None:
             USER.check_weights(w, y)
             spat_diag = True
             ws = w.sparse
         else:
             ws = None
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
+
         BaseProbit.__init__(self, y=y, x=x_constant, w=ws,
                             optim=optim, scalem=scalem, maxiter=maxiter)
         self.title = "CLASSIC PROBIT ESTIMATOR"
