@@ -10,7 +10,7 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
-from .utils import RegressionPropsY, RegressionPropsVM
+from .utils import RegressionPropsY, RegressionPropsVM, set_warn
 from . import diagnostics as DIAG
 from . import user_output as USER
 from . import summary_output as SUMMARY
@@ -452,7 +452,8 @@ class ML_Error(BaseML_Error):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant = USER.check_constant(x)
+        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        set_warn(self, warn)
         method = method.upper()
         BaseML_Error.__init__(self, y=y, x=x_constant,
                               w=w, method=method, epsilon=epsilon)

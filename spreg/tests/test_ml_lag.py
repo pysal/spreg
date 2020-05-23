@@ -2,7 +2,7 @@ import unittest
 import libpysal
 from scipy import sparse
 import numpy as np
-from ..ml_lag import ML_Lag
+from spreg.ml_lag import ML_Lag
 from libpysal.common import RTOL
 from warnings import filterwarnings
 filterwarnings('ignore', category=sparse.SparseEfficiencyWarning)
