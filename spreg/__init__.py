@@ -28,4 +28,5 @@ from .sur_utils import *
 from .utils import *
 from .regimes import *
 from .sputils import *
-from .sp_panels import *
+from .panel_sp import *
+from .panel_ml import *

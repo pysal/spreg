@@ -1,5 +1,5 @@
 """
-Utilities for panel data estimations
+Utilities for panel data estimation
 """
 
 __author__ = "Luc Anselin lanselin@gmail.com, \
@@ -7,10 +7,10 @@ __author__ = "Luc Anselin lanselin@gmail.com, \
 
 import numpy as np
 
-__all__ = ["convert_panel"]
+__all__ = ["check_panel"]
 
 
-def convert_panel(y, x, w, name_y, name_x):
+def check_panel(y, x, w, name_y, name_x):
     """
     Check the data structure and converts from wide to long if needed.
 
@@ -34,9 +34,9 @@ def convert_panel(y, x, w, name_y, name_x):
                         "object.")
     # Wide format
     if y.shape[1] > 1:
-        message = ("Assuming time data is in wide format, i.e. y[:, 0] refers"
-                   "to T0, y[:, 1] refers to T1, etc.\nSimilarly, assuming"
-                   "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers"
+        message = ("Assuming panel is in wide format, i.e. y[:, 0] refers "
+                   "to T0, y[:, 1] refers to T1, etc.\nSimilarly, assuming "
+                   "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers "
                    "to k2, etc.")
         print("Warning: " + message)
         N, T = y.shape[0], y.shape[1]
@@ -76,3 +76,28 @@ def convert_panel(y, x, w, name_y, name_x):
             name_x = name_bigx
 
     return bigy, bigx, name_y, name_x
+
+
+def demean_panel(arr, n, t):
+    """
+    Returns demeaned variable.
+
+    Parameters
+    ----------
+    arr         : array
+                  n*tx1 array
+    n           : integer
+                  Number of observations
+    t           : integer
+                  Number of time periods
+
+    Returns
+    -------
+    arr_dm      : array
+                  Demeaned variable
+    """
+    if arr.ndim > 1:
+        arr = arr.reshape(-1)
+    arr_mean = arr.reshape((n, t)).mean(axis=1)
+    arr_dm = arr - np.tile(arr_mean, t)
+    return arr_dm

@@ -699,6 +699,17 @@ def GM_Panels(reg, vm, w, regimes=False):
             nonspat_diag=False, spat_diag=False)
 
 
+def Panel_ML(reg, w, vm, spat_diag):
+    reg.__summary = {}
+    # compute diagnostics and organize summary output
+    beta_diag_lag(reg, robust=None, error=False)
+    # build coefficients table body
+    summary_coefs_allx(reg, reg.z_stat)
+    summary_warning(reg)
+    summary(reg=reg, vm=vm, instruments=False,
+            nonspat_diag=False, spat_diag=False)
+
+
 ##############################################################################
 
 
@@ -1048,7 +1059,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
     if regimes:
         regK = len(reg.regimes_set) # number of regimes
     else:
-        regK = 1   
+        regK = 1
     for eq in reg.name_bigy.keys():
         reg.__summary[eq] = {}
         strSummary = ""
@@ -1069,7 +1080,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
                         % (reg.name_bigyend[eq][j], betas[eq][h+j][0], inf[eq][h+j][0],\
                              inf[eq][h+j][1], inf[eq][h+j][2])
             except:
-                pass 
+                pass
         if lambd:
             pos = list(reg.name_bigy.keys()).index(eq)
             try:
@@ -1098,10 +1109,10 @@ def summary_coefs_somex(reg, zt_stat):
 '''
 def summary_coefs_yend(reg, zt_stat, lambd=False):
     strSummary = ""
-    indices = _get_var_indices(reg, zt_stat, lambd) 
+    indices = _get_var_indices(reg, zt_stat, lambd)
     for i in indices:
         strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"   \
-                     % (reg.name_z[i],reg.betas[i][0],reg.std_err[i],zt_stat[i][0],zt_stat[i][1])              
+                     % (reg.name_z[i],reg.betas[i][0],reg.std_err[i],zt_stat[i][0],zt_stat[i][1])
     reg.__summary['summary_coefs'] = strSummary
 '''
 
@@ -1157,7 +1168,7 @@ def summary_iteration(reg):  # extra space d
     try:
         niter = reg.niter
     except:
-        niter = reg.iteration        
+        niter = reg.iteration
     try:
         if reg.step1c:
             step1c = 'Yes'
@@ -1190,7 +1201,7 @@ def summary_regimes(reg, chow=True):
     if chow:
         summary_chow(reg)
 
-''' 
+'''
 deprecated
 def summary_sur(reg, u_cov=False):
     """Lists the equation ID variable used.
@@ -1222,7 +1233,7 @@ def summary_sur(reg, u_cov=False):
 def summary_chow(reg, lambd=False, sur=False):
     sum_text = "\nREGIMES DIAGNOSTICS - CHOW TEST"
     if sur is not False:
-        eq = list(reg.name_bigy.keys())[sur-1]        
+        eq = list(reg.name_bigy.keys())[sur-1]
         name_x_r = reg.name_x_r[eq]
         joint,regi = reg.chow_regimes[eq]
         sum_text += " WITHIN EQUATION"
@@ -1295,7 +1306,7 @@ def summary_r2(reg, ols, spatial_lag):
     else:
         strSummary = "%-20s:%12.4f\n" % ('Pseudo R-squared',reg.pr2)
         if spatial_lag:
-            if reg.pr2_e != None: 
+            if reg.pr2_e != None:
                 strSummary += "%-20s:%12.4f\n" % ('Spatial Pseudo R-squared',reg.pr2_e)
     return strSummary
 """
@@ -1406,7 +1417,7 @@ def summary_diag_sur(reg, nonspat_diag, spat_diag, tsls, lambd, rho=False, ml=Tr
             #strSummary += "----------------------\n"
             strSummary += "                                     TEST         DF       VALUE           PROB\n"
             strSummary += "%41s        %2d   %10.3f           %6.4f\n" % (
-                "Joint significance (rho)", reg.joinrho[1], reg.joinrho[0], reg.joinrho[2])        
+                "Joint significance (rho)", reg.joinrho[1], reg.joinrho[0], reg.joinrho[2])
             summary_add_other_end(reg, strSummary)
     else:
         if nonspat_diag or (spat_diag and lambd):
@@ -1427,7 +1438,7 @@ def summary_diag_sur(reg, nonspat_diag, spat_diag, tsls, lambd, rho=False, ml=Tr
                     "LR test on lambda", reg.likrlambda[1], reg.likrlambda[0], reg.likrlambda[2])
                 if reg.vm is not None:
                     strSummary += "%41s        %2d   %10.3f           %6.4f\n" % (
-                        "Joint significance (lambda)", reg.joinlam[1], reg.joinlam[0], reg.joinlam[2])        
+                        "Joint significance (lambda)", reg.joinlam[1], reg.joinlam[0], reg.joinlam[2])
             summary_add_other_end(reg, strSummary)
     chow_lamb = False
     try:

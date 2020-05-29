@@ -11,7 +11,7 @@ import numpy as np
 from . import ols as OLS
 from .utils import optim_moments, RegressionPropsY, get_spFilter
 from .utils import spdot, set_warn
-from .panel_utils import convert_panel
+from .panel_utils import check_panel
 from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import regimes as REGI
@@ -317,7 +317,7 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
                  regimes=None, vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None, name_regimes=None):
         n_rows = USER.check_arrays(y, x)
-        bigy, bigx, name_y, name_x = convert_panel(y, x, w, name_y, name_x)
+        bigy, bigx, name_y, name_x = check_panel(y, x, w, name_y, name_x)
         USER.check_weights(w, bigy, w_required=True, time=True)
         x_constant, name_x, warn = USER.check_constant(bigx, name_x)
         set_warn(self, warn)
