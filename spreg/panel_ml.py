@@ -87,8 +87,8 @@ class BasePanel_ML(RegressionPropsY):
         self.method = method
         self.epsilon = epsilon
         # Demeaned variables
-        self.y = demean_panel(y.reshape(-1), self.n, self.t)[:, None]
-        self.x = np.apply_along_axis(demean_panel, 0, x, self.n, self.t)
+        self.y = demean_panel(y, self.n, self.t)
+        self.x = demean_panel(x, self.n, self.t)
         W = np.kron(np.identity(self.t), w.full()[0])
         Wsp = sp.kron(sp.identity(self.t), w.sparse)
         ylag = spdot(W, self.y)
@@ -99,8 +99,8 @@ class BasePanel_ML(RegressionPropsY):
         xtyl = spdot(self.x.T, ylag)
         b0 = spdot(xtxi, xty)
         b1 = spdot(xtxi, xtyl)
-        e0 = self.y - spdot(x, b0)
-        e1 = ylag - spdot(x, b1)
+        e0 = self.y - spdot(self.x, b0)
+        e1 = ylag - spdot(self.x, b1)
         methodML = method.upper()
         if methodML in ['FULL', 'LU', 'ORD']:
             if methodML == 'FULL':
@@ -126,7 +126,7 @@ class BasePanel_ML(RegressionPropsY):
         self.u = e0 - self.rho * e1
         self.predy = self.y - self.u
 
-        xb = spdot(x, b)
+        xb = spdot(self.x, b)
 
         self.predy_e = inverse_prod(
             Wsp, xb, self.rho, inv_method="power_exp", threshold=epsilon)
@@ -152,7 +152,7 @@ class BasePanel_ML(RegressionPropsY):
 
         wpredy = spdot(W, self.predy_e)
         wpyTwpy = spdot(wpredy.T, wpredy)
-        xTwpy = spdot(x.T, wpredy)
+        xTwpy = spdot(self.x.T, wpredy)
 
         # order of variables is beta, rho, sigma2
 
