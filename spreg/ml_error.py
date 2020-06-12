@@ -302,8 +302,6 @@ class ML_Error(BaseML_Error):
                    if 'LU', LU sparse matrix decomposition
     epsilon      : float
                    tolerance criterion in mimimize_scalar function and inverse_product
-    spat_diag    : boolean
-                   if True, include spatial diagnostics (not implemented yet)
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -447,7 +445,7 @@ class ML_Error(BaseML_Error):
     """
 
     def __init__(self, y, x, w, method='full', epsilon=0.0000001,
-                 spat_diag=False, vm=False, name_y=None, name_x=None,
+                 vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
@@ -466,7 +464,7 @@ class ML_Error(BaseML_Error):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        SUMMARY.ML_Error(reg=self, w=w, vm=vm, spat_diag=spat_diag)
+        SUMMARY.ML_Error(reg=self, w=w, vm=vm, spat_diag=False)
 
 
 def err_c_loglik(lam, n, y, ylag, x, xlag, W):

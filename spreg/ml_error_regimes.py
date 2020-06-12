@@ -65,8 +65,6 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                    Specifies if multiprocessing is to be used
                    Default: no multiprocessing, cores = False
                    Note: Multiprocessing may not work on all platforms.
-    spat_diag    : boolean
-                   if True, include spatial diagnostics (not implemented yet)
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -274,7 +272,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
     def __init__(self, y, x, regimes, w=None, constant_regi='many',
                  cols2regi='all', method='full', epsilon=0.0000001,
-                 regime_err_sep=False, regime_lag_sep=False, cores=False, spat_diag=False,
+                 regime_err_sep=False, regime_lag_sep=False, cores=False,
                  vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None, name_regimes=None):
 
@@ -305,7 +303,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
                 self._error_regimes_multi(y, x_constant, regimes, w, cores,
-                                          method, epsilon, cols2regi, vm, name_x, spat_diag)
+                                          method, epsilon, cols2regi, vm, name_x)
             else:
                 raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
         else:
@@ -331,10 +329,10 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
             SUMMARY.ML_Error(
-                reg=self, w=w, vm=vm, spat_diag=spat_diag, regimes=True)
+                reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
 
     def _error_regimes_multi(self, y, x, regimes, w, cores,
-                             method, epsilon, cols2regi, vm, name_x, spat_diag):
+                             method, epsilon, cols2regi, vm, name_x):
 
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set)
@@ -406,7 +404,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         self.chow = REGI.Chow(self)
         self.multi = results
         SUMMARY.ML_Error_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=spat_diag, regimes=True, w=w)
+            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w)
 
 
 def _work_error(y, x, regi_ids, r, w, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes):

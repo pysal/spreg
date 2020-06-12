@@ -309,8 +309,6 @@ class ML_Lag(BaseML_Lag):
                    if 'ord', Ord eigenvalue method
     epsilon      : float
                    tolerance criterion in mimimize_scalar function and inverse_product
-    spat_diag    : boolean
-                   if True, include spatial diagnostics
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -548,7 +546,7 @@ class ML_Lag(BaseML_Lag):
     """
 
     def __init__(self, y, x, w, method='full', epsilon=0.0000001,
-                 spat_diag=False, vm=False, name_y=None, name_x=None,
+                 vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
@@ -570,7 +568,7 @@ class ML_Lag(BaseML_Lag):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        SUMMARY.ML_Lag(reg=self, w=w, vm=vm, spat_diag=spat_diag)
+        SUMMARY.ML_Lag(reg=self, w=w, vm=vm, spat_diag=False)
 
 def lag_c_loglik(rho, n, e0, e1, W):
     # concentrated log-lik for lag model, no constants, brute force
