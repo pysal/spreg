@@ -1,5 +1,5 @@
 """
-Spatial Fixed Effects Panel model based on: :cite:`KKP2007`
+Spatial Fixed Effects Panel model based on: :cite:`Elhorst2003`
 """
 
 __author__ = "Luc Anselin anselin@uchicago.edu, \
