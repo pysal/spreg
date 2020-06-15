@@ -8,7 +8,7 @@ __author__ = "Luc Anselin lanselin@gmail.com, \
 import numpy as np
 from .sputils import spdot
 
-__all__ = ["check_panel"]
+__all__ = ["check_panel", "demean_panel"]
 
 
 def check_panel(y, x, w, name_y, name_x):
@@ -97,10 +97,10 @@ def demean_panel(arr, n, t):
     arr_dm      : array
                   Demeaned variable
     """
-    
+
     one = np.ones((t, 1))
     J = np.identity(t) - (1/t)*spdot(one, one.T)
     Q = np.kron(J, np.identity(n))
     arr_dm = spdot(Q, arr)
-    
+
     return arr_dm

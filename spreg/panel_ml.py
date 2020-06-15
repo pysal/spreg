@@ -10,12 +10,11 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
-from .utils import RegressionPropsY, inverse_prod, set_warn
+from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod, set_warn
 from .sputils import spdot, spfill_diagonal, spinv
 from . import diagnostics as DIAG
 from . import user_output as USER
 from . import summary_output as SUMMARY
-from libpysal import weights
 try:
     from scipy.optimize import minimize_scalar
     minimize_scalar_available = True
@@ -23,12 +22,11 @@ except ImportError:
     minimize_scalar_available = False
 
 from .panel_utils import check_panel, demean_panel
-# import warnings
 
 __all__ = ["Panel_ML"]
 
 
-class BasePanel_ML(RegressionPropsY):
+class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
 
     """
     Base ML method for a fixed effects spatial lag model based on
@@ -49,7 +47,8 @@ class BasePanel_ML(RegressionPropsY):
                 if 'ord', Ord eigenvalue method
                 if 'LU', LU sparse matrix decomposition
     epsilon   : float
-                tolerance criterion in mimimize_scalar function and inverse_product
+                tolerance criterion in mimimize_scalar function and
+                inverse_product
 
     Attributes
     ----------
@@ -77,21 +76,24 @@ class BasePanel_ML(RegressionPropsY):
                    Variance covariance matrix (kxk)
     """
 
-    def __init__(self, y, x, w,
-                 approach="direct", method='full', epsilon=0.0000001):
+    def __init__(self, y, x, w, method='full', epsilon=0.0000001):
         # set up main regression variables and spatial filters
         self.n = w.n
         self.t = y.shape[0] // self.n
-        self.N = self.n * self.t
+        # self.N = self.n * self.t
         self.k = x.shape[1]
         self.method = method
         self.epsilon = epsilon
         # Demeaned variables
         self.y = demean_panel(y, self.n, self.t)
         self.x = demean_panel(x, self.n, self.t)
-        W = np.kron(np.identity(self.t), w.full()[0])
-        Wsp = sp.kron(sp.identity(self.t), w.sparse)
-        ylag = spdot(W, self.y)
+        # Big W matrix
+        W = w.full()[0]
+        W_nt = np.kron(np.identity(self.t), W)
+        Wsp = w.sparse
+        Wsp_nt = sp.kron(sp.identity(self.t), Wsp)
+        # Lag dependent variable
+        ylag = spdot(W_nt, self.y)
         # b0, b1, e0 and e1
         xtx = spdot(self.x.T, self.x)
         xtxi = la.inv(xtx)
@@ -108,7 +110,7 @@ class BasePanel_ML(RegressionPropsY):
                                       args=(self.n, self.t, e0, e1, W),
                                       method='bounded', tol=epsilon)
             elif methodML == 'LU':
-                I = sp.identity(self.N)
+                I = sp.identity(self.n)
                 res = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
                                       args=(self.n, self.t, e0, e1, I, Wsp),
                                       method='bounded', tol=epsilon)
@@ -116,7 +118,9 @@ class BasePanel_ML(RegressionPropsY):
 
         # compute full log-likelihood, including constants
         ln2pi = np.log(2.0 * np.pi)
-        llik = -res.fun - (self.N) / 2.0 * ln2pi - self.N / 2.0
+        llik = (- res.fun
+                - (self.n * self.t) / 2.0 * ln2pi
+                - (self.n * self.t) / 2.0)
         self.logll = llik[0][0]
 
         # b, residuals and predicted values
@@ -129,12 +133,12 @@ class BasePanel_ML(RegressionPropsY):
         xb = spdot(self.x, b)
 
         self.predy_e = inverse_prod(
-            Wsp, xb, self.rho, inv_method="power_exp", threshold=epsilon)
+            Wsp_nt, xb, self.rho, inv_method="power_exp", threshold=epsilon)
         self.e_pred = self.y - self.predy_e
 
         # residual variance
         self._cache = {}
-        self.sig2 = spdot(self.u.T, self.u) / self.N
+        self.sig2 = spdot(self.u.T, self.u) / (self.n * self.t)
 
         # information matrix
         # if w should be kept sparse, how can we do the following:
@@ -150,18 +154,22 @@ class BasePanel_ML(RegressionPropsY):
         waiTwai = spdot(wai.T, wai)
         tr3 = waiTwai.diagonal().sum()
 
-        wpredy = spdot(W, self.predy_e)
-        wpyTwpy = spdot(wpredy.T, wpredy)
-        xTwpy = spdot(self.x.T, wpredy)
+        wai_nt = np.kron(np.identity(self.t), wai)
+        wpredy = spdot(wai_nt, xb)
+        xTwpy = spdot(x.T, wpredy)
+
+        waiTwai_nt = np.kron(np.identity(self.t), waiTwai)
+        wTwpredy = spdot(waiTwai_nt, xb)
+        wpyTwpy = spdot(xb.T, wTwpredy)
 
         # order of variables is beta, rho, sigma2
 
         v1 = np.vstack(
             (xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((1, self.k))))
         v2 = np.vstack(
-            (xTwpy / self.sig2, self.t*(tr2 + tr3) + wpyTwpy / self.sig2, tr1 / self.sig2))
+            (xTwpy / self.sig2, self.t*(tr2 + tr3) + wpyTwpy / self.sig2, self.t*tr1 / self.sig2))
         v3 = np.vstack(
-            (np.zeros((self.k, 1)), self.t * tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2)))
+            (np.zeros((self.k, 1)), self.t*tr1 / self.sig2, self.n*self.t / (2.0 * self.sig2**2)))
 
         v = np.hstack((v1, v2, v3))
 
@@ -273,20 +281,21 @@ class Panel_ML(BasePanel_ML):
                    Name of the regression method used
     """
 
-    def __init__(self, y, x, w,
-                 method="full", lag=False, error="kkp", full_w=False,
-                 spat_diag=False, regimes=None, vm=False,
-                 name_y=None, name_x=None, epsilon=0.0000001,
-                 name_w=None, name_ds=None, name_regimes=None):
+    def __init__(self, y, x, w, method="full", epsilon=0.0000001,
+                 spat_diag=False, vm=False, name_y=None, name_x=None,
+                 name_w=None, name_ds=None):
         n_rows = USER.check_arrays(y, x)
-        bigy, bigx, name_y, name_x = check_panel(y, x, w, name_y, name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, True)
+        set_warn(self, warn)
+        bigy, bigx, name_y, name_x = check_panel(y, x_constant, w,
+                                                 name_y, name_x)
         USER.check_weights(w, bigy, w_required=True, time=True)
-        # x_constant, name_x, warn = USER.check_constant(bigx, name_x)
-        # set_warn(self, warn)
+
         method = method.upper()
         BasePanel_ML.__init__(
             self, bigy, bigx, w, method=method, epsilon=epsilon)
-        self.title = "SPATIAL LAG PANEL MODEL - FIXED EFFECTS"
+        self.title = "MAXIMUM LIKELIHOOD FIXED EFFECTS PANEL" + \
+                     " - SPATIAL LAG"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=True)
