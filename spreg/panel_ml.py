@@ -76,13 +76,12 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
                    Variance covariance matrix (kxk)
     """
 
-    def __init__(self, y, x, w, method='full', epsilon=0.0000001):
+    def __init__(self, y, x, w, epsilon=0.0000001):
         # set up main regression variables and spatial filters
         self.n = w.n
         self.t = y.shape[0] // self.n
         # self.N = self.n * self.t
         self.k = x.shape[1]
-        self.method = method
         self.epsilon = epsilon
         # Demeaned variables
         self.y = demean_panel(y, self.n, self.t)
@@ -92,7 +91,7 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
         W_nt = np.kron(np.identity(self.t), W)
         Wsp = w.sparse
         Wsp_nt = sp.kron(sp.identity(self.t), Wsp)
-        # Lag dependent variable
+        # lag dependent variable
         ylag = spdot(W_nt, self.y)
         # b0, b1, e0 and e1
         xtx = spdot(self.x.T, self.x)
@@ -103,17 +102,12 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
         b1 = spdot(xtxi, xtyl)
         e0 = self.y - spdot(self.x, b0)
         e1 = ylag - spdot(self.x, b1)
-        methodML = method.upper()
-        if methodML in ['FULL', 'LU', 'ORD']:
-            if methodML == 'FULL':
-                res = minimize_scalar(lag_c_loglik, 0.0, bounds=(-1.0, 1.0),
-                                      args=(self.n, self.t, e0, e1, W),
-                                      method='bounded', tol=epsilon)
-            elif methodML == 'LU':
-                I = sp.identity(self.n)
-                res = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
-                                      args=(self.n, self.t, e0, e1, I, Wsp),
-                                      method='bounded', tol=epsilon)
+
+        # concentrated Log Likelihood
+        I = sp.identity(self.n)
+        res = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
+                              args=(self.n, self.t, e0, e1, I, Wsp),
+                              method='bounded', tol=epsilon)
         self.rho = res.x[0][0]
 
         # compute full log-likelihood, including constants
@@ -124,7 +118,6 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
         self.logll = llik[0][0]
 
         # b, residuals and predicted values
-
         b = b0 - self.rho * b1
         self.betas = np.vstack((b, self.rho))   # rho added as last coefficient
         self.u = e0 - self.rho * e1
@@ -141,7 +134,6 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
         self.sig2 = spdot(self.u.T, self.u) / (self.n * self.t)
 
         # information matrix
-        # if w should be kept sparse, how can we do the following:
         a = -self.rho * W
         spfill_diagonal(a, 1.0)
         ai = spinv(a)
@@ -281,7 +273,7 @@ class Panel_ML(BasePanel_ML):
                    Name of the regression method used
     """
 
-    def __init__(self, y, x, w, method="full", epsilon=0.0000001,
+    def __init__(self, y, x, w, epsilon=0.0000001,
                  spat_diag=False, vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None):
         n_rows = USER.check_arrays(y, x)
@@ -291,9 +283,8 @@ class Panel_ML(BasePanel_ML):
                                                  name_y, name_x)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
-        method = method.upper()
         BasePanel_ML.__init__(
-            self, bigy, bigx, w, method=method, epsilon=epsilon)
+            self, bigy, bigx, w, epsilon=epsilon)
         self.title = "MAXIMUM LIKELIHOOD FIXED EFFECTS PANEL" + \
                      " - SPATIAL LAG"
         self.name_ds = USER.set_name_ds(name_ds)
@@ -305,19 +296,6 @@ class Panel_ML(BasePanel_ML):
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
         SUMMARY.Panel_ML(reg=self, w=w, vm=vm, spat_diag=spat_diag)
-
-
-def lag_c_loglik(rho, n, t, e0, e1, W):
-    # concentrated log-lik for lag model, no constants, brute force
-    er = e0 - rho * e1
-    sig2 = spdot(er.T, er) / (n*t)
-    nlsig2 = (n*t / 2.0) * np.log(sig2)
-    a = -rho * W
-    spfill_diagonal(a, 1.0)
-    jacob = t * np.log(np.linalg.det(a))
-    # this is the negative of the concentrated log lik for minimization
-    clik = nlsig2 - jacob
-    return clik
 
 
 def lag_c_loglik_sp(rho, n, t, e0, e1, I, Wsp):
@@ -341,7 +319,3 @@ def _test():
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
-
-
-# if __name__ == '__main__':
-#     _test()
