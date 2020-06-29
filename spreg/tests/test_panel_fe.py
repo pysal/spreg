@@ -1,11 +1,11 @@
 import unittest
 import libpysal
 import numpy as np
-from spreg.panel_ml import Panel_ML
+from spreg.panel_fe import Panel_FE_Lag
 from libpysal.common import RTOL
 
 
-class Test_Panel_ML(unittest.TestCase):
+class Test_Panel_FE_Lag(unittest.TestCase):
     def setUp(self):
         self.ds_name = "NCOVR"
         nat = libpysal.examples.load_example(self.ds_name)
@@ -19,9 +19,9 @@ class Test_Panel_ML(unittest.TestCase):
         self.x = np.array([self.db.by_col(name) for name in self.x_names]).T
 
     def test_Panel(self):
-        reg = Panel_ML(self.y, self.x, w=self.w,
-                       name_y=self.y_name, name_x=self.x_names,
-                       name_ds=self.ds_name)
+        reg = Panel_FE_Lag(self.y, self.x, w=self.w,
+                           name_y=self.y_name, name_x=self.x_names,
+                           name_ds=self.ds_name)
         betas = np.array([[0.80058859],
         [-2.60035236],
         [0.19030424]])

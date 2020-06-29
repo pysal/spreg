@@ -699,15 +699,21 @@ def GM_Panels(reg, vm, w, regimes=False):
             nonspat_diag=False, spat_diag=False)
 
 
-def Panel_ML(reg, w, vm, spat_diag):
+def Panel_FE_Lag(reg, w, vm, spat_diag):
     reg.__summary = {}
     # compute diagnostics and organize summary output
     beta_diag_lag(reg, robust=None, error=False)
+    reg.__summary['summary_r2'] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
+        'Sigma-square ML', reg.sig2, 'Log likelihood', reg.logll)
+    reg.__summary['summary_r2'] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
+        'S.E of regression', np.sqrt(reg.sig2), 'Akaike info criterion', reg.aic)
+    reg.__summary['summary_r2'] += "                                                 %-22s:%12.3f\n" % (
+        'Schwarz criterion', reg.schwarz)
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=False,
-            nonspat_diag=False, spat_diag=False)
+            nonspat_diag=False, spat_diag=spat_diag)
 
 
 ##############################################################################

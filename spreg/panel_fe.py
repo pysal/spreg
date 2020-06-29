@@ -2,7 +2,7 @@
 Spatial Fixed Effects Panel model based on: :cite:`Elhorst2003`
 """
 
-__author__ = "Luc Anselin anselin@uchicago.edu, \
+__author__ = "Wei Kang weikang9009@gmail.com, \
               Pedro Amaral pedroamaral@cedeplar.ufmg.br, \
               Pablo Estrada pabloestradace@gmail.com"
 
@@ -23,14 +23,14 @@ except ImportError:
 
 from .panel_utils import check_panel, demean_panel
 
-__all__ = ["Panel_ML"]
+__all__ = ["Panel_FE_Lag"]
 
 
-class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
+class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
 
     """
-    Base ML method for a fixed effects spatial lag model based on
-    Anselin (2006) ...
+    Base ML method for a fixed effects spatial lag model (note no consistency
+    checks, diagnostics or constants added) :cite:`Elhorst2003`.
 
     Parameters
     ----------
@@ -42,10 +42,6 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
                 (note: must already include constant term)
     w         : pysal W object
                 Spatial weights matrix
-    method    : string
-                if 'full', brute force calculation (full matrix expressions)
-                if 'ord', Ord eigenvalue method
-                if 'LU', LU sparse matrix decomposition
     epsilon   : float
                 tolerance criterion in mimimize_scalar function and
                 inverse_product
@@ -53,27 +49,41 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
     Attributes
     ----------
     betas        : array
-                   kx1 array of estimated coefficients
+                   (k+1)x1 array of estimated coefficients (rho last)
+    rho          : float
+                   estimate of spatial autoregressive coefficient
     u            : array
-                   nx1 array of residuals
-    e_filtered   : array
-                   nx1 array of spatially filtered residuals
+                   (nxt)x1 array of residuals
     predy        : array
-                   nx1 array of predicted y values
+                   (nxt)x1 array of predicted y values
     n            : integer
-                   Number of observations
+                   Total number of observations
     t            : integer
                    Number of time periods
     k            : integer
                    Number of variables for which coefficients are estimated
-                   (including the constant)
+                   (no constant, excluding the rho)
     y            : array
-                   nx1 array for dependent variable
+                   (nxt)x1 array for dependent variable
     x            : array
-                   Two dimensional array with n rows and one column for each
-                   independent (exogenous) variable, including the constant
+                   Two dimensional array with nxt rows and one column for each
+                   independent (exogenous) variable, no constant
+    mean_y       : float
+                   Mean of dependent variable
+    std_y        : float
+                   Standard deviation of dependent variable
     vm           : array
-                   Variance covariance matrix (kxk)
+                   Variance covariance matrix (k+1 x k+1)
+    vm1          : array
+                   Variance covariance matrix (k+2 x k+2) includes sigma2
+    sig2         : float
+                   Sigma squared used in computations
+    logll        : float
+                   maximized log-likelihood (including constant terms)
+    predy_e      : array
+                   predicted values from reduced form
+    e_pred       : array
+                   prediction errors using reduced form predicted values
     """
 
     def __init__(self, y, x, w, epsilon=0.0000001):
@@ -107,7 +117,7 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
         I = sp.identity(self.n)
         res = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
                               args=(self.n, self.t, e0, e1, I, Wsp),
-                              method='bounded', tol=epsilon)
+                              method='bounded', options={"xatol": epsilon})
         self.rho = res.x[0][0]
 
         # compute full log-likelihood, including constants
@@ -170,11 +180,11 @@ class BasePanel_ML(RegressionPropsY, RegressionPropsVM):
         self.n = self.n * self.t
 
 
-class Panel_ML(BasePanel_ML):
+class Panel_FE_Lag(BasePanel_FE_Lag):
 
     """
     ML estimation of the fixed effects spatial lag model with all results and
-    diagnostics; :cite:`Anselin1988`
+    diagnostics :cite:`Elhorst2003`.
 
     Parameters
     ----------
@@ -185,9 +195,6 @@ class Panel_ML(BasePanel_ML):
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
                    Spatial weights object
-    method       : string
-                   if 'full', brute force calculation (full matrix expressions)
-                   if 'ord', Ord eigenvalue method
     epsilon      : float
                    tolerance criterion in mimimize_scalar function and inverse_product
     spat_diag    : boolean
@@ -207,26 +214,25 @@ class Panel_ML(BasePanel_ML):
     Attributes
     ----------
     betas        : array
-                   (k+1)x1 array of estimated coefficients (rho first)
+                   (k+1)x1 array of estimated coefficients (rho last)
     rho          : float
                    estimate of spatial autoregressive coefficient
     u            : array
-                   nx1 array of residuals
+                   (nxt)x1 array of residuals
     predy        : array
-                   nx1 array of predicted y values
+                   (nxt)x1 array of predicted y values
     n            : integer
-                   Number of observations
+                   Total number of observations
+    t            : integer
+                   Number of time periods
     k            : integer
                    Number of variables for which coefficients are estimated
-                   (including the constant, excluding the rho)
+                   (no constant, excluding the rho)
     y            : array
-                   nx1 array for dependent variable
+                   (nxt)x1 array for dependent variable
     x            : array
-                   Two dimensional array with n rows and one column for each
+                   Two dimensional array with nxt rows and one column for each
                    independent (exogenous) variable, including the constant
-    method       : string
-                   log Jacobian method
-                   if 'full': brute force (full matrix computations)
     epsilon      : float
                    tolerance criterion used in minimize_scalar function and inverse_product
     mean_y       : float
@@ -257,7 +263,7 @@ class Panel_ML(BasePanel_ML):
     utu          : float
                    Sum of squared residuals
     std_err      : array
-                   1xk array of standard errors of the betas
+                   1x(k+1) array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -271,6 +277,28 @@ class Panel_ML(BasePanel_ML):
                    Name of dataset for use in output
     title        : string
                    Name of the regression method used
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import libpysal
+    >>> import spreg
+    >>> nat = libpysal.examples.load_example("NCOVR")
+    >>> db = libpysal.io.open(nat.get_path("NAT.dbf"), "r")
+    >>> nat_shp = libpysal.examples.get_path("NAT.shp")
+    >>> w = libpysal.weights.Queen.from_shapefile(nat_shp)
+    >>> w.transform = 'r'
+    >>> name_y = ["HR70", "HR80", "HR90"]
+    >>> y = np.array([db.by_col(name) for name in name_y]).T
+    >>> name_x = ["RD70", "RD80", "RD90", "PS70", "PS80", "PS90"]
+    >>> x = np.array([db.by_col(name) for name in name_x]).T
+    >>> felag = spreg.Panel_FE_Lag(y, x, w, name_y=name_y, name_x=name_x, name_ds="NAT")
+    Warning: Assuming panel is in wide format, i.e. y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+    Similarly, assuming x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+    np.around(felag.betas, decimals=4)
+    array([[ 0.8006],
+           [-2.6004],
+           [ 0.1903]])
     """
 
     def __init__(self, y, x, w, epsilon=0.0000001,
@@ -283,10 +311,12 @@ class Panel_ML(BasePanel_ML):
                                                  name_y, name_x)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
-        BasePanel_ML.__init__(
+        BasePanel_FE_Lag.__init__(
             self, bigy, bigx, w, epsilon=epsilon)
-        self.title = "MAXIMUM LIKELIHOOD FIXED EFFECTS PANEL" + \
-                     " - SPATIAL LAG"
+        # increase by 1 to have correct aic and sc, include rho in count
+        self.k += 1
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG PANEL" + \
+                     " - FIXED EFFECTS"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=True)
@@ -295,7 +325,8 @@ class Panel_ML(BasePanel_ML):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        SUMMARY.Panel_ML(reg=self, w=w, vm=vm, spat_diag=spat_diag)
+        self.n
+        SUMMARY.Panel_FE_Lag(reg=self, w=w, vm=vm, spat_diag=spat_diag)
 
 
 def lag_c_loglik_sp(rho, n, t, e0, e1, I, Wsp):
