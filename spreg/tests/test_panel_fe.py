@@ -40,9 +40,9 @@ class Test_Panel_FE_Lag(unittest.TestCase):
         np.testing.assert_allclose(reg.std_err, std_err, RTOL)
         logll = -25673.94932137113
         np.testing.assert_allclose(reg.logll, logll, RTOL)
-        aic = 51351.89864274226
+        aic = 51353.89864274226
         np.testing.assert_allclose(reg.aic, aic, RTOL)
-        schwarz = 51366.164481192274
+        schwarz = 51375.29740041728
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
 
