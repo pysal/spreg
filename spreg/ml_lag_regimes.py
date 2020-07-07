@@ -63,8 +63,6 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    Specifies if multiprocessing is to be used
                    Default: no multiprocessing, cores = False
                    Note: Multiprocessing may not work on all platforms.
-    spat_diag    : boolean
-                   if True, include spatial diagnostics (not implemented yet)
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -291,14 +289,13 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
 
     def __init__(self, y, x, regimes, w=None, constant_regi='many',
                  cols2regi='all', method='full', epsilon=0.0000001,
-                 regime_lag_sep=False, regime_err_sep=False, cores=False, spat_diag=False,
+                 regime_lag_sep=False, regime_err_sep=False, cores=False,
                  vm=False, name_y=None, name_x=None,
                  name_w=None, name_ds=None, name_regimes=None):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        USER.check_spat_diag(spat_diag, w)
         name_y = USER.set_name_y(name_y)
         self.name_y = name_y
 
@@ -339,7 +336,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.y = y
             self.ML_Lag_Regimes_Multi(y, x_constant, w_i, w, regi_ids,
                                       cores=cores, cols2regi=cols2regi, method=method, epsilon=epsilon,
-                                      spat_diag=spat_diag, vm=vm, name_y=name_y, name_x=name_x,
+                                      vm=vm, name_y=name_y, name_x=name_x,
                                       name_regimes=self.name_regimes,
                                       name_w=name_w, name_ds=name_ds)
         else:
@@ -360,11 +357,11 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES" + \
                 " (METHOD = " + method + ")"
             SUMMARY.ML_Lag(
-                reg=self, w=w, vm=vm, spat_diag=spat_diag, regimes=True)
+                reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
 
     def ML_Lag_Regimes_Multi(self, y, x, w_i, w, regi_ids,
                              cores, cols2regi, method, epsilon,
-                             spat_diag, vm, name_y, name_x,
+                             vm, name_y, name_x,
                              name_regimes, name_w, name_ds):
         #        pool = mp.Pool(cores)
         results_p = {}
@@ -437,7 +434,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         self.multi = results
         self.chow = REGI.Chow(self)
         SUMMARY.ML_Lag_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=spat_diag, regimes=True, w=w)
+            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w)
 
 
 def _work(y, x, regi_ids, r, w_r, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes):
