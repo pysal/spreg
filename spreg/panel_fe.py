@@ -189,16 +189,15 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
     Parameters
     ----------
     y            : array
-                   nx1 array for dependent variable
+                   nxt or (nxt)x1 array for dependent variable
     x            : array
-                   Two dimensional array with n rows and one column for each
-                   independent (exogenous) variable, excluding the constant
+                   nx(txk) or (nxt)xk array for independent (exogenous)
+                   variables, no constant
     w            : pysal W object
                    Spatial weights object
     epsilon      : float
-                   tolerance criterion in mimimize_scalar function and inverse_product
-    spat_diag    : boolean
-                   if True, include spatial diagnostics
+                   tolerance criterion in mimimize_scalar function and
+                   inverse_product
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -232,9 +231,7 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
                    (nxt)x1 array for dependent variable
     x            : array
                    Two dimensional array with nxt rows and one column for each
-                   independent (exogenous) variable, including the constant
-    epsilon      : float
-                   tolerance criterion used in minimize_scalar function and inverse_product
+                   independent (exogenous) variable, no constant
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -352,8 +349,8 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
     Attributes
     ----------
     betas        : array
-                   (k+1)x1 array of estimated coefficients (rho last)
-    rho          : float
+                   kx1 array of estimated coefficients
+    lam          : float
                    estimate of spatial autoregressive coefficient
     u            : array
                    (nxt)x1 array of residuals
@@ -365,7 +362,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
                    Number of time periods
     k            : integer
                    Number of variables for which coefficients are estimated
-                   (no constant, excluding the rho)
+                   (no constant, excluding the lambda)
     y            : array
                    (nxt)x1 array for dependent variable
     x            : array
@@ -383,10 +380,6 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
                    Sigma squared used in computations
     logll        : float
                    maximized log-likelihood (including constant terms)
-    predy_e      : array
-                   predicted values from reduced form
-    e_pred       : array
-                   prediction errors using reduced form predicted values
     """
 
     def __init__(self, y, x, w, epsilon=0.0000001):
@@ -403,7 +396,6 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
         W = w.full()[0]
         W_nt = np.kron(np.identity(self.t), W)
         Wsp = w.sparse
-        Wsp_nt = sp.kron(sp.identity(self.t), Wsp)
         # lag dependent variable
         ylag = spdot(W_nt, self.y)
         xlag = spdot(W_nt, self.x)
@@ -483,16 +475,15 @@ class Panel_FE_Error(BasePanel_FE_Error):
     Parameters
     ----------
     y            : array
-                   nx1 array for dependent variable
+                   nxt or (nxt)x1 array for dependent variable
     x            : array
-                   Two dimensional array with n rows and one column for each
-                   independent (exogenous) variable, excluding the constant
+                   nx(txk) or (nxt)xk array for independent (exogenous)
+                   variables, no constant
     w            : pysal W object
                    Spatial weights object
     epsilon      : float
-                   tolerance criterion in mimimize_scalar function and inverse_product
-    spat_diag    : boolean
-                   if True, include spatial diagnostics
+                   tolerance criterion in mimimize_scalar function and
+                   inverse_product
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -508,11 +499,13 @@ class Panel_FE_Error(BasePanel_FE_Error):
     Attributes
     ----------
     betas        : array
-                   (k+1)x1 array of estimated coefficients (rho last)
-    rho          : float
+                   kx1 array of estimated coefficients
+    lam          : float
                    estimate of spatial autoregressive coefficient
     u            : array
                    (nxt)x1 array of residuals
+    e_filtered   : array
+                   (nxt)x1 array of spatially filtered residuals
     predy        : array
                    (nxt)x1 array of predicted y values
     n            : integer
@@ -521,14 +514,12 @@ class Panel_FE_Error(BasePanel_FE_Error):
                    Number of time periods
     k            : integer
                    Number of variables for which coefficients are estimated
-                   (no constant, excluding the rho)
+                   (no constant, excluding the lambda)
     y            : array
                    (nxt)x1 array for dependent variable
     x            : array
                    Two dimensional array with nxt rows and one column for each
                    independent (exogenous) variable, including the constant
-    epsilon      : float
-                   tolerance criterion used in minimize_scalar function and inverse_product
     mean_y       : float
                    Mean of dependent variable
     std_y        : float
@@ -545,15 +536,8 @@ class Panel_FE_Error(BasePanel_FE_Error):
                    Akaike information criterion
     schwarz      : float
                    Schwarz criterion
-    predy_e      : array
-                   predicted values from reduced form
-    e_pred       : array
-                   prediction errors using reduced form predicted values
     pr2          : float
                    Pseudo R squared (squared correlation between y and ypred)
-    pr2_e        : float
-                   Pseudo R squared (squared correlation between y and ypred_e
-                   (using reduced form))
     utu          : float
                    Sum of squared residuals
     std_err      : array
