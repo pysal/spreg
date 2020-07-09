@@ -79,7 +79,7 @@ def check_panel(y, x, w, name_y, name_x):
     return bigy, bigx, name_y, name_x
 
 
-def demean_panel(arr, n, t):
+def demean_panel(arr, n, t, phi=0):
     """
     Returns demeaned variable.
 
@@ -91,6 +91,10 @@ def demean_panel(arr, n, t):
                   Number of observations
     t           : integer
                   Number of time periods
+    phi         : float
+                  Weight from 0 to 1 attached to the cross-sectional component
+                  of the data. If phi=0, then it is the demeaning procedure.
+                  If phi=1, then the data doesn't change at all.
 
     Returns
     -------
@@ -99,7 +103,7 @@ def demean_panel(arr, n, t):
     """
 
     one = np.ones((t, 1))
-    J = np.identity(t) - (1/t)*spdot(one, one.T)
+    J = np.identity(t) - (1-phi)*(1/t)*spdot(one, one.T)
     Q = np.kron(J, np.identity(n))
     arr_dm = spdot(Q, arr)
 
