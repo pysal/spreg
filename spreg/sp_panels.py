@@ -1,6 +1,5 @@
 '''
-Spatial random effects panel model based on: :cite:`KKP2007` 
-
+Spatial random effects panel model based on: :cite:`KKP2007`
 '''
 
 __author__ = "Luc Anselin anselin@uchicago.edu, Pedro Amaral pedroamaral@cedeplar.ufmg.br"
@@ -23,7 +22,6 @@ class BaseGM_KKP(RegressionPropsY):
     '''
     Base GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
-
     Parameters
     ----------
     y          : array
@@ -35,10 +33,10 @@ class BaseGM_KKP(RegressionPropsY):
     w          : spatial weights object
                  Spatial weights matrix
     full_weights: boolean
-                  Considers different weights for each of the 6 moment 
+                  Considers different weights for each of the 6 moment
                   conditions if True or only 2 sets of weights for the
                   first 3 and the last 3 monent conditions if False (default)
-       
+
     Attributes
     ----------
     betas        : array
@@ -62,8 +60,8 @@ class BaseGM_KKP(RegressionPropsY):
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, including the constant
     vm           : array
-                   Variance covariance matrix (kxk)   
-    """  
+                   Variance covariance matrix (kxk)
+    """
     '''
 
     def __init__(self,y,x,w,full_weights=False):
@@ -86,7 +84,7 @@ class BaseGM_KKP(RegressionPropsY):
         if full_weights:
             Tau = _get_Tau(w.sparse,trace_w2)
         else:
-            Tau = SP.identity(3)        
+            Tau = SP.identity(3)
         Xi = SP.kron(Xi_a,Tau)
         moments_b,_ = _moments_kkp(w.sparse, ols.u, 1,trace_w2)
         G = np.vstack((np.hstack((moments[0],np.zeros((3,1)))),moments_b[0]))
@@ -115,7 +113,6 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     '''
     GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
-
     Parameters
     ----------
     y          : array
@@ -127,7 +124,7 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     w          : spatial weights object
                  Spatial weights matrix, nxn
     full_weights: boolean
-                  Considers different weights for each of the 6 moment 
+                  Considers different weights for each of the 6 moment
                   conditions if True or only 2 sets of weights for the
                   first 3 and the last 3 moment conditions if False (default)
     regimes      : list
@@ -146,7 +143,7 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
                    Name of dataset for use in output
     name_regimes : string
                    Name of regime variable for use in the output
-       
+
     Attributes
     ----------
     betas        : array
@@ -172,10 +169,10 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     vm           : array
                    Variance covariance matrix (kxk)
     chow         : tuple
-                   Contains 2 elements. 1: Pair of Wald statistic and p-value 
+                   Contains 2 elements. 1: Pair of Wald statistic and p-value
                    for the setup of global regime stability. 2: array with Wald
-                   statistic (col 0) and its p-value (col 1) for each beta that 
-                   varies across regimes. 
+                   statistic (col 0) and its p-value (col 1) for each beta that
+                   varies across regimes.
                    Exists only if regimes is not None.
     name_y       : string
                    Name of dependent variable for use in output
@@ -189,36 +186,29 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     title        : string
                    Name of the regression method used
-    """  
-
+    """
     Examples
     --------
     We first need to import the needed modules, namely numpy to convert the
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis.
-
     >>> from spreg import GM_KKP
     >>> import numpy as np
     >>> import libpysal
-
-    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open(). 
+    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile. Note that
     libpysal.io.open() also reads data in CSV format; The GM_KKP function requires
     data to be passed in as numpy arrays, hence the user can read their
-    data in using any method.  
-
+    data in using any method.
     >>> nat = libpysal.examples.load_example('NCOVR')
     >>> db = libpysal.io.open(nat.get_path("NAT.dbf"),'r')
-
-    Extract the HR (homicide rates) data in the 70's, 80's and 90's from the DBF file 
+    Extract the HR (homicide rates) data in the 70's, 80's and 90's from the DBF file
     and make it the dependent variable for the regression. Note that the data can also
     be passed in the long format instead of wide format (i.e. a vector with n*t rows
     and a single column for the dependent variable and a matrix of dimension n*txk
     for the independent variables).
-
     >>> name_y = ['HR70','HR80','HR90']
     >>> y = np.array([db.by_col(name) for name in name_y]).T
-
     Extract RD and PS in the same time periods from the DBF to be used as
     independent variables in the regression.  Note that PySAL requires this to
     be an nxk*t numpy array, where k is the number of independent variables (not
@@ -226,41 +216,32 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
     organized in a way that all time periods of a given variable are side-by-side
     and in the correct time order.
     By default a vector of ones will be added to the independent variables passed in.
-
     >>> name_x = ['RD70','RD80','RD90','PS70','PS80','PS90']
     >>> x = np.array([db.by_col(name) for name in name_x]).T
-
     Since we want to run a spatial error panel model, we need to specify the spatial
     weights matrix that includes the spatial configuration of the observations
     into the error component of the model. To do that, we can open an already
     existing gal file or create a new one. In this case, we will create one
     from ``NAT.shp``.
-
     >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
-
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
     things, his allows to interpret the spatial lag of a variable as the
     average value of the neighboring observations. In PySAL, this can be
     easily performed in the following way:
-
     >>> w.transform = 'r'
-
     We are all set with the preliminaries, we are good to run the model. In this
     case, we will need the variables and the weights matrix. If we want to
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional. In this example
     we set full_weights to False (the default), indicating that we will use
     only 2 sets of moments weights for the first 3 and the last 3 moment conditions.
-
     >>> reg = GM_KKP(y,x,w,full_weights=False,name_y=name_y, name_x=name_x)
     Warning: Assuming time data is in wide format, i.e. y[0] refers to T0, y[1], refers to T1, etc.
      Similarly, assuming x[0:k] refers to independent variables for T0, x[k+1:2k] refers to T1, etc.
-
     Once we have run the model, we can explore a little bit the output. We can
     either request a printout of the results with the command print(reg.summary) or
     check out the individual attributes of GM_KKP:
-
     >>> print(reg.summary)
     REGRESSION
     ----------
@@ -279,18 +260,15 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
                 CONSTANT       6.4922156       0.1126713      57.6208690       0.0000000
                       RD       3.6244575       0.0877475      41.3055536       0.0000000
                       PS       1.3118778       0.0852516      15.3883058       0.0000000
-                  lambda       0.4177759    
-                sigma2_v      22.8190822    
-                sigma2_1      39.9099323    
+                  lambda       0.4177759
+                sigma2_v      22.8190822
+                sigma2_1      39.9099323
     ------------------------------------------------------------------------------------
     ================================ END OF REPORT =====================================
-
     >>> print(reg.name_x)
     ['CONSTANT', 'RD', 'PS', 'lambda', ' sigma2_v', 'sigma2_1']
-
-    The attribute reg.betas contains all the coefficients: betas, the spatial error 
+    The attribute reg.betas contains all the coefficients: betas, the spatial error
     coefficient lambda, sig2_v and sig2_1:
-
     >>> print(np.around(reg.betas,4))
     [[ 6.4922]
      [ 3.6245]
@@ -298,13 +276,11 @@ class GM_KKP(BaseGM_KKP,REGI.Regimes_Frame):
      [ 0.4178]
      [22.8191]
      [39.9099]]
-
     Finally, we can check the standard erros of the betas:
     >>> print(np.around(np.sqrt(reg.vm.diagonal().reshape(3,1)),4))
     [[0.1127]
      [0.0877]
      [0.0853]]
-
     '''
 
     def __init__(self, y, x, w, full_weights=False,
@@ -355,30 +331,24 @@ def _moments_kkp(ws, u, i, trace_w2=None):
     '''
     Compute G and g matrices for the KKP model.
     ...
-
     Parameters
     ----------
-
     ws          : Sparse matrix
-                  Spatial weights sparse matrix   
-
+                  Spatial weights sparse matrix
     u           : array
                   Residuals. nx1 array assumed to be aligned with w
-    
-    i		    : integer
+
+    i       : integer
                   0 if Q0, 1 if Q1
     trace_w2    : float
                   trace of WW. Computed in 1st step and saved for step 2.
-
     Returns
     -------
-
     moments     : list
                   List of two arrays corresponding to the matrices 'G' and
                   'g', respectively.
     trace_w2    : float
                   trace of WW. Computed in 1st step and saved for step 2.
-
     '''
     N = ws.shape[0]
     T = u.shape[0]//N
@@ -406,9 +376,9 @@ def _moments_kkp(ws, u, i, trace_w2=None):
     else:
         G = np.array([[G11,G12,0,N*(T-1)**(1-i)],[G21,G22,0,G23],[G31,G32,0,0]])/(N*(T-1)**(1-i))
     g1 = float(np.dot(u.T,Qu))
-    g2 = float(np.dot(ub.T,Qub))    
+    g2 = float(np.dot(ub.T,Qub))
     g3 = float(np.dot(u.T,Qub))
-    g = np.array([[g1,g2,g3]]).T / (N*(T-1)**(1-i))                            
+    g = np.array([[g1,g2,g3]]).T / (N*(T-1)**(1-i))
     return [G, g],trace_w2
 
 
@@ -416,11 +386,11 @@ def _get_Tau(ws, trace_w2):
     '''
     Computes Tau as in :cite:`KKP2007`.
     ...
-    
+
     Parameters
     ----------
     ws          : Sparse matrix
-                  Spatial weights sparse matrix   
+                  Spatial weights sparse matrix
     trace_w2    : float
                   trace of WW. Computed in 1st step of _moments_kkp
     '''
@@ -439,7 +409,7 @@ def _get_panel_data(y, x, w, name_y, name_x):
     '''
     Performs some checks on the data structure and converts from wide to long if needed.
     ...
-    
+
     Parameters
     ----------
     y          : array
@@ -478,7 +448,7 @@ def _get_panel_data(y, x, w, name_y, name_x):
             bigx = np.hstack((bigx,x[:,T*i:T*(i+1)].reshape((N*T,1),order='F')))
     else:
         bigy, bigx = y, x
-    
+
     if name_y:
         if not isinstance(name_y, str) and not isinstance(name_y, list):
             raise Exception("name_y must either be strings or a list of strings.")
@@ -494,7 +464,7 @@ def _get_panel_data(y, x, w, name_y, name_x):
             for i in range(k):
                 name_bigx.append(''.join([j for j in name_x[i*T] if not j.isdigit()]))
             name_x = name_bigx
-       
+
     return bigy, bigx, name_y, name_x
 
 def _test():
@@ -505,4 +475,4 @@ def _test():
     np.set_printoptions(suppress=start_suppress)
 
 if __name__ == '__main__':
-    _test()   
+    _test()
