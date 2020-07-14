@@ -289,10 +289,10 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
     >>> y = np.array([db.by_col(name) for name in name_y]).T
     >>> name_x = ["RD70", "RD80", "RD90", "PS70", "PS80", "PS90"]
     >>> x = np.array([db.by_col(name) for name in name_x]).T
-    >>> felag = spreg.Panel_FE_Lag(y, x, w, name_y=name_y, name_x=name_x, name_ds="NAT")
+    >>> fe_lag = spreg.Panel_FE_Lag(y, x, w, name_y=name_y, name_x=name_x, name_ds="NAT")
     Warning: Assuming panel is in wide format, i.e. y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
     Similarly, assuming x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
-    np.around(felag.betas, decimals=4)
+    >>> np.around(fe_lag.betas, decimals=4)
     array([[ 0.8006],
            [-2.6004],
            [ 0.1903]])
@@ -322,7 +322,6 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        self.n
         SUMMARY.Panel_FE_Lag(reg=self, w=w, vm=vm)
 
 
@@ -570,13 +569,13 @@ class Panel_FE_Error(BasePanel_FE_Error):
     >>> y = np.array([db.by_col(name) for name in name_y]).T
     >>> name_x = ["RD70", "RD80", "RD90", "PS70", "PS80", "PS90"]
     >>> x = np.array([db.by_col(name) for name in name_x]).T
-    >>> felag = spreg.Panel_FE_Lag(y, x, w, name_y=name_y, name_x=name_x, name_ds="NAT")
+    >>> fe_error = spreg.Panel_FE_Error(y, x, w, name_y=name_y, name_x=name_x, name_ds="NAT")
     Warning: Assuming panel is in wide format, i.e. y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
     Similarly, assuming x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
-    np.around(felag.betas, decimals=4)
-    array([[ 0.8006],
-           [-2.6004],
-           [ 0.1903]])
+    >>> np.around(fe_error.betas, decimals=4)
+    array([[ 0.8698],
+           [-2.9661],
+           [ 0.1943]])
     """
 
     def __init__(self, y, x, w, epsilon=0.0000001,
@@ -599,7 +598,6 @@ class Panel_FE_Error(BasePanel_FE_Error):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        self.n
         SUMMARY.Panel_FE_Error(reg=self, w=w, vm=vm)
 
 
