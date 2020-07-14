@@ -38,11 +38,11 @@ class Test_Panel_FE_Lag(unittest.TestCase):
         np.testing.assert_allclose(reg.pr2, pr2)
         std_err = np.array([0.16144743, 0.49354863, 0.01599908])
         np.testing.assert_allclose(reg.std_err, std_err, RTOL)
-        logll = -25673.94932137113
+        logll = -67936.53303509377
         np.testing.assert_allclose(reg.logll, logll, RTOL)
-        aic = 51353.89864274226
+        aic = 135879.06607018755
         np.testing.assert_allclose(reg.aic, aic, RTOL)
-        schwarz = 51375.29740041728
+        schwarz = 135900.46482786257
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
 
@@ -79,11 +79,11 @@ class Test_Panel_FE_Error(unittest.TestCase):
         np.testing.assert_allclose(reg.pr2, pr2)
         std_err = np.array([0.3692968 , 1.17037644, 0.01602533])
         np.testing.assert_allclose(reg.std_err, std_err, RTOL)
-        logll = -35839.07814595635
+        logll = -67934.00512805565
         np.testing.assert_allclose(reg.logll, logll, RTOL)
-        aic = 71682.1562919127
+        aic = 135872.0102561113
         np.testing.assert_allclose(reg.aic, aic, RTOL)
-        schwarz = 71696.42213036271
+        schwarz = 135886.27609456133
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
 
