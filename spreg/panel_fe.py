@@ -98,11 +98,10 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
         self.x = demean_panel(x, self.n, self.t)
         # Big W matrix
         W = w.full()[0]
-        W_nt = np.kron(np.identity(self.t), W)
         Wsp = w.sparse
-        Wsp_nt = sp.kron(sp.identity(self.t), Wsp)
+        Wsp_nt = sp.kron(sp.identity(self.t), Wsp, format="csr")
         # lag dependent variable
-        ylag = spdot(W_nt, self.y)
+        ylag = spdot(Wsp_nt, self.y)
         # b0, b1, e0 and e1
         xtx = spdot(self.x.T, self.x)
         xtxi = la.inv(xtx)
@@ -147,7 +146,7 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
         a = -self.rho * W
         spfill_diagonal(a, 1.0)
         ai = spinv(a)
-        wai = spdot(W, ai)
+        wai = spdot(Wsp, ai)
         tr1 = wai.diagonal().sum()  # same for sparse and dense
 
         wai2 = spdot(wai, wai)
@@ -156,16 +155,15 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
         waiTwai = spdot(wai.T, wai)
         tr3 = waiTwai.diagonal().sum()
 
-        wai_nt = np.kron(np.identity(self.t), wai)
+        wai_nt = sp.kron(sp.identity(self.t), wai, format="csr")
         wpredy = spdot(wai_nt, xb)
         xTwpy = spdot(x.T, wpredy)
 
-        waiTwai_nt = np.kron(np.identity(self.t), waiTwai)
+        waiTwai_nt = sp.kron(sp.identity(self.t), waiTwai, format="csr")
         wTwpredy = spdot(waiTwai_nt, xb)
         wpyTwpy = spdot(xb.T, wTwpredy)
 
         # order of variables is beta, rho, sigma2
-
         v1 = np.vstack(
             (xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((1, self.k))))
         v2 = np.vstack(
@@ -177,7 +175,7 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
 
         self.vm1 = la.inv(v)  # vm1 includes variance for sigma2
         self.vm = self.vm1[:-1, :-1]  # vm is for coefficients only
-        self.n = self.n * self.t
+        self.n = self.n * self.t  # change the n, for degree of freedom
 
 
 class Panel_FE_Lag(BasePanel_FE_Lag):
@@ -393,11 +391,11 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
         self.x = demean_panel(x, self.n, self.t)
         # Big W matrix
         W = w.full()[0]
-        W_nt = np.kron(np.identity(self.t), W)
         Wsp = w.sparse
+        Wsp_nt = sp.kron(sp.identity(self.t), Wsp, format="csr")
         # lag dependent variable
-        ylag = spdot(W_nt, self.y)
-        xlag = spdot(W_nt, self.x)
+        ylag = spdot(Wsp_nt, self.y)
+        xlag = spdot(Wsp_nt, self.x)
 
         # concentrated Log Likelihood
         I = sp.identity(self.n)
@@ -416,19 +414,19 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
         # b, residuals and predicted values
         ys = self.y - self.lam * ylag
         xs = self.x - self.lam * xlag
-        xsxs = np.dot(xs.T, xs)
-        xsxsi = np.linalg.inv(xsxs)
-        xsys = np.dot(xs.T, ys)
-        b = np.dot(xsxsi, xsys)
+        xsxs = spdot(xs.T, xs)
+        xsxsi = la.inv(xsxs)
+        xsys = spdot(xs.T, ys)
+        b = spdot(xsxsi, xsys)
 
         self.betas = np.vstack((b, self.lam))
 
-        self.u = y - np.dot(self.x, b)
+        self.u = self.y - spdot(self.x, b)
         self.predy = self.y - self.u
 
         # residual variance
-        self.e_filtered = self.u - self.lam * spdot(W_nt, self.u)
-        self.sig2 = (np.dot(self.e_filtered.T, self.e_filtered)
+        self.e_filtered = self.u - self.lam * spdot(Wsp_nt, self.u)
+        self.sig2 = (spdot(self.e_filtered.T, self.e_filtered)
                      / (self.n * self.t))
 
         # variance-covariance matrix betas
@@ -438,7 +436,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
         a = -self.lam * W
         spfill_diagonal(a, 1.0)
         ai = spinv(a)
-        wai = spdot(W, ai)
+        wai = spdot(Wsp, ai)
         tr1 = wai.diagonal().sum()
 
         wai2 = spdot(wai, wai)
@@ -454,7 +452,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
 
         v = np.hstack((v1, v2))
 
-        self.vm1 = np.linalg.inv(v)
+        self.vm1 = la.inv(v)
 
         # create variance matrix for beta, lambda
         vv = np.hstack((varb, np.zeros((self.k, 1))))
