@@ -607,7 +607,7 @@ def check_constant(x,name_x=None,just_rem=False):
     >>> X.append(db.by_col("INC"))
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
-    >>> x_constant,_ = check_constant(X)
+    >>> x_constant,name_x,warn = check_constant(X)
     >>> x_constant.shape
     (49, 3)
 
