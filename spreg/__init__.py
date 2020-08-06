@@ -1,4 +1,4 @@
-__version__ = "1.1.2"
+__version__ = "1.1.2.post1"
 from .ols import *
 from .diagnostics import *
 from .diagnostics_sp import *
