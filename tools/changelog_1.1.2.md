@@ -1,4 +1,4 @@
-# Changes 
+# Changes
 
 Version 1.1.2 (2020-08-05)
 
