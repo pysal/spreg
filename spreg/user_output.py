@@ -388,7 +388,7 @@ def check_y(y, n):
             y = y.reshape(n,1)
         except:
             raise Exception("y must be a single column array matching the length of other arrays")
-    if shape != (n, 1):
+    if y.shape != (n, 1):
         raise Exception("y must be a single column array matching the length of other arrays")
     return y
 
