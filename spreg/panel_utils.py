@@ -2,8 +2,9 @@
 Utilities for panel data estimation
 """
 
-__author__ = "Luc Anselin lanselin@gmail.com, \
-              Pedro V. Amaral pedrovma@gmail.com"
+__author__ = "Wei Kang weikang9009@gmail.com, \
+              Pedro Amaral pedroamaral@cedeplar.ufmg.br, \
+              Pablo Estrada pabloestradace@gmail.com"
 
 import numpy as np
 from .sputils import spdot
@@ -35,11 +36,10 @@ def check_panel(y, x, w, name_y, name_x):
                         "object.")
     # Wide format
     if y.shape[1] > 1:
-        message = ("Assuming panel is in wide format, i.e. y[:, 0] refers "
-                   "to T0, y[:, 1] refers to T1, etc.\nSimilarly, assuming "
-                   "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers "
-                   "to k2, etc.")
-        print("Warning: " + message)
+        warn = ("Assuming panel is in wide format.\n"
+                "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n"
+                "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers "
+                "to k2, etc.")
         N, T = y.shape[0], y.shape[1]
         k = x.shape[1] // T
         bigy = y.reshape((y.size, 1), order="F")
@@ -49,9 +49,9 @@ def check_panel(y, x, w, name_y, name_x):
                 (bigx, x[:, T * i:T * (i + 1)].reshape((N * T, 1), order="F")))
     # Long format
     else:
-        message = ("Assuming time data is in long format, i.e. y[0:N] refers"
-                   "to T0, y[N+1:2N] refers to T1, etc. \n Similar for x.")
-        print("Warning: " + message)
+        warn = ("Assuming panel is in long format.\n"
+                "y[0:N] refers to T0, y[N+1:2N] refers to T1, etc.\n"
+                "x[0:N] refers to T0, x[N+1:2N] refers to T1, etc.")
         T = y.shape[0] // w.n
         N = w.n
         k = x.shape[1]
@@ -76,7 +76,7 @@ def check_panel(y, x, w, name_y, name_x):
                 name_bigx.append(namek)
             name_x = name_bigx
 
-    return bigy, bigx, name_y, name_x
+    return bigy, bigx, name_y, name_x, warn
 
 
 def demean_panel(arr, n, t, phi=0):
