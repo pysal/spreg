@@ -90,7 +90,6 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
         # set up main regression variables and spatial filters
         self.n = w.n
         self.t = y.shape[0] // self.n
-        # self.N = self.n * self.t
         self.k = x.shape[1]
         self.epsilon = epsilon
         # Demeaned variables
@@ -175,6 +174,7 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
 
         self.vm1 = la.inv(v)  # vm1 includes variance for sigma2
         self.vm = self.vm1[:-1, :-1]  # vm is for coefficients only
+        self.varb = la.inv(np.hstack((v1[:-1], v2[:-1])))
         self.n = self.n * self.t  # change the n, for degree of freedom
 
 
@@ -302,8 +302,9 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
         n_rows = USER.check_arrays(y, x)
         x_constant, name_x, warn = USER.check_constant(x, name_x, True)
         set_warn(self, warn)
-        bigy, bigx, name_y, name_x = check_panel(y, x_constant, w,
-                                                 name_y, name_x)
+        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w,
+                                                       name_y, name_x)
+        set_warn(self, warn)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
         BasePanel_FE_Lag.__init__(
@@ -383,7 +384,6 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
         # set up main regression variables and spatial filters
         self.n = w.n
         self.t = y.shape[0] // self.n
-        # self.N = self.n * self.t
         self.k = x.shape[1]
         self.epsilon = epsilon
         # Demeaned variables
@@ -460,6 +460,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
             (np.zeros((1, self.k)), self.vm1[0, 0] * np.ones((1, 1))))
 
         self.vm = np.vstack((vv, vv1))
+        self.varb = varb
         self.n = self.n * self.t
 
 
@@ -582,8 +583,9 @@ class Panel_FE_Error(BasePanel_FE_Error):
         n_rows = USER.check_arrays(y, x)
         x_constant, name_x, warn = USER.check_constant(x, name_x, True)
         set_warn(self, warn)
-        bigy, bigx, name_y, name_x = check_panel(y, x_constant, w,
-                                                 name_y, name_x)
+        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w,
+                                                       name_y, name_x)
+        set_warn(self, warn)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
         BasePanel_FE_Error.__init__(self, bigy, bigx, w, epsilon=epsilon)
@@ -592,7 +594,7 @@ class Panel_FE_Error(BasePanel_FE_Error):
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=True)
-        self.name_x.append('lambda')
+        self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
@@ -623,7 +625,7 @@ def err_c_loglik_sp(lam, n, t, y, ylag, x, xlag, I, Wsp):
     xs = x - lam * xlag
     ysys = np.dot(ys.T, ys)
     xsxs = np.dot(xs.T, xs)
-    xsxsi = np.linalg.inv(xsxs)
+    xsxsi = la.inv(xsxs)
     xsys = np.dot(xs.T, ys)
     x1 = np.dot(xsxsi, xsys)
     x2 = np.dot(xsys.T, x1)
