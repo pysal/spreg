@@ -67,17 +67,17 @@ class Test_Panel_FE_Error(unittest.TestCase):
                           [-2.96606744],
                           [0.19434604]])
         np.testing.assert_allclose(reg.betas, betas, RTOL)
-        u = np.array([-0.07023431])
+        u = np.array([-3.02217669])
         np.testing.assert_allclose(reg.u[0], u, RTOL)
-        predy = np.array([-2.88170807])
+        predy = np.array([0.07023431])
         np.testing.assert_allclose(reg.predy[0], predy, RTOL)
-        vm = np.array([1.36380130e-01, 1.36978101e+00, 2.56811350e-04])
+        vm = np.array([0.02951625, 0.29645666, 0.00025681])
         np.testing.assert_allclose(reg.vm.diagonal(), vm, RTOL)
-        sig2 = np.array([[68.95139869]])
+        sig2 = np.array([[14.92289858]])
         np.testing.assert_allclose(reg.sig2, sig2, RTOL)
-        pr2 = 3.662469318784559e-05
+        pr2 = 0.008359611052787335
         np.testing.assert_allclose(reg.pr2, pr2)
-        std_err = np.array([0.3692968 , 1.17037644, 0.01602533])
+        std_err = np.array([0.17180294, 0.54447834, 0.01602534])
         np.testing.assert_allclose(reg.std_err, std_err, RTOL)
         logll = -67934.00512805565
         np.testing.assert_allclose(reg.logll, logll, RTOL)
