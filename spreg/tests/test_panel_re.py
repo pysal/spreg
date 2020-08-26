@@ -111,7 +111,7 @@ class Test_Panel_RE_Error(unittest.TestCase):
         sig2 = np.array([[16.10231419]])
         np.testing.assert_allclose(reg.sig2, sig2, RTOL)
         pr2 = 0.3256008995950422
-        np.testing.assert_allclose(reg.pr2, pr2)
+        np.testing.assert_allclose(reg.pr2, pr2, RTOL)
         std_err = np.array([0.22723545, 0.23353024, 0.24768493, 0.01581518,
                             0.05510535])
         np.testing.assert_allclose(reg.std_err, std_err, RTOL)
