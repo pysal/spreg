@@ -442,7 +442,7 @@ def check_weights(w, y, w_required=False, time=False):
             from warnings import warn
             warn("w must be API-compatible pysal weights object")
         if w.n != y.shape[0] and time == False:
-            raise Exception("y must be nx1, and w must be an nxn PySAL W object")
+            raise Exception("y must have n rows, and w must be an nxn PySAL W object")
         diag = w.sparse.diagonal()
         # check to make sure all entries equal 0
         if diag.min() != 0:
