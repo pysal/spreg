@@ -1,6 +1,7 @@
 __version__ = "1.1.1"
 from .ols import *
 from .diagnostics import *
+from .diagnostics_panel import *
 from .diagnostics_sp import *
 from .diagnostics_sur import *
 from .diagnostics_tsls import *
@@ -30,3 +31,4 @@ from .regimes import *
 from .sputils import *
 from .sp_panels import *
 from .panel_fe import *
+from .panel_re import *
