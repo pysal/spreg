@@ -1,6 +1,7 @@
-__version__ = "1.1.2.post1"
+__version__ = "1.2.0"
 from .ols import *
 from .diagnostics import *
+from .diagnostics_panel import *
 from .diagnostics_sp import *
 from .diagnostics_sur import *
 from .diagnostics_tsls import *
@@ -28,3 +29,6 @@ from .sur_utils import *
 from .utils import *
 from .regimes import *
 from .sputils import *
+from .sp_panels import *
+from .panel_fe import *
+from .panel_re import *

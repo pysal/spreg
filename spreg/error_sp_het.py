@@ -326,6 +326,10 @@ class GM_Error_Het(BaseGM_Error_Het):
      [ 0.7105  0.3681]
      [-0.5588  0.1616]
      [ 0.4118  0.168 ]]
+
+    Alternatively, we can have a summary of the output by typing:
+    print(reg.summary)
+
     """
 
     def __init__(self, y, x, w,

@@ -322,7 +322,7 @@ def _moments2eqs(A1, s, u):
     return [G, g]
 
 
-def optim_moments(moments_in, vcX=np.array([0])):
+def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
     """
     Optimization of moments
     ...
@@ -333,9 +333,14 @@ def optim_moments(moments_in, vcX=np.array([0])):
     moments     : Moments
                   Instance of gmm_utils.moments_het with G and g
     vcX         : array
-                  Optional. 2x2 array with the Variance-Covariance matrix to be used as
+                  Optional. Array with the Variance-Covariance matrix to be used as
                   weights in the optimization (applies Cholesky
                   decomposition). Set empty by default.
+    all_par     : boolean
+                  Optional. Whether to return all parameters from
+                  solution or just the 1st. Default is 1st only.
+    start       : list
+                  List with initial values for the optimization
 
     Returns
     -------
@@ -365,12 +370,19 @@ def optim_moments(moments_in, vcX=np.array([0])):
     if moments[0].shape[0] == 3:
         optim_par = lambda par: foptim_par(
             np.array([[float(par[0]), float(par[0]) ** 2., float(par[1])]]).T, moments)
-        start = [0.0, 0.0]
+        start = [0.0, 1.0]
         bounds = [(-1.0, 1.0), (0.0, None)]
+    if moments[0].shape[1] == 4:
+        optim_par = lambda par: foptim_par(
+            np.array([[float(par[0]), float(par[0]) ** 2., float(par[1]), float(par[2])]]).T, moments)
+        if not start:
+            start = [0.0, 1.0, 1.0]
+        bounds = [(-1.0, 1.0), (0.0, None), (0.0, None)]        
     lambdaX = op.fmin_l_bfgs_b(
         optim_par, start, approx_grad=True, bounds=bounds)
+    if all_par:
+        return lambdaX[0]
     return lambdaX[0][0]
-
 
 def foptim_par(par, moments):
     """ 
@@ -434,11 +446,15 @@ def get_spFilter(w, lamb, sf):
 
     '''
     try:
-        result = sf - lamb * (w.sparse * sf)
+        ws = w.sparse
     except:
-        result = sf - lamb * (w * sf)
+        ws = w
+    T = sf.shape[0] // ws.shape[0]
+    if T == 1:
+        result = sf - lamb * (ws * sf)
+    else:
+        result = sf - lamb * SP.kron(SP.identity(T),ws).dot(sf)        
     return result
-
 
 def get_lags(w, x, w_lags):
     '''

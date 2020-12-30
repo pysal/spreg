@@ -6,7 +6,8 @@ from ..sur_utils import sur_dictxy
 from ..sur_error import SURerrorML, SURerrorGM
 from .test_sur import dict_compare
 from libpysal.common import RTOL
-ATOL = 1e-12
+
+ATOL = 0.0001
 
 
 class Test_SUR_error(unittest.TestCase):
@@ -140,12 +141,12 @@ class Test_SUR_error_gm(unittest.TestCase):
        [  1.34136264e-01,   8.27537784e+00,   1.28048921e-16],
        [  4.03310502e-02,   1.20903229e+01,   1.18818750e-33]])},rtol=RTOL, atol=ATOL)
         np.testing.assert_allclose(reg.lamsur,np.array([[ 0.55099267],
-       [ 0.52364925]]),RTOL)
+       [ 0.52364925]]),RTOL, ATOL)
         np.testing.assert_allclose(reg.corr,np.array([[ 1.        ,  0.29038532],
        [ 0.29038532,  1.        ]]),RTOL)
-        np.testing.assert_allclose(reg.surchow,[[ 5.5135078 ,  1.        ,  0.01887016],
-       [ 1.77544155,  1.        ,  0.18271008],
-       [ 1.14089432,  1.        ,  0.28546343]],rtol=RTOL, atol=ATOL)
+        np.testing.assert_allclose(reg.surchow,np.array([[5.51329 , 1.      , 0.018873],
+              [1.775379, 1.      , 0.182718],
+              [1.1408  , 1.      , 0.285483]]),rtol=RTOL, atol=ATOL)
 
     def test_error_3eq_gm(self): #Three equation example, unequal K
         y_var1 = ['HR60','HR70','HR80']
@@ -174,7 +175,7 @@ class Test_SUR_error_gm(unittest.TestCase):
        [  1.21987743e-001,   1.15202312e+001,   1.04330705e-030]])},rtol=RTOL, atol=ATOL)
         np.testing.assert_allclose(reg.lamsur,np.array([[ 0.40589647],
        [ 0.42900222],
-       [ 0.41682256]]),RTOL)
+       [ 0.41682256]]),RTOL, ATOL)
         np.testing.assert_allclose(reg.corr,np.array([[ 1.        ,  0.22987815,  0.13516187],
        [ 0.22987815,  1.        ,  0.2492023 ],
        [ 0.13516187,  0.2492023 ,  1.        ]]),RTOL)
