@@ -42,8 +42,8 @@ def setup_package():
         name="spreg",
         version=__version__,
         description="PySAL Spatial Econometrics Package",
-        long_description = long_description,
-        long_description_content_type = 'text/markdown',
+        long_description=long_description,
+        long_description_content_type="text/markdown",
         maintainer="PySAL Developers",
         maintainer_email="pysal-dev@googlegroups.com",
         url="http://pysal.org",
@@ -73,4 +73,3 @@ def setup_package():
 
 if __name__ == "__main__":
     setup_package()
-
