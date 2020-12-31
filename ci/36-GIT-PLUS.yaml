@@ -23,3 +23,7 @@ dependencies:
   - scikit-learn>=0.17.1
   - seaborn>=0.7.0
   - statsmodels>=0.6.1
+  # required
+  - pip
+  - pip:
+    - git+https://github.com/pysal/libpysal.git@master
