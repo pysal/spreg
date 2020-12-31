@@ -1,7 +1,7 @@
 # spreg
 
-[![Build Status](https://travis-ci.com/pysal/spreg.svg?branch=master)](https://travis-ci.com/pysal/spreg)
-[![Coverage Status](https://coveralls.io/repos/github/pysal/spreg/badge.svg?branch=master)](https://coveralls.io/github/pysal/spreg?branch=master&service=github)
+[![unittests](https://github.com/pysal/spreg/workflows/.github/workflows/unittests.yml/badge.svg)](https://github.com/pysal/spreg/actions?query=workflow%3A.github%2Fworkflows%2Funittests.yml)
+[![codecov](https://codecov.io/gh/pysal/spreg/branch/master/graph/badge.svg?token=9VrJpIYIl3)](https://codecov.io/gh/pysal/spreg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/spreg)
 ![PyPI](https://img.shields.io/pypi/v/spreg)
 ![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/spreg)
