@@ -15,8 +15,8 @@
      timeout-minutes: 30
      strategy:
        matrix:
-         os: [macos-latest, ubuntu-latest, windows-latest]
-         environment-file: [ci/37-GIT-PLUS.yaml]
+         os: [macos-latest, ubuntu-latest] #[macos-latest, ubuntu-latest, windows-latest]
+         environment-file: [ci/37-GIT-PLUS.yaml, ci/37-PYPI-PLUS.yaml]
          #exclude:
          #  - environment-file: ci/36-PYPI-PLUS.yaml
          #    os: windows-latest
