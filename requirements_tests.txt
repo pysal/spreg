@@ -1,4 +1,6 @@
+codecov
+coverage
 pytest
 pytest-cov
-coverage
-coveralls
+twine
+wheel
