@@ -48,7 +48,8 @@
        - run: mamba list
        - run: conda config --show-sources
        - run: conda config --show
-       - run: pytest -v spreg --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml
+       #- run: pytest -v spreg --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml
+       - run: pytest -v spreg --cov=spreg --cov-config=.coveragerc --cov-report=xml
        - name: codecov (${{ matrix.os }}, ${{ matrix.environment-file }})
          uses: codecov/codecov-action@v1
          with:
