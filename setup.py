@@ -1,15 +1,13 @@
 # coding: utf-8
-
-from setuptools import setup, find_packages
-
 from distutils.command.build_py import build_py
+from setuptools import setup
 
-import os
+package = "spreg"
 
 with open("README.md", encoding="utf8") as file:
     long_description = file.read()
 
-with open("spreg/__init__.py", "r") as f:
+with open("%s/__init__.py" % package, "r") as f:
     exec(f.readline())
 
 
@@ -39,18 +37,18 @@ def setup_package():
     extras_reqs = reqs
 
     setup(
-        name="spreg",
+        name=package,
         version=__version__,
         description="PySAL Spatial Econometrics Package",
         long_description=long_description,
         long_description_content_type="text/markdown",
         maintainer="PySAL Developers",
         maintainer_email="pysal-dev@googlegroups.com",
-        url="http://pysal.org",
-        download_url="https://pypi.python.org/pypi/spreg",
+        url="pysal.org/%s/" % package,
+        download_url="https://pypi.python.org/pypi/%s" % package,
         license="BSD",
-        py_modules=["spreg"],
-        packages=find_packages(),
+        py_modules=[package],
+        packages=[package],
         keywords="spatial statistics",
         classifiers=[
             "Development Status :: 5 - Production/Stable",
@@ -63,8 +61,8 @@ def setup_package():
             "Programming Language :: Python",
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
         ],
-        # package_data={'libpysal':list(example_data_files)},
         install_requires=install_reqs,
         extras_require=extras_reqs,
         cmdclass={"build_py": build_py},

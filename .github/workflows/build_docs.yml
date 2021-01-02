@@ -12,7 +12,7 @@
      strategy:
        matrix:
          os: ['ubuntu-latest']
-         environment-file: [ci/37-GIT-PLUS.yaml]
+         environment-file: [ci/38-GIT-PLUS.yaml]
          experimental: [false]
      defaults:
        run:
