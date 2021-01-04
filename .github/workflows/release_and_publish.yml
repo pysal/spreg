@@ -65,8 +65,8 @@
          asset_path: dist/${{ env.name }}
          asset_name: ${{ env.name }}
          asset_content_type: application/zip
-      - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
+     - name: Publish distribution 📦 to PyPI
+       uses: pypa/gh-action-pypi-publish@master
+       with:
+         user: __token__
          password: ${{ secrets.PYPI_PASSWORD }}
