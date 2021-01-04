@@ -1,0 +1,24 @@
+name: notebooks-environment
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - bokeh
+  - folium
+  - geojson
+  - geopandas
+  - libpysal
+  - matplotlib
+  - mplleaflet
+  - numba
+  - numexpr
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - seaborn
+  - statsmodels
+  - watermark
+  - pip
+  - pip:
+    - git+https://github.com/pysal/spreg.git@master
