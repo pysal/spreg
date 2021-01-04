@@ -156,6 +156,7 @@ html_theme_options = {
     # Navigation bar menu
     "navbar_links": [
         ("Installation", "installation"),
+        ("Tutorials", "tutorials"),
         ("API", "api"),
         ("References", "references"),
     ],
