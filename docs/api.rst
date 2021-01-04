@@ -8,7 +8,7 @@ API reference
 .. _models_api:
 
 Spatial Regression Models
-=========================
+-------------------------
 
 These are the standard spatial regression models supported by the `spreg` package. Each of them contains a significant amount of detail in their docstring discussing how they're used, how they're fit, and how to interpret the results. 
 
@@ -73,6 +73,17 @@ Seemingly-unrelated regression models are a generalization of linear regression.
     spreg.SURerrorML
     spreg.SURlagIV
     spreg.ThreeSLS
+
+Panel Models
+------------
+
+.. autosummary::
+    :toctree: generated/
+
+    spreg.Panel_FE_Lag
+    spreg.Panel_FE_Error
+    spreg.Panel_RE_Lag
+    spreg.Panel_RE_Error
 
 Spatial Panel Models
 --------------------
