@@ -19,6 +19,7 @@ Spatial Regression Models (spreg)
    :caption: Contents:
 
    Installation <installation>
+   Tutorials <tutorials>
    API <api>
    References <references>
 
