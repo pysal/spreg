@@ -6,7 +6,7 @@
 ![PyPI](https://img.shields.io/pypi/v/spreg)
 ![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/spreg)
 ![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/pysal/spreg/latest)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3973200.svg)](https://doi.org/10.5281/zenodo.3973200)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4421373.svg)](https://zenodo.org/record/4421373)
 
 ## PySAL Spatial Econometrics Package
 
