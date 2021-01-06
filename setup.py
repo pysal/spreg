@@ -44,7 +44,7 @@ def setup_package():
         long_description_content_type="text/markdown",
         maintainer="PySAL Developers",
         maintainer_email="pysal-dev@googlegroups.com",
-        url="pysal.org/%s/" % package,
+        url="https://github.com/pysal/" + package,
         download_url="https://pypi.python.org/pypi/%s" % package,
         license="BSD",
         py_modules=[package],
