@@ -1,0 +1,49 @@
+﻿spreg.Probit
+============
+
+.. currentmodule:: spreg
+
+.. autoclass:: Probit
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Probit.__init__
+      ~Probit.gradient
+      ~Probit.hessian
+      ~Probit.ll
+      ~Probit.par_est
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Probit.KP_error
+      ~Probit.LR
+      ~Probit.PS_error
+      ~Probit.Pinkse_error
+      ~Probit.phiy
+      ~Probit.predpc
+      ~Probit.predy
+      ~Probit.scale
+      ~Probit.slopes
+      ~Probit.slopes_std_err
+      ~Probit.slopes_vm
+      ~Probit.slopes_z_stat
+      ~Probit.u_gen
+      ~Probit.u_naive
+      ~Probit.vm
+      ~Probit.xb
+      ~Probit.xmean
+      ~Probit.z_stat
+   
+   
