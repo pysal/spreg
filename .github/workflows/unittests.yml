@@ -61,7 +61,7 @@
        #- run: pytest -v spreg --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml
        ##############################################
        - name: codecov (${{ matrix.os }}, ${{ matrix.environment-file }})
-         uses: codecov/codecov-action@v1
+         uses: codecov/codecov-action@v1.5.0
          with:
            token: ${{ secrets.CODECOV_TOKEN }}
            file: ./coverage.xml
