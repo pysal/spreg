@@ -631,13 +631,14 @@ def check_const_regi(reg,x,name_x,regi_ids):
     keep_x = COPY.copy(name_x)
     for r in reg.regimes_set:
         diffs = np.ptp(x[regi_ids[r]],axis=0)
-        keep_x = list(set(keep_x) & set([keep_x[i] for i in np.nonzero(diffs>0)[0]]))
+        const_x = [keep_x[i] for i in np.nonzero(diffs==0)[0]]
+        keep_x = [element for element in keep_x if element not in const_x]
         x = np.delete(x,np.nonzero(diffs==0),1)
     rem_x = list(set(name_x) - set(keep_x))
     if len(rem_x) > 0:
         set_warn(reg,'Variable(s) '+str(rem_x)+' removed for being constant for at least one of the regimes.')
     x_constant = spu.sphstack(np.ones((x.shape[0], 1)), x)
-    name_x =['CONSTANT']+keep_x
+    name_x =['CONSTANT'] + keep_x
     return x_constant, name_x
 
 
