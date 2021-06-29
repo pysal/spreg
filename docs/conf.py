@@ -253,7 +253,7 @@ plot_include_source = True
 
 
 def setup(app):
-    app.add_stylesheet("pysal-styles.css")
+    app.add_css_file("pysal-styles.css")
 
 
 # Configuration for intersphinx
@@ -270,7 +270,6 @@ intersphinx_mapping = {
 # This is processed by Jinja2 and inserted before each notebook
 nbsphinx_prolog = r"""
 {% set docname = env.doc2path(env.docname, base='') %}
-{% set fullpath = env.doc2path(env.docname, base='tree/master/') %}
 
 .. only:: html
 
@@ -283,7 +282,7 @@ nbsphinx_prolog = r"""
         Interactive online version:
         :raw-html:`<a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath={{ docname }}"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a>`
 
-    __ https://github.com/pysal/spreg/{{ fullpath }}
+    __ https://github.com/pysal/spreg/blob/master/{{ docname }}
 
 .. raw:: latex
 
