@@ -103,7 +103,7 @@ def demean_panel(arr, n, t, phi=0):
                   Demeaned variable
     """
 
-    one = sp.ones((t, 1))
+    one = np.ones((t, 1))
     J = sp.identity(t) - (1-phi)*(1/t)*spdot(one, one.T)
     Q = sp.kron(J, sp.identity(n), format="csr")
     arr_dm = spdot(Q, arr)
