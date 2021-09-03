@@ -7,6 +7,7 @@ __author__ = "Wei Kang weikang9009@gmail.com, \
               Pablo Estrada pabloestradace@gmail.com"
 
 import numpy as np
+from scipy import sparse as sp
 from .sputils import spdot
 
 __all__ = ["check_panel", "demean_panel"]
@@ -102,9 +103,9 @@ def demean_panel(arr, n, t, phi=0):
                   Demeaned variable
     """
 
-    one = np.ones((t, 1))
-    J = np.identity(t) - (1-phi)*(1/t)*spdot(one, one.T)
-    Q = np.kron(J, np.identity(n))
+    one = sp.ones((t, 1))
+    J = sp.identity(t) - (1-phi)*(1/t)*spdot(one, one.T)
+    Q = sp.kron(J, sp.identity(n), format="csr")
     arr_dm = spdot(Q, arr)
 
     return arr_dm
