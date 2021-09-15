@@ -359,9 +359,9 @@ def GM_Error_Hom(reg, vm, w, regimes=False):
     beta_diag(reg, None)
     summary_iteration(reg)
     # build coefficients table body
-    beta_position = summary_coefs_somex(reg, reg.z_stat)
-    summary_coefs_lambda(reg, reg.z_stat)
+    beta_position = summary_coefs_allx(reg, reg.z_stat, lambd=True)
     if regimes:
+        summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=False,
@@ -376,8 +376,8 @@ def GM_Error_Hom_multi(reg, multireg, vm, regimes=False):
         summary_iteration(mreg)
         beta_diag(mreg, None)
         # build coefficients table body
-        beta_position = summary_coefs_somex(mreg, mreg.z_stat)
-        summary_coefs_lambda(mreg, mreg.z_stat)
+        beta_position = summary_coefs_allx(mreg, mreg.z_stat, lambd=True)
+        #summary_coefs_lambda(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
         summary_warning(mreg,reg)
@@ -396,9 +396,9 @@ def GM_Endog_Error_Hom(reg, vm, w, regimes=False):
     summary_iteration(reg)
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
-    summary_coefs_lambda(reg, reg.z_stat)
     summary_coefs_instruments(reg)
     if regimes:
+        summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True,
@@ -414,7 +414,7 @@ def GM_Endog_Error_Hom_multi(reg, multireg, vm, regimes=False):
         summary_iteration(mreg)
         # build coefficients table body
         summary_coefs_allx(mreg, mreg.z_stat, lambd=True)
-        summary_coefs_lambda(mreg, mreg.z_stat)
+        #summary_coefs_lambda(mreg, mreg.z_stat)
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
@@ -433,9 +433,9 @@ def GM_Error_Het(reg, vm, w, regimes=False):
     beta_diag(reg, 'het')
     summary_iteration(reg)
     # build coefficients table body
-    beta_position = summary_coefs_somex(reg, reg.z_stat)
-    summary_coefs_lambda(reg, reg.z_stat)
+    beta_position = summary_coefs_allx(reg, reg.z_stat, lambd=True)
     if regimes:
+        summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=False,
@@ -450,8 +450,8 @@ def GM_Error_Het_multi(reg, multireg, vm, regimes=False):
         beta_diag(mreg, 'het')
         summary_iteration(mreg)
         # build coefficients table body
-        beta_position = summary_coefs_somex(mreg, mreg.z_stat)
-        summary_coefs_lambda(mreg, mreg.z_stat)
+        beta_position = summary_coefs_allx(mreg, mreg.z_stat, lambd=True)
+        #summary_coefs_lambda(mreg, mreg.z_stat)
         if regimes:
             summary_regimes(mreg, chow=False)
         summary_warning(mreg,reg)
@@ -470,9 +470,9 @@ def GM_Endog_Error_Het(reg, vm, w, regimes=False):
     summary_iteration(reg)
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
-    summary_coefs_lambda(reg, reg.z_stat)
     summary_coefs_instruments(reg)
     if regimes:
+        summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True,
@@ -488,7 +488,7 @@ def GM_Endog_Error_Het_multi(reg, multireg, vm, regimes=False):
         summary_iteration(mreg)
         # build coefficients table body
         summary_coefs_allx(mreg, mreg.z_stat, lambd=True)
-        summary_coefs_lambda(mreg, mreg.z_stat)
+        #summary_coefs_lambda(mreg, mreg.z_stat)
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
@@ -546,9 +546,9 @@ def GM_Combo_Hom(reg, vm, w, regimes=False):
     summary_iteration(reg)
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
-    summary_coefs_lambda(reg, reg.z_stat)
     summary_coefs_instruments(reg)
     if regimes:
+        summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True,
@@ -564,7 +564,7 @@ def GM_Combo_Hom_multi(reg, multireg, vm, regimes=False):
         summary_iteration(mreg)
         # build coefficients table body
         summary_coefs_allx(mreg, mreg.z_stat, lambd=True)
-        summary_coefs_lambda(mreg, mreg.z_stat)
+        #summary_coefs_lambda(mreg, mreg.z_stat)
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
@@ -585,9 +585,9 @@ def GM_Combo_Het(reg, vm, w, regimes=False):
     summary_iteration(reg)
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
-    summary_coefs_lambda(reg, reg.z_stat)
     summary_coefs_instruments(reg)
     if regimes:
+        summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True,
@@ -603,7 +603,7 @@ def GM_Combo_Het_multi(reg, multireg, vm, regimes=False):
         summary_iteration(mreg)
         # build coefficients table body
         summary_coefs_allx(mreg, mreg.z_stat, lambd=True)
-        summary_coefs_lambda(mreg, mreg.z_stat)
+        #summary_coefs_lambda(mreg, mreg.z_stat)
         summary_coefs_instruments(mreg)
         if regimes:
             summary_regimes(mreg, chow=False)
