@@ -32,4 +32,3 @@ from .sputils import *
 from .sp_panels import *
 from .panel_fe import *
 from .panel_re import *
-from .skater_reg import *
