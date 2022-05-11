@@ -2,9 +2,9 @@
 
 __author__ = "Luc Anselin anselin@uchicago.edu, Pedro Amaral pedroamaral@cedeplar.ufmg.br, Levi Wolf levi.john.wolf@bristol.ac.uk"
 
-from sklearn.metrics import pairwise as skm
 from scipy.sparse import csgraph as cg
 from scipy.optimize import OptimizeWarning
+from scipy.spatial.distance import cdist
 from collections import namedtuple
 from warnings import warn
 from libpysal.weights import w_subset
@@ -12,6 +12,21 @@ from .utils import set_endog
 import time
 import numpy as np
 import copy
+
+try:
+    from sklearn.metrics import euclidean_distances
+except ImportError:
+    from scipy.spatial.distance import pdist, cdist, squareform
+    def euclidean_distances(X,Y=None):
+        """
+        fallback function to compute pairwise euclidean distances
+        for a single input, or point-to-point euclidean distances
+        for two inputs.
+        """
+        if Y is None:
+            return squareform(pdist(X))
+        else:
+            return cdist(X,Y)
 
 __all__ = ["Skater_reg"]
 
@@ -131,7 +146,7 @@ class Skater_reg(object):
     """
 
     def __init__(self,
-                 dissimilarity=skm.euclidean_distances,
+                 dissimilarity=euclidean_distances,
                  affinity=None,
                  reduction=np.sum,
                  center=np.mean):
