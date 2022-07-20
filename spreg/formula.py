@@ -12,10 +12,7 @@ Description
       external to the actual running of the model
 
 TODO
-- figure out I/O stuff in the classes
-- build dispatcher to combos (and build combo models!)
-    - basic gm combo class for if user inputs lag and error, beyond that it's up to you
-- add functionality for multiple estimation methods (kwarg; hook up to new classes)
+- build dispatcher to combos?
 """
 
 import numpy as np
