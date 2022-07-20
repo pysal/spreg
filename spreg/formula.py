@@ -5,14 +5,14 @@ Description
     - enclose lagged covariates or dependent var for assembly in model matrix
     - usage: <FIELD> adds spatial lag of that field from df to model matrix
 - & adds spatial error component (& is not a reserved char in formulaic)
-    - accepts sums of fields and &: <FIELD + ... + FIELD> + & is the most general format
 - all terms and operators MUST be space delimited
 - requires the user to have constructed a weights matrix first
     - i think this makes sense, as the functionality for this is well-documented and
       external to the actual running of the model
 
 TODO
-- build dispatcher to combos?
+- build dispatcher to combos? optimally, should accept sums of fields and &:
+    e.g., <FIELD + ... + FIELD> + & would be the most general format
 """
 
 import numpy as np
