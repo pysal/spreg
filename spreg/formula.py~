@@ -22,9 +22,11 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 from formulaic import model_matrix
-from .prop_ols import OLS
-from .prop_lag import Lag
-from .prop_err import Error
+from .ols import OLS
+from .ml_lag import ML_Lag
+from .ml_err import ML_Error
+from .twosls_sp import GM_Lag
+from .error_sp import GM_Error
 
 
 def noninplace_remove(lst, el):
@@ -41,7 +43,7 @@ def expand_lag(w_name, fields):
     return " + ".join(output)
 
 
-def from_formula(formula, df, w=None, method="full"):
+def from_formula(formula, df, w=None, method="gm", **kwargs):
     # Find all <...> and linearly lag every covar in there
     # if "&" is found, switch to spatial error
     lag_start_idx = formula.find("<")
@@ -95,16 +97,24 @@ def from_formula(formula, df, w=None, method="full"):
     y = np.array(y)
     X = np.array(X)
 
+    method = method.lower()
+    if method not in ["gm", "full", "lu", "ord"]:
+        raise ValueError(f"Method must be in 'gm', 'full', 'lu', 'ord'; was {method}")
+
     if not (err_model or lag_model):
         model = OLS(X, y)
     elif lag_model:
-        model = Lag(X, y, w)
+        if method == "gm":
+            model = GM_Lag(y, X, w, **kwargs)
+        else:
+            model = ML_Lag(y, X, w, method=method, **kwargs)
     elif err_model:
-        model = Error(X, y, w)
+        if method == "gm":
+            model = GM_Error(y, X, w, **kwargs)
+        else:
+            model = ML_Error(y, X, w, method=method, **kwargs)
 
-    # fit goes here
-
-    return model, parsed_formula  # temporary return for parser demos
+    return model
 
 
 # Testing

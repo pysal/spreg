@@ -24,7 +24,7 @@ import geopandas as gpd
 from formulaic import model_matrix
 from .ols import OLS
 from .ml_lag import ML_Lag
-from .ml_err import ML_Error
+from .ml_error import ML_Error
 from .twosls_sp import GM_Lag
 from .error_sp import GM_Error
 
@@ -102,23 +102,24 @@ def from_formula(formula, df, w=None, method="gm", **kwargs):
         raise ValueError(f"Method must be in 'gm', 'full', 'lu', 'ord'; was {method}")
 
     if not (err_model or lag_model):
-        model = OLS(X, y)
+        model = OLS(y, X, w=w, **kwargs)
     elif lag_model:
         if method == "gm":
-            model = GM_Lag(y, X, w, **kwargs)
+            model = GM_Lag(y, X, w=w, **kwargs)
         else:
-            model = ML_Lag(y, X, w, method=method, **kwargs)
+            model = ML_Lag(y, X, w=w, method=method, **kwargs)
     elif err_model:
         if method == "gm":
-            model = GM_Error(y, X, w, **kwargs)
+            model = GM_Error(y, X, w=w, **kwargs)
         else:
-            model = ML_Error(y, X, w, method=method, **kwargs)
+            model = ML_Error(y, X, w=w, method=method, **kwargs)
 
     return model
 
 
 # Testing
 if __name__ == "__main__":
+    # Imports required for example
     import spreg
     import numpy as np
     import pandas as pd
@@ -126,9 +127,11 @@ if __name__ == "__main__":
     from libpysal.examples import load_example
     from libpysal.weights import Kernel, fill_diagonal
 
+    # Load boston example
     boston = load_example("Bostonhsg")
     boston_df = gpd.read_file(boston.get_path("boston.shp"))
 
+    # Manually transform data and set up model matrices
     boston_df["NOXSQ"] = (10 * boston_df["NOX"])**2
     boston_df["RMSQ"] = boston_df["RM"]**2
     boston_df["LOGDIS"] = np.log(boston_df["DIS"].values)
@@ -147,24 +150,24 @@ if __name__ == "__main__":
     # Original OLS model, manually transformed fields
     formula = "CMEDV ~ RMSQ + AGE + LOGDIS + LOGRAD + TAX + PTRATIO + TRANSB" + \
               " + LOGSTAT + CRIM + ZN + INDUS + CHAS + NOXSQ"
-    model, parsed_formula = spreg.from_formula(formula, boston_df)
+    model = spreg.from_formula(formula, boston_df)
 
     # OLS model, fields transformed using formulaic
     formula = "log(CMEDV) ~ {RM**2} + AGE + log(DIS) + log(RAD) + TAX + PTRATIO" + \
               " + {B/1000} + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2}"
-    model, parsed_formula = spreg.from_formula(formula, boston_df)
+    model = spreg.from_formula(formula, boston_df)
 
     # SLX model
     # note that type(model) == spreg.prop_ols.OLS as SLX is just smoothed covars
     formula = "log(CMEDV) ~ {RM**2} + AGE + log(RAD) + TAX + PTRATIO" + \
               " + {B/1000} + log(LSTAT) + <CRIM + ZN + INDUS + CHAS> + {(10*NOX)**2}"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights)
+    model = spreg.from_formula(formula, boston_df, w=weights)
 
     # SLY model
     formula = "log(CMEDV) ~ {RM**2} + AGE + <log(CMEDV)>"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights)
+    model = spreg.from_formula(formula, boston_df, w=weights)
 
     # Error model
     formula = "log(CMEDV) ~ {RM**2} + AGE + TAX + PTRATIO + {B/1000}" + \
               " + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2} + &"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights)
+    model = spreg.from_formula(formula, boston_df, w=weights)
