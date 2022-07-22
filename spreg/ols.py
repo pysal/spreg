@@ -29,7 +29,7 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
                    HAC consistent estimator of the variance-covariance
-                   matrix is given. Default set to None. 
+                   matrix is given. Default set to None.
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
@@ -140,7 +140,7 @@ class OLS(BaseOLS):
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
                    HAC consistent estimator of the variance-covariance
-                   matrix is given. Default set to None. 
+                   matrix is given. Default set to None.
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
@@ -217,11 +217,11 @@ class OLS(BaseOLS):
     logll        : float
                    Log likelihood
     aic          : float
-                   Akaike information criterion 
+                   Akaike information criterion
     schwarz      : float
-                   Schwarz information criterion     
+                   Schwarz information criterion
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     t_stat       : list of tuples
                    t statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -229,24 +229,24 @@ class OLS(BaseOLS):
                    Multicollinearity condition number
     jarque_bera  : dictionary
                    'jb': Jarque-Bera statistic (float); 'pvalue': p-value
-                   (float); 'df': degrees of freedom (int)  
+                   (float); 'df': degrees of freedom (int)
     breusch_pagan : dictionary
                     'bp': Breusch-Pagan statistic (float); 'pvalue': p-value
-                    (float); 'df': degrees of freedom (int)  
+                    (float); 'df': degrees of freedom (int)
     koenker_bassett : dictionary
                       'kb': Koenker-Bassett statistic (float); 'pvalue':
-                      p-value (float); 'df': degrees of freedom (int)  
+                      p-value (float); 'df': degrees of freedom (int)
     white         : dictionary
                     'wh': White statistic (float); 'pvalue': p-value (float);
-                    'df': degrees of freedom (int)  
+                    'df': degrees of freedom (int)
     lm_error      : tuple
                     Lagrange multiplier test for spatial error model; tuple
                     contains the pair (statistic, p-value), where each is a
-                    float 
+                    float
     lm_lag        : tuple
                     Lagrange multiplier test for spatial lag model; tuple
                     contains the pair (statistic, p-value), where each is a
-                    float 
+                    float
     rlm_error     : tuple
                     Robust lagrange multiplier test for spatial error model;
                     tuple contains the pair (statistic, p-value), where each
@@ -294,7 +294,7 @@ class OLS(BaseOLS):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; also, the actual OLS class
     requires data to be passed in as numpy arrays so the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
@@ -419,22 +419,36 @@ class OLS(BaseOLS):
 
     """
 
-    def __init__(self, y, x,
-                 w=None,
-                 robust=None, gwk=None, sig2n_k=True,
-                 nonspat_diag=True, spat_diag=False, moran=False,
-                 white_test=False, vm=False, name_y=None, name_x=None,
-                 name_w=None, name_gwk=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w=None,
+        robust=None,
+        gwk=None,
+        sig2n_k=True,
+        nonspat_diag=True,
+        spat_diag=False,
+        moran=False,
+        white_test=False,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_gwk=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        BaseOLS.__init__(self, y=y, x=x_constant, robust=robust,
-                         gwk=gwk, sig2n_k=sig2n_k)
+        BaseOLS.__init__(
+            self, y=y, x=x_constant, robust=robust, gwk=gwk, sig2n_k=sig2n_k
+        )
         self.title = "ORDINARY LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
@@ -442,32 +456,53 @@ class OLS(BaseOLS):
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        SUMMARY.OLS(reg=self, vm=vm, w=w, nonspat_diag=nonspat_diag,
-                    spat_diag=spat_diag, moran=moran, white_test=white_test)
+        SUMMARY.OLS(
+            reg=self,
+            vm=vm,
+            w=w,
+            nonspat_diag=nonspat_diag,
+            spat_diag=spat_diag,
+            moran=moran,
+            white_test=white_test,
+        )
 
 
 def _test():
     import doctest
+
     # the following line could be used to define an alternative to the '<BLANKLINE>' flag
-    #doctest.BLANKLINE_MARKER = 'something better than <BLANKLINE>'
-    start_suppress = np.get_printoptions()['suppress']
+    # doctest.BLANKLINE_MARKER = 'something better than <BLANKLINE>'
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()
 
     import numpy as np
     import libpysal
-    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
-    y_var = 'CRIME'
+
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y_var = "CRIME"
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
-    x_var = ['INC', 'HOVAL']
+    x_var = ["INC", "HOVAL"]
     x = np.array([db.by_col(name) for name in x_var]).T
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-    w.transform = 'r'
+    w.transform = "r"
     ols = OLS(
-        y, x, w=w, nonspat_diag=True, spat_diag=True, name_y=y_var, name_x=x_var,
-        name_ds='columbus', name_w='columbus.gal', robust='white', sig2n_k=True, moran=True)
+        y,
+        x,
+        w=w,
+        nonspat_diag=True,
+        spat_diag=True,
+        name_y=y_var,
+        name_x=x_var,
+        name_ds="columbus",
+        name_w="columbus.gal",
+        robust="white",
+        sig2n_k=True,
+        moran=True,
+    )
     print(ols.summary)

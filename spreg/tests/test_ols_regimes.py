@@ -7,65 +7,84 @@ from libpysal.common import RTOL
 
 PEGP = libpysal.examples.get_path
 
+
 class TestOLS_regimes(unittest.TestCase):
     def setUp(self):
-        db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
-        self.y_var = 'CRIME'
-        self.y = np.array([db.by_col(self.y_var)]).reshape(49,1)
-        self.x_var = ['INC','HOVAL']
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+        self.y_var = "CRIME"
+        self.y = np.array([db.by_col(self.y_var)]).reshape(49, 1)
+        self.x_var = ["INC", "HOVAL"]
         self.x = np.array([db.by_col(name) for name in self.x_var]).T
-        self.r_var = 'NSA'
+        self.r_var = "NSA"
         self.regimes = db.by_col(self.r_var)
-        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-        self.w.transform = 'r'
+        self.w = libpysal.weights.Rook.from_shapefile(
+            libpysal.examples.get_path("columbus.shp")
+        )
+        self.w.transform = "r"
 
     def test_OLS(self):
-        start_suppress = np.get_printoptions()['suppress']
-        np.set_printoptions(suppress=True)    
-        ols = OLS_Regimes(self.y, self.x, self.regimes, w=self.w, regime_err_sep=False, constant_regi='many', nonspat_diag=False, spat_diag=True, name_y=self.y_var, name_x=self.x_var, name_ds='columbus', name_regimes=self.r_var, name_w='columbus.gal')        
-        #np.testing.assert_allclose(ols.aic, 408.73548964604873 ,RTOL)
-        np.testing.assert_allclose(ols.ar2,0.50761700679873101 ,RTOL)
-        np.testing.assert_allclose(ols.betas,np.array([[ 68.78670869],\
-                [ -1.9864167 ],[ -0.10887962],[ 67.73579559],[ -1.36937552],[ -0.31792362]])) 
-        vm = np.array([ 48.81339213,  -2.14959579,  -0.19968157,   0.        ,
-         0.        ,   0.        ])
-        np.testing.assert_allclose(ols.vm[0], vm,RTOL)
-        np.testing.assert_allclose(ols.lm_error, \
-            (5.92970357,  0.01488775),RTOL)
-        np.testing.assert_allclose(ols.lm_lag, \
-            (8.78315751,  0.00304024),RTOL)
-        np.testing.assert_allclose(ols.lm_sarma, \
-                (8.89955982,  0.01168114),RTOL)
-        np.testing.assert_allclose(ols.mean_y, \
-            35.1288238979591,RTOL)
+        start_suppress = np.get_printoptions()["suppress"]
+        np.set_printoptions(suppress=True)
+        ols = OLS_Regimes(
+            self.y,
+            self.x,
+            self.regimes,
+            w=self.w,
+            regime_err_sep=False,
+            constant_regi="many",
+            nonspat_diag=False,
+            spat_diag=True,
+            name_y=self.y_var,
+            name_x=self.x_var,
+            name_ds="columbus",
+            name_regimes=self.r_var,
+            name_w="columbus.gal",
+        )
+        # np.testing.assert_allclose(ols.aic, 408.73548964604873 ,RTOL)
+        np.testing.assert_allclose(ols.ar2, 0.50761700679873101, RTOL)
+        np.testing.assert_allclose(
+            ols.betas,
+            np.array(
+                [
+                    [68.78670869],
+                    [-1.9864167],
+                    [-0.10887962],
+                    [67.73579559],
+                    [-1.36937552],
+                    [-0.31792362],
+                ]
+            ),
+        )
+        vm = np.array([48.81339213, -2.14959579, -0.19968157, 0.0, 0.0, 0.0])
+        np.testing.assert_allclose(ols.vm[0], vm, RTOL)
+        np.testing.assert_allclose(ols.lm_error, (5.92970357, 0.01488775), RTOL)
+        np.testing.assert_allclose(ols.lm_lag, (8.78315751, 0.00304024), RTOL)
+        np.testing.assert_allclose(ols.lm_sarma, (8.89955982, 0.01168114), RTOL)
+        np.testing.assert_allclose(ols.mean_y, 35.1288238979591, RTOL)
         np.testing.assert_equal(ols.k, 6)
         np.testing.assert_equal(ols.kf, 0)
         np.testing.assert_equal(ols.kr, 3)
         np.testing.assert_equal(ols.n, 49)
         np.testing.assert_equal(ols.nr, 2)
-        np.testing.assert_equal(ols.name_ds,  'columbus')
-        np.testing.assert_equal(ols.name_gwk,  None)
-        np.testing.assert_equal(ols.name_w,  'columbus.gal')
-        np.testing.assert_equal(ols.name_x,  ['0_CONSTANT', '0_INC', '0_HOVAL', '1_CONSTANT', '1_INC', '1_HOVAL'])
-        np.testing.assert_equal(ols.name_y,  'CRIME')
-        np.testing.assert_allclose(ols.predy[3], np.array([
-            51.05003696]),RTOL)
-        np.testing.assert_allclose(ols.r2, \
-                0.55890690192386316 ,RTOL)
-        np.testing.assert_allclose(ols.rlm_error, \
-                (0.11640231,  0.73296972),RTOL)
-        np.testing.assert_allclose(ols.rlm_lag, \
-            (2.96985625,  0.08482939),RTOL)
-        np.testing.assert_equal(ols.robust,  'unadjusted')
-        np.testing.assert_allclose(ols.sig2, \
-            137.84897351821013,RTOL)
-        np.testing.assert_allclose(ols.sig2n, \
-                120.96950737312316,RTOL)
-        np.testing.assert_allclose(ols.t_stat[2][0], \
-                -0.43342216706091791,RTOL)
-        np.testing.assert_allclose(ols.t_stat[2][1], \
-                0.66687472578594531,RTOL)
-        np.set_printoptions(suppress=start_suppress)        
+        np.testing.assert_equal(ols.name_ds, "columbus")
+        np.testing.assert_equal(ols.name_gwk, None)
+        np.testing.assert_equal(ols.name_w, "columbus.gal")
+        np.testing.assert_equal(
+            ols.name_x,
+            ["0_CONSTANT", "0_INC", "0_HOVAL", "1_CONSTANT", "1_INC", "1_HOVAL"],
+        )
+        np.testing.assert_equal(ols.name_y, "CRIME")
+        np.testing.assert_allclose(ols.predy[3], np.array([51.05003696]), RTOL)
+        np.testing.assert_allclose(ols.r2, 0.55890690192386316, RTOL)
+        np.testing.assert_allclose(ols.rlm_error, (0.11640231, 0.73296972), RTOL)
+        np.testing.assert_allclose(ols.rlm_lag, (2.96985625, 0.08482939), RTOL)
+        np.testing.assert_equal(ols.robust, "unadjusted")
+        np.testing.assert_allclose(ols.sig2, 137.84897351821013, RTOL)
+        np.testing.assert_allclose(ols.sig2n, 120.96950737312316, RTOL)
+        np.testing.assert_allclose(ols.t_stat[2][0], -0.43342216706091791, RTOL)
+        np.testing.assert_allclose(ols.t_stat[2][1], 0.66687472578594531, RTOL)
+        np.set_printoptions(suppress=start_suppress)
+
     """
     def test_OLS_regi(self):
         #Artficial:
@@ -108,39 +127,54 @@ class TestOLS_regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.chow.regi, chow_regi,RTOL)
         np.testing.assert_allclose(reg.chow.joint[0], 0.67787986791767096,RTOL)
     """
+
     def test_OLS_fixed(self):
-        start_suppress = np.get_printoptions()['suppress']
-        np.set_printoptions(suppress=True)    
-        ols = OLS_Regimes(self.y, self.x, self.regimes, w=self.w, cols2regi=[False,True], regime_err_sep=True, constant_regi='one', nonspat_diag=False, spat_diag=True, name_y=self.y_var, name_x=self.x_var, name_ds='columbus', name_regimes=self.r_var, name_w='columbus.gal')        
-        np.testing.assert_allclose(ols.betas,np.array([[ -0.24385565], [ \
-        -0.26335026], [ 68.89701137], [ -1.67389685]]), RTOL) 
-        vm = np.array([ 0.02354271,  0.01246677,  0.00424658, -0.04921356])
-        np.testing.assert_allclose(ols.vm[0], vm,RTOL)
-        np.testing.assert_allclose(ols.lm_error, \
-            (5.62668744,  0.01768903),RTOL)
-        np.testing.assert_allclose(ols.lm_lag, \
-            (9.43264957,  0.00213156),RTOL)
-        np.testing.assert_allclose(ols.mean_y, \
-            35.12882389795919,RTOL)
+        start_suppress = np.get_printoptions()["suppress"]
+        np.set_printoptions(suppress=True)
+        ols = OLS_Regimes(
+            self.y,
+            self.x,
+            self.regimes,
+            w=self.w,
+            cols2regi=[False, True],
+            regime_err_sep=True,
+            constant_regi="one",
+            nonspat_diag=False,
+            spat_diag=True,
+            name_y=self.y_var,
+            name_x=self.x_var,
+            name_ds="columbus",
+            name_regimes=self.r_var,
+            name_w="columbus.gal",
+        )
+        np.testing.assert_allclose(
+            ols.betas,
+            np.array([[-0.24385565], [-0.26335026], [68.89701137], [-1.67389685]]),
+            RTOL,
+        )
+        vm = np.array([0.02354271, 0.01246677, 0.00424658, -0.04921356])
+        np.testing.assert_allclose(ols.vm[0], vm, RTOL)
+        np.testing.assert_allclose(ols.lm_error, (5.62668744, 0.01768903), RTOL)
+        np.testing.assert_allclose(ols.lm_lag, (9.43264957, 0.00213156), RTOL)
+        np.testing.assert_allclose(ols.mean_y, 35.12882389795919, RTOL)
         np.testing.assert_equal(ols.kf, 2)
         np.testing.assert_equal(ols.kr, 1)
         np.testing.assert_equal(ols.n, 49)
         np.testing.assert_equal(ols.nr, 2)
-        np.testing.assert_equal(ols.name_ds,  'columbus')
-        np.testing.assert_equal(ols.name_gwk,  None)
-        np.testing.assert_equal(ols.name_w,  'columbus.gal')
-        np.testing.assert_equal(ols.name_x,  ['0_HOVAL', '1_HOVAL', '_Global_CONSTANT', '_Global_INC'])
-        np.testing.assert_equal(ols.name_y,  'CRIME')
-        np.testing.assert_allclose(ols.predy[3], np.array([
-            52.65974636]),RTOL)
-        np.testing.assert_allclose(ols.r2, \
-                0.5525561183786056 ,RTOL)
-        np.testing.assert_equal(ols.robust,  'unadjusted')
-        np.testing.assert_allclose(ols.t_stat[2][0], \
-                13.848705206463748,RTOL)
-        np.testing.assert_allclose(ols.t_stat[2][1], \
-                7.776650625274256e-18,RTOL)
+        np.testing.assert_equal(ols.name_ds, "columbus")
+        np.testing.assert_equal(ols.name_gwk, None)
+        np.testing.assert_equal(ols.name_w, "columbus.gal")
+        np.testing.assert_equal(
+            ols.name_x, ["0_HOVAL", "1_HOVAL", "_Global_CONSTANT", "_Global_INC"]
+        )
+        np.testing.assert_equal(ols.name_y, "CRIME")
+        np.testing.assert_allclose(ols.predy[3], np.array([52.65974636]), RTOL)
+        np.testing.assert_allclose(ols.r2, 0.5525561183786056, RTOL)
+        np.testing.assert_equal(ols.robust, "unadjusted")
+        np.testing.assert_allclose(ols.t_stat[2][0], 13.848705206463748, RTOL)
+        np.testing.assert_allclose(ols.t_stat[2][1], 7.776650625274256e-18, RTOL)
         np.set_printoptions(suppress=start_suppress)
-        
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main()

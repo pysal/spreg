@@ -11,7 +11,7 @@ from .user_output import check_constant
 
 def robust_vm(reg, gwk=None, sig2n_k=False):
     """
-    Robust estimation of the variance-covariance matrix. Estimated by White (default) or HAC (if wk is provided). 
+    Robust estimation of the variance-covariance matrix. Estimated by White (default) or HAC (if wk is provided).
 
     Parameters
     ----------
@@ -45,7 +45,7 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
     >>> X = []
     >>> X.append(db.by_col("RD90"))
     >>> X.append(db.by_col("DV90"))
-    >>> X = np.array(X).T                       
+    >>> X = np.array(X).T
 
     Example with OLS with unadjusted standard errors
 
@@ -98,7 +98,7 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
            [-0.02810131, -0.01364908, -0.00318197,  0.00713251]])
 
     """
-    if hasattr(reg, 'h'):  # If reg has H, do 2SLS estimator. OLS otherwise.
+    if hasattr(reg, "h"):  # If reg has H, do 2SLS estimator. OLS otherwise.
         tsls = True
         xu = spbroadcast(reg.h, reg.u)
     else:
@@ -111,7 +111,7 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
     else:
         psi0 = spdot(xu.T, xu)
         if sig2n_k:
-            psi0 = psi0 * (1. * reg.n / (reg.n - reg.k))
+            psi0 = psi0 * (1.0 * reg.n / (reg.n - reg.k))
     if tsls:
         psi1 = spdot(reg.varb, reg.zthhthi)
         psi = spdot(psi1, np.dot(psi0, psi1.T))
@@ -123,7 +123,7 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
 
 def hac_multi(reg, gwk, constant=False):
     """
-    HAC robust estimation of the variance-covariance matrix for multi-regression object 
+    HAC robust estimation of the variance-covariance matrix for multi-regression object
 
     Parameters
     ----------
@@ -148,22 +148,25 @@ def hac_multi(reg, gwk, constant=False):
     psi0 = spdot(xu.T, gwkxu)
     counter = 0
     for m in reg.multi:
-        reg.multi[m].robust = 'hac'
+        reg.multi[m].robust = "hac"
         reg.multi[m].name_gwk = reg.name_gwk
         try:
             psi1 = spdot(reg.multi[m].varb, reg.multi[m].zthhthi)
             reg.multi[m].vm = spdot(psi1, np.dot(psi0, psi1.T))
         except:
-            reg.multi[m].vm = spdot(
-                reg.multi[m].xtxi, np.dot(psi0, reg.multi[m].xtxi))
-        reg.vm[(counter * reg.kr):((counter + 1) * reg.kr),
-               (counter * reg.kr):((counter + 1) * reg.kr)] = reg.multi[m].vm
+            reg.multi[m].vm = spdot(reg.multi[m].xtxi, np.dot(psi0, reg.multi[m].xtxi))
+        reg.vm[
+            (counter * reg.kr) : ((counter + 1) * reg.kr),
+            (counter * reg.kr) : ((counter + 1) * reg.kr),
+        ] = reg.multi[m].vm
         counter += 1
 
 
 def _test():
     import doctest
+
     doctest.testmod()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

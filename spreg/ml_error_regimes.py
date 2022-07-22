@@ -270,11 +270,26 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
     'MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIMES (METHOD = full)'
     """
 
-    def __init__(self, y, x, regimes, w=None, constant_regi='many',
-                 cols2regi='all', method='full', epsilon=0.0000001,
-                 regime_err_sep=False, regime_lag_sep=False, cores=False,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None, name_regimes=None):
+    def __init__(
+        self,
+        y,
+        x,
+        regimes,
+        w=None,
+        constant_regi="many",
+        cols2regi="all",
+        method="full",
+        epsilon=0.0000001,
+        regime_err_sep=False,
+        regime_lag_sep=False,
+        cores=False,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+        name_regimes=None,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
@@ -289,8 +304,8 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         self.n = n
         self.y = y
 
-        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
-        set_warn(self,warn)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.name_x_r = USER.set_name_x(name_x, x_constant)
 
@@ -302,40 +317,69 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
-                self._error_regimes_multi(y, x_constant, regimes, w, cores,
-                                          method, epsilon, cols2regi, vm, name_x)
+                self._error_regimes_multi(
+                    y,
+                    x_constant,
+                    regimes,
+                    w,
+                    cores,
+                    method,
+                    epsilon,
+                    cols2regi,
+                    vm,
+                    name_x,
+                )
             else:
-                raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
+                raise Exception(
+                    "All coefficients must vary accross regimes if regime_err_sep = True."
+                )
         else:
             x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
             name_x = USER.set_name_x(name_x, x_constant)
             regimes_att = {}
-            regimes_att['x'] = x_constant
-            regimes_att['regimes'] = regimes
-            regimes_att['cols2regi'] = cols2regi
-            x, name_x = REGI.Regimes_Frame.__init__(self, x_constant,
-                                                    regimes, constant_regi=None, cols2regi=cols2regi,
-                                                    names=name_x)
+            regimes_att["x"] = x_constant
+            regimes_att["regimes"] = regimes
+            regimes_att["cols2regi"] = cols2regi
+            x, name_x = REGI.Regimes_Frame.__init__(
+                self,
+                x_constant,
+                regimes,
+                constant_regi=None,
+                cols2regi=cols2regi,
+                names=name_x,
+            )
 
             BaseML_Error.__init__(
-                self, y=y, x=x, w=w, method=method, epsilon=epsilon, regimes_att=regimes_att)
+                self,
+                y=y,
+                x=x,
+                w=w,
+                method=method,
+                epsilon=epsilon,
+                regimes_att=regimes_att,
+            )
 
-            self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIMES" + \
-                " (METHOD = " + method + ")"
+            self.title = (
+                "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIMES"
+                + " (METHOD = "
+                + method
+                + ")"
+            )
             self.name_x = USER.set_name_x(name_x, x, constant=True)
-            self.name_x.append('lambda')
+            self.name_x.append("lambda")
             self.kf += 1  # Adding a fixed k to account for lambda.
             self.chow = REGI.Chow(self)
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
-            SUMMARY.ML_Error(
-                reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
+            SUMMARY.ML_Error(reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
 
-    def _error_regimes_multi(self, y, x, regimes, w, cores,
-                             method, epsilon, cols2regi, vm, name_x):
+    def _error_regimes_multi(
+        self, y, x, regimes, w, cores, method, epsilon, cols2regi, vm, name_x
+    ):
 
         regi_ids = dict(
-            (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set)
+            (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
+        )
         results_p = {}
         """
         for r in self.regimes_set:
@@ -347,16 +391,45 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work_error,args=(y,x,regi_ids,r,w,method,epsilon,self.name_ds,self.name_y,name_x+['lambda'],self.name_w,self.name_regimes, ))
                 is_win = False
         """
-        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        x_constant, name_x = REGI.check_const_regi(self, x, name_x, regi_ids)
         self.name_x_r = name_x
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
-                results_p[r] = pool.apply_async(_work_error, args=(
-                    y, x_constant, regi_ids, r, w, method, epsilon, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes, ))
+                results_p[r] = pool.apply_async(
+                    _work_error,
+                    args=(
+                        y,
+                        x_constant,
+                        regi_ids,
+                        r,
+                        w,
+                        method,
+                        epsilon,
+                        self.name_ds,
+                        self.name_y,
+                        name_x + ["lambda"],
+                        self.name_w,
+                        self.name_regimes,
+                    ),
+                )
             else:
                 results_p[r] = _work_error(
-                    *(y, x_constant, regi_ids, r, w, method, epsilon, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes))
+                    *(
+                        y,
+                        x_constant,
+                        regi_ids,
+                        r,
+                        w,
+                        method,
+                        epsilon,
+                        self.name_ds,
+                        self.name_y,
+                        name_x + ["lambda"],
+                        self.name_w,
+                        self.name_regimes,
+                    )
+                )
 
         self.kryd = 0
         self.kr = len(cols2regi) + 1
@@ -391,35 +464,51 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
             else:
                 results[r] = results_p[r].get()
 
-            self.vm[(counter * self.kr):((counter + 1) * self.kr),
-                    (counter * self.kr):((counter + 1) * self.kr)] = results[r].vm
+            self.vm[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].vm
             self.betas[
-                (counter * self.kr):((counter + 1) * self.kr), ] = results[r].betas
-            self.u[regi_ids[r], ] = results[r].u
-            self.predy[regi_ids[r], ] = results[r].predy
-            self.e_filtered[regi_ids[r], ] = results[r].e_filtered
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.e_filtered[
+                regi_ids[r],
+            ] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
         SUMMARY.ML_Error_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w)
+            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w
+        )
 
 
-def _work_error(y, x, regi_ids, r, w, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes):
+def _work_error(
+    y, x, regi_ids, r, w, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes
+):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
-    model = BaseML_Error(
-        y=y_r, x=x_r, w=w_r, method=method, epsilon=epsilon)
+    model = BaseML_Error(y=y_r, x=x_r, w=w_r, method=method, epsilon=epsilon)
     set_warn(model, warn)
     model.w = w_r
-    model.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIME " + \
-        str(r) + " (METHOD = " + method + ")"
+    model.title = (
+        "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIME "
+        + str(r)
+        + " (METHOD = "
+        + method
+        + ")"
+    )
     model.name_ds = name_ds
-    model.name_y = '%s_%s' % (str(r), name_y)
-    model.name_x = ['%s_%s' % (str(r), i) for i in name_x]
+    model.name_y = "%s_%s" % (str(r), name_y)
+    model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
     model.name_w = name_w
     model.name_regimes = name_regimes
     model.aic = DIAG.akaike(reg=model)
@@ -429,28 +518,30 @@ def _work_error(y, x, regi_ids, r, w, method, epsilon, name_ds, name_y, name_x, 
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
+
 
 if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
-    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), 'r')
+
+    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), "r")
     ds_name = "baltim.dbf"
     y_name = "PRICE"
     y = np.array(db.by_col(y_name)).T
     y.shape = (len(y), 1)
-    x_names = ["NROOM", "NBATH", "PATIO", "FIREPL",
-               "AC", "GAR", "AGE", "LOTSZ", "SQFT"]
+    x_names = ["NROOM", "NBATH", "PATIO", "FIREPL", "AC", "GAR", "AGE", "LOTSZ", "SQFT"]
     x = np.array([db.by_col(var) for var in x_names]).T
     ww = ps.open(ps.examples.get_path("baltim_q.gal"))
     w = ww.read()
     ww.close()
     w_name = "baltim_q.gal"
-    w.transform = 'r'
+    w.transform = "r"
 
     regimes = []
     y_coord = np.array(db.by_col("Y"))
@@ -460,7 +551,17 @@ if __name__ == "__main__":
         else:
             regimes.append("South")
 
-    mlerror = ML_Error_Regimes(y, x, regimes, w=w, method='full', name_y=y_name,
-                               name_x=x_names, name_w=w_name, name_ds=ds_name, regime_err_sep=False,
-                               name_regimes="North")
+    mlerror = ML_Error_Regimes(
+        y,
+        x,
+        regimes,
+        w=w,
+        method="full",
+        name_y=y_name,
+        name_x=x_names,
+        name_w=w_name,
+        name_ds=ds_name,
+        regime_err_sep=False,
+        name_regimes="North",
+    )
     print(mlerror.summary)
