@@ -15,8 +15,10 @@ from .sputils import spdot, spfill_diagonal, spinv
 from . import diagnostics as DIAG
 from . import user_output as USER
 from . import summary_output as SUMMARY
+
 try:
     from scipy.optimize import minimize_scalar
+
     minimize_scalar_available = True
 except ImportError:
     minimize_scalar_available = False
@@ -113,28 +115,32 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
 
         # concentrated Log Likelihood
         I = sp.identity(self.n)
-        res = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
-                              args=(self.n, self.t, e0, e1, I, Wsp),
-                              method='bounded', options={"xatol": epsilon})
+        res = minimize_scalar(
+            lag_c_loglik_sp,
+            0.0,
+            bounds=(-1.0, 1.0),
+            args=(self.n, self.t, e0, e1, I, Wsp),
+            method="bounded",
+            options={"xatol": epsilon},
+        )
         self.rho = res.x[0][0]
 
         # compute full log-likelihood, including constants
         ln2pi = np.log(2.0 * np.pi)
-        llik = (- res.fun
-                - (self.n * self.t) / 2.0 * ln2pi
-                - (self.n * self.t) / 2.0)
+        llik = -res.fun - (self.n * self.t) / 2.0 * ln2pi - (self.n * self.t) / 2.0
         self.logll = llik[0][0]
 
         # b, residuals and predicted values
         b = b0 - self.rho * b1
-        self.betas = np.vstack((b, self.rho))   # rho added as last coefficient
+        self.betas = np.vstack((b, self.rho))  # rho added as last coefficient
         self.u = e0 - self.rho * e1
         self.predy = self.y - self.u
 
         xb = spdot(self.x, b)
 
         self.predy_e = inverse_prod(
-            Wsp_nt, xb, self.rho, inv_method="power_exp", threshold=epsilon)
+            Wsp_nt, xb, self.rho, inv_method="power_exp", threshold=epsilon
+        )
         self.e_pred = self.y - self.predy_e
 
         # residual variance
@@ -163,12 +169,21 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
         wpyTwpy = spdot(xb.T, wTwpredy)
 
         # order of variables is beta, rho, sigma2
-        v1 = np.vstack(
-            (xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((1, self.k))))
+        v1 = np.vstack((xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((1, self.k))))
         v2 = np.vstack(
-            (xTwpy / self.sig2, self.t*(tr2 + tr3) + wpyTwpy / self.sig2, self.t*tr1 / self.sig2))
+            (
+                xTwpy / self.sig2,
+                self.t * (tr2 + tr3) + wpyTwpy / self.sig2,
+                self.t * tr1 / self.sig2,
+            )
+        )
         v3 = np.vstack(
-            (np.zeros((self.k, 1)), self.t*tr1 / self.sig2, self.n*self.t / (2.0 * self.sig2**2)))
+            (
+                np.zeros((self.k, 1)),
+                self.t * tr1 / self.sig2,
+                self.n * self.t / (2.0 * self.sig2 ** 2),
+            )
+        )
 
         v = np.hstack((v1, v2, v3))
 
@@ -296,23 +311,29 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
            [ 0.1903]])
     """
 
-    def __init__(self, y, x, w, epsilon=0.0000001,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        epsilon=0.0000001,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
         n_rows = USER.check_arrays(y, x)
         x_constant, name_x, warn = USER.check_constant(x, name_x, True)
         set_warn(self, warn)
-        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w,
-                                                       name_y, name_x)
+        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w, name_y, name_x)
         set_warn(self, warn)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
-        BasePanel_FE_Lag.__init__(
-            self, bigy, bigx, w, epsilon=epsilon)
+        BasePanel_FE_Lag.__init__(self, bigy, bigx, w, epsilon=epsilon)
         # increase by 1 to have correct aic and sc, include rho in count
         self.k += 1
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG PANEL" + \
-                     " - FIXED EFFECTS"
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG PANEL" + " - FIXED EFFECTS"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=True)
@@ -399,17 +420,21 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
 
         # concentrated Log Likelihood
         I = sp.identity(self.n)
-        res = minimize_scalar(err_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
-                              args=(self.n, self.t, self.y, ylag,
-                                    self.x, xlag, I, Wsp),
-                              method='bounded', options={"xatol": epsilon})
+        res = minimize_scalar(
+            err_c_loglik_sp,
+            0.0,
+            bounds=(-1.0, 1.0),
+            args=(self.n, self.t, self.y, ylag, self.x, xlag, I, Wsp),
+            method="bounded",
+            options={"xatol": epsilon},
+        )
         self.lam = res.x
 
         # compute full log-likelihood
         ln2pi = np.log(2.0 * np.pi)
-        self.logll = (- res.fun
-                      - (self.n * self.t) / 2.0 * ln2pi
-                      - (self.n * self.t) / 2.0)
+        self.logll = (
+            -res.fun - (self.n * self.t) / 2.0 * ln2pi - (self.n * self.t) / 2.0
+        )
 
         # b, residuals and predicted values
         ys = self.y - self.lam * ylag
@@ -426,8 +451,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
 
         # residual variance
         self.e_filtered = self.u - self.lam * spdot(Wsp_nt, self.u)
-        self.sig2 = (spdot(self.e_filtered.T, self.e_filtered)
-                     / (self.n * self.t))
+        self.sig2 = spdot(self.e_filtered.T, self.e_filtered) / (self.n * self.t)
 
         # variance-covariance matrix betas
         varb = self.sig2 * xsxsi
@@ -445,10 +469,10 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
         waiTwai = spdot(wai.T, wai)
         tr3 = waiTwai.diagonal().sum()
 
-        v1 = np.vstack((self.t * (tr2 + tr3),
-                        self.t * tr1 / self.sig2))
-        v2 = np.vstack((self.t * tr1 / self.sig2,
-                        self.t * self.n / (2.0 * self.sig2 ** 2)))
+        v1 = np.vstack((self.t * (tr2 + tr3), self.t * tr1 / self.sig2))
+        v2 = np.vstack(
+            (self.t * tr1 / self.sig2, self.t * self.n / (2.0 * self.sig2 ** 2))
+        )
 
         v = np.hstack((v1, v2))
 
@@ -456,8 +480,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
 
         # create variance matrix for beta, lambda
         vv = np.hstack((varb, np.zeros((self.k, 1))))
-        vv1 = np.hstack(
-            (np.zeros((1, self.k)), self.vm1[0, 0] * np.ones((1, 1))))
+        vv1 = np.hstack((np.zeros((1, self.k)), self.vm1[0, 0] * np.ones((1, 1))))
 
         self.vm = np.vstack((vv, vv1))
         self.varb = varb
@@ -577,20 +600,27 @@ class Panel_FE_Error(BasePanel_FE_Error):
            [ 0.1943]])
     """
 
-    def __init__(self, y, x, w, epsilon=0.0000001,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        epsilon=0.0000001,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
         n_rows = USER.check_arrays(y, x)
         x_constant, name_x, warn = USER.check_constant(x, name_x, True)
         set_warn(self, warn)
-        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w,
-                                                       name_y, name_x)
+        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w, name_y, name_x)
         set_warn(self, warn)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
         BasePanel_FE_Error.__init__(self, bigy, bigx, w, epsilon=epsilon)
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR PANEL" + \
-                     " - FIXED EFFECTS"
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR PANEL" + " - FIXED EFFECTS"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=True)
@@ -608,7 +638,7 @@ def lag_c_loglik_sp(rho, n, t, e0, e1, I, Wsp):
             rho = rho[0][0]
     er = e0 - rho * e1
     sig2 = spdot(er.T, er)
-    nlsig2 = (n*t / 2.0) * np.log(sig2)
+    nlsig2 = (n * t / 2.0) * np.log(sig2)
     a = I - rho * Wsp
     LU = SuperLU(a.tocsc())
     jacob = t * np.sum(np.log(np.abs(LU.U.diagonal())))
@@ -631,7 +661,7 @@ def err_c_loglik_sp(lam, n, t, y, ylag, x, xlag, I, Wsp):
     x2 = np.dot(xsys.T, x1)
     ee = ysys - x2
     sig2 = ee[0][0]
-    nlsig2 = (n*t / 2.0) * np.log(sig2)
+    nlsig2 = (n * t / 2.0) * np.log(sig2)
     a = I - lam * Wsp
     LU = SuperLU(a.tocsc())
     jacob = t * np.sum(np.log(np.abs(LU.U.diagonal())))
@@ -642,7 +672,8 @@ def err_c_loglik_sp(lam, n, t, y, ylag, x, xlag, I, Wsp):
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)

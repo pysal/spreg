@@ -33,26 +33,30 @@ def check_panel(y, x, w, name_y, name_x):
 
     # Check if 'y' is a balanced panel with respect to 'W'
     if y.shape[0] / w.n != y.shape[0] // w.n:
-        raise Exception("y must be ntx1 or nxt, and w must be an nxn PySAL W"
-                        "object.")
+        raise Exception("y must be ntx1 or nxt, and w must be an nxn PySAL W" "object.")
     # Wide format
     if y.shape[1] > 1:
-        warn = ("Assuming panel is in wide format.\n"
-                "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n"
-                "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers "
-                "to k2, etc.")
+        warn = (
+            "Assuming panel is in wide format.\n"
+            "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n"
+            "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers "
+            "to k2, etc."
+        )
         N, T = y.shape[0], y.shape[1]
         k = x.shape[1] // T
         bigy = y.reshape((y.size, 1), order="F")
         bigx = x[:, 0:T].reshape((N * T, 1), order="F")
         for i in range(1, k):
             bigx = np.hstack(
-                (bigx, x[:, T * i:T * (i + 1)].reshape((N * T, 1), order="F")))
+                (bigx, x[:, T * i : T * (i + 1)].reshape((N * T, 1), order="F"))
+            )
     # Long format
     else:
-        warn = ("Assuming panel is in long format.\n"
-                "y[0:N] refers to T0, y[N+1:2N] refers to T1, etc.\n"
-                "x[0:N] refers to T0, x[N+1:2N] refers to T1, etc.")
+        warn = (
+            "Assuming panel is in long format.\n"
+            "y[0:N] refers to T0, y[N+1:2N] refers to T1, etc.\n"
+            "x[0:N] refers to T0, x[N+1:2N] refers to T1, etc."
+        )
         T = y.shape[0] // w.n
         N = w.n
         k = x.shape[1]
@@ -60,16 +64,16 @@ def check_panel(y, x, w, name_y, name_x):
     # Fix name_y and name_x
     if name_y:
         if not isinstance(name_y, str) and not isinstance(name_y, list):
-            raise Exception("name_y must either be strings or a list of"
-                            "strings.")
+            raise Exception("name_y must either be strings or a list of" "strings.")
         if len(name_y) > 1 and isinstance(name_y, list):
-            name_y = ''.join([i for i in name_y[0] if not i.isdigit()])
+            name_y = "".join([i for i in name_y[0] if not i.isdigit()])
         if len(name_y) == 1 and isinstance(name_y, list):
             name_y = name_y[0]
     if name_x:
         if len(name_x) != k * T and len(name_x) != k:
-            raise Exception("Names of columns in X must have exactly either"
-                            "k or k*t elements.")
+            raise Exception(
+                "Names of columns in X must have exactly either" "k or k*t elements."
+            )
         if len(name_x) > k:
             name_bigx = []
             for i in range(k):
@@ -104,7 +108,7 @@ def demean_panel(arr, n, t, phi=0):
     """
 
     one = np.ones((t, 1))
-    J = sp.identity(t) - (1-phi)*(1/t)*spdot(one, one.T)
+    J = sp.identity(t) - (1 - phi) * (1 / t) * spdot(one, one.T)
     Q = sp.kron(J, sp.identity(n), format="csr")
     arr_dm = spdot(Q, arr)
 

@@ -11,7 +11,15 @@ from numpy import linalg as la
 from . import ols as OLS
 from libpysal.weights.spatial_lag import lag_spatial
 from .utils import power_expansion, set_endog, iter_msg, sp_att
-from .utils import get_A1_hom, get_A2_hom, get_A1_het, optim_moments, get_spFilter, get_lags, _moments2eqs
+from .utils import (
+    get_A1_hom,
+    get_A2_hom,
+    get_A1_het,
+    optim_moments,
+    get_spFilter,
+    get_lags,
+    _moments2eqs,
+)
 from .utils import spdot, RegressionPropsY, set_warn
 from . import twosls as TSLS
 from . import user_output as USER
@@ -24,7 +32,7 @@ class BaseGM_Error(RegressionPropsY):
 
     """
     GMM method for a spatial error model (note: no consistency checks
-    diagnostics or constant added); based on Kelejian and Prucha 
+    diagnostics or constant added); based on Kelejian and Prucha
     (1998, 1999) :cite:`Kelejian1998` :cite:`Kelejian1999`.
 
     Parameters
@@ -35,7 +43,7 @@ class BaseGM_Error(RegressionPropsY):
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : Sparse matrix
-                   Spatial weights sparse matrix   
+                   Spatial weights sparse matrix
 
     Attributes
     ----------
@@ -76,7 +84,7 @@ class BaseGM_Error(RegressionPropsY):
     >>> y = np.array([dbf.by_col('HOVAL')]).T
     >>> x = np.array([dbf.by_col('INC'), dbf.by_col('CRIME')]).T
     >>> x = np.hstack((np.ones(y.shape),x))
-    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> w.transform='r'
     >>> model = spreg.error_sp.BaseGM_Error(y, x, w=w.sparse)
     >>> np.around(model.betas, decimals=4)
@@ -129,7 +137,7 @@ class GM_Error(BaseGM_Error):
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
-                   Spatial weights object (always needed)   
+                   Spatial weights object (always needed)
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -176,7 +184,7 @@ class GM_Error(BaseGM_Error):
     sig2         : float
                    Sigma squared used in computations
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -206,7 +214,7 @@ class GM_Error(BaseGM_Error):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
@@ -235,7 +243,7 @@ class GM_Error(BaseGM_Error):
     Note that, in order to read the file, not only to open it, we need to
     append '.read()' at the end of the command.
 
-    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -278,28 +286,28 @@ class GM_Error(BaseGM_Error):
 
     """
 
-    def __init__(self, y, x, w,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self, y, x, w, vm=False, name_y=None, name_x=None, name_w=None, name_ds=None
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
         BaseGM_Error.__init__(self, y=y, x=x_constant, w=w.sparse)
         self.title = "SPATIALLY WEIGHTED LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
-        self.name_x.append('lambda')
+        self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Error(reg=self, w=w, vm=vm)
 
 
 class BaseGM_Endog_Error(RegressionPropsY):
 
-    '''
+    """
     GMM method for a spatial error model with endogenous variables (note: no
     consistency checks, diagnostics or constant added); based on Kelejian and
     Prucha (1998, 1999) :cite:`Kelejian1998` :cite:`Kelejian1999`.
@@ -316,10 +324,10 @@ class BaseGM_Endog_Error(RegressionPropsY):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : Sparse matrix
-                   Spatial weights sparse matrix 
+                   Spatial weights sparse matrix
 
     Attributes
     ----------
@@ -367,7 +375,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
     >>> x = np.hstack((np.ones(y.shape),x))
     >>> yend = np.array([dbf.by_col('HOVAL')]).T
     >>> q = np.array([dbf.by_col('DISCBD')]).T
-    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
     >>> w.transform='r'
     >>> model = spreg.error_sp.BaseGM_Endog_Error(y, x, yend, q, w=w.sparse)
     >>> np.around(model.betas, decimals=4)
@@ -376,7 +384,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
            [-1.4481],
            [ 0.3499]])
 
-    '''
+    """
 
     def __init__(self, y, x, yend, q, w):
 
@@ -409,7 +417,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
 
 class GM_Endog_Error(BaseGM_Endog_Error):
 
-    '''
+    """
     GMM method for a spatial error model with endogenous variables, with
     results and diagnostics; based on Kelejian and Prucha (1998,
     1999) :cite:`Kelejian1998` :cite:`Kelejian1999`.
@@ -426,10 +434,10 @@ class GM_Endog_Error(BaseGM_Endog_Error):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : pysal W object
-                   Spatial weights object (always needed)   
+                   Spatial weights object (always needed)
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -485,7 +493,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     sig2         : float
                    Sigma squared used in computations
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -496,7 +504,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     name_yend     : list of strings
                     Names of endogenous variables for use in output
     name_z        : list of strings
-                    Names of exogenous and endogenous variables for use in 
+                    Names of exogenous and endogenous variables for use in
                     output
     name_q        : list of strings
                     Names of external instruments
@@ -523,7 +531,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> dbf = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
 
@@ -563,7 +571,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     Note that, in order to read the file, not only to open it, we need to
     append '.read()' at the end of the command.
 
-    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read() 
+    >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -602,27 +610,37 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     >>> np.around(model.std_err, decimals=4)
     array([16.1381,  1.3545,  0.7862])
 
-    '''
+    """
 
-    def __init__(self, y, x, yend, q, w,
-                 vm=False, name_y=None, name_x=None,
-                 name_yend=None, name_q=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        yend,
+        q,
+        w,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        BaseGM_Endog_Error.__init__(
-            self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q)
+        BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q)
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
-        self.name_z.append('lambda')
+        self.name_z.append("lambda")
         self.name_q = USER.set_name_q(name_q, q)
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
@@ -633,7 +651,7 @@ class BaseGM_Combo(BaseGM_Endog_Error):
 
     """
     GMM method for a spatial lag and error model, with endogenous variables
-    (note: no consistency checks, diagnostics or constant added); based on 
+    (note: no consistency checks, diagnostics or constant added); based on
     Kelejian and Prucha (1998, 1999) :cite:`Kelejian1998` :cite:`Kelejian1999`.
 
     Parameters
@@ -648,16 +666,16 @@ class BaseGM_Combo(BaseGM_Endog_Error):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : Sparse matrix
-                   Spatial weights sparse matrix  
+                   Spatial weights sparse matrix
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
     lag_q        : boolean
-                   If True, then include spatial lags of the additional 
+                   If True, then include spatial lags of the additional
                    instruments (q).
 
     Attributes
@@ -749,10 +767,9 @@ class BaseGM_Combo(BaseGM_Endog_Error):
      ['HOVAL' '-0.6885' '0.3029']
      ['W_CRIME' '0.4375' '0.2314']]
 
-        """
+    """
 
-    def __init__(self, y, x, yend=None, q=None,
-                 w=None, w_lags=1, lag_q=True):
+    def __init__(self, y, x, yend=None, q=None, w=None, w_lags=1, lag_q=True):
 
         BaseGM_Endog_Error.__init__(self, y=y, x=x, w=w, yend=yend, q=q)
 
@@ -776,16 +793,16 @@ class GM_Combo(BaseGM_Combo):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : pysal W object
-                   Spatial weights object (always needed)   
+                   Spatial weights object (always needed)
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
     lag_q        : boolean
-                   If True, then include spatial lags of the additional 
+                   If True, then include spatial lags of the additional
                    instruments (q).
     vm           : boolean
                    If True, include variance-covariance matrix in summary
@@ -850,7 +867,7 @@ class GM_Combo(BaseGM_Combo):
                    Sigma squared used in computations (based on filtered
                    residuals)
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -861,7 +878,7 @@ class GM_Combo(BaseGM_Combo):
     name_yend     : list of strings
                     Names of endogenous variables for use in output
     name_z        : list of strings
-                    Names of exogenous and endogenous variables for use in 
+                    Names of exogenous and endogenous variables for use in
                     output
     name_q        : list of strings
                     Names of external instruments
@@ -889,7 +906,7 @@ class GM_Combo(BaseGM_Combo):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
 
@@ -990,24 +1007,44 @@ class GM_Combo(BaseGM_Combo):
 
     """
 
-    def __init__(self, y, x, yend=None, q=None,
-                 w=None, w_lags=1, lag_q=True,
-                 vm=False, name_y=None, name_x=None,
-                 name_yend=None, name_q=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        yend=None,
+        q=None,
+        w=None,
+        w_lags=1,
+        lag_q=True,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        yend2, q2 = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
+        yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
         BaseGM_Combo.__init__(
-            self, y=y, x=x_constant, w=w.sparse, yend=yend2, q=q2,
-            w_lags=w_lags, lag_q=lag_q)
+            self,
+            y=y,
+            x=x_constant,
+            w=w.sparse,
+            yend=yend2,
+            q=q2,
+            w_lags=w_lags,
+            lag_q=lag_q,
+        )
         self.rho = self.betas[-2]
-        self.predy_e, self.e_pred, warn = sp_att(w, self.y,
-                                                 self.predy, yend2[:, -1].reshape(self.n, 1), self.rho)
+        self.predy_e, self.e_pred, warn = sp_att(
+            w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho
+        )
         set_warn(self, warn)
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
@@ -1016,10 +1053,9 @@ class GM_Combo(BaseGM_Combo):
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend
-        self.name_z.append('lambda')
+        self.name_z.append("lambda")
         self.name_q = USER.set_name_q(name_q, q)
-        self.name_q.extend(
-            USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+        self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Combo(reg=self, w=w, vm=vm)
@@ -1042,30 +1078,41 @@ def _momentsGM_Error(w, u):
     wtw = wsparse.T * wsparse
     trWtW = np.sum(wtw.diagonal())
     g = np.array([[u2[0][0], wu2[0][0], uwu[0][0]]]).T / n
-    G = np.array(
-        [[2 * uwu[0][0], -wu2[0][0], n], [2 * wuwwu[0][0], -wwu2[0][0], trWtW],
-         [uwwu[0][0] + wu2[0][0], -wuwwu[0][0], 0.]]) / n
+    G = (
+        np.array(
+            [
+                [2 * uwu[0][0], -wu2[0][0], n],
+                [2 * wuwwu[0][0], -wwu2[0][0], trWtW],
+                [uwwu[0][0] + wu2[0][0], -wuwwu[0][0], 0.0],
+            ]
+        )
+        / n
+    )
     return [G, g]
 
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     _test()
     import libpysal
     import numpy as np
-    dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
-    y = np.array([dbf.by_col('HOVAL')]).T
-    names_to_extract = ['INC', 'CRIME']
+
+    dbf = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y = np.array([dbf.by_col("HOVAL")]).T
+    names_to_extract = ["INC", "CRIME"]
     x = np.array([dbf.by_col(name) for name in names_to_extract]).T
-    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
-    w.transform = 'r'
-    model = GM_Error(y, x, w, name_y='hoval',
-                     name_x=['income', 'crime'], name_ds='columbus')
+    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), "r").read()
+    w.transform = "r"
+    model = GM_Error(
+        y, x, w, name_y="hoval", name_x=["income", "crime"], name_ds="columbus"
+    )
     print(model.summary)

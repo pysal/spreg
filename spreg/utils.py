@@ -39,44 +39,44 @@ class RegressionPropsY(object):
     @property
     def mean_y(self):
         try:
-            return self._cache['mean_y']
+            return self._cache["mean_y"]
         except AttributeError:
             self._cache = {}
-            self._cache['mean_y'] = np.mean(self.y)
+            self._cache["mean_y"] = np.mean(self.y)
         except KeyError:
-            self._cache['mean_y'] = np.mean(self.y)
-        return self._cache['mean_y']
-    
+            self._cache["mean_y"] = np.mean(self.y)
+        return self._cache["mean_y"]
+
     @mean_y.setter
     def mean_y(self, val):
         try:
-            self._cache['mean_y'] = val
+            self._cache["mean_y"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['mean_y'] = val
+            self._cache["mean_y"] = val
         except KeyError:
-            self._cache['mean_y'] = val
+            self._cache["mean_y"] = val
 
     @property
     def std_y(self):
         try:
-            return self._cache['std_y']
+            return self._cache["std_y"]
         except AttributeError:
             self._cache = {}
-            self._cache['std_y'] = np.std(self.y, ddof=1)
+            self._cache["std_y"] = np.std(self.y, ddof=1)
         except KeyError:
-            self._cache['std_y'] = np.std(self.y, ddof=1)
-        return self._cache['std_y']
-    
+            self._cache["std_y"] = np.std(self.y, ddof=1)
+        return self._cache["std_y"]
+
     @std_y.setter
     def std_y(self, val):
         try:
-            self._cache['std_y'] = val
+            self._cache["std_y"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['std_y'] = val
+            self._cache["std_y"] = val
         except KeyError:
-            self._cache['std_y'] = val
+            self._cache["std_y"] = val
 
 
 class RegressionPropsVM(object):
@@ -105,87 +105,87 @@ class RegressionPropsVM(object):
     @property
     def utu(self):
         try:
-            return self._cache['utu']
+            return self._cache["utu"]
         except AttributeError:
             self._cache = {}
-            self._cache['utu'] = np.sum(self.u ** 2)
+            self._cache["utu"] = np.sum(self.u ** 2)
         except KeyError:
-            self._cache['utu'] = np.sum(self.u ** 2)
-        return self._cache['utu']
+            self._cache["utu"] = np.sum(self.u ** 2)
+        return self._cache["utu"]
 
     @utu.setter
     def utu(self, val):
         try:
-            self._cache['utu'] = val
+            self._cache["utu"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['utu'] = val
+            self._cache["utu"] = val
         except KeyError:
-            self._cache['utu'] = val
+            self._cache["utu"] = val
 
     @property
     def sig2n(self):
         try:
-            return self._cache['sig2n']
+            return self._cache["sig2n"]
         except AttributeError:
             self._cache = {}
-            self._cache['sig2n'] = self.utu / self.n
+            self._cache["sig2n"] = self.utu / self.n
         except KeyError:
-            self._cache['sig2n'] = self.utu / self.n
-        return self._cache['sig2n']
+            self._cache["sig2n"] = self.utu / self.n
+        return self._cache["sig2n"]
 
     @sig2n.setter
     def sig2n(self, val):
         try:
-            self._cache['sig2n'] = val
+            self._cache["sig2n"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['sig2n'] = val
+            self._cache["sig2n"] = val
         except KeyError:
-            self._cache['sig2n'] = val
+            self._cache["sig2n"] = val
 
     @property
     def sig2n_k(self):
         try:
-            return self._cache['sig2n_k']
+            return self._cache["sig2n_k"]
         except AttributeError:
             self._cache = {}
-            self._cache['sig2n_k'] = self.utu / (self.n - self.k)
+            self._cache["sig2n_k"] = self.utu / (self.n - self.k)
         except KeyError:
-            self._cache['sig2n_k'] = self.utu / (self.n - self.k)
-        return self._cache['sig2n_k']
-    
+            self._cache["sig2n_k"] = self.utu / (self.n - self.k)
+        return self._cache["sig2n_k"]
+
     @sig2n_k.setter
     def sig2n_k(self, val):
         try:
-            self._cache['sig2n_k'] = val
+            self._cache["sig2n_k"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['sig2n_k'] = val
+            self._cache["sig2n_k"] = val
         except KeyError:
-            self._cache['sig2n_k'] = val
+            self._cache["sig2n_k"] = val
 
     @property
     def vm(self):
         try:
-            return self._cache['vm']
+            return self._cache["vm"]
         except AttributeError:
             self._cache = {}
-            self._cache['vm'] = np.dot(self.sig2, self.xtxi)
+            self._cache["vm"] = np.dot(self.sig2, self.xtxi)
         except KeyError:
-            self._cache['vm'] = np.dot(self.sig2, self.xtxi)
+            self._cache["vm"] = np.dot(self.sig2, self.xtxi)
         finally:
-            return self._cache['vm']
+            return self._cache["vm"]
 
     @vm.setter
     def vm(self, val):
         try:
-            self._cache['vm'] = val
+            self._cache["vm"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['vm'] = val
+            self._cache["vm"] = val
         except KeyError:
-            self._cache['vm'] = val
+            self._cache["vm"] = val
 
 
 def get_A1_het(S):
@@ -213,7 +213,7 @@ def get_A1_het(S):
     """
     StS = S.T * S
     d = SP.spdiags([StS.diagonal()], [0], S.get_shape()[0], S.get_shape()[1])
-    d = d.asformat('csr')
+    d = d.asformat("csr")
     return StS - d
 
 
@@ -246,20 +246,20 @@ def get_A1_hom(s, scalarKP=False):
     n = float(s.shape[0])
     wpw = s.T * s
     twpw = np.sum(wpw.diagonal())
-    e = SP.eye(n, n, format='csr')
+    e = SP.eye(n, n, format="csr")
     e.data = np.ones(int(n)) * (twpw / n)
     num = wpw - e
     if not scalarKP:
         return num
     else:
-        den = 1. + (twpw / n) ** 2.
+        den = 1.0 + (twpw / n) ** 2.0
         return num / den
 
 
 def get_A2_hom(s):
     """
     Builds A2 for the spatial error GM estimation with homoscedasticity as in
-    Anselin (2011) :cite:`Anselin2011` 
+    Anselin (2011) :cite:`Anselin2011`
 
     .. math::
 
@@ -276,11 +276,11 @@ def get_A2_hom(s):
     Implicit        : csr_matrix
                       A2 matrix in scipy sparse format
     """
-    return (s + s.T) / 2.
+    return (s + s.T) / 2.0
 
 
 def _moments2eqs(A1, s, u):
-    '''
+    """
     Helper to compute G and g in a system of two equations as in
     the heteroskedastic error models from Drukker et al. [Drukker2011]_
     ...
@@ -306,7 +306,7 @@ def _moments2eqs(A1, s, u):
                   'g', respectively.
 
 
-    '''
+    """
     n = float(s.shape[0])
     A1u = A1 * u
     wu = s * u
@@ -364,28 +364,34 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
     moments[0], moments[1] = moments[0] / scale, moments[1] / scale
     if moments[0].shape[0] == 2:
         optim_par = lambda par: foptim_par(
-            np.array([[float(par[0]), float(par[0]) ** 2.]]).T, moments)
+            np.array([[float(par[0]), float(par[0]) ** 2.0]]).T, moments
+        )
         start = [0.0]
         bounds = [(-1.0, 1.0)]
     if moments[0].shape[0] == 3:
         optim_par = lambda par: foptim_par(
-            np.array([[float(par[0]), float(par[0]) ** 2., float(par[1])]]).T, moments)
+            np.array([[float(par[0]), float(par[0]) ** 2.0, float(par[1])]]).T, moments
+        )
         start = [0.0, 1.0]
         bounds = [(-1.0, 1.0), (0.0, None)]
     if moments[0].shape[1] == 4:
         optim_par = lambda par: foptim_par(
-            np.array([[float(par[0]), float(par[0]) ** 2., float(par[1]), float(par[2])]]).T, moments)
+            np.array(
+                [[float(par[0]), float(par[0]) ** 2.0, float(par[1]), float(par[2])]]
+            ).T,
+            moments,
+        )
         if not start:
             start = [0.0, 1.0, 1.0]
-        bounds = [(-1.0, 1.0), (0.0, None), (0.0, None)]        
-    lambdaX = op.fmin_l_bfgs_b(
-        optim_par, start, approx_grad=True, bounds=bounds)
+        bounds = [(-1.0, 1.0), (0.0, None), (0.0, None)]
+    lambdaX = op.fmin_l_bfgs_b(optim_par, start, approx_grad=True, bounds=bounds)
     if all_par:
         return lambdaX[0]
     return lambdaX[0][0]
 
+
 def foptim_par(par, moments):
-    """ 
+    """
     Preparation of the function of moments for minimization
     ...
 
@@ -401,7 +407,7 @@ def foptim_par(par, moments):
     -------
 
     minimum         : float
-                      sum of square residuals (e) of the equation system 
+                      sum of square residuals (e) of the equation system
                       moments.g - moments.G * lambdapar = e
     """
     vv = np.dot(moments[0], par)
@@ -410,13 +416,13 @@ def foptim_par(par, moments):
 
 
 def get_spFilter(w, lamb, sf):
-    '''
+    """
     Compute the spatially filtered variables
 
     Parameters
     ----------
     w       : weight
-              PySAL weights instance  
+              PySAL weights instance
     lamb    : double
               spatial autoregressive parameter
     sf      : array
@@ -435,7 +441,7 @@ def get_spFilter(w, lamb, sf):
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     >>> y = np.array(db.by_col("CRIME"))
     >>> y = np.reshape(y, (49,1))
-    >>> w=libpysal.io.open(libpysal.examples.get_path("columbus.gal")).read()        
+    >>> w=libpysal.io.open(libpysal.examples.get_path("columbus.gal")).read()
     >>> solu = get_spFilter(w,0.5,y)
     >>> print(solu[0:5])
     [[  -8.9882875]
@@ -444,7 +450,7 @@ def get_spFilter(w, lamb, sf):
      [ -36.9051915]
      [-111.1298   ]]
 
-    '''
+    """
     try:
         ws = w.sparse
     except:
@@ -453,11 +459,12 @@ def get_spFilter(w, lamb, sf):
     if T == 1:
         result = sf - lamb * (ws * sf)
     else:
-        result = sf - lamb * SP.kron(SP.identity(T),ws).dot(sf)        
+        result = sf - lamb * SP.kron(SP.identity(T), ws).dot(sf)
     return result
 
+
 def get_lags(w, x, w_lags):
-    '''
+    """
     Calculates a given order of spatial lags and all the smaller orders
 
     Parameters
@@ -465,7 +472,7 @@ def get_lags(w, x, w_lags):
     w       : weight
               PySAL weights instance
     x       : array
-              nxk arrays with the variables to be lagged  
+              nxk arrays with the variables to be lagged
     w_lags  : integer
               Maximum order of spatial lag
 
@@ -474,7 +481,7 @@ def get_lags(w, x, w_lags):
     rs      : array
               nxk*(w_lags+1) array with original and spatially lagged variables
 
-    '''
+    """
     lag = lag_spatial(w, x)
     spat_lags = lag
     for i in range(w_lags - 1):
@@ -483,14 +490,22 @@ def get_lags(w, x, w_lags):
     return spat_lags
 
 
-def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", threshold=0.0000000001, max_iterations=None):
-    """ 
+def inverse_prod(
+    w,
+    data,
+    scalar,
+    post_multiply=False,
+    inv_method="power_exp",
+    threshold=0.0000000001,
+    max_iterations=None,
+):
+    """
 
     Parameters
     ----------
 
     w               : Pysal W object
-                      nxn Pysal spatial weights object 
+                      nxn Pysal spatial weights object
 
     data            : Numpy array
                       nx1 vector of data
@@ -513,7 +528,7 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
                       iteration.
 
     max_iterations  : integer
-                      Maximum number of iterations for the expansion.   
+                      Maximum number of iterations for the expansion.
 
     Examples
     --------
@@ -543,8 +558,13 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
     """
     if inv_method == "power_exp":
         inv_prod = power_expansion(
-            w, data, scalar, post_multiply=post_multiply,
-            threshold=threshold, max_iterations=max_iterations)
+            w,
+            data,
+            scalar,
+            post_multiply=post_multiply,
+            threshold=threshold,
+            max_iterations=max_iterations,
+        )
     elif inv_method == "true_inv":
         try:
             matrix = la.inv(np.eye(w.n) - (scalar * w.full()[0]))
@@ -559,7 +579,9 @@ def inverse_prod(w, data, scalar, post_multiply=False, inv_method="power_exp", t
     return inv_prod
 
 
-def power_expansion(w, data, scalar, post_multiply=False, threshold=0.0000000001, max_iterations=None):
+def power_expansion(
+    w, data, scalar, post_multiply=False, threshold=0.0000000001, max_iterations=None
+):
     """
     Compute the inverse of a matrix using the power expansion (Leontief
     expansion).  General form is:
@@ -594,7 +616,9 @@ def power_expansion(w, data, scalar, post_multiply=False, threshold=0.0000000001
         test_old = test
         test = la.norm(increment)
         if test > test_old:
-            raise Exception("power expansion will not converge, check model specification and that weight are less than 1")
+            raise Exception(
+                "power expansion will not converge, check model specification and that weight are less than 1"
+            )
         count += 1
     return running_total
 
@@ -668,8 +692,8 @@ def sp_att(w, y, predy, w_y, rho):
         # Note 1: Here if omitting pseudo-R2; If not, see Note 2.
         resid_sp = y - predy_sp
     else:
-        #warn = "Warning: Estimate for rho is outside the boundary (-1, 1). Computation of true inverse of W was required (slow)."
-        #predy_sp = inverse_prod(w, xb, rho, inv_method="true_inv")
+        # warn = "Warning: Estimate for rho is outside the boundary (-1, 1). Computation of true inverse of W was required (slow)."
+        # predy_sp = inverse_prod(w, xb, rho, inv_method="true_inv")
         warn = "*** WARNING: Estimate for spatial lag coefficient is outside the boundary (-1, 1). ***"
         predy_sp = np.zeros(y.shape, float)
         resid_sp = np.zeros(y.shape, float)
@@ -677,8 +701,9 @@ def sp_att(w, y, predy, w_y, rho):
     # see Note 1.
     return predy_sp, resid_sp, warn
 
+
 def set_warn(reg, warn):
-    ''' Groups warning messages for printout. '''
+    """Groups warning messages for printout."""
     if warn:
         try:
             reg.warning += "Warning: " + warn + "\n"
@@ -687,8 +712,11 @@ def set_warn(reg, warn):
     else:
         pass
 
-def RegressionProps_basic(reg, betas=None, predy=None, u=None, sig2=None, sig2n_k=None, vm=None):
-    ''' Set props based on arguments passed. '''
+
+def RegressionProps_basic(
+    reg, betas=None, predy=None, u=None, sig2=None, sig2n_k=None, vm=None
+):
+    """Set props based on arguments passed."""
     if betas is not None:
         reg.betas = betas
     if predy is not None:
@@ -714,7 +742,9 @@ def RegressionProps_basic(reg, betas=None, predy=None, u=None, sig2=None, sig2n_
 
 def _test():
     import doctest
+
     doctest.testmod()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

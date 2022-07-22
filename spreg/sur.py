@@ -2,7 +2,7 @@
 SUR and 3SLS estimation
 """
 
-__author__= "Luc Anselin lanselin@gmail.com,    \
+__author__ = "Luc Anselin lanselin@gmail.com,    \
              Pedro V. Amaral pedrovma@gmail.com"
 
 
@@ -12,17 +12,31 @@ from scipy import stats
 from . import summary_output as SUMMARY
 from . import user_output as USER
 from . import regimes as REGI
-from .sur_utils import sur_dict2mat,sur_mat2dict,sur_corr,\
-                      sur_crossprod,sur_est,sur_resids,sur_predict,check_k
-from .diagnostics_sur import sur_setp,sur_lrtest,sur_lmtest,surLMe,\
-                      surLMlag,sur_chow
+from .sur_utils import (
+    sur_dict2mat,
+    sur_mat2dict,
+    sur_corr,
+    sur_crossprod,
+    sur_est,
+    sur_resids,
+    sur_predict,
+    check_k,
+)
+from .diagnostics_sur import (
+    sur_setp,
+    sur_lrtest,
+    sur_lmtest,
+    surLMe,
+    surLMlag,
+    sur_chow,
+)
 from .sputils import sphstack, spdot
 
 
-__all__ = ['SUR','ThreeSLS']
+__all__ = ["SUR", "ThreeSLS"]
 
 
-class BaseSUR():
+class BaseSUR:
     """
     Base class for SUR estimation, both two step as well as iterated
 
@@ -92,21 +106,26 @@ class BaseSUR():
     llik        : float
                   log-likelihood (including the constant pi)
     """
-    def __init__(self,bigy,bigX,iter=False,maxiter=5,epsilon=0.00001,verbose=False):
+
+    def __init__(
+        self, bigy, bigX, iter=False, maxiter=5, epsilon=0.00001, verbose=False
+    ):
         # setting up the cross-products
         self.bigy = bigy
         self.bigX = bigX
         self.n_eq = len(bigy.keys())
         self.n = bigy[0].shape[0]
-        self.bigK = np.zeros((self.n_eq,1),dtype=np.int_)
+        self.bigK = np.zeros((self.n_eq, 1), dtype=np.int_)
         for r in range(self.n_eq):
             self.bigK[r] = self.bigX[r].shape[1]
-        self.bigXX,self.bigXy = sur_crossprod(self.bigX,self.bigy)
+        self.bigXX, self.bigXy = sur_crossprod(self.bigX, self.bigy)
         # OLS regression by equation, sets up initial residuals
-        _sur_ols(self) # creates self.bOLS and self.olsE
+        _sur_ols(self)  # creates self.bOLS and self.olsE
         # SUR estimation using OLS residuals - two step estimation
-        self.bSUR,self.varb,self.sig = sur_est(self.bigXX,self.bigXy,self.olsE,self.bigK)
-        resids = sur_resids(self.bigy,self.bigX,self.bSUR)  # matrix of residuals
+        self.bSUR, self.varb, self.sig = sur_est(
+            self.bigXX, self.bigXy, self.olsE, self.bigK
+        )
+        resids = sur_resids(self.bigy, self.bigX, self.bSUR)  # matrix of residuals
         # Sigma and log det(Sigma) for null model
         self.sig_ols = self.sig
         sols = np.diag(np.diag(self.sig))
@@ -115,32 +134,33 @@ class BaseSUR():
         # setup for iteration
         det1 = la.slogdet(self.sig)[1]
         self.ldetS1 = det1
-        #self.niter = 0
-        if iter:    # iterated FGLS aka ML
+        # self.niter = 0
+        if iter:  # iterated FGLS aka ML
             n_iter = 0
-            while np.abs(det1-det0) > epsilon and n_iter <= maxiter:
+            while np.abs(det1 - det0) > epsilon and n_iter <= maxiter:
                 n_iter += 1
                 det0 = det1
-                self.bSUR,self.varb,self.sig = sur_est(self.bigXX,self.bigXy,\
-                          resids,self.bigK)
-                resids = sur_resids(self.bigy,self.bigX,self.bSUR)
+                self.bSUR, self.varb, self.sig = sur_est(
+                    self.bigXX, self.bigXy, resids, self.bigK
+                )
+                resids = sur_resids(self.bigy, self.bigX, self.bSUR)
                 det1 = la.slogdet(self.sig)[1]
                 if verbose:
-                    print(n_iter,det0,det1)
-            self.bigE = sur_resids(self.bigy,self.bigX,self.bSUR)
+                    print(n_iter, det0, det1)
+            self.bigE = sur_resids(self.bigy, self.bigX, self.bSUR)
             self.ldetS1 = det1
             self.niter = n_iter
         else:
             self.niter = 1
             self.bigE = resids
-        self.bigYP = sur_predict(self.bigy,self.bigX,self.bSUR)  # LA added 10/30/16    
+        self.bigYP = sur_predict(self.bigy, self.bigX, self.bSUR)  # LA added 10/30/16
         self.corr = sur_corr(self.sig)
-        lik = self.n_eq * (1.0 + np.log(2.0*np.pi)) + self.ldetS1
-        self.llik = - (self.n / 2.0) * lik
+        lik = self.n_eq * (1.0 + np.log(2.0 * np.pi)) + self.ldetS1
+        self.llik = -(self.n / 2.0) * lik
 
 
 def _sur_ols(reg):
-    '''
+    """
     OLS estimation of SUR equations
 
     Parameters
@@ -154,12 +174,13 @@ def _sur_ols(reg):
     reg.olsE    : array
                  N x n_eq array with OLS residuals for each equation
 
-    '''
+    """
     reg.bOLS = {}
     for r in range(reg.n_eq):
-        reg.bOLS[r] = np.dot(la.inv(reg.bigXX[(r,r)]),reg.bigXy[(r,r)])
-    reg.olsE = sur_resids(reg.bigy,reg.bigX,reg.bOLS)
+        reg.bOLS[r] = np.dot(la.inv(reg.bigXX[(r, r)]), reg.bigXy[(r, r)])
+    reg.olsE = sur_resids(reg.bigy, reg.bigX, reg.bOLS)
     return reg
+
 
 class SUR(BaseSUR, REGI.Regimes_Frame):
     """
@@ -385,102 +406,154 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
     ================================ END OF REPORT =====================================
     """
 
-    def __init__(self,bigy,bigX,w=None,regimes=None,nonspat_diag=True,spat_diag=False,\
-        vm=False,iter=False,maxiter=5,epsilon=0.00001,verbose=False,\
-        name_bigy=None,name_bigX=None,name_ds=None,name_w=None, name_regimes=None):
+    def __init__(
+        self,
+        bigy,
+        bigX,
+        w=None,
+        regimes=None,
+        nonspat_diag=True,
+        spat_diag=False,
+        vm=False,
+        iter=False,
+        maxiter=5,
+        epsilon=0.00001,
+        verbose=False,
+        name_bigy=None,
+        name_bigX=None,
+        name_ds=None,
+        name_w=None,
+        name_regimes=None,
+    ):
 
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_w = USER.set_name_w(name_w, w)
-        self.n_eq = len(bigy.keys())        
+        self.n_eq = len(bigy.keys())
 
-        #initialize names - should be generated by sur_stack
+        # initialize names - should be generated by sur_stack
         if name_bigy:
             self.name_bigy = name_bigy
-        else: # need to construct y names
+        else:  # need to construct y names
             self.name_bigy = {}
             for r in range(self.n_eq):
-                yn = 'dep_var_' + str(r)
+                yn = "dep_var_" + str(r)
                 self.name_bigy[r] = yn
         if name_bigX is None:
             name_bigX = {}
             for r in range(self.n_eq):
                 k = self.bigX[r].shape[1] - 1
-                name_x = ['var_' + str(i + 1) + "_" + str(r) for i in range(k)]
-                ct = 'Constant_' + str(r)  # NOTE: constant always included in X
+                name_x = ["var_" + str(i + 1) + "_" + str(r) for i in range(k)]
+                ct = "Constant_" + str(r)  # NOTE: constant always included in X
                 name_x.insert(0, ct)
                 name_bigX[r] = name_x
 
         if regimes is not None:
-            self.constant_regi = 'many'
-            self.cols2regi = 'all'
+            self.constant_regi = "many"
+            self.cols2regi = "all"
             self.regime_err_sep = False
             self.name_regimes = USER.set_name_ds(name_regimes)
             self.regimes_set = REGI._get_regimes_set(regimes)
             self.regimes = regimes
-            self.name_x_r = name_bigX     
+            self.name_x_r = name_bigX
             cols2regi_dic = {}
             self.name_bigX = {}
             for r in range(self.n_eq):
-                cols2regi_dic[r] = REGI.check_cols2regi(self.constant_regi, self.cols2regi, bigX[r], add_cons=False)
+                cols2regi_dic[r] = REGI.check_cols2regi(
+                    self.constant_regi, self.cols2regi, bigX[r], add_cons=False
+                )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(self, bigX[r],\
-                 regimes, constant_regi=None, cols2regi=cols2regi_dic[r], names=name_bigX[r])
+                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                    self,
+                    bigX[r],
+                    regimes,
+                    constant_regi=None,
+                    cols2regi=cols2regi_dic[r],
+                    names=name_bigX[r],
+                )
         else:
             self.name_bigX = name_bigX
-            
-        #need checks on match between bigy, bigX dimensions
-        # init moved here before name check
-        BaseSUR.__init__(self,bigy=bigy,bigX=bigX,iter=iter,\
-            maxiter=maxiter,epsilon=epsilon,verbose=verbose)
 
-        #inference
-        self.sur_inf = sur_setp(self.bSUR,self.varb)
+        # need checks on match between bigy, bigX dimensions
+        # init moved here before name check
+        BaseSUR.__init__(
+            self,
+            bigy=bigy,
+            bigX=bigX,
+            iter=iter,
+            maxiter=maxiter,
+            epsilon=epsilon,
+            verbose=verbose,
+        )
+
+        # inference
+        self.sur_inf = sur_setp(self.bSUR, self.varb)
 
         if nonspat_diag:
-            #LR test on off-diagonal elements of Sigma
-            self.lrtest = sur_lrtest(self.n,self.n_eq,self.ldetS0,self.ldetS1)
+            # LR test on off-diagonal elements of Sigma
+            self.lrtest = sur_lrtest(self.n, self.n_eq, self.ldetS0, self.ldetS1)
 
-            #LM test on off-diagonal elements of Sigma
-            self.lmtest = sur_lmtest(self.n,self.n_eq,self.sig_ols)
+            # LM test on off-diagonal elements of Sigma
+            self.lmtest = sur_lmtest(self.n, self.n_eq, self.sig_ols)
         else:
             self.lrtest = None
             self.lmtest = None
 
         if spat_diag:
             if not w:
-                 raise Exception("Error: spatial weights needed")
+                raise Exception("Error: spatial weights needed")
             WS = w.sparse
-            #LM test on spatial error autocorrelation
-            self.lmEtest = surLMe(self.n_eq,WS,self.bigE,self.sig)
-            #LM test on spatial lag autocorrelation
-            self.lmlagtest = surLMlag(self.n_eq,WS,self.bigy,
-                       self.bigX,self.bigE,self.bigYP,
-                       self.sig,self.varb)
+            # LM test on spatial error autocorrelation
+            self.lmEtest = surLMe(self.n_eq, WS, self.bigE, self.sig)
+            # LM test on spatial lag autocorrelation
+            self.lmlagtest = surLMlag(
+                self.n_eq,
+                WS,
+                self.bigy,
+                self.bigX,
+                self.bigE,
+                self.bigYP,
+                self.sig,
+                self.varb,
+            )
         else:
             self.lmEtest = None
             self.lmlagtest = None
 
         # test on constancy of coefficients across equations
-        if check_k(self.bigK):   # only for equal number of variables
-            self.surchow = sur_chow(self.n_eq,self.bigK,self.bSUR,self.varb)
+        if check_k(self.bigK):  # only for equal number of variables
+            self.surchow = sur_chow(self.n_eq, self.bigK, self.bSUR, self.varb)
         else:
             self.surchow = None
 
-        #Listing of the results
+        # Listing of the results
         self.title = "SEEMINGLY UNRELATED REGRESSIONS (SUR)"
         if regimes is not None:
             self.title += " - REGIMES"
             self.chow_regimes = {}
             varb_counter = 0
             for r in range(self.n_eq):
-                counter_end = varb_counter+self.bSUR[r].shape[0]
-                self.chow_regimes[r] = REGI._chow_run(len(cols2regi_dic[r]),0,0,len(self.regimes_set),self.bSUR[r],self.varb[varb_counter:counter_end,varb_counter:counter_end])
-                varb_counter = counter_end     
-            regimes=True   
-            
-        SUMMARY.SUR(reg=self, nonspat_diag=nonspat_diag, spat_diag=spat_diag, surlm=True, regimes=regimes)
+                counter_end = varb_counter + self.bSUR[r].shape[0]
+                self.chow_regimes[r] = REGI._chow_run(
+                    len(cols2regi_dic[r]),
+                    0,
+                    0,
+                    len(self.regimes_set),
+                    self.bSUR[r],
+                    self.varb[varb_counter:counter_end, varb_counter:counter_end],
+                )
+                varb_counter = counter_end
+            regimes = True
 
-class BaseThreeSLS():
+        SUMMARY.SUR(
+            reg=self,
+            nonspat_diag=nonspat_diag,
+            spat_diag=spat_diag,
+            surlm=True,
+            regimes=regimes,
+        )
+
+
+class BaseThreeSLS:
     """
     Base class for 3SLS estimation, two step
 
@@ -530,7 +603,8 @@ class BaseThreeSLS():
                   inter-equation 3SLS error correlation matrix
 
     """
-    def __init__(self,bigy,bigX,bigyend,bigq):
+
+    def __init__(self, bigy, bigX, bigyend, bigq):
         # setting up the cross-products
         self.bigy = bigy
         self.n_eq = len(bigy.keys())
@@ -538,24 +612,26 @@ class BaseThreeSLS():
         # dictionary with exog and endog, Z
         self.bigZ = {}
         for r in range(self.n_eq):
-            self.bigZ[r] = sphstack(bigX[r],bigyend[r])
+            self.bigZ[r] = sphstack(bigX[r], bigyend[r])
         # number of explanatory variables by equation
-        self.bigK = np.zeros((self.n_eq,1),dtype=np.int_)
+        self.bigK = np.zeros((self.n_eq, 1), dtype=np.int_)
         for r in range(self.n_eq):
             self.bigK[r] = self.bigZ[r].shape[1]
         # dictionary with instruments, H
         bigH = {}
         for r in range(self.n_eq):
-            bigH[r] = sphstack(bigX[r],bigq[r])
+            bigH[r] = sphstack(bigX[r], bigq[r])
         # dictionary with instrumental variables, X and yend_predicted, Z-hat
         bigZhat = _get_bigZhat(self, bigX, bigyend, bigH)
-        self.bigZHZH,self.bigZHy = sur_crossprod(bigZhat,self.bigy)
+        self.bigZHZH, self.bigZHy = sur_crossprod(bigZhat, self.bigy)
 
         # 2SLS regression by equation, sets up initial residuals
-        _sur_2sls(self) # creates self.b2SLS and self.tslsE
+        _sur_2sls(self)  # creates self.b2SLS and self.tslsE
 
-        self.b3SLS,self.varb,self.sig = sur_est(self.bigZHZH,self.bigZHy,self.tslsE,self.bigK)
-        self.bigE = sur_resids(self.bigy,self.bigZ,self.b3SLS)  # matrix of residuals
+        self.b3SLS, self.varb, self.sig = sur_est(
+            self.bigZHZH, self.bigZHy, self.tslsE, self.bigK
+        )
+        self.bigE = sur_resids(self.bigy, self.bigZ, self.b3SLS)  # matrix of residuals
 
         # inter-equation correlation matrix
         self.corr = sur_corr(self.sig)
@@ -726,28 +802,40 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
 
     """
 
-    def __init__(self,bigy,bigX,bigyend,bigq,regimes=None,nonspat_diag=True,\
-        name_bigy=None,name_bigX=None,name_bigyend=None,name_bigq=None,\
-        name_ds=None,name_regimes=None):
+    def __init__(
+        self,
+        bigy,
+        bigX,
+        bigyend,
+        bigq,
+        regimes=None,
+        nonspat_diag=True,
+        name_bigy=None,
+        name_bigX=None,
+        name_bigyend=None,
+        name_bigq=None,
+        name_ds=None,
+        name_regimes=None,
+    ):
 
         self.name_ds = USER.set_name_ds(name_ds)
-        self.n_eq = len(bigy.keys())        
+        self.n_eq = len(bigy.keys())
 
-        #initialize names - should be generated by sur_stack
+        # initialize names - should be generated by sur_stack
         if name_bigy:
             self.name_bigy = name_bigy
-        else: # need to construct y names
+        else:  # need to construct y names
             self.name_bigy = {}
             for r in range(self.n_eq):
-                yn = 'dep_var_' + str(r+1)
+                yn = "dep_var_" + str(r + 1)
                 self.name_bigy[r] = yn
 
         if name_bigX is None:
             name_bigX = {}
             for r in range(self.n_eq):
                 k = bigX[r].shape[1] - 1
-                name_x = ['var_' + str(i + 1) + "_" + str(r+1) for i in range(k)]
-                ct = 'Constant_' + str(r+1)  # NOTE: constant always included in X
+                name_x = ["var_" + str(i + 1) + "_" + str(r + 1) for i in range(k)]
+                ct = "Constant_" + str(r + 1)  # NOTE: constant always included in X
                 name_x.insert(0, ct)
                 name_bigX[r] = name_x
 
@@ -755,130 +843,183 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
             name_bigyend = {}
             for r in range(self.n_eq):
                 ky = bigyend[r].shape[1]
-                name_ye = ['end_' + str(i + 1) + "_" + str(r+1) for i in range(ky)]
+                name_ye = ["end_" + str(i + 1) + "_" + str(r + 1) for i in range(ky)]
                 name_bigyend[r] = name_ye
 
         if name_bigq is None:
             name_bigq = {}
             for r in range(self.n_eq):
                 ki = bigq[r].shape[1]
-                name_i = ['inst_' + str(i + 1) + "_" + str(r+1) for i in range(ki)]
+                name_i = ["inst_" + str(i + 1) + "_" + str(r + 1) for i in range(ki)]
                 name_bigq[r] = name_i
 
         if regimes is not None:
-            self.constant_regi = 'many'
-            self.cols2regi = 'all'
+            self.constant_regi = "many"
+            self.cols2regi = "all"
             self.regime_err_sep = False
             self.name_regimes = USER.set_name_ds(name_regimes)
             self.regimes_set = REGI._get_regimes_set(regimes)
             self.regimes = regimes
             cols2regi_dic = {}
-            self.name_bigX,self.name_x_r,self.name_bigq,self.name_bigyend = {},{},{},{}
+            self.name_bigX, self.name_x_r, self.name_bigq, self.name_bigyend = (
+                {},
+                {},
+                {},
+                {},
+            )
 
             for r in range(self.n_eq):
                 self.name_x_r[r] = name_bigX[r] + name_bigyend[r]
-                cols2regi_dic[r] = REGI.check_cols2regi(self.constant_regi, self.cols2regi, bigX[r], yend=bigyend[r], add_cons=False)
+                cols2regi_dic[r] = REGI.check_cols2regi(
+                    self.constant_regi,
+                    self.cols2regi,
+                    bigX[r],
+                    yend=bigyend[r],
+                    add_cons=False,
+                )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(self, bigX[r],\
-                 regimes, constant_regi=None, cols2regi=cols2regi_dic[r], names=name_bigX[r])
-                bigq[r], self.name_bigq[r] = REGI.Regimes_Frame.__init__(self, bigq[r],\
-                 regimes, constant_regi=None, cols2regi='all', names=name_bigq[r])
-                bigyend[r], self.name_bigyend[r] = REGI.Regimes_Frame.__init__(self, bigyend[r],\
-                 regimes, constant_regi=None, cols2regi=cols2regi_dic[r], yend=True, names=name_bigyend[r])
+                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                    self,
+                    bigX[r],
+                    regimes,
+                    constant_regi=None,
+                    cols2regi=cols2regi_dic[r],
+                    names=name_bigX[r],
+                )
+                bigq[r], self.name_bigq[r] = REGI.Regimes_Frame.__init__(
+                    self,
+                    bigq[r],
+                    regimes,
+                    constant_regi=None,
+                    cols2regi="all",
+                    names=name_bigq[r],
+                )
+                bigyend[r], self.name_bigyend[r] = REGI.Regimes_Frame.__init__(
+                    self,
+                    bigyend[r],
+                    regimes,
+                    constant_regi=None,
+                    cols2regi=cols2regi_dic[r],
+                    yend=True,
+                    names=name_bigyend[r],
+                )
         else:
-            self.name_bigX,self.name_bigq,self.name_bigyend = name_bigX,name_bigq,name_bigyend
-        #need checks on match between bigy, bigX dimensions
-        BaseThreeSLS.__init__(self,bigy=bigy,bigX=bigX,bigyend=bigyend,\
-            bigq=bigq)
+            self.name_bigX, self.name_bigq, self.name_bigyend = (
+                name_bigX,
+                name_bigq,
+                name_bigyend,
+            )
+        # need checks on match between bigy, bigX dimensions
+        BaseThreeSLS.__init__(self, bigy=bigy, bigX=bigX, bigyend=bigyend, bigq=bigq)
 
-        #inference
-        self.tsls_inf = sur_setp(self.b3SLS,self.varb)
+        # inference
+        self.tsls_inf = sur_setp(self.b3SLS, self.varb)
 
         # test on constancy of coefficients across equations
-        if check_k(self.bigK):   # only for equal number of variables
-            self.surchow = sur_chow(self.n_eq,self.bigK,self.b3SLS,self.varb)
+        if check_k(self.bigK):  # only for equal number of variables
+            self.surchow = sur_chow(self.n_eq, self.bigK, self.b3SLS, self.varb)
         else:
             self.surchow = None
 
-        #Listing of the results
+        # Listing of the results
         self.title = "THREE STAGE LEAST SQUARES (3SLS)"
         if regimes is not None:
             self.title += " - REGIMES"
             self.chow_regimes = {}
             varb_counter = 0
             for r in range(self.n_eq):
-                counter_end = varb_counter+self.b3SLS[r].shape[0]
-                self.chow_regimes[r] = REGI._chow_run(len(cols2regi_dic[r]),0,0,len(self.regimes_set),self.b3SLS[r],self.varb[varb_counter:counter_end,varb_counter:counter_end])
-                varb_counter = counter_end     
-            regimes=True   
+                counter_end = varb_counter + self.b3SLS[r].shape[0]
+                self.chow_regimes[r] = REGI._chow_run(
+                    len(cols2regi_dic[r]),
+                    0,
+                    0,
+                    len(self.regimes_set),
+                    self.b3SLS[r],
+                    self.varb[varb_counter:counter_end, varb_counter:counter_end],
+                )
+                varb_counter = counter_end
+            regimes = True
 
-        SUMMARY.SUR(reg=self, tsls=True, ml=False, nonspat_diag=nonspat_diag, regimes=regimes)
+        SUMMARY.SUR(
+            reg=self, tsls=True, ml=False, nonspat_diag=nonspat_diag, regimes=regimes
+        )
+
 
 def _sur_2sls(reg):
-    '''
-    2SLS estimation of SUR equations
+    """
+     2SLS estimation of SUR equations
 
-   Parameters
-   ----------
+    Parameters
+    ----------
 
-   reg  : BaseSUR object
+    reg  : BaseSUR object
 
-   Return
-   ------
+    Return
+    ------
 
-   reg.b2SLS    : dictionary
-                  with regression coefficients for each equation
-   reg.tslsE    : array
-                  N x n_eq array with OLS residuals for each equation
+    reg.b2SLS    : dictionary
+                   with regression coefficients for each equation
+    reg.tslsE    : array
+                   N x n_eq array with OLS residuals for each equation
 
-    '''
+    """
     reg.b2SLS = {}
     for r in range(reg.n_eq):
-        reg.b2SLS[r] = np.dot(la.inv(reg.bigZHZH[(r,r)]),reg.bigZHy[(r,r)])
-    reg.tslsE = sur_resids(reg.bigy,reg.bigZ,reg.b2SLS)
+        reg.b2SLS[r] = np.dot(la.inv(reg.bigZHZH[(r, r)]), reg.bigZHy[(r, r)])
+    reg.tslsE = sur_resids(reg.bigy, reg.bigZ, reg.b2SLS)
     return reg
+
 
 def _get_bigZhat(reg, bigX, bigyend, bigH):
     bigZhat = {}
     for r in range(reg.n_eq):
         try:
-            HHi = la.inv(spdot(bigH[r].T,bigH[r]))
+            HHi = la.inv(spdot(bigH[r].T, bigH[r]))
         except:
             raise Exception("ERROR: singular cross product matrix, check instruments")
-        Hye = spdot(bigH[r].T,bigyend[r])
-        yp = spdot(bigH[r],spdot(HHi,Hye))
-        bigZhat[r] = sphstack(bigX[r],yp)
+        Hye = spdot(bigH[r].T, bigyend[r])
+        yp = spdot(bigH[r], spdot(HHi, Hye))
+        bigZhat[r] = sphstack(bigX[r], yp)
     return bigZhat
-
 
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
-    from .sur_utils import sur_dictxy,sur_dictZ
+    from .sur_utils import sur_dictxy, sur_dictZ
     from libpysal.examples import load_example
 
-    nat = load_example('Natregimes')
-    db = libpysal.io.open(nat.get_path('NAT.dbf'), 'r')
-    y_var = ['HR80','HR90']
-    x_var = [['PS80','UE80'],['PS90','UE90']]
-    regimes = db.by_col('SOUTH')
+    nat = load_example("Natregimes")
+    db = libpysal.io.open(nat.get_path("NAT.dbf"), "r")
+    y_var = ["HR80", "HR90"]
+    x_var = [["PS80", "UE80"], ["PS90", "UE90"]]
+    regimes = db.by_col("SOUTH")
 
-    #Example SUR
-    #"""
+    # Example SUR
+    # """
     w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
-    w.transform='r'
-    bigy0,bigX0,bigyvars0,bigXvars0 = sur_dictxy(db,y_var,x_var)
-    reg0 = SUR(bigy0,bigX0,w=w,regimes=None,name_bigy=bigyvars0,name_bigX=bigXvars0,\
-          spat_diag=True,name_ds="NAT")
+    w.transform = "r"
+    bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(db, y_var, x_var)
+    reg0 = SUR(
+        bigy0,
+        bigX0,
+        w=w,
+        regimes=None,
+        name_bigy=bigyvars0,
+        name_bigX=bigXvars0,
+        spat_diag=True,
+        name_ds="NAT",
+    )
     print(reg0.summary)
     """
     #Example 3SLS

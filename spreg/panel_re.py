@@ -16,13 +16,16 @@ from spreg.w_utils import symmetrize
 from . import diagnostics as DIAG
 from . import user_output as USER
 from . import summary_output as SUMMARY
+
 try:
     from scipy.optimize import minimize_scalar
+
     minimize_scalar_available = True
 except ImportError:
     minimize_scalar_available = False
 try:
     from scipy.optimize import minimize
+
     minimize_available = True
 except ImportError:
     minimize_available = False
@@ -121,11 +124,14 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
         # Iterative procedure
         while converge > criteria and i < itermax:
             phiold = self.phi
-            res_phi = minimize_scalar(phi_c_loglik, 0.1, bounds=(0.0, 1.0),
-                                      args=(self.rho, b, bigy, bigx,
-                                            self.n, self.t, Wsp_nt),
-                                      method='bounded',
-                                      options={"xatol": epsilon})
+            res_phi = minimize_scalar(
+                phi_c_loglik,
+                0.1,
+                bounds=(0.0, 1.0),
+                args=(self.rho, b, bigy, bigx, self.n, self.t, Wsp_nt),
+                method="bounded",
+                options={"xatol": epsilon},
+            )
             self.phi = res_phi.x[0][0]
             # Demeaned variables
             self.y = demean_panel(bigy, self.n, self.t, phi=self.phi)
@@ -141,10 +147,14 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
             b1 = spdot(xtxi, xtyl)
             e0 = self.y - spdot(self.x, b0)
             e1 = ylag - spdot(self.x, b1)
-            res_rho = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0, 1.0),
-                                      args=(self.n, self.t, e0, e1, I, Wsp),
-                                      method='bounded',
-                                      options={"xatol": epsilon})
+            res_rho = minimize_scalar(
+                lag_c_loglik_sp,
+                0.0,
+                bounds=(-1.0, 1.0),
+                args=(self.n, self.t, e0, e1, I, Wsp),
+                method="bounded",
+                options={"xatol": epsilon},
+            )
             self.rho = res_rho.x[0][0]
             b = b0 - self.rho * b1
             i += 1
@@ -152,9 +162,7 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
 
         # compute full log-likelihood, including constants
         ln2pi = np.log(2.0 * np.pi)
-        llik = (- res_rho.fun
-                - (self.n * self.t) / 2.0 * ln2pi
-                - (self.n * self.t) / 2.0)
+        llik = -res_rho.fun - (self.n * self.t) / 2.0 * ln2pi - (self.n * self.t) / 2.0
         self.logll = llik[0][0]
 
         # b, residuals and predicted values
@@ -164,7 +172,8 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
         xb = spdot(self.x, b)
 
         self.predy_e = inverse_prod(
-            Wsp_nt, xb, self.rho, inv_method="power_exp", threshold=epsilon)
+            Wsp_nt, xb, self.rho, inv_method="power_exp", threshold=epsilon
+        )
         self.e_pred = self.y - self.predy_e
 
         # residual variance
@@ -193,17 +202,31 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
         wpyTwpy = spdot(xb.T, wTwpredy)
 
         # order of variables is beta, rho, sigma2
-        v1 = np.vstack(
-            (xtx/self.sig2, xTwpy.T/self.sig2, np.zeros((2, self.k))))
+        v1 = np.vstack((xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((2, self.k))))
         v2 = np.vstack(
-            (xTwpy/self.sig2, self.t*(tr2+tr3) + wpyTwpy/self.sig2,
-                -tr1/self.sig2, self.t*tr1/self.sig2))
+            (
+                xTwpy / self.sig2,
+                self.t * (tr2 + tr3) + wpyTwpy / self.sig2,
+                -tr1 / self.sig2,
+                self.t * tr1 / self.sig2,
+            )
+        )
         v3 = np.vstack(
-            (np.zeros((self.k, 1)), -tr1/self.sig2,
-                self.n*(1 + 1/self.phi**2), -self.n/self.sig2))
+            (
+                np.zeros((self.k, 1)),
+                -tr1 / self.sig2,
+                self.n * (1 + 1 / self.phi ** 2),
+                -self.n / self.sig2,
+            )
+        )
         v4 = np.vstack(
-            (np.zeros((self.k, 1)), self.t*tr1/self.sig2,
-                -self.n/self.sig2**2, self.n*self.t/(2.0*self.sig2**2)))
+            (
+                np.zeros((self.k, 1)),
+                self.t * tr1 / self.sig2,
+                -self.n / self.sig2 ** 2,
+                self.n * self.t / (2.0 * self.sig2 ** 2),
+            )
+        )
 
         v = np.hstack((v1, v2, v3, v4))
 
@@ -342,23 +365,29 @@ class Panel_RE_Lag(BasePanel_RE_Lag):
            [0.68426639]])
     """
 
-    def __init__(self, y, x, w, epsilon=0.0000001,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        epsilon=0.0000001,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
         n_rows = USER.check_arrays(y, x)
-        bigy, bigx, name_y, name_x, warn = check_panel(y, x, w,
-                                                       name_y, name_x)
+        bigy, bigx, name_y, name_x, warn = check_panel(y, x, w, name_y, name_x)
         set_warn(self, warn)
         bigx, name_x, warn = USER.check_constant(bigx, name_x)
         set_warn(self, warn)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
-        BasePanel_RE_Lag.__init__(
-            self, bigy, bigx, w, epsilon=epsilon)
+        BasePanel_RE_Lag.__init__(self, bigy, bigx, w, epsilon=epsilon)
         # increase by 1 to have correct aic and sc, include rho in count
         self.k += 1
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG PANEL" + \
-                     " - RANDOM EFFECTS"
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG PANEL" + " - RANDOM EFFECTS"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=False)
@@ -453,30 +482,45 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
             WW = np.array(ww.todense())
             evals, evecs = la.eigh(WW)
             W = WW
-        else:     # need dense here
+        else:  # need dense here
             evals, evecs = la.eig(W)
         one = np.ones((self.t, 1))
-        J = (1/self.t)*spdot(one, one.T)
+        J = (1 / self.t) * spdot(one, one.T)
         Q = sp.kron(J, I, format="csr")
         y_mean = spdot(Q, self.y)
         x_mean = spdot(Q, self.x)
-        res = minimize(err_c_loglik_ord, (0.0, 0.1),
-                       bounds=((-1.0, 1.0), (0.0, 10000.0)),
-                       method='L-BFGS-B',
-                       args=(evals, evecs, self.n, self.t, self.y, self.x,
-                             ylag, xlag, y_mean, x_mean, I, Wsp))
+        res = minimize(
+            err_c_loglik_ord,
+            (0.0, 0.1),
+            bounds=((-1.0, 1.0), (0.0, 10000.0)),
+            method="L-BFGS-B",
+            args=(
+                evals,
+                evecs,
+                self.n,
+                self.t,
+                self.y,
+                self.x,
+                ylag,
+                xlag,
+                y_mean,
+                x_mean,
+                I,
+                Wsp,
+            ),
+        )
         self.lam, self.phi = res.x
 
         # compute full log-likelihood
         ln2pi = np.log(2.0 * np.pi)
-        self.logll = (- res.fun
-                      - (self.n * self.t) / 2.0 * ln2pi
-                      - (self.n * self.t) / 2.0)
+        self.logll = (
+            -res.fun - (self.n * self.t) / 2.0 * ln2pi - (self.n * self.t) / 2.0
+        )
 
         # b, residuals and predicted values
-        cvals = self.t*self.phi**2 + 1/(1-self.lam*evals)**2
-        P = spdot(np.diag(cvals**(-0.5)), evecs.T)
-        pr = P - (I - self.lam*W)
+        cvals = self.t * self.phi ** 2 + 1 / (1 - self.lam * evals) ** 2
+        P = spdot(np.diag(cvals ** (-0.5)), evecs.T)
+        pr = P - (I - self.lam * W)
         pr_nt = sp.kron(sp.identity(self.t), pr, format="csr")
         yrand = self.y + spdot(pr_nt, y_mean)
         xrand = self.x + spdot(pr_nt, x_mean)
@@ -492,13 +536,12 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
 
         # residual variance
         self.e_filtered = ys - spdot(xs, b)
-        self.sig2 = (spdot(self.e_filtered.T, self.e_filtered)
-                     / (self.n * self.t))
+        self.sig2 = spdot(self.e_filtered.T, self.e_filtered) / (self.n * self.t)
 
         # variance-covariance matrix betas
         varb = self.sig2 * xsxsi
         # variance of random effects
-        self.sig2_u = self.phi**2 * self.sig2
+        self.sig2_u = self.phi ** 2 * self.sig2
 
         self.betas = np.vstack((b, self.lam, self.sig2_u))
 
@@ -508,7 +551,7 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
         aTai = la.inv(spdot(a.T, a))
         wa_aw = spdot(W.T, a) + spdot(a.T, W)
         gamma = spdot(wa_aw, aTai)
-        vi = la.inv(self.t*self.phi*I + aTai)
+        vi = la.inv(self.t * self.phi * I + aTai)
         sigma = spdot(vi, aTai)
 
         tr1 = gamma.diagonal().sum()
@@ -527,15 +570,27 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
         sigma_gamma_sigma = spdot(sigma_gamma, sigma)
         tr7 = sigma_gamma_sigma.diagonal().sum()
 
-        v1 = np.vstack(((self.t-1)/2 * tr1**2 + 1/2 * tr4**2,
-                        self.t/(2*self.sig2) * tr6,
-                        (self.t-1)/(2*self.sig2)*tr1 + 1/(2*self.sig2) * tr7))
-        v2 = np.vstack((self.t/(2*self.sig2) * tr6,
-                        self.t**2 / (2.0*self.sig2**2) * tr2**2,
-                        self.t / (2.0*self.sig2**2) * tr5))
-        v3 = np.vstack(((self.t-1)/(2*self.sig2) * tr1 + 1/(2*self.sig2) * tr7,
-                        self.t / (2.0*self.sig2**2) * tr5,
-                        1 / (2.0*self.sig2**2) * ((self.t-1)*self.n + tr3**2)))
+        v1 = np.vstack(
+            (
+                (self.t - 1) / 2 * tr1 ** 2 + 1 / 2 * tr4 ** 2,
+                self.t / (2 * self.sig2) * tr6,
+                (self.t - 1) / (2 * self.sig2) * tr1 + 1 / (2 * self.sig2) * tr7,
+            )
+        )
+        v2 = np.vstack(
+            (
+                self.t / (2 * self.sig2) * tr6,
+                self.t ** 2 / (2.0 * self.sig2 ** 2) * tr2 ** 2,
+                self.t / (2.0 * self.sig2 ** 2) * tr5,
+            )
+        )
+        v3 = np.vstack(
+            (
+                (self.t - 1) / (2 * self.sig2) * tr1 + 1 / (2 * self.sig2) * tr7,
+                self.t / (2.0 * self.sig2 ** 2) * tr5,
+                1 / (2.0 * self.sig2 ** 2) * ((self.t - 1) * self.n + tr3 ** 2),
+            )
+        )
 
         v = np.hstack((v1, v2, v3))
 
@@ -543,8 +598,7 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
 
         # create variance matrix for beta, lambda
         vv = np.hstack((varb, np.zeros((self.k, 2))))
-        vv1 = np.hstack(
-            (np.zeros((2, self.k)), vm1[:2, :2]))
+        vv1 = np.hstack((np.zeros((2, self.k)), vm1[:2, :2]))
 
         self.vm = np.vstack((vv, vv1))
         self.varb = varb
@@ -678,20 +732,27 @@ class Panel_RE_Error(BasePanel_RE_Error):
            [4.9782446]])
     """
 
-    def __init__(self, y, x, w, epsilon=0.0000001,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        epsilon=0.0000001,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
         n_rows = USER.check_arrays(y, x)
-        bigy, bigx, name_y, name_x, warn = check_panel(y, x, w,
-                                                       name_y, name_x)
+        bigy, bigx, name_y, name_x, warn = check_panel(y, x, w, name_y, name_x)
         set_warn(self, warn)
         bigx, name_x, warn = USER.check_constant(bigx, name_x)
         set_warn(self, warn)
         USER.check_weights(w, bigy, w_required=True, time=True)
 
         BasePanel_RE_Error.__init__(self, bigy, bigx, w, epsilon=epsilon)
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR PANEL" + \
-                     " - RANDOM EFFECTS"
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR PANEL" + " - RANDOM EFFECTS"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, bigx, constant=False)
@@ -709,8 +770,8 @@ def lag_c_loglik_sp(rho, n, t, e0, e1, I, Wsp):
         if rho.shape == (1, 1):
             rho = rho[0][0]
     er = e0 - rho * e1
-    sig2 = spdot(er.T, er) / (n*t)
-    nlsig2 = (n*t / 2.0) * np.log(sig2)
+    sig2 = spdot(er.T, er) / (n * t)
+    nlsig2 = (n * t / 2.0) * np.log(sig2)
     a = I - rho * Wsp
     LU = SuperLU(a.tocsc())
     jacob = t * np.sum(np.log(np.abs(LU.U.diagonal())))
@@ -724,21 +785,22 @@ def phi_c_loglik(phi, rho, beta, bigy, bigx, n, t, W_nt):
     x = demean_panel(bigx, n, t, phi=phi)
     # Lag dependent variable
     ylag = spdot(W_nt, y)
-    er = y - rho*ylag - spdot(x, beta)
+    er = y - rho * ylag - spdot(x, beta)
     sig2 = spdot(er.T, er)
-    nlsig2 = (n*t / 2.0) * np.log(sig2)
-    nphi2 = (n / 2.0) * np.log(phi**2)
+    nlsig2 = (n * t / 2.0) * np.log(sig2)
+    nphi2 = (n / 2.0) * np.log(phi ** 2)
     clike = nlsig2 - nphi2
     return clike
 
 
-def err_c_loglik_ord(lam_phi, evals, evecs, n, t,
-                     bigy, bigx, ylag, xlag, y_mean, x_mean, I, Wsp):
+def err_c_loglik_ord(
+    lam_phi, evals, evecs, n, t, bigy, bigx, ylag, xlag, y_mean, x_mean, I, Wsp
+):
     # concentrated log-lik for error model, no constants, eigenvalues
     lam, phi = lam_phi
-    cvals = t*phi**2 + 1/(1-lam*evals)**2
-    P = spdot(np.diag(cvals**(-0.5)), evecs.T)
-    pr = P - (I - lam*Wsp)
+    cvals = t * phi ** 2 + 1 / (1 - lam * evals) ** 2
+    P = spdot(np.diag(cvals ** (-0.5)), evecs.T)
+    pr = P - (I - lam * Wsp)
     pr_nt = sp.kron(sp.identity(t), pr, format="csr")
     # Term 1
     yrand = bigy + spdot(pr_nt, y_mean)
@@ -753,12 +815,12 @@ def err_c_loglik_ord(lam_phi, evals, evecs, n, t,
     x2 = np.dot(xsys.T, x1)
     ee = ysys - x2
     sig2 = ee[0][0]
-    nlsig2 = (n*t / 2.0) * np.log(sig2)
+    nlsig2 = (n * t / 2.0) * np.log(sig2)
     # Term 2
-    revals = t * phi**2 * (1 - lam*evals)**2
-    phi_jacob = 1/2 * np.log(1 + revals).sum()
+    revals = t * phi ** 2 * (1 - lam * evals) ** 2
+    phi_jacob = 1 / 2 * np.log(1 + revals).sum()
     # Term 3
-    jacob = t * np.log(1 - lam*evals).sum()
+    jacob = t * np.log(1 - lam * evals).sum()
     if isinstance(jacob, complex):
         jacob = jacob.real
     # this is the negative of the concentrated log lik for minimization

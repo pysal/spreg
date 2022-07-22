@@ -287,11 +287,26 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     'MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES (METHOD = full)'
     """
 
-    def __init__(self, y, x, regimes, w=None, constant_regi='many',
-                 cols2regi='all', method='full', epsilon=0.0000001,
-                 regime_lag_sep=False, regime_err_sep=False, cores=False,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None, name_regimes=None):
+    def __init__(
+        self,
+        y,
+        x,
+        regimes,
+        w=None,
+        constant_regi="many",
+        cols2regi="all",
+        method="full",
+        epsilon=0.0000001,
+        regime_lag_sep=False,
+        regime_err_sep=False,
+        cores=False,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+        name_regimes=None,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
@@ -299,8 +314,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         name_y = USER.set_name_y(name_y)
         self.name_y = name_y
 
-        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
-        set_warn(self,warn)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
         self.name_x_r = name_x + [USER.set_name_yend_sp(name_y)]
@@ -310,7 +325,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         self.constant_regi = constant_regi
         self.n = n
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x_constant, add_cons=False)
+            constant_regi, cols2regi, x_constant, add_cons=False
+        )
         self.cols2regi = cols2regi
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
@@ -323,30 +339,55 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         # regime_err_sep is ignored, always False
 
         if regime_lag_sep == True:
-            if not (set(cols2regi) == set([True]) and constant_regi == 'many'):
-                raise Exception("All variables must vary by regimes if regime_lag_sep = True.")
+            if not (set(cols2regi) == set([True]) and constant_regi == "many"):
+                raise Exception(
+                    "All variables must vary by regimes if regime_lag_sep = True."
+                )
             cols2regi += [True]
             w_i, regi_ids, warn = REGI.w_regimes(
-                w, regimes, self.regimes_set, transform=True, get_ids=True, min_n=len(cols2regi) + 1)
+                w,
+                regimes,
+                self.regimes_set,
+                transform=True,
+                get_ids=True,
+                min_n=len(cols2regi) + 1,
+            )
             set_warn(self, warn)
         else:
             cols2regi += [False]
 
-        if set(cols2regi) == set([True]) and constant_regi == 'many':
+        if set(cols2regi) == set([True]) and constant_regi == "many":
             self.y = y
-            self.ML_Lag_Regimes_Multi(y, x_constant, w_i, w, regi_ids,
-                                      cores=cores, cols2regi=cols2regi, method=method, epsilon=epsilon,
-                                      vm=vm, name_y=name_y, name_x=name_x,
-                                      name_regimes=self.name_regimes,
-                                      name_w=name_w, name_ds=name_ds)
+            self.ML_Lag_Regimes_Multi(
+                y,
+                x_constant,
+                w_i,
+                w,
+                regi_ids,
+                cores=cores,
+                cols2regi=cols2regi,
+                method=method,
+                epsilon=epsilon,
+                vm=vm,
+                name_y=name_y,
+                name_x=name_x,
+                name_regimes=self.name_regimes,
+                name_w=name_w,
+                name_ds=name_ds,
+            )
         else:
             # if regime_lag_sep == True:
             #    w = REGI.w_regimes_union(w, w_i, self.regimes_set)
-            x, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
-                                                         regimes, constant_regi, cols2regi=cols2regi[:-1], names=name_x)
+            x, self.name_x = REGI.Regimes_Frame.__init__(
+                self,
+                x_constant,
+                regimes,
+                constant_regi,
+                cols2regi=cols2regi[:-1],
+                names=name_x,
+            )
             self.name_x.append("_Global_" + USER.set_name_yend_sp(name_y))
-            BaseML_Lag.__init__(
-                self, y=y, x=x, w=w, method=method, epsilon=epsilon)
+            BaseML_Lag.__init__(self, y=y, x=x, w=w, method=method, epsilon=epsilon)
             self.kf += 1  # Adding a fixed k to account for spatial lag in Chow
             # adding a fixed k to account for spatial lag in aic, sc
             self.k += 1
@@ -354,15 +395,32 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
             self.regime_lag_sep = regime_lag_sep
-            self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES" + \
-                " (METHOD = " + method + ")"
-            SUMMARY.ML_Lag(
-                reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
+            self.title = (
+                "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"
+                + " (METHOD = "
+                + method
+                + ")"
+            )
+            SUMMARY.ML_Lag(reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
 
-    def ML_Lag_Regimes_Multi(self, y, x, w_i, w, regi_ids,
-                             cores, cols2regi, method, epsilon,
-                             vm, name_y, name_x,
-                             name_regimes, name_w, name_ds):
+    def ML_Lag_Regimes_Multi(
+        self,
+        y,
+        x,
+        w_i,
+        w,
+        regi_ids,
+        cores,
+        cols2regi,
+        method,
+        epsilon,
+        vm,
+        name_y,
+        name_x,
+        name_regimes,
+        name_w,
+        name_ds,
+    ):
         #        pool = mp.Pool(cores)
         results_p = {}
         """
@@ -374,16 +432,45 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work,args=(y,x,regi_ids,r,w_i[r],method,epsilon,name_ds,name_y,name_x,name_w,name_regimes, ))
                 is_win = False
         """
-        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        x_constant, name_x = REGI.check_const_regi(self, x, name_x, regi_ids)
         name_x = name_x + [USER.set_name_yend_sp(name_y)]
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
-                results_p[r] = pool.apply_async(_work, args=(y, x_constant, regi_ids, r, w_i[
-                                                r], method, epsilon, name_ds, name_y, name_x, name_w, name_regimes, ))
+                results_p[r] = pool.apply_async(
+                    _work,
+                    args=(
+                        y,
+                        x_constant,
+                        regi_ids,
+                        r,
+                        w_i[r],
+                        method,
+                        epsilon,
+                        name_ds,
+                        name_y,
+                        name_x,
+                        name_w,
+                        name_regimes,
+                    ),
+                )
             else:
                 results_p[r] = _work(
-                    *(y, x_constant, regi_ids, r, w_i[r], method, epsilon, name_ds, name_y, name_x, name_w, name_regimes))
+                    *(
+                        y,
+                        x_constant,
+                        regi_ids,
+                        r,
+                        w_i[r],
+                        method,
+                        epsilon,
+                        name_ds,
+                        name_y,
+                        name_x,
+                        name_w,
+                        name_regimes,
+                    )
+                )
 
         self.kryd = 0
         self.kr = len(cols2regi) + 1
@@ -420,32 +507,62 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 results[r] = results_p[r]
             else:
                 results[r] = results_p[r].get()
-            self.vm[(counter * self.kr):((counter + 1) * self.kr),
-                    (counter * self.kr):((counter + 1) * self.kr)] = results[r].vm
+            self.vm[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].vm
             self.betas[
-                (counter * self.kr):((counter + 1) * self.kr), ] = results[r].betas
-            self.u[regi_ids[r], ] = results[r].u
-            self.predy[regi_ids[r], ] = results[r].predy
-            self.predy_e[regi_ids[r], ] = results[r].predy_e
-            self.e_pred[regi_ids[r], ] = results[r].e_pred
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.predy_e[
+                regi_ids[r],
+            ] = results[r].predy_e
+            self.e_pred[
+                regi_ids[r],
+            ] = results[r].e_pred
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             counter += 1
         self.multi = results
         self.chow = REGI.Chow(self)
         SUMMARY.ML_Lag_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w)
+            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w
+        )
 
 
-def _work(y, x, regi_ids, r, w_r, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes):
+def _work(
+    y,
+    x,
+    regi_ids,
+    r,
+    w_r,
+    method,
+    epsilon,
+    name_ds,
+    name_y,
+    name_x,
+    name_w,
+    name_regimes,
+):
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
     model = BaseML_Lag(y_r, x_r, w_r, method=method, epsilon=epsilon)
-    model.title = "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIME " + \
-        str(r) + " (METHOD = " + method + ")"
+    model.title = (
+        "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIME "
+        + str(r)
+        + " (METHOD = "
+        + method
+        + ")"
+    )
     model.name_ds = name_ds
-    model.name_y = '%s_%s' % (str(r), name_y)
-    model.name_x = ['%s_%s' % (str(r), i) for i in name_x]
+    model.name_y = "%s_%s" % (str(r), name_y)
+    model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
     model.name_w = name_w
     model.name_regimes = name_regimes
     model.k += 1  # add 1 for proper df and aic, sc
@@ -456,31 +573,44 @@ def _work(y, x, regi_ids, r, w_r, method, epsilon, name_ds, name_y, name_x, name
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
+
 
 if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
-    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), 'r')
+
+    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), "r")
     ds_name = "baltim.dbf"
     y_name = "PRICE"
     y = np.array(db.by_col(y_name)).T
     y.shape = (len(y), 1)
-    x_names = ["NROOM", "NBATH", "PATIO", "FIREPL",
-               "AC", "GAR", "AGE", "LOTSZ", "SQFT"]
+    x_names = ["NROOM", "NBATH", "PATIO", "FIREPL", "AC", "GAR", "AGE", "LOTSZ", "SQFT"]
     x = np.array([db.by_col(var) for var in x_names]).T
     ww = ps.open(ps.examples.get_path("baltim_q.gal"))
     w = ww.read()
     ww.close()
     w_name = "baltim_q.gal"
-    w.transform = 'r'
+    w.transform = "r"
     regimes = db.by_col("CITCOU")
 
-    mllag = ML_Lag_Regimes(y, x, regimes, w=w, method='full', name_y=y_name, name_x=x_names,
-                           name_w=w_name, name_ds=ds_name, regime_lag_sep=True, constant_regi='many',
-                           name_regimes="CITCOU")
+    mllag = ML_Lag_Regimes(
+        y,
+        x,
+        regimes,
+        w=w,
+        method="full",
+        name_y=y_name,
+        name_x=x_names,
+        name_w=w_name,
+        name_ds=ds_name,
+        regime_lag_sep=True,
+        constant_regi="many",
+        name_regimes="CITCOU",
+    )
     print(mllag.summary)
