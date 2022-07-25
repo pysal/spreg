@@ -1,14 +1,12 @@
 # coding: utf-8
 from distutils.command.build_py import build_py
 from setuptools import setup
+import versioneer
 
 package = "spreg"
 
 with open("README.md", encoding="utf8") as file:
     long_description = file.read()
-
-with open("%s/__init__.py" % package, "r") as f:
-    exec(f.readline())
 
 
 def _get_requirements_from_files(groups_files):
@@ -38,14 +36,14 @@ def setup_package():
 
     setup(
         name=package,
-        version=__version__,
+        version=versioneer.get_version(),
         description="PySAL Spatial Econometrics Package",
         long_description=long_description,
         long_description_content_type="text/markdown",
         maintainer="PySAL Developers",
         maintainer_email="pysal-dev@googlegroups.com",
-        url="https://github.com/pysal/" + package,
-        download_url="https://pypi.python.org/pypi/%s" % package,
+        url=f"https://github.com/pysal/{package}",
+        download_url=f"https://pypi.python.org/pypi/{package}",
         license="BSD",
         py_modules=[package],
         packages=[package],
@@ -59,12 +57,13 @@ def setup_package():
             "Topic :: Scientific/Engineering :: GIS",
             "License :: OSI Approved :: BSD License",
             "Programming Language :: Python",
-            "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
         ],
         install_requires=install_reqs,
         extras_require=extras_reqs,
-        cmdclass={"build_py": build_py},
+        cmdclass=versioneer.get_cmdclass({"build_py": build_py}),
     )
 
 

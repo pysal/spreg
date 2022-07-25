@@ -11,7 +11,7 @@
 ## PySAL Spatial Econometrics Package
 
 `spreg`, short for “spatial regression,” is a Python package to estimate simultaneous autoregressive spatial regression models. These models are useful when modeling processes where observations interact with one another. 
-This package is part of a [refactoring of PySAL](https://github.com/pysal/pysal/wiki/PEP-13:-Refactor-PySAL-Using-Submodules)
+This package is part of a [refactoring of PySAL](https://github.com/pysal/pysal/wiki/PEP-13:-Refactor-PySAL-Using-Submodules).
 
 ## License information
 

@@ -1,4 +1,3 @@
-__version__ = "1.2.4"
 from .ols import *
 from .diagnostics import *
 from .diagnostics_panel import *
@@ -33,3 +32,7 @@ from .sp_panels import *
 from .panel_fe import *
 from .panel_re import *
 from .skater_reg import *
+
+from . import _version
+
+__version__ = _version.get_versions()["version"]
