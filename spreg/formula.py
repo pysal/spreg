@@ -9,6 +9,9 @@ Description
 - requires the user to have constructed a weights matrix first
     - i think this makes sense, as the functionality for this is well-documented and
       external to the actual running of the model
+
+TODO
+- intercept column being properly handled?
 """
 
 __author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
@@ -64,7 +67,10 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
         if y_name in fields:
             lag_model = True
             fields.remove(y_name)
+
+        # Default includes covariates and lags
         if len(fields) > 0:
+            parsed_formula += " + ".join(fields) + " + " 
             parsed_formula += expand_lag("w", fields)  # spatial weights matrix is w in this scope
         else:  # chomp hanging plus
             parsed_formula = parsed_formula[:-3]
