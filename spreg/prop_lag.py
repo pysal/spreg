@@ -89,7 +89,7 @@ class Lag(GenericModel):
             clik = nlsig2 - jacob
             return clik
 
-    def fit(self, method="full", yend=None, q=None, epsilon=1e-7):
+    def fit(self, method="gm", yend=None, q=None, epsilon=1e-7):
         method = method.lower()
         if method in ["full", "lu", "ord"]:
             self._fit_ml(method, epsilon)

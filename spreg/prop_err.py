@@ -204,7 +204,7 @@ class Error(GenericModel):
             (np.zeros((1, self.k)), self.vm1[0, 0] * np.ones((1, 1))))
 
         self.vm = np.vstack((vv, vv1))
-    def fit(self, method="full", epsilon=1e-7):
+    def fit(self, method="gm", epsilon=1e-7):
         method = method.lower()
         if method in ["full", "lu", "ord"]:
             self._fit_ml(method, epsilon)
