@@ -9,6 +9,7 @@ from . import summary_output as SUMMARY
 from . import robust as ROBUST
 from .utils import spdot, set_warn
 from .abstract_base import GenericModel
+from stargazer import Stargazer
 
 
 class OLS(GenericModel):

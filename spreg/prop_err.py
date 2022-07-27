@@ -39,7 +39,6 @@ class Error(GenericModel):
 
         # Assign data attributes
         super().__init__(X, y)
-        self.vm_flag = vm_flag
         self.w = w
 
     def err_c_loglik(self, lam, n, y, ylag, x, xlag, W):

@@ -33,11 +33,14 @@ spreg has...
 - seemingly-unrelated regression models
 - diagnostics
 """
+import .user_output as inputcheck
 
 
 class GenericModel:
     def __init__(self, X, y=None):
         # accepts dataset and spatial domain
+
+        inputcheck.check_arrays(X, y)
         self.X = X
         self.y = y
         self.N, self.D = X.shape
