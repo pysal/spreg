@@ -92,11 +92,11 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
         df = pd.DataFrame(df)
     y, X = model_matrix(parsed_formula, df)
     y = np.array(y)
-    X = np.array(X)
+    X = np.array(X.values[:, 1:])  # exclude intercept column (built-in for spreg)
 
     method = method.lower()
     if method not in ["gm", "full", "lu", "ord"]:
-        raise ValueError(f"Method must be in 'gm', 'full', 'lu', 'ord'; was {method}")
+        raise ValueError(f"Method must be 'gm', 'full', 'lu', 'ord'; was {method}")
 
     if not (err_model or lag_model):
         model = OLS(y, X, w=w, **kwargs)
@@ -151,18 +151,22 @@ if __name__ == "__main__":
     #-------------- Testing section ----------------#
     
     # Original OLS model, manually transformed fields
-    formula = "CMEDV ~ RMSQ + AGE + LOGDIS + LOGRAD + TAX + PTRATIO + TRANSB" + \
+    formula = "log(CMEDV) ~ RMSQ + AGE + LOGDIS + LOGRAD + TAX + PTRATIO + TRANSB" + \
               " + LOGSTAT + CRIM + ZN + INDUS + CHAS + NOXSQ"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True)
+    model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True,
+                                               name_y="CMEDV", name_x=fields)
     print(type(model))
     print(parsed_formula)
+    print(model.summary)
     
     # OLS model, fields transformed using formulaic
     formula = "log(CMEDV) ~ {RM**2} + AGE + log(DIS) + log(RAD) + TAX + PTRATIO" + \
               " + {B/1000} + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2}"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True)
+    model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True,
+                                               name_y="CMEDV", name_x=fields)
     print(type(model))
     print(parsed_formula)
+    print(model.summary)
 
     # SLX model
     # note that type(model) == spreg.OLS as SLX is just smoothing covars
@@ -171,12 +175,14 @@ if __name__ == "__main__":
     model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
     print(type(model))
     print(parsed_formula)
+    print(model.summary)
 
     # SLY model
     formula = "log(CMEDV) ~ {RM**2} + AGE + <log(CMEDV)>"
     model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
     print(type(model))
     print(parsed_formula)
+    print(model.summary)
 
     # Error model
     formula = "log(CMEDV) ~ {RM**2} + AGE + TAX + PTRATIO + {B/1000}" + \
@@ -184,6 +190,7 @@ if __name__ == "__main__":
     model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
     print(type(model))
     print(parsed_formula)
+    print(model.summary)
 
     # Error model with ML estimation
     formula = "log(CMEDV) ~ {RM**2} + AGE + TAX + PTRATIO + {B/1000}" + \
@@ -191,3 +198,4 @@ if __name__ == "__main__":
     model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
     print(type(model))
     print(parsed_formula)
+    print(model.summary)
