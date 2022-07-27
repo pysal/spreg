@@ -64,40 +64,40 @@ class GenericModel:
         pass
 
 
-class OLS(GenericModel):
-    def __init__(self, X, y):
-        super.__init__()
-
-    def _model(self, params):
-        return self.X @ params[1:] + params[0]
-
-    def _objective(self, params):
-        return np.sum((self._model(params) - self.y)**2)
-
-    def fit(self):
-        # optimize objective
-        pass
-
-    def summary(self):
-        # return results
-        pass
-
-
-class SLX(GenericModel):
-    def __init__(self, X, y):
-        super.__init__()
-
-    def _model(self, params):
-        return params[0] + self.X @ params[1:self.D + 1] + \
-            self.W @ self.X @ params[self.D + 1:]
-
-    def _objective(self, params):
-        return np.sum((self._model(params) - self.y)**2)
-
-    def fit(self):
-        # optimize objective
-        pass
-
-    def summary(self):
-        # return results
-        pass
+#class OLS(GenericModel):
+    #def __init__(self, X, y):
+        #super.__init__()
+#
+    #def _model(self, params):
+        #return self.X @ params[1:] + params[0]
+#
+    #def _objective(self, params):
+        #return np.sum((self._model(params) - self.y)**2)
+#
+    #def fit(self):
+        ## optimize objective
+        #pass
+#
+    #def summary(self):
+        ## return results
+        #pass
+#
+#
+#class SLX(GenericModel):
+    #def __init__(self, X, y):
+        #super.__init__()
+#
+    #def _model(self, params):
+        #return params[0] + self.X @ params[1:self.D + 1] + \
+            #self.W @ self.X @ params[self.D + 1:]
+#
+    #def _objective(self, params):
+        #return np.sum((self._model(params) - self.y)**2)
+#
+    #def fit(self):
+        ## optimize objective
+        #pass
+#
+    #def summary(self):
+        ## return results
+        #pass
