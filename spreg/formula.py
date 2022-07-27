@@ -195,7 +195,8 @@ if __name__ == "__main__":
     # Error model with ML estimation
     formula = "log(CMEDV) ~ {RM**2} + AGE + TAX + PTRATIO + {B/1000}" + \
               " + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2} + &"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
+    model, parsed_formula = spreg.from_formula(formula, boston_df, method="full",
+                                               w=weights, debug=True)
     print(type(model))
     print(parsed_formula)
     print(model.summary)
