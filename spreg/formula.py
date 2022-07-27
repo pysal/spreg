@@ -9,11 +9,9 @@ Description
 - requires the user to have constructed a weights matrix first
     - i think this makes sense, as the functionality for this is well-documented and
       external to the actual running of the model
-
-TODO
-- build dispatcher to combos? optimally, should accept sums of fields and &:
-    e.g., <FIELD + ... + FIELD> + & would be the most general format
 """
+
+__author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
 
 import numpy as np
 import pandas as pd
@@ -23,7 +21,9 @@ from .ols import OLS
 from .ml_lag import ML_Lag
 from .ml_error import ML_Error
 from .twosls_sp import GM_Lag
-from .error_sp import GM_Error
+from .error_sp import GM_Error, GM_Combo
+from .error_sp_hom import GM_Combo_Hom
+from .error_sp_het import GM_Combo_Het
 
 
 def noninplace_remove(lst, el):
@@ -100,6 +100,10 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
 
     if not (err_model or lag_model):
         model = OLS(y, X, w=w, **kwargs)
+    elif err_model and lag_model:
+        if method != "gm":
+            print("Can't use ML estimation for combo model, switching to GMM")
+        model = GM_Combo(y, X, w=w, **kwargs)
     elif lag_model:
         if method == "gm":
             model = GM_Lag(y, X, w=w, **kwargs)
