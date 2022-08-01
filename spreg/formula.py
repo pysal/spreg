@@ -1,19 +1,3 @@
-"""
-Description
-- adds R-style lm functionality for spatial lag and spatial error models
-- add <...> operator
-    - enclose lagged covariates or dependent var for assembly in model matrix
-    - usage: <FIELD> adds spatial lag of that field from df to model matrix
-- & adds spatial error component (& is not a reserved char in formulaic)
-- all terms and operators MUST be space delimited
-- requires the user to have constructed a weights matrix first
-    - i think this makes sense, as the functionality for this is well-documented and
-      external to the actual running of the model
-
-TODO
-- intercept column being properly handled?
-"""
-
 __author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
 
 import numpy as np
@@ -53,23 +37,60 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
     """
     Given a formula and a dataframe, parse the formula and return a configured
     `spreg` model.
- 
+    
+    Inputs
+    ------
+    
+    formula  : string
+               formula description following formulaic's grammar and the below syntax
+    df       : pandas.DataFrame or geopandas.GeoDataFrame
+               container with columns labelled according to the desired variables
+    w        : libpysal.weights.W
+               spatial weights matrix for spatial models. Default set to None.
+    method   : string
+               estimation method: "gm" for generalized method of moments,
+               "full" for brute force ML estimation, "lu" for ML estimation with
+               LU log Jacobian calculation, or "ord" for ML estimation with Ord
+               log Jacobian calculation. Default set to "gm".
+    debug    : boolean
+               if true, outputs the preprocessed formula alongside the spatial model.
+               Default set to False.
+    **kwargs : dictionary
+               additional keyword arguments to be passed to the underlying model class.
+
+
+    Description
+    -----------
     Syntax for the formulas is the same as `formulaic`, with two spatial operators added.
-    - The `<...>` operator:
-        - Enclose variables (covariates or response) in angle brackets to denote 
-          a spatial lag.
-        - `<` and `>` are not reserved characters in formulaic, so there are no conflicts.
-        - Usage: including `<FIELD>` in a formula adds the field and its spatial lag 
-          from the dataframe to the model matrix, unless `FIELD` is the y variable. In
-          that case, the code dispatches to the correct spatial lag estimation routine.
-        - Can use other transformations within `<...>`, 
-          e.g. `<{10*FIELD1} + FIELD2>` will be correctly parsed.
-    - The `&` symbol:
+
+    - The <...> operator:
+        - Enclose variables (covariates or response) in angle brackets to 
+          denote a spatial lag.
+        - `<` and `>` are not reserved characters in `formulaic` (the underlying 
+          formula parsing library), so there are no conflicts.
+        - **Usage:** include `<FIELD>` as a term in a formula string to add 
+          that field and its spatial lag field from the dataframe to model matrix.
+        - Can use other transformations within `<...>`, e.g. 
+          `<{10*FIELD1} + FIELD2>` will be correctly parsed.
+    - The & symbol:
         - Adds a spatial error component to a model.
         - `&` is not a reserved character in formulaic, so there are no conflicts.
-    - The parser accepts combinations of `<...>` and `&`: 
-      `<FIELD1 + ... + FIELDN> + &` is the most general possible spatial model available. 
-   
+        - **Usage:** include `&` as a term in a formula string to introduce 
+          a spatial error component in a model.
+
+    The parser accepts combinations of `<...>` and `&`: `<FIELD1 + ... + FIELDN> + &` 
+    is the most general possible spatial model available. Additionally, any 
+    transformations from [`formulaic`'s grammar](https://matthewwardrop.github.io/formulaic/concepts/grammar/) are admissible anywhere in the formula string.
+
+    Variable names do not need to be provided separately to the model classes 
+    (i.e., through the `name_x` and `name_y` keyword arguments) as they can be 
+    automatically detected from the formula string. This behavior can be overriden 
+    by passing `name_x` and `name_y` as keyword arguments, but this is **highly 
+    not recommended** as `formulaic` rearranges the variables when building the
+    model matrix. Variables which read ``w.sparse @ `FIELD` `` are the 
+    spatial lags of those fields (future TODO: make this prettier).
+    
+
     Examples
     --------
 
@@ -168,33 +189,42 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
     if spatial_model and w is None:
         raise ValueError("Requested spatial model but did not provide weights matrix")
 
+    # Remove intercept term from formulaic (spreg adds this already)
+    parsed_formula += " - 1"
+    
     # Assemble model matrices
     if type(df) == gpd.GeoDataFrame:
         df = pd.DataFrame(df)
     y, X = model_matrix(parsed_formula, df)
+
+    # Get names of parsed/transformed variables, overriding with
+    # kwarg names if they were provided
+    name_x = kwargs.pop("name_x") if "name_x" in kwargs else list(X.columns)  
+    name_y = kwargs.pop("name_y") if "name_y" in kwargs else y.columns[0]
+
     y = np.array(y)
-    X = np.array(X.values[:, 1:])  # exclude intercept column (built-in for spreg)
+    X = np.array(X)  
 
     method = method.lower()
     if method not in ["gm", "full", "lu", "ord"]:
         raise ValueError(f"Method must be 'gm', 'full', 'lu', 'ord'; was {method}")
 
     if not (err_model or lag_model):
-        model = OLS(y, X, w=w, **kwargs)
+        model = OLS(y, X, w=w, name_x=name_x, name_y=name_y, **kwargs)
     elif err_model and lag_model:
         if method != "gm":
             print("Can't use ML estimation for combo model, switching to GMM")
-        model = GM_Combo(y, X, w=w, **kwargs)
+        model = GM_Combo(y, X, w=w, name_x=name_x, name_y=name_y, **kwargs)
     elif lag_model:
         if method == "gm":
-            model = GM_Lag(y, X, w=w, **kwargs)
+            model = GM_Lag(y, X, w=w, name_x=name_x, **kwargs)
         else:
-            model = ML_Lag(y, X, w=w, method=method, **kwargs)
+            model = ML_Lag(y, X, w=w, method=method, name_x=name_x, name_y=name_y, **kwargs)
     elif err_model:
         if method == "gm":
-            model = GM_Error(y, X, w=w, **kwargs)
+            model = GM_Error(y, X, w=w, name_x=name_x, name_y=name_y, **kwargs)
         else:
-            model = ML_Error(y, X, w=w, method=method, **kwargs)
+            model = ML_Error(y, X, w=w, method=method, name_x=name_x, name_y=name_y, **kwargs)
 
     if debug:
         return model, parsed_formula
@@ -239,7 +269,7 @@ if __name__ == "__main__":
     formula = "log(CMEDV) ~ RMSQ + AGE + LOGDIS + LOGRAD + TAX + PTRATIO + TRANSB" + \
               " + LOGSTAT + CRIM + ZN + INDUS + CHAS + NOXSQ"
     model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True,
-                                               name_y="CMEDV", name_x=fields)
+                                               name_y="LCMEDV", name_x=fields)
     print(type(model))
     print(parsed_formula)
     print(model.summary)
