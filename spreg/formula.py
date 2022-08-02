@@ -142,6 +142,10 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
         [ 8.4226000e-02,  9.3287700e-01]])
     """
 
+    # Error checking. Minimum formula size is 5, e.g. "a ~ b"
+    if type(formula) != str or len(formula) < 5:
+        raise ValueError("Malformed formula string")
+    
     lag_start_idx = formula.find("<")
     lag_end_idx = -1
     parsed_formula = formula[:lag_start_idx] if lag_start_idx >= 0 else ""
