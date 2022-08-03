@@ -8,9 +8,9 @@ from .ols import OLS
 from .ml_lag import ML_Lag
 from .ml_error import ML_Error
 from .twosls_sp import GM_Lag
-from .error_sp import GM_Error, GM_Combo
-from .error_sp_hom import GM_Combo_Hom
-from .error_sp_het import GM_Combo_Het
+from .error_sp import GM_Error, GM_Endog_Error, GM_Combo
+from .error_sp_hom import GM_Error_Hom, GM_Endog_Error_Hom, GM_Combo_Hom
+from .error_sp_het import GM_Error_Het, GM_Endog_Error_Het, GM_Combo_Het
 
 
 def noninplace_remove(lst, el):
@@ -33,7 +33,8 @@ def expand_lag(w_name, fields):
     return " + ".join(output)
 
 
-def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
+def from_formula(formula, df, w=None, method="gm", skedastic=None,
+                 debug=False, **kwargs):
     """
     Given a formula and a dataframe, parse the formula and return a configured
     `spreg` model.
@@ -52,6 +53,10 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
                "full" for brute force ML estimation, "lu" for ML estimation with
                LU log Jacobian calculation, or "ord" for ML estimation with Ord
                log Jacobian calculation. Default set to "gm".
+    skedastic: string
+               specifies form of skedasticity in an error term. "het" for 
+               heteroskedastic spatial error, "hom" for homoskedastic spatial error.
+               Default set to None (regular spatial error estimation).
     debug    : boolean
                if true, outputs the preprocessed formula alongside the spatial model.
                Default set to False.
@@ -84,11 +89,9 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
 
     Variable names do not need to be provided separately to the model classes 
     (i.e., through the `name_x` and `name_y` keyword arguments) as they can be 
-    automatically detected from the formula string. This behavior can be overriden 
-    by passing `name_x` and `name_y` as keyword arguments, but this is **highly 
-    not recommended** as `formulaic` rearranges the variables when building the
-    model matrix. Variables which read ``w.sparse @ `FIELD` `` are the 
-    spatial lags of those fields (future TODO: make this prettier).
+    automatically detected from the formula string. Variables which read 
+    ``w.sparse @ `FIELD` `` are the spatial lags of those fields 
+    (future TODO: make this prettier).
     
 
     Examples
@@ -201,10 +204,10 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
         df = pd.DataFrame(df)
     y, X = model_matrix(parsed_formula, df)
 
-    # Get names of parsed/transformed variables, overriding with
-    # kwarg names if they were provided
-    name_x = kwargs.pop("name_x") if "name_x" in kwargs else list(X.columns)  
-    name_y = kwargs.pop("name_y") if "name_y" in kwargs else y.columns[0]
+    # Get names of parsed/transformed variables and remove
+    # names from kwargs if provided
+    kwargs["name_x"] = list(X.columns)
+    kwargs["name_y"] = y.columns[0]
 
     y = np.array(y)
     X = np.array(X)  
@@ -214,21 +217,44 @@ def from_formula(formula, df, w=None, method="gm", debug=False, **kwargs):
         raise ValueError(f"Method must be 'gm', 'full', 'lu', 'ord'; was {method}")
 
     if not (err_model or lag_model):
-        model = OLS(y, X, w=w, name_x=name_x, name_y=name_y, **kwargs)
+        model = OLS(y, X, w=w, **kwargs)
     elif err_model and lag_model:
         if method != "gm":
             print("Can't use ML estimation for combo model, switching to GMM")
-        model = GM_Combo(y, X, w=w, name_x=name_x, name_y=name_y, **kwargs)
+
+        if skedastic == "het":
+            model = GM_Combo_Het(y, X, w=w, **kwargs)
+        elif skedastic == "hom":
+            model = GM_Combo_Hom(y, X, w=w, **kwargs)
+        else:
+            model = GM_Combo(y, X, w=w, **kwargs)
     elif lag_model:
         if method == "gm":
-            model = GM_Lag(y, X, w=w, name_x=name_x, **kwargs)
+            model = GM_Lag(y, X, w=w, **kwargs)
         else:
-            model = ML_Lag(y, X, w=w, method=method, name_x=name_x, name_y=name_y, **kwargs)
+            model = ML_Lag(y, X, w=w, method=method, **kwargs)
     elif err_model:
         if method == "gm":
-            model = GM_Error(y, X, w=w, name_x=name_x, name_y=name_y, **kwargs)
+            if skedastic == "het":
+                if "yend" in kwargs:
+                    model = GM_Endog_Error_Het(y, X, kwargs["yend"], kwargs["q"],
+                                               w=w, **kwargs)
+                else:
+                    model = GM_Error_Het(y, X, w=w, **kwargs)
+            elif skedastic == "hom":
+                if "yend" in kwargs:
+                    model = GM_Endog_Error_Hom(y, X, kwargs["yend"], kwargs["q"],
+                                               w=w, **kwargs)
+                else:
+                    model = GM_Error_Hom(y, X, w=w, **kwargs)
+            else:
+                if "yend" in kwargs:
+                    model = GM_Endog_Error(y, X, kwargs["yend"], kwargs["q"],
+                                           w=w, **kwargs)
+                else:
+                    model = GM_Error(y, X, w=w, **kwargs)
         else:
-            model = ML_Error(y, X, w=w, method=method, name_x=name_x, name_y=name_y, **kwargs)
+            model = ML_Error(y, X, w=w, method=method, **kwargs)
 
     if debug:
         return model, parsed_formula
