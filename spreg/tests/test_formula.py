@@ -48,7 +48,7 @@ class TestFormula(unittest.TestCase):
         formula = "log(CMEDV) ~ ZN + RM"
         model = spreg.from_formula(formula, self.boston_df, robust="white")
         self.assertEqual(model.robust, "white")
-        
+
         # Lag formula
         formula = "log(CMEDV) ~ ZN + RM + <log(CMEDV)>"
         model = spreg.from_formula(formula, self.boston_df, sig2n_k=True)
@@ -68,13 +68,11 @@ class TestFormula(unittest.TestCase):
         formula = "log(CMEDV) ~ ZN + AGE + RM"
         model = spreg.from_formula(formula, self.boston_df)
         self.assertEqual(type(model), spreg.OLS)
-        # TODO add numerical checks
 
     def test_nonspatial_formula_with_transforms(self):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2}"
         model = spreg.from_formula(formula, self.boston_df)
         self.assertEqual(type(model), spreg.OLS)
-        # TODO add numerical checks
 
     def test_field_not_found(self):
         with self.assertRaises(KeyError):
@@ -84,53 +82,43 @@ class TestFormula(unittest.TestCase):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <CRIM>"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.OLS)
-        # TODO add numerical checks
 
     def test_spatial_lag_y(self):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <log(CMEDV)>"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.GM_Lag)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
         self.assertEqual(type(model), spreg.ML_Lag)
-        # TODO add numerical checks
 
     def test_spatial_error(self):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + &"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.GM_Error)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
         self.assertEqual(type(model), spreg.ML_Error)
-        # TODO add numerical checks
 
     def test_slx_sly(self):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <INDUS + log(CMEDV)>"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.GM_Lag)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
         self.assertEqual(type(model), spreg.ML_Lag)
-        # TODO add numerical checks
 
     def test_slx_error(self):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <INDUS> + &"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.GM_Error)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
         self.assertEqual(type(model), spreg.ML_Error)
-        # TODO add numerical checks
 
     def test_sly_error(self):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <log(CMEDV)> + &"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.GM_Combo)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
         self.assertEqual(type(model), spreg.GM_Combo)
@@ -139,7 +127,6 @@ class TestFormula(unittest.TestCase):
         formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <INDUS + log(CMEDV)> + &"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights)
         self.assertEqual(type(model), spreg.GM_Combo)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
         self.assertEqual(type(model), spreg.GM_Combo)
@@ -148,7 +135,7 @@ class TestFormula(unittest.TestCase):
         with self.assertRaises(formulaic.errors.FormulaSyntaxError):
             model = spreg.from_formula("log(CMEDV) ~ ZN + & + &", self.boston_df,
                                        w=self.weights)
-    
+
         with self.assertRaises(formulaic.errors.FormulaSyntaxError):
             model = spreg.from_formula("log(CMEDV) ~ <ZN + <AGE>>", self.boston_df,
                                        w=self.weights)
@@ -158,12 +145,10 @@ class TestFormula(unittest.TestCase):
         model = spreg.from_formula(formula, self.boston_df, w=self.weights,
                                    skedastic="het")
         self.assertEqual(type(model), spreg.GM_Error_Het)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights,
                                    skedastic="hom")
         self.assertEqual(type(model), spreg.GM_Error_Hom)
-        # TODO add numerical checks
 
     def test_endog_het_hom(self):
         formula = "log(CMEDV) ~ ZN + AGE + &"
@@ -174,24 +159,20 @@ class TestFormula(unittest.TestCase):
         model = spreg.from_formula(formula, self.boston_df, w=self.weights,
                                    skedastic="het", yend=self.boston_df["INDUS"])
         self.assertEqual(type(model), spreg.GM_Endog_Error_Het)
-        # TODO add numerical checks
 
         model = spreg.from_formula(formula, self.boston_df, w=self.weights,
                                    skedastic="hom", yend=self.boston_df["INDUS"])
         self.assertEqual(type(model), spreg.GM_Endog_Error_Hom)
-        # TODO add numerical checks
 
     def test_combo_het_hom(self):
         formula = "log(CMEDV) ~ ZN + AGE + <{10*NOX} + log(CMEDV)> + &"
         model = spreg.from_formula(formula, self.boston_df, w=self.weights,
                                    skedastic="het")
         self.assertEqual(type(model), spreg.GM_Combo_Het)
-        # TODO add numerical checks
-        
+
         model = spreg.from_formula(formula, self.boston_df, w=self.weights,
                                    skedastic="hom")
         self.assertEqual(type(model), spreg.GM_Combo_Hom)
-        # TODO add numerical checks
 
 
 if __name__ == "__main__":
