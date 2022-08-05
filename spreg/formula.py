@@ -68,7 +68,7 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
     -----------
     Syntax for the formulas is the same as `formulaic`, with two spatial operators added.
 
-    - The <...> operator:
+    - The `<...>` operator:
         - Enclose variables (covariates or response) in angle brackets to 
           denote a spatial lag.
         - `<` and `>` are not reserved characters in `formulaic` (the underlying 
@@ -77,7 +77,7 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
           that field and its spatial lag field from the dataframe to model matrix.
         - Can use other transformations within `<...>`, e.g. 
           `<{10*FIELD1} + FIELD2>` will be correctly parsed.
-    - The & symbol:
+    - The `&` symbol:
         - Adds a spatial error component to a model.
         - `&` is not a reserved character in formulaic, so there are no conflicts.
         - **Usage:** include `&` as a term in a formula string to introduce 
@@ -92,6 +92,9 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
     automatically detected from the formula string. Variables which read 
     ``w.sparse @ `FIELD` `` are the spatial lags of those fields 
     (future TODO: make this prettier).
+
+    Finally, if `yend` is included as a keyword argument for an error model,
+    the dispatcher will send it to the correct endogenous error model.
     
 
     Examples
@@ -345,3 +348,11 @@ if __name__ == "__main__":
     print(type(model))
     print(parsed_formula)
     print(model.summary)
+
+
+    #-------------- Regimes testing ----------------#
+    # Set up some regimes
+    from spopt.region import RegionKMeansHeuristic
+    kmeans = RegionKMeansHeuristic(boston_df[fields].values, 5, weights)
+    kmeans.solve()
+    boston_df["regime"] = kmeans.labels_
