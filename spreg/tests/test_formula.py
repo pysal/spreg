@@ -1,6 +1,3 @@
-import os
-os.chdir("../..")
-
 import unittest
 import numpy as np
 import pandas as pd
@@ -9,7 +6,6 @@ import spreg
 import formulaic
 from libpysal.examples import load_example
 from libpysal.weights import Kernel, fill_diagonal
-from libpysal.common import RTOL
 
 
 class TestFormula(unittest.TestCase):
@@ -156,6 +152,47 @@ class TestFormula(unittest.TestCase):
         with self.assertRaises(formulaic.errors.FormulaSyntaxError):
             model = spreg.from_formula("log(CMEDV) ~ <ZN + <AGE>>", self.boston_df,
                                        w=self.weights)
+
+    def test_het_hom(self):
+        formula = "log(CMEDV) ~ ZN + AGE + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="het")
+        self.assertEqual(type(model), spreg.GM_Error_Het)
+        # TODO add numerical checks
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="hom")
+        self.assertEqual(type(model), spreg.GM_Error_Hom)
+        # TODO add numerical checks
+
+    def test_endog_het_hom(self):
+        formula = "log(CMEDV) ~ ZN + AGE + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   yend=self.boston_df["INDUS"])
+        self.assertEqual(type(model), spreg.GM_Endog_Error_Het)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="het", yend=self.boston_df["INDUS"])
+        self.assertEqual(type(model), spreg.GM_Endog_Error_Het)
+        # TODO add numerical checks
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="hom", yend=self.boston_df["INDUS"])
+        self.assertEqual(type(model), spreg.GM_Endog_Error_Hom)
+        # TODO add numerical checks
+
+    def test_combo_het_hom(self):
+        formula = "log(CMEDV) ~ ZN + AGE + <{10*NOX} + log(CMEDV)> + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="het")
+        self.assertEqual(type(model), spreg.GM_Combo_Het)
+        # TODO add numerical checks
+        
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="hom")
+        self.assertEqual(type(model), spreg.GM_Combo_Hom)
+        # TODO add numerical checks
+
 
 if __name__ == "__main__":
     unittest.main()
