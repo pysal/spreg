@@ -51,7 +51,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
     Attributes
     ----------
     betas        : array
-                   (k+1)x1 array of estimated coefficients (rho last)
+                   (k+1)x1 array of estimated coefficients (rho first)
     rho          : float
                    estimate of spatial autoregressive coefficient
     u            : array
@@ -324,7 +324,7 @@ class ML_Lag(BaseML_Lag):
     Attributes
     ----------
     betas        : array
-                   (k+1)x1 array of estimated coefficients (rho last)
+                   (k+1)x1 array of estimated coefficients (rho first)
     rho          : float
                    estimate of spatial autoregressive coefficient
     u            : array
