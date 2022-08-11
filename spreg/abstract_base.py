@@ -33,7 +33,7 @@ spreg has...
 - seemingly-unrelated regression models
 - diagnostics
 """
-import .user_output as inputcheck
+# import .user_output as inputcheck
 
 
 class GenericModel:

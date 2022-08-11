@@ -35,7 +35,5 @@ from .panel_re import *
 from .skater_reg import *
 
 #-------------- NEW IMPORTS --------------#
-from .prop_ols import OLS
 from .prop_lag import Lag
 from .prop_err import Error
-from .formula_tools import from_formula
