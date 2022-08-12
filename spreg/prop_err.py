@@ -1,10 +1,16 @@
+__author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
+
+"""
+Implement spatial error model in the format of scikit-learn
+current goal is to make this work on its own, then progress down dependencies
+"""
+
 import numpy as np
 from .utils import optim_moments, get_spFilter
 from .sputils import spdot
 from sklearn.base import RegressorMixin
-from sklearn.utils.validation import check_is_fitted
-from sklearn.utils.extmath import safe_sparse_dot
-from sklearn.linear_model._base import LinearModel
+from sklearn.linear_model._base import LinearModel, _preprocess_data
+
 
 class Error(RegressorMixin, LinearModel):
     def __init__(self, w=None, fit_intercept=True, method="gm"):
@@ -15,14 +21,25 @@ class Error(RegressorMixin, LinearModel):
     def fit(self, X, y):
         # Input validation
         X, y = self._validate_data(X, y, accept_sparse=True, y_numeric=True)
+        if self.w is None:
+            raise ValueError("w must be libpysal.weights.W object")
+        #X, y, X_offset, y_offset, X_scale = _preprocess_data(X, y,
+                                                             #self.fit_intercept,
+                                                             #copy=True)
+
+        if self.fit_intercept:
+            X = np.insert(X, 0, np.ones((X.shape[0],)), axis=1)
 
         if self.method == "gm":
-            return self._fit_gm(X, y)
+            self._fit_gm(X, y)
         elif self.method in ["full", "lu", "ord"]:
-            return self._fit_ml(X, y)
+            self._fit_ml(X, y)
         else:
             raise ValueError(f"Method was {self.method}, choose 'gm', 'full'," +
                              " 'lu', or 'ord'")
+
+        #self._set_intercept(X_offset, y_offset, X_scale)
+        return self
 
     def _fit_gm(self, X, y):
         def ols(X, y):
@@ -36,16 +53,19 @@ class Error(RegressorMixin, LinearModel):
         ols1 = ols(X, y)
         
         # Next, do generalized method of moments to calculate the error effect
-        print(np.dot(X, ols1.T) - y)
-        moments = _moments_gm_error(self.w, np.dot(X, ols1.T) - y)
-        self.indir_coefs_ = optim_moments(moments)
+        ols1_errors = (np.dot(X, ols1.T) - y).reshape(-1, 1)
+        moments = _moments_gm_error(self.w, ols1_errors)
+        self.indir_coef_ = optim_moments(moments)
 
         # Generate estimated direct effects by filtering the variables
-        xs = get_spFilter(w, lambda1, X)
-        ys = get_spFilter(w, lambda1, y)
-        self.dir_coefs_ = ols(xs, ys)
+        xs = get_spFilter(self.w, self.indir_coef_, X)
+        ys = get_spFilter(self.w, self.indir_coef_, y)
+        params_ = ols(xs, ys)
+        self.intercept_ = params_[0]
+        self.coef_ = params_[1:]
 
-        return self
+    def _fit_ml(self, X, y):
+        pass
 
 
 def _moments_gm_error(w, u):
@@ -89,8 +109,9 @@ if __name__ == "__main__":
     boston_df["TRANSB"] = boston_df["B"].values / 1000
     boston_df["LOGSTAT"] = np.log(boston_df["LSTAT"].values)
 
-    fields = ["RMSQ", "AGE", "LOGDIS", "LOGRAD", "TAX", "PTRATIO",
-              "TRANSB", "LOGSTAT", "CRIM", "ZN", "INDUS", "CHAS", "NOXSQ"]
+    #fields = ["RMSQ", "AGE", "LOGDIS", "LOGRAD", "TAX", "PTRATIO",
+              #"TRANSB", "LOGSTAT", "CRIM", "ZN", "INDUS", "CHAS", "NOXSQ"]
+    fields = ["RMSQ", "CRIM"]
     X = boston_df[fields].values
     y = np.log(boston_df["CMEDV"].values)  # predict log corrected median house prices from covars
 
@@ -99,3 +120,9 @@ if __name__ == "__main__":
 
     model = spreg.Error(w=weights)
     model.fit(X, y)
+    print(model.intercept_)
+    print(model.coef_)
+    print(model.indir_coef_)
+
+    old_model = spreg.GM_Error(y, X, weights)
+    print(old_model.betas)
