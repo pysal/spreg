@@ -17,31 +17,29 @@ class Error(RegressorMixin, LinearModel):
         self.w = w
         self.fit_intercept = fit_intercept
         self.method = method
-
-    def fit(self, X, y):
+        
+    def fit(self, X, y, yend=None, q=None):
         # Input validation
         X, y = self._validate_data(X, y, accept_sparse=True, y_numeric=True)
+        y = y.reshape(-1, 1)  # ensure vector TODO FORMALIZE THIS
+
         if self.w is None:
             raise ValueError("w must be libpysal.weights.W object")
-        #X, y, X_offset, y_offset, X_scale = _preprocess_data(X, y,
-                                                             #self.fit_intercept,
-                                                             #copy=True)
 
         if self.fit_intercept:
             X = np.insert(X, 0, np.ones((X.shape[0],)), axis=1)
 
         if self.method == "gm":
-            self._fit_gm(X, y)
+            self._fit_gm(X, y, yend, q)
         elif self.method in ["full", "lu", "ord"]:
             self._fit_ml(X, y)
         else:
             raise ValueError(f"Method was {self.method}, choose 'gm', 'full'," +
                              " 'lu', or 'ord'")
 
-        #self._set_intercept(X_offset, y_offset, X_scale)
         return self
 
-    def _fit_gm(self, X, y):
+    def _fit_gm(self, X, y, yend, q):
         def ols(X, y):
             xtx = spdot(X.T, X)
             xty = spdot(X.T, y)
@@ -49,46 +47,65 @@ class Error(RegressorMixin, LinearModel):
             xtxi = np.linalg.inv(xtx)
             return np.dot(xtxi, xty)
 
-        # First, fit an OLS
-        ols1 = ols(X, y)
+        def tsls(X, y, yend, q):
+            z = sphstack(X, yend)
+            h = sphstack(X, q)
+            hth = spdot(h.T, h)
+            hthi = np.linalg.inv(hth)
+            zth = spdot(z.T, h)
+            hty = spdot(h.T, y)
+
+            factor_1 = np.dot(zth, hthi)
+            factor_3 = np.dot(varb, factor_1)
+            return np.dot(factor_3, hty)
+
+        # First stage
+        if yend is not None:
+            stage1 = tsls(X, y)
+        else:
+            stage1 = ols(X, y)
         
         # Next, do generalized method of moments to calculate the error effect
-        ols1_errors = (np.dot(X, ols1.T) - y).reshape(-1, 1)
-        moments = _moments_gm_error(self.w, ols1_errors)
+        stage1_errors = (np.dot(X, stage1) - y).reshape(-1, 1)
+        moments = self._moments_gm_error(self.w, stage1_errors)
         self.indir_coef_ = optim_moments(moments)
 
         # Generate estimated direct effects by filtering the variables
         xs = get_spFilter(self.w, self.indir_coef_, X)
         ys = get_spFilter(self.w, self.indir_coef_, y)
-        params_ = ols(xs, ys)
+
+        if yend is not None:
+            yend_s = get_spFilter(self.w, self.indir_coef_, yend)
+            params_ = tsls(xs, ys, yends, q)
+        else:
+            params_ = ols(xs, ys)
         self.intercept_ = params_[0]
         self.coef_ = params_[1:]
 
     def _fit_ml(self, X, y):
-        pass
+        raise ValueError("Unimplemented")
 
-
-def _moments_gm_error(w, u):
-    try:
-        wsparse = w.sparse
-    except:
-        wsparse = w
-    n = wsparse.shape[0]
-    u2 = np.dot(u.T, u)
-    wu = wsparse * u
-    uwu = np.dot(u.T, wu)
-    wu2 = np.dot(wu.T, wu)
-    wwu = wsparse * wu
-    uwwu = np.dot(u.T, wwu)
-    wwu2 = np.dot(wwu.T, wwu)
-    wuwwu = np.dot(wu.T, wwu)
-    wtw = wsparse.T * wsparse
-    trWtW = np.sum(wtw.diagonal())
-    g = np.array([[u2[0][0], wu2[0][0], uwu[0][0]]]).T / n
-    G = np.array(
-        [[2 * uwu[0][0], -wu2[0][0], n], [2 * wuwwu[0][0], -wwu2[0][0], trWtW],
-         [uwwu[0][0] + wu2[0][0], -wuwwu[0][0], 0.]]) / n
-    return [G, g]
+    def _moments_gm_error(w, u):
+        try:
+            wsparse = w.sparse
+        except:
+            wsparse = w
+        n = wsparse.shape[0]
+        u2 = np.dot(u.T, u)
+        wu = wsparse * u
+        uwu = np.dot(u.T, wu)
+        wu2 = np.dot(wu.T, wu)
+        wwu = wsparse * wu
+        uwwu = np.dot(u.T, wwu)
+        wwu2 = np.dot(wwu.T, wwu)
+        wuwwu = np.dot(wu.T, wwu)
+        wtw = wsparse.T * wsparse
+        trWtW = np.sum(wtw.diagonal())
+        g = np.array([[u2[0][0], wu2[0][0], uwu[0][0]]]).T / n
+        G = np.array(
+            [[2 * uwu[0][0], -wu2[0][0], n], [2 * wuwwu[0][0], -wwu2[0][0], trWtW],
+            [uwwu[0][0] + wu2[0][0], -wuwwu[0][0], 0.]]) / n
+        return [G, g]
 
 
 if __name__ == "__main__":
@@ -109,8 +126,6 @@ if __name__ == "__main__":
     boston_df["TRANSB"] = boston_df["B"].values / 1000
     boston_df["LOGSTAT"] = np.log(boston_df["LSTAT"].values)
 
-    #fields = ["RMSQ", "AGE", "LOGDIS", "LOGRAD", "TAX", "PTRATIO",
-              #"TRANSB", "LOGSTAT", "CRIM", "ZN", "INDUS", "CHAS", "NOXSQ"]
     fields = ["RMSQ", "CRIM"]
     X = boston_df[fields].values
     y = np.log(boston_df["CMEDV"].values)  # predict log corrected median house prices from covars

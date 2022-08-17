@@ -1,5 +1,8 @@
+__author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
+
 """
-Proposed Lag model interface
+Implement spatial lag model in the format of scikit-learn
+current goal is to make this work on its own, then progress down dependencies
 """
 
 import numpy as np
@@ -61,7 +64,7 @@ class Lag(RegressorMixin, LinearModel):
         self.indir_coef_ = params[-1]
     
     def _fit_ml(self, X, y):
-        pass
+        raise ValueError("Unimplemented")
 
 if __name__ == "__main__":
     import spreg
@@ -81,8 +84,6 @@ if __name__ == "__main__":
     boston_df["TRANSB"] = boston_df["B"].values / 1000
     boston_df["LOGSTAT"] = np.log(boston_df["LSTAT"].values)
 
-    #fields = ["RMSQ", "AGE", "LOGDIS", "LOGRAD", "TAX", "PTRATIO",
-              #"TRANSB", "LOGSTAT", "CRIM", "ZN", "INDUS", "CHAS", "NOXSQ"]
     fields = ["RMSQ", "CRIM"]
     X = boston_df[fields].values
     y = np.log(boston_df["CMEDV"].values)  # predict log corrected median house prices from covars
