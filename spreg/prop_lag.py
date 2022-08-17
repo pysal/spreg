@@ -9,6 +9,8 @@ import numpy as np
 from .utils import set_endog
 from .sputils import spdot, sphstack
 from sklearn.base import RegressorMixin
+from sklearn.utils.extmath import safe_sparse_dot
+from sklearn.utils.validation import check_is_fitted
 from sklearn.linear_model._base import LinearModel
 
 
@@ -17,6 +19,13 @@ class Lag(RegressorMixin, LinearModel):
         self.w = w
         self.fit_intercept = fit_intercept
         self.method = method
+
+    def _decision_function(self, X, y):
+        check_is_fitted(self)
+
+        X, y = self._validate_data(X, y, accept_sparse=True)
+        return safe_sparse_dot(X, self.coef_.T, dense_output=True) + self.intercept_ \
+            + self.indir_coef_ * spdot(self.w, y)
 
     def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True):
         # Input validation
