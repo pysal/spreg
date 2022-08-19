@@ -6,19 +6,21 @@ current goal is to make this work on its own, then progress down dependencies
 """
 
 import numpy as np
+from scipy import sparse as sp
 from .utils import set_endog
-from .sputils import spdot, sphstack
+from .sputils import spdot, sphstack, spfill_diagonal
 from sklearn.base import RegressorMixin
 from sklearn.utils.extmath import safe_sparse_dot
 from sklearn.utils.validation import check_is_fitted
 from sklearn.linear_model._base import LinearModel
+from libpysal.weights import lag_spatial
+from scipy.optimize import minimize_scalar
 
 
 class Lag(RegressorMixin, LinearModel):
-    def __init__(self, w=None, fit_intercept=True, method="gm"):
+    def __init__(self, w=None, fit_intercept=True):
         self.w = w
         self.fit_intercept = fit_intercept
-        self.method = method
 
     def _decision_function(self, X, y):
         check_is_fitted(self)
@@ -27,7 +29,7 @@ class Lag(RegressorMixin, LinearModel):
         return safe_sparse_dot(X, self.coef_.T, dense_output=True) + self.intercept_ \
             + self.indir_coef_ * spdot(self.w, y)
 
-    def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True):
+    def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True, method="gm", epsilon=1e-7):
         # Input validation
         X, y = self._validate_data(X, y, accept_sparse=True, y_numeric=True)
         y = y.reshape(-1, 1)  # ensure vector TODO FORMALIZE THIS
@@ -38,10 +40,10 @@ class Lag(RegressorMixin, LinearModel):
         if self.fit_intercept:
             X = np.insert(X, 0, np.ones((X.shape[0],)), axis=1)
 
-        if self.method == "gm":
+        if method == "gm":
             self._fit_gm(X, y, yend, q, w_lags, lag_q)
-        elif self.method in ["full", "lu", "ord"]:
-            self._fit_ml(X, y)
+        elif method in ["full", "lu", "ord"]:
+            self._fit_ml(X, y, method, epsilon)
         else:
             raise ValueError(f"Method was {self.method}, choose 'gm', 'full'," +
                              "'lu', or 'ord'")
@@ -66,14 +68,75 @@ class Lag(RegressorMixin, LinearModel):
         # this one needs to be in cache to be used in AK
         varb = np.linalg.inv(factor_2)
         factor_3 = np.dot(varb, factor_1)
-        params = np.dot(factor_3, hty)
+        params_ = np.dot(factor_3, hty)
 
-        self.intercept_ = params[0]
-        self.coef_ = params[1:-1]
-        self.indir_coef_ = params[-1]
+        if self.fit_intercept:
+            self.coef_ = params_[1:-1]
+            self.intercept_ = params_[0]
+        else:
+            self.coef_ = params_[:-1]
+        self.indir_coef_ = params_[-1]
     
-    def _fit_ml(self, X, y):
-        raise ValueError("Unimplemented")
+    def _fit_ml(self, X, y, method, epsilon):
+        ylag = lag_spatial(self.w, y)
+        xtx = spdot(X.T, X)
+        xtxi = np.linalg.inv(xtx)
+        xty = spdot(X.T, y)
+        xtyl = spdot(X.T, ylag)
+        b0 = spdot(xtxi, xty)
+        b1 = spdot(xtxi, xtyl)
+        e0 = y - spdot(X, b0)
+        e1 = ylag - spdot(X, b1)
+
+        print("ml")
+        # Create eigenvalues before minimizing
+        if method == "ord" and self.w.asymmetry(intrinsic=False) == []:
+            ww = symmetrize(self.w)
+            WW = np.array(ww.todense())
+            evals = np.linalg.eigvalsh(WW)
+        elif method != "ord":
+            evals = None
+        else:
+            evals = np.linalg.eigvals(self.w.full()[0])
+
+        res = minimize_scalar(self._log_likelihood, bounds=(-1.0, 1.0),
+                              args=(e0, e1, evals, method), method="bounded",
+                              tol=epsilon)
+
+        self.indir_coef_ = res.x[0][0]
+        params_ = b0 - self.indir_coef_ * b1
+
+        if self.fit_intercept:
+            self.coef_ = params_[1:]
+            self.intercept_ = params_[0]
+        else:
+            self.coef_ = params_
+
+    def _log_likelihood(self, rho, e0, e1, evals, method):
+        n = self.w.n
+        er = e0 - rho * e1
+        sig2 = spdot(er.T, er) / n
+        nlsig2 = (n / 2.0) * np.log(sig2)
+
+        if method == "full":
+            a = -rho * self.w.full()[0]
+            spfill_diagonal(a, 1.0)
+            jacob = np.log(np.linalg.det(a))
+        elif method == "lu":
+            if isinstance(rho, np.ndarray) and rho.shape == (1, 1):
+                rho = rho[0][0]
+            a = sp.identity(self.w.n)
+            LU = sp.linalg.splu(a.tocsc())
+            jacob = np.sum(np.log(np.abs(LU.U.diagonal())))
+        else:
+            revals = rho * evals
+            jacob = np.log(1 - revals).sum()
+            if isinstance(jacob, complex):
+                jacob = jacob.real
+
+        clik = nlsig2 - jacob
+        return clik
+
 
 if __name__ == "__main__":
     import spreg
@@ -107,4 +170,28 @@ if __name__ == "__main__":
     print(model.indir_coef_)
 
     old_model = spreg.GM_Lag(y, X, w=weights)
+    print(old_model.betas)
+
+    model.fit(X, y, method="full")
+    print(model.intercept_)
+    print(model.coef_)
+    print(model.indir_coef_)
+
+    old_model = spreg.ML_Lag(y, X, w=weights, method="full")
+    print(old_model.betas)
+
+    model.fit(X, y, method="lu")
+    print(model.intercept_)
+    print(model.coef_)
+    print(model.indir_coef_)
+
+    old_model = spreg.ML_Lag(y, X, w=weights, method="lu")
+    print(old_model.betas)
+
+    model.fit(X, y, method="ord")
+    print(model.intercept_)
+    print(model.coef_)
+    print(model.indir_coef_)
+
+    old_model = spreg.ML_Lag(y, X, w=weights, method="ord")
     print(old_model.betas)

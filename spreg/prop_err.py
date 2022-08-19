@@ -84,8 +84,12 @@ class Error(RegressorMixin, LinearModel):
             params_ = tsls(xs, ys, yend_s, q)
         else:
             params_ = ols(xs, ys)
-        self.intercept_ = params_[0]
-        self.coef_ = params_[1:]
+
+        if self.fit_intercept:
+            self.coef_ = params_[1:]
+            self.intercept_ = params_[0]
+        else:
+            self.coef_ = params_
 
     def _fit_ml(self, X, y, method, epsilon):
         ylag = lag_spatial(self.w, y)
@@ -113,8 +117,12 @@ class Error(RegressorMixin, LinearModel):
         xsxsi = np.linalg.inv(xsxs)
         xsys = np.dot(xs.T, ys)
         params_ = np.dot(xsxsi, xsys)
-        self.coef_ = params_[1:]
-        self.intercept_ = params_[0]
+
+        if self.fit_intercept:
+            self.coef_ = params_[1:]
+            self.intercept_ = params_[0]
+        else:
+            self.coef_ = params_
 
     def _log_likelihood(self, lam, X, y, xlag, ylag, evals, method):
         # Common stuff for all methods
@@ -137,8 +145,6 @@ class Error(RegressorMixin, LinearModel):
             np.fill_diagonal(a, 1.0)
             jacob = np.log(np.linalg.det(a))
             # this is the negative of the concentrated log lik for minimization
-            clik = nlsig2 - jacob
-            return clik
         elif method == "lu":
             if isinstance(lam, np.ndarray):
                 if lam.shape == (1, 1):
@@ -147,16 +153,14 @@ class Error(RegressorMixin, LinearModel):
             LU = splu(a.tocsc())
             jacob = np.sum(np.log(np.abs(LU.U.diagonal())))
             # this is the negative of the concentrated log lik for minimization
-            clik = nlsig2 - jacob
-            return clik
         else:
             revals = lam * evals
             jacob = np.log(1 - revals).sum()
             if isinstance(jacob, complex):
                 jacob = jacob.real
             # this is the negative of the concentrated log lik for minimization
-            clik = nlsig2 - jacob
-            return clik
+        clik = nlsig2 - jacob
+        return clik
 
     def _moments_gm_error(self, w, u):
         try:
