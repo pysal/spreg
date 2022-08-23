@@ -35,5 +35,6 @@ from .panel_re import *
 from .skater_reg import *
 
 #-------------- NEW IMPORTS --------------#
-from .prop_lag import Lag
-from .prop_err import Error
+from .lag import Lag
+from .error import Error
+from .durbin import DurbinLag, DurbinError
