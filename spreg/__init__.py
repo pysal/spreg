@@ -34,3 +34,6 @@ from .panel_fe import *
 from .panel_re import *
 from .skater_reg import *
 from .formula import *
+from .lag import Lag
+from .error import Error
+from .durbin import DurbinLag, DurbinError
