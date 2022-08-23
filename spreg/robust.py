@@ -100,10 +100,10 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
     """
     if hasattr(reg, 'h'):  # If reg has H, do 2SLS estimator. OLS otherwise.
         tsls = True
-        xu = spbroadcast(reg.h, reg.resid)
+        xu = spbroadcast(reg.h, reg.u)
     else:
         tsls = False
-        xu = spbroadcast(reg.X, reg.resid)
+        xu = spbroadcast(reg.x, reg.u)
 
     if gwk:  # If gwk do HAC. White otherwise.
         gwkxu = lag_spatial(gwk, xu)
@@ -111,7 +111,7 @@ def robust_vm(reg, gwk=None, sig2n_k=False):
     else:
         psi0 = spdot(xu.T, xu)
         if sig2n_k:
-            psi0 = psi0 * (1. * reg.N / (reg.N - reg.D))
+            psi0 = psi0 * (1. * reg.n / (reg.n - reg.k))
     if tsls:
         psi1 = spdot(reg.varb, reg.zthhthi)
         psi = spdot(psi1, np.dot(psi0, psi1.T))

@@ -33,8 +33,7 @@ from .sp_panels import *
 from .panel_fe import *
 from .panel_re import *
 from .skater_reg import *
-
-#-------------- NEW IMPORTS --------------#
+from .formula import *
 from .lag import Lag
 from .error import Error
 from .durbin import DurbinLag, DurbinError

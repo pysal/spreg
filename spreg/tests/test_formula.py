@@ -1,0 +1,179 @@
+import unittest
+import numpy as np
+import pandas as pd
+import geopandas as gpd  # this dependency isn't required
+import spreg
+import formulaic
+from libpysal.examples import load_example
+from libpysal.weights import Kernel, fill_diagonal
+
+
+class TestFormula(unittest.TestCase):
+    def setUp(self):
+        # Load boston example
+        self.boston = load_example("Bostonhsg")
+        self.boston_df = gpd.read_file(self.boston.get_path("boston.shp"))
+
+        # Make weights matrix and set diagonal to 0 (necessary for lag model)
+        self.weights = Kernel(self.boston_df[["x", "y"]], k=50, fixed=False)
+        self.weights = fill_diagonal(self.weights, 0)
+
+    def tearDown(self):
+        pass
+
+    def test_empty_formula(self):
+        with self.assertRaises(ValueError):
+            model = spreg.from_formula("", self.boston_df)
+
+    def test_empty_df(self):
+        with self.assertRaises(NameError):
+            model = spreg.from_formula("log(CMEDV) ~ ZN + CHAS", pd.DataFrame())
+
+    def test_spatial_no_w(self):
+        with self.assertRaises(ValueError):
+            model = spreg.from_formula("log(CMEDV) ~ ZN + CHAS + &", self.boston_df)
+
+    def test_bad_method(self):
+        with self.assertRaises(ValueError):
+            model = spreg.from_formula("log(CMEDV) ~ CHAS + &", self.boston_df, method="a")
+
+    def test_debug(self):
+        formula = "log(CMEDV) ~ ZN + RM"
+        outputs = spreg.from_formula(formula, self.boston_df, debug=True)
+        self.assertEqual(len(outputs), 2)
+        self.assertEqual(outputs[0], spreg.from_formula(formula, self.boston_df))
+
+    def test_kwargs(self):
+        # OLS formula
+        formula = "log(CMEDV) ~ ZN + RM"
+        model = spreg.from_formula(formula, self.boston_df, robust="white")
+        self.assertEqual(model.robust, "white")
+
+        # Lag formula
+        formula = "log(CMEDV) ~ ZN + RM + <log(CMEDV)>"
+        model = spreg.from_formula(formula, self.boston_df, sig2n_k=True)
+        self.assertEqual(model.sig2n_k, True)
+
+        # Error formula
+        formula = "log(CMEDV) ~ ZN + RM + &"
+        model = spreg.from_formula(formula, self.boston_df, vm=True)
+        self.assertEqual(model.vm, True)
+
+        # Combo formula
+        formula = "log(CMEDV) ~ ZN + RM + <log(CMEDV)> + &"
+        model = spreg.from_formula(formula, self.boston_df, vm=True)
+        self.assertEqual(model.vm, True)
+
+    def test_nonspatial_formula(self):
+        formula = "log(CMEDV) ~ ZN + AGE + RM"
+        model = spreg.from_formula(formula, self.boston_df)
+        self.assertEqual(type(model), spreg.OLS)
+
+    def test_nonspatial_formula_with_transforms(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2}"
+        model = spreg.from_formula(formula, self.boston_df)
+        self.assertEqual(type(model), spreg.OLS)
+
+    def test_field_not_found(self):
+        with self.assertRaises(KeyError):
+            model = spreg.from_formula("log(CMEDV) ~ ZN + HI + INDUS")
+
+    def test_spatial_lag_x(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <CRIM>"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.OLS)
+
+    def test_spatial_lag_y(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <log(CMEDV)>"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.GM_Lag)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
+        self.assertEqual(type(model), spreg.ML_Lag)
+
+    def test_spatial_error(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.GM_Error)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
+        self.assertEqual(type(model), spreg.ML_Error)
+
+    def test_slx_sly(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <INDUS + log(CMEDV)>"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.GM_Lag)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
+        self.assertEqual(type(model), spreg.ML_Lag)
+
+    def test_slx_error(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <INDUS> + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.GM_Error)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
+        self.assertEqual(type(model), spreg.ML_Error)
+
+    def test_sly_error(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <log(CMEDV)> + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.GM_Combo)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
+        self.assertEqual(type(model), spreg.GM_Combo)
+
+    def test_slx_sly_error(self):
+        formula = "log(CMEDV) ~ ZN + AGE + {RM**2} + <INDUS + log(CMEDV)> + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights)
+        self.assertEqual(type(model), spreg.GM_Combo)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights, method="lu")
+        self.assertEqual(type(model), spreg.GM_Combo)
+
+    def test_pathological_formulae(self):
+        with self.assertRaises(formulaic.errors.FormulaSyntaxError):
+            model = spreg.from_formula("log(CMEDV) ~ ZN + & + &", self.boston_df,
+                                       w=self.weights)
+
+        with self.assertRaises(formulaic.errors.FormulaSyntaxError):
+            model = spreg.from_formula("log(CMEDV) ~ <ZN + <AGE>>", self.boston_df,
+                                       w=self.weights)
+
+    def test_het_hom(self):
+        formula = "log(CMEDV) ~ ZN + AGE + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="het")
+        self.assertEqual(type(model), spreg.GM_Error_Het)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="hom")
+        self.assertEqual(type(model), spreg.GM_Error_Hom)
+
+    def test_endog_het_hom(self):
+        formula = "log(CMEDV) ~ ZN + AGE + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   yend=self.boston_df["INDUS"])
+        self.assertEqual(type(model), spreg.GM_Endog_Error_Het)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="het", yend=self.boston_df["INDUS"])
+        self.assertEqual(type(model), spreg.GM_Endog_Error_Het)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="hom", yend=self.boston_df["INDUS"])
+        self.assertEqual(type(model), spreg.GM_Endog_Error_Hom)
+
+    def test_combo_het_hom(self):
+        formula = "log(CMEDV) ~ ZN + AGE + <{10*NOX} + log(CMEDV)> + &"
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="het")
+        self.assertEqual(type(model), spreg.GM_Combo_Het)
+
+        model = spreg.from_formula(formula, self.boston_df, w=self.weights,
+                                   skedastic="hom")
+        self.assertEqual(type(model), spreg.GM_Combo_Hom)
+
+
+if __name__ == "__main__":
+    unittest.main()

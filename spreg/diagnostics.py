@@ -86,10 +86,10 @@ def f_stat(reg):
     28.385629224695 0.000000009341
 
     """
-    k = reg.k  # (scalar) number of ind. vars (includes constant)
-    n = reg.n  # (scalar) number of observations
-    utu = reg.utu  # (scalar) residual sum of squares
-    predy = reg.predy  # (array) vector of predicted values (n x 1)
+    k = reg.k            # (scalar) number of ind. vars (includes constant)
+    n = reg.n            # (scalar) number of observations
+    utu = reg.utu        # (scalar) residual sum of squares
+    predy = reg.predy    # (array) vector of predicted values (n x 1)
     mean_y = reg.mean_y  # (scalar) mean of dependent observations
     Q = utu
     U = np.sum((predy - mean_y) ** 2)
@@ -155,10 +155,10 @@ def t_stat(reg, z_stat=False):
     14.490373143689 0.000000000000 -4.780496191297 0.000018289595 -2.654408642718 0.010874504910
     """
 
-    k = reg.k  # (scalar) number of ind. vars (includes constant)
-    n = reg.n  # (scalar) number of observations
-    vm = reg.vm  # (array) coefficients of variance matrix (k x k)
-    betas = reg.betas  # (array) coefficients of the regressors (1 x k)
+    k = reg.k           # (scalar) number of ind. vars (includes constant)
+    n = reg.n           # (scalar) number of observations
+    vm = reg.vm         # (array) coefficients of variance matrix (k x k)
+    betas = reg.betas   # (array) coefficients of the regressors (1 x k)
     variance = vm.diagonal()
     tStat = (
         betas[list(range(0, len(vm)))].reshape(
@@ -228,9 +228,9 @@ def r2(reg):
     0.55240404
 
     """
-    y = reg.y  # (array) vector of dep observations (n x 1)
-    mean_y = reg.mean_y  # (scalar) mean of dep observations
-    utu = reg.utu  # (scalar) residual sum of squares
+    y = reg.y               # (array) vector of dep observations (n x 1)
+    mean_y = reg.mean_y     # (scalar) mean of dep observations
+    utu = reg.utu           # (scalar) residual sum of squares
     ss_tot = ((y - mean_y) ** 2).sum(0)
     r2 = 1 - utu / ss_tot
     r2_result = r2[0]
@@ -289,8 +289,8 @@ def ar2(reg):
     0.53294335
 
     """
-    k = reg.k  # (scalar) number of ind. variables (includes constant)
-    n = reg.n  # (scalar) number of observations
+    k = reg.k       # (scalar) number of ind. variables (includes constant)
+    n = reg.n       # (scalar) number of observations
     ar2_result = 1 - (1 - r2(reg)) * (n - 1) / (n - k)
     return ar2_result
 
