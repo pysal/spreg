@@ -26,8 +26,9 @@ class Lag(RegressorMixin, LinearModel):
         check_is_fitted(self)
 
         X, y = self._validate_data(X, y, accept_sparse=True)
-        return safe_sparse_dot(X, self.coef_.T, dense_output=True) + self.intercept_ \
-            + self.indir_coef_ * spdot(self.w, y)
+        return safe_sparse_dot(
+            np.linalg.inv(sp.eye(y.shape[0]) - self.indir_coef_ * self.w),
+            safe_sparse_dot(X, self.coef_.T, dense_output=True), dense_output=True)
 
     def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True, method="gm", epsilon=1e-7):
         # Input validation
