@@ -3,6 +3,7 @@ from libpysal import weights
 import scipy.sparse as SP
 import itertools as iter
 from scipy.stats import f, chi2
+
 chisqprob = chi2.sf
 import itertools as iter
 import numpy.linalg as la
@@ -20,7 +21,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, \
 
 
 class Chow:
-    '''
+    """
     Chow test of coefficient stability across regimes. The test is a
     particular case of the Wald statistic in which the constraint are setup
     according to the spatial or other type of regime structure
@@ -78,21 +79,31 @@ class Chow:
     Joint test:
     >>> print(olsr.chow.joint)
     (0.6339319928978724, 0.8886223520178821)
-    '''
+    """
 
     def __init__(self, reg):
-        kr, kf, kryd, nr, betas, vm = reg.kr, reg.kf, reg.kryd, reg.nr, reg.betas, reg.vm
-        self.joint, self.regi = _chow_run(reg.kr, reg.kf, reg.kryd, reg.nr, reg.betas, reg.vm)
+        kr, kf, kryd, nr, betas, vm = (
+            reg.kr,
+            reg.kf,
+            reg.kryd,
+            reg.nr,
+            reg.betas,
+            reg.vm,
+        )
+        self.joint, self.regi = _chow_run(
+            reg.kr, reg.kf, reg.kryd, reg.nr, reg.betas, reg.vm
+        )
+
 
 def _chow_run(kr, kf, kryd, nr, betas, vm):
     if betas.shape[0] != vm.shape[0]:
         if kf > 0:
             kf = kf - (betas.shape[0] - vm.shape[0])
-            betas = betas[0:vm.shape[0], :]           
+            betas = betas[0 : vm.shape[0], :]
         else:
             brange = []
             for i in range(nr):
-                    brange.extend(list(range(i * (kr + 1), i * (kr + 1) + kr)))
+                brange.extend(list(range(i * (kr + 1), i * (kr + 1) + kr)))
             betas = betas[brange, :]
     r_global = []
     regi = np.zeros((kr, 2))
@@ -104,11 +115,11 @@ def _chow_run(kr, kf, kryd, nr, betas, vm):
     r_global = np.vstack(tuple(r_global))
     q = np.zeros((r_global.shape[0], 1))
     joint = wald_test(betas, r_global, q, vm)
-    return joint,regi
+    return joint, regi
 
 
 class Wald:
-    '''
+    """
     Chi sq. Wald statistic to test for restriction of coefficients.
     Implementation following Greene :cite:`Greene2003` eq. (17-24), p. 488
 
@@ -131,7 +142,7 @@ class Wald:
               P value for Wald statistic calculated as a Chi sq. distribution
               with R degrees of freedom
 
-    '''
+    """
 
     def __init__(self, reg, r, q=None):
         if not q:
@@ -140,7 +151,7 @@ class Wald:
 
 
 class Regimes_Frame:
-    '''
+    """
     Setup framework to work with regimes. Basically it involves:
 
     * Dealing with the constant in a regimes world
@@ -199,32 +210,36 @@ class Regimes_Frame:
     nr           : int
                    Number of different regimes in the 'regimes' list
 
-    '''
+    """
 
     def __init__(self, x, regimes, constant_regi, cols2regi, names=None, yend=False):
-        if cols2regi == 'all':
+        if cols2regi == "all":
             cols2regi = [True] * x.shape[1]
         else:
             if yend:
-                cols2regi = cols2regi[-x.shape[1]:]
+                cols2regi = cols2regi[-x.shape[1] :]
             else:
-                cols2regi = cols2regi[0:x.shape[1]]
+                cols2regi = cols2regi[0 : x.shape[1]]
         if constant_regi:
             x = np.hstack((np.ones((x.shape[0], 1)), x))
-            if constant_regi == 'one':
+            if constant_regi == "one":
                 cols2regi.insert(0, False)
-            elif constant_regi == 'many':
+            elif constant_regi == "many":
                 cols2regi.insert(0, True)
             else:
-                raise Exception("Invalid argument (%s) passed for 'constant_regi'. Please secify a valid term." % str(
-                    constant))
+                raise Exception(
+                    "Invalid argument (%s) passed for 'constant_regi'. Please secify a valid term."
+                    % str(constant)
+                )
         try:
-            x = regimeX_setup(x, regimes, cols2regi,
-                              self.regimes_set, constant=constant_regi)
+            x = regimeX_setup(
+                x, regimes, cols2regi, self.regimes_set, constant=constant_regi
+            )
         except AttributeError:
             self.regimes_set = _get_regimes_set(regimes)
-            x = regimeX_setup(x, regimes, cols2regi,
-                              self.regimes_set, constant=constant_regi)
+            x = regimeX_setup(
+                x, regimes, cols2regi, self.regimes_set, constant=constant_regi
+            )
 
         kr = len(np.where(np.array(cols2regi) == True)[0])
         if yend:
@@ -239,13 +254,14 @@ class Regimes_Frame:
 
         if names:
             names = set_name_x_regimes(
-                names, regimes, constant_regi, cols2regi, self.regimes_set)
+                names, regimes, constant_regi, cols2regi, self.regimes_set
+            )
 
         return (x, names)
 
 
 def wald_test(betas, r, q, vm):
-    '''
+    """
     Chi sq. Wald statistic to test for restriction of coefficients.
     Implementation following Greene :cite:`Greene2003` eq. (17-24), p. 488
 
@@ -269,7 +285,7 @@ def wald_test(betas, r, q, vm):
               P value for Wald statistic calculated as a Chi sq. distribution
               with R degrees of freedom
 
-    '''
+    """
     rbq = np.dot(r, betas) - q
     rvri = la.inv(np.dot(r, np.dot(vm, r.T)))
     w = np.dot(rbq.T, np.dot(rvri, rbq))[0][0]
@@ -279,11 +295,11 @@ def wald_test(betas, r, q, vm):
 
 
 def buildR(kr, kf, nr):
-    '''
+    """
     Build R matrix to globally test for spatial heterogeneity across regimes.
     The constraint setup reflects the null every beta is the same
     across regimes
-    
+
     Note: needs a placeholder for kryd in builR1var, set to 0
 
     Parameters
@@ -301,13 +317,14 @@ def buildR(kr, kf, nr):
     R       : array
               Array with constrain setup to test stability across regimes of
               one variable
-    '''
-    return np.vstack(tuple(map(buildR1var, np.arange(kr), [kr] * kr, [kf] * kr,\
-               [0] * kr, [nr] * kr)))
+    """
+    return np.vstack(
+        tuple(map(buildR1var, np.arange(kr), [kr] * kr, [kf] * kr, [0] * kr, [nr] * kr))
+    )
 
 
 def buildR1var(vari, kr, kf, kryd, nr):
-    '''
+    """
     Build R matrix to test for spatial heterogeneity across regimes in one
     variable. The constraint setup reflects the null betas for variable 'vari'
     are the same across regimes
@@ -332,8 +349,8 @@ def buildR1var(vari, kr, kf, kryd, nr):
     R       : array
               Array with constrain setup to test stability across regimes of
               one variable
-    '''
-    ncols = (kr * nr)
+    """
+    ncols = kr * nr
     nrows = nr - 1
     r = np.zeros((nrows, ncols), dtype=int)
     rbeg = 0
@@ -344,14 +361,14 @@ def buildR1var(vari, kr, kf, kryd, nr):
     else:
         kr_j = kryd
         cbeg = krexog * (nr - 1) + vari
-    r[rbeg: rbeg + nrows, cbeg] = 1
+    r[rbeg : rbeg + nrows, cbeg] = 1
     for j in np.arange(nrows):
         r[rbeg + j, kr_j + cbeg + j * kr_j] = -1
     return np.hstack((r, np.zeros((nrows, kf), dtype=int)))
 
 
 def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
-    '''
+    """
     Flexible full setup of a regime structure
 
     NOTE: constant term, if desired in the model, should be included in the x
@@ -394,7 +411,7 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
                   Structure of the output matrix (assuming X1, X2 to vary
                   across regimes and constant term, X3 and X4 to be global):
                     X1r1, X2r1, ... , X1r2, X2r2, ... , constant, X3, X4
-    '''
+    """
     cols2regi = np.array(cols2regi)
     if set(cols2regi) == set([True]):
         xsp = x2xsp(x, regimes, regimes_set)
@@ -404,12 +421,12 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
         not_regi = x[:, np.where(cols2regi == False)[0]]
         regi_subset = x[:, np.where(cols2regi)[0]]
         regi_subset = x2xsp(regi_subset, regimes, regimes_set)
-        xsp = SP.hstack((regi_subset, SP.csr_matrix(not_regi)), format='csr')
+        xsp = SP.hstack((regi_subset, SP.csr_matrix(not_regi)), format="csr")
     return xsp
 
 
 def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
-    '''
+    """
     Generate the set of variable names in a regimes setup, according to the
     order of the betas
 
@@ -445,28 +462,28 @@ def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
     Returns
     -------
     name_x_regi
-    '''
+    """
     k = len(cols2regi)
     if constant_regi:
         k -= 1
     if not name_x:
-        name_x = ['var_' + str(i + 1) for i in range(k)]
+        name_x = ["var_" + str(i + 1) for i in range(k)]
     if constant_regi:
-        name_x.insert(0, 'CONSTANT')
+        name_x.insert(0, "CONSTANT")
     nxa = np.array(name_x)
     c2ra = np.array(cols2regi)
     vars_regi = nxa[np.where(c2ra == True)]
     vars_glob = nxa[np.where(c2ra == False)]
     name_x_regi = []
     for r in regimes_set:
-        rl = ['%s_%s' % (str(r), i) for i in vars_regi]
+        rl = ["%s_%s" % (str(r), i) for i in vars_regi]
         name_x_regi.extend(rl)
-    name_x_regi.extend(['_Global_%s' % i for i in vars_glob])
+    name_x_regi.extend(["_Global_%s" % i for i in vars_glob])
     return name_x_regi
 
 
 def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):
-    '''
+    """
     Returns the subset of W matrix according to a given regime ID
 
     Parameters
@@ -482,13 +499,15 @@ def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):
     -------
     w_regi_i    : pysal W object
                   Subset of W for regime regi_i
-    '''
+    """
     w_ids = list(map(w.id_order.__getitem__, regi_ids))
     warn = None
     w_regi_i = weights.set_operations.w_subset(w, w_ids, silence_warnings=True)
     if min_n:
         if w_regi_i.n < min_n:
-            raise Exception("There are less observations than variables in regime %s." % regi_i)
+            raise Exception(
+                "There are less observations than variables in regime %s." % regi_i
+            )
     if transform:
         w_regi_i.transform = w.get_transform()
     if w_regi_i.islands:
@@ -497,7 +516,7 @@ def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):
 
 
 def w_regimes(w, regimes, regimes_set, transform=True, get_ids=None, min_n=None):
-    '''
+    """
     ######### DEPRECATED ##########
     Subsets W matrix according to regimes
 
@@ -515,19 +534,22 @@ def w_regimes(w, regimes, regimes_set, transform=True, get_ids=None, min_n=None)
     -------
     w_regi      : dictionary
                   Dictionary containing the subsets of W according to regimes: [r1:w1, r2:w2, ..., rR:wR]
-    '''
-    regi_ids = dict((r, list(np.where(np.array(regimes) == r)[0]))
-                    for r in regimes_set)
-    w_ids = dict((r, list(map(w.id_order.__getitem__, regi_ids[r])))
-                 for r in regimes_set)
+    """
+    regi_ids = dict((r, list(np.where(np.array(regimes) == r)[0])) for r in regimes_set)
+    w_ids = dict(
+        (r, list(map(w.id_order.__getitem__, regi_ids[r]))) for r in regimes_set
+    )
     w_regi_i = {}
     warn = None
     for r in regimes_set:
-        w_regi_i[r] = weights.set_operations.w_subset(w, w_ids[r],
-                                             silence_warnings=True)
+        w_regi_i[r] = weights.set_operations.w_subset(
+            w, w_ids[r], silence_warnings=True
+        )
         if min_n:
             if w_regi_i[r].n < min_n:
-                raise Exception("There are less observations than variables in regime %s." % r)
+                raise Exception(
+                    "There are less observations than variables in regime %s." % r
+                )
         if transform:
             w_regi_i[r].transform = w.get_transform()
         if w_regi_i[r].islands:
@@ -538,7 +560,7 @@ def w_regimes(w, regimes, regimes_set, transform=True, get_ids=None, min_n=None)
 
 
 def w_regimes_union(w, w_regi_i, regimes_set):
-    '''
+    """
     Combines the subsets of the W matrix according to regimes
 
     Parameters
@@ -554,21 +576,24 @@ def w_regimes_union(w, w_regi_i, regimes_set):
     -------
     w_regi      : pysal W object
                   Spatial weights object containing the union of the subsets of W
-    '''
-    w_regi = weights.set_operations.w_union(w_regi_i[regimes_set[0]],
-                                   w_regi_i[regimes_set[1]], silence_warnings=True)
+    """
+    w_regi = weights.set_operations.w_union(
+        w_regi_i[regimes_set[0]], w_regi_i[regimes_set[1]], silence_warnings=True
+    )
     if len(regimes_set) > 2:
         for i in range(len(regimes_set))[2:]:
-            w_regi = weights.set_operations.w_union(w_regi,
-                                           w_regi_i[regimes_set[i]], silence_warnings=True)
-    w_regi = weights.util.remap_ids(w_regi, dict((i, i)
-                                                  for i in w_regi.id_order), w.id_order)
+            w_regi = weights.set_operations.w_union(
+                w_regi, w_regi_i[regimes_set[i]], silence_warnings=True
+            )
+    w_regi = weights.util.remap_ids(
+        w_regi, dict((i, i) for i in w_regi.id_order), w.id_order
+    )
     w_regi.transform = w.get_transform()
     return w_regi
 
 
 def x2xsp(x, regimes, regimes_set):
-    '''
+    """
     Convert X matrix with regimes into a sparse X matrix that accounts for the
     regimes
 
@@ -589,7 +614,7 @@ def x2xsp(x, regimes, regimes_set):
                   regimes regression. 'xsp' is of dimension (n, k*r) where 'r'
                   is the number of different regimes
                   The structure of the alignent is X1r1 X2r1 ... X1r2 X2r2 ...
-    '''
+    """
     n, k = x.shape
     data = x.flatten()
     R = len(regimes_set)
@@ -597,20 +622,20 @@ def x2xsp(x, regimes, regimes_set):
     regime_by_row = np.array([[r] * k for r in list(regimes_set)]).flatten()
     row_map = dict((r, np.where(regime_by_row == r)[0]) for r in regimes_set)
     indices = np.array([row_map[row] for row in regimes]).flatten()
-    indptr = np.zeros((n + 1, ), dtype=int)
+    indptr = np.zeros((n + 1,), dtype=int)
     indptr[:-1] = list(np.arange(n) * k)
     indptr[-1] = n * k
     return SP.csr_matrix((data, indices, indptr))
 
 
 def check_cols2regi(constant_regi, cols2regi, x, yend=None, add_cons=True):
-    ''' Checks if dimensions of list cols2regi match number of variables. '''
+    """Checks if dimensions of list cols2regi match number of variables."""
 
     if add_cons:
         is_cons = 1
-        if constant_regi == 'many':
+        if constant_regi == "many":
             regi_cons = [True]
-        elif constant_regi == 'one':
+        elif constant_regi == "one":
             regi_cons = [False]
     else:
         is_cons = 0
@@ -619,31 +644,39 @@ def check_cols2regi(constant_regi, cols2regi, x, yend=None, add_cons=True):
         tot_k = x.shape[1] + yend.shape[1]
     except:
         tot_k = x.shape[1]
-    if cols2regi == 'all':
+    if cols2regi == "all":
         cols2regi = regi_cons + [True] * tot_k
     else:
         cols2regi = regi_cons + cols2regi
     if len(cols2regi) - is_cons != tot_k:
-        raise Exception("The lenght of list 'cols2regi' must be equal to the amount of variables (exogenous + endogenous) when not using cols2regi=='all'.")
+        raise Exception(
+            "The lenght of list 'cols2regi' must be equal to the amount of variables (exogenous + endogenous) when not using cols2regi=='all'."
+        )
     return cols2regi
 
-def check_const_regi(reg,x,name_x,regi_ids):
+
+def check_const_regi(reg, x, name_x, regi_ids):
     keep_x = COPY.copy(name_x)
     for r in reg.regimes_set:
-        diffs = np.ptp(x[regi_ids[r]],axis=0)
-        const_x = [keep_x[i] for i in np.nonzero(diffs==0)[0]]
+        diffs = np.ptp(x[regi_ids[r]], axis=0)
+        const_x = [keep_x[i] for i in np.nonzero(diffs == 0)[0]]
         keep_x = [element for element in keep_x if element not in const_x]
-        x = np.delete(x,np.nonzero(diffs==0),1)
+        x = np.delete(x, np.nonzero(diffs == 0), 1)
     rem_x = list(set(name_x) - set(keep_x))
     if len(rem_x) > 0:
-        set_warn(reg,'Variable(s) '+str(rem_x)+' removed for being constant for at least one of the regimes.')
+        set_warn(
+            reg,
+            "Variable(s) "
+            + str(rem_x)
+            + " removed for being constant for at least one of the regimes.",
+        )
     x_constant = spu.sphstack(np.ones((x.shape[0], 1)), x)
-    name_x =['CONSTANT'] + keep_x
+    name_x = ["CONSTANT"] + keep_x
     return x_constant, name_x
 
 
 def _get_regimes_set(regimes):
-    ''' Creates a list with regimes in alphabetical order. '''
+    """Creates a list with regimes in alphabetical order."""
     regimes_set = list(set(regimes))
     if isinstance(regimes_set[0], float):
         regimes_set1 = list(set(map(int, regimes_set)))
@@ -654,14 +687,21 @@ def _get_regimes_set(regimes):
 
 
 def _get_weighted_var(regimes, regimes_set, sig2n_k, u, y, x, yend=None, q=None):
-    regi_ids = dict((r, list(np.where(np.array(regimes) == r)[0]))
-                    for r in regimes_set)
+    regi_ids = dict((r, list(np.where(np.array(regimes) == r)[0])) for r in regimes_set)
     if sig2n_k:
-        sig = dict((r, np.dot(u[regi_ids[r]].T, u[regi_ids[r]]) / (len(regi_ids[r]) - x.shape[1]))
-                   for r in regimes_set)
+        sig = dict(
+            (
+                r,
+                np.dot(u[regi_ids[r]].T, u[regi_ids[r]])
+                / (len(regi_ids[r]) - x.shape[1]),
+            )
+            for r in regimes_set
+        )
     else:
-        sig = dict((r, np.dot(u[regi_ids[r]].T, u[regi_ids[r]]) / len(regi_ids[r]))
-                   for r in regimes_set)
+        sig = dict(
+            (r, np.dot(u[regi_ids[r]].T, u[regi_ids[r]]) / len(regi_ids[r]))
+            for r in regimes_set
+        )
     sig_vec = np.zeros(y.shape, float)
     y2 = np.zeros(y.shape, float)
     for r in regimes_set:
@@ -678,26 +718,40 @@ def _get_weighted_var(regimes, regimes_set, sig2n_k, u, y, x, yend=None, q=None)
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
     from .ols_regimes import OLS_Regimes
-    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
-    y_var = 'CRIME'
+
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y_var = "CRIME"
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
-    x_var = ['INC', 'HOVAL']
+    x_var = ["INC", "HOVAL"]
     x = np.array([db.by_col(name) for name in x_var]).T
-    r_var = 'NSA'
+    r_var = "NSA"
     regimes = db.by_col(r_var)
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-    w.transform = 'r'
+    w.transform = "r"
     olsr = OLS_Regimes(
-        y, x, regimes, w=w, constant_regi='many', nonspat_diag=False, spat_diag=False,
-        name_y=y_var, name_x=x_var, name_ds='columbus', name_regimes=r_var, name_w='columbus.gal')
+        y,
+        x,
+        regimes,
+        w=w,
+        constant_regi="many",
+        nonspat_diag=False,
+        spat_diag=False,
+        name_y=y_var,
+        name_x=x_var,
+        name_ds="columbus",
+        name_regimes=r_var,
+        name_w="columbus.gal",
+    )
     print(olsr.summary)

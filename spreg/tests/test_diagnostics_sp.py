@@ -8,11 +8,12 @@ from spreg.twosls_sp import GM_Lag
 from spreg.diagnostics_sp import LMtests, MoranRes, spDcache, AKtest
 from libpysal.common import RTOL
 
+
 class TestLMtests(unittest.TestCase):
     def setUp(self):
-        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
         y = np.array(db.by_col("HOVAL"))
-        y = np.reshape(y, (49,1))
+        y = np.reshape(y, (49, 1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
@@ -21,41 +22,41 @@ class TestLMtests(unittest.TestCase):
         self.X = X
         ols = OLS(self.y, self.X)
         self.ols = ols
-        w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
-        w.transform='r'
+        w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), "r").read()
+        w.transform = "r"
         self.w = w
 
     def test_lm_err(self):
         lms = LMtests(self.ols, self.w)
-        lme = np.array([3.097094,  0.078432])
+        lme = np.array([3.097094, 0.078432])
         np.testing.assert_allclose(lms.lme, lme, RTOL)
 
     def test_lm_lag(self):
         lms = LMtests(self.ols, self.w)
-        lml = np.array([ 0.981552,  0.321816])
+        lml = np.array([0.981552, 0.321816])
         np.testing.assert_allclose(lms.lml, lml, RTOL)
 
     def test_rlm_err(self):
         lms = LMtests(self.ols, self.w)
-        rlme = np.array([ 3.209187,  0.073226])
+        rlme = np.array([3.209187, 0.073226])
         np.testing.assert_allclose(lms.rlme, rlme, RTOL)
 
     def test_rlm_lag(self):
         lms = LMtests(self.ols, self.w)
-        rlml = np.array([ 1.093645,  0.295665])
+        rlml = np.array([1.093645, 0.295665])
         np.testing.assert_allclose(lms.rlml, rlml, RTOL)
 
     def test_lm_sarma(self):
         lms = LMtests(self.ols, self.w)
-        sarma = np.array([ 4.190739,  0.123025])
+        sarma = np.array([4.190739, 0.123025])
         np.testing.assert_allclose(lms.sarma, sarma, RTOL)
 
 
 class TestMoranRes(unittest.TestCase):
     def setUp(self):
-        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
         y = np.array(db.by_col("HOVAL"))
-        y = np.reshape(y, (49,1))
+        y = np.reshape(y, (49, 1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
@@ -64,10 +65,10 @@ class TestMoranRes(unittest.TestCase):
         self.X = X
         ols = OLS(self.y, self.X)
         self.ols = ols
-        w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
-        w.transform='r'
+        w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), "r").read()
+        w.transform = "r"
         self.w = w
-    
+
     def test_get_m_i(self):
         m = MoranRes(self.ols, self.w, z=True)
         np.testing.assert_allclose(m.I, 0.17130999999999999, RTOL)
@@ -87,9 +88,9 @@ class TestMoranRes(unittest.TestCase):
 
 class TestAKTest(unittest.TestCase):
     def setUp(self):
-        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),'r')
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
         y = np.array(db.by_col("CRIME"))
-        y = np.reshape(y, (49,1))
+        y = np.reshape(y, (49, 1))
         self.y = y
         X = []
         X.append(db.by_col("INC"))
@@ -105,8 +106,10 @@ class TestAKTest(unittest.TestCase):
         self.q = q
         reg = TSLS(y, X, yd, q=q)
         self.reg = reg
-        w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-        w.transform = 'r'
+        w = libpysal.weights.Rook.from_shapefile(
+            libpysal.examples.get_path("columbus.shp")
+        )
+        w.transform = "r"
         self.w = w
 
     def test_gen_mi(self):
@@ -122,22 +125,23 @@ class TestAKTest(unittest.TestCase):
         np.testing.assert_allclose(ak.p, 0.031182360054340875, RTOL)
 
     def test_sp_mi(self):
-        ak = AKtest(self.reg, self.w, case='gen')
+        ak = AKtest(self.reg, self.w, case="gen")
         np.testing.assert_allclose(ak.mi, 0.2232672865437263, RTOL)
 
     def test_sp_ak(self):
-        ak = AKtest(self.reg, self.w,case='gen')
+        ak = AKtest(self.reg, self.w, case="gen")
         np.testing.assert_allclose(ak.ak, 1.1575928784397795, RTOL)
 
     def test_sp_p(self):
-        ak = AKtest(self.reg, self.w, case='gen')
+        ak = AKtest(self.reg, self.w, case="gen")
         np.testing.assert_allclose(ak.p, 0.28196531619791054, RTOL)
+
 
 class TestSpDcache(unittest.TestCase):
     def setUp(self):
-        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"),"r")
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
         y = np.array(db.by_col("HOVAL"))
-        y = np.reshape(y, (49,1))
+        y = np.reshape(y, (49, 1))
         X = []
         X.append(db.by_col("INC"))
         X.append(db.by_col("CRIME"))
@@ -146,8 +150,8 @@ class TestSpDcache(unittest.TestCase):
         self.X = X
         ols = OLS(self.y, self.X)
         self.ols = ols
-        w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
-        w.transform='r'
+        w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), "r").read()
+        w.transform = "r"
         self.w = w
 
     def test_j(self):
@@ -175,5 +179,5 @@ class TestSpDcache(unittest.TestCase):
         np.testing.assert_allclose(cache.wu[0][0], -10.681344941514411, RTOL)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

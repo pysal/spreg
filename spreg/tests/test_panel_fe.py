@@ -12,19 +12,22 @@ class Test_Panel_FE_Lag(unittest.TestCase):
         self.db = libpysal.io.open(nat.get_path("NAT.dbf"), "r")
         nat_shp = libpysal.examples.get_path("NAT.shp")
         self.w = libpysal.weights.Queen.from_shapefile(nat_shp)
-        self.w.transform = 'r'
+        self.w.transform = "r"
         self.y_name = ["HR70", "HR80", "HR90"]
         self.x_names = ["RD70", "RD80", "RD90", "PS70", "PS80", "PS90"]
         self.y = np.array([self.db.by_col(name) for name in self.y_name]).T
         self.x = np.array([self.db.by_col(name) for name in self.x_names]).T
 
     def test_Panel(self):
-        reg = Panel_FE_Lag(self.y, self.x, w=self.w,
-                           name_y=self.y_name, name_x=self.x_names,
-                           name_ds=self.ds_name)
-        betas = np.array([[0.80058859],
-        [-2.60035236],
-        [0.19030424]])
+        reg = Panel_FE_Lag(
+            self.y,
+            self.x,
+            w=self.w,
+            name_y=self.y_name,
+            name_x=self.x_names,
+            name_ds=self.ds_name,
+        )
+        betas = np.array([[0.80058859], [-2.60035236], [0.19030424]])
         np.testing.assert_allclose(reg.betas, betas, RTOL)
         u = np.array([-2.70317346])
         np.testing.assert_allclose(reg.u[0], u, RTOL)
@@ -53,19 +56,22 @@ class Test_Panel_FE_Error(unittest.TestCase):
         self.db = libpysal.io.open(nat.get_path("NAT.dbf"), "r")
         nat_shp = libpysal.examples.get_path("NAT.shp")
         self.w = libpysal.weights.Queen.from_shapefile(nat_shp)
-        self.w.transform = 'r'
+        self.w.transform = "r"
         self.y_name = ["HR70", "HR80", "HR90"]
         self.x_names = ["RD70", "RD80", "RD90", "PS70", "PS80", "PS90"]
         self.y = np.array([self.db.by_col(name) for name in self.y_name]).T
         self.x = np.array([self.db.by_col(name) for name in self.x_names]).T
 
     def test_Panel(self):
-        reg = Panel_FE_Error(self.y, self.x, w=self.w,
-                             name_y=self.y_name, name_x=self.x_names,
-                             name_ds=self.ds_name)
-        betas = np.array([[0.86979232],
-                          [-2.96606744],
-                          [0.19434604]])
+        reg = Panel_FE_Error(
+            self.y,
+            self.x,
+            w=self.w,
+            name_y=self.y_name,
+            name_x=self.x_names,
+            name_ds=self.ds_name,
+        )
+        betas = np.array([[0.86979232], [-2.96606744], [0.19434604]])
         np.testing.assert_allclose(reg.betas, betas, RTOL)
         u = np.array([-3.02217669])
         np.testing.assert_allclose(reg.u[0], u, RTOL)
@@ -87,5 +93,5 @@ class Test_Panel_FE_Error(unittest.TestCase):
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

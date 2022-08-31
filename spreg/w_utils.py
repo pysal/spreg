@@ -16,11 +16,11 @@ def symmetrize(w):
 
     """
     current = w.transform
-    w.transform = 'B'
+    w.transform = "B"
     d = w.sparse.sum(axis=1)  # row sum
     d.shape = (w.n,)
     d = np.sqrt(d)
-    Di12 = SPARSE.spdiags(1. / d, [0], w.n, w.n)
+    Di12 = SPARSE.spdiags(1.0 / d, [0], w.n, w.n)
     D12 = SPARSE.spdiags(d, [0], w.n, w.n)
-    w.transform = 'r'
+    w.transform = "r"
     return D12 * w.sparse * Di12

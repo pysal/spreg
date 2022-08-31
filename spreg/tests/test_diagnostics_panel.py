@@ -32,9 +32,13 @@ class Test_Panel_Diagnostics(unittest.TestCase):
         counties = np.array(self.db.by_col("FIPSNO"))
         subid = np.where(np.isin(counties, filter_counties))[0]
         self.w = w_subset(w_full, subid)
-        self.w.transform = 'r'
-        self.y = y_full[subid, ]
-        self.x = x_full[subid, ]
+        self.w.transform = "r"
+        self.y = y_full[
+            subid,
+        ]
+        self.x = x_full[
+            subid,
+        ]
 
     def test_LM(self):
         lmlag = panel_LMlag(self.y, self.x, self.w)
@@ -63,5 +67,5 @@ class Test_Panel_Diagnostics(unittest.TestCase):
         np.testing.assert_allclose(Herror, exp, RTOL)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

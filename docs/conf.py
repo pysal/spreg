@@ -309,4 +309,3 @@ nbsphinx_execute_arguments = [
 mathjax_config = {
     "TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": True}},
 }
-

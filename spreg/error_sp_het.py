@@ -1,6 +1,6 @@
-'''
+"""
 Spatial Error with Heteroskedasticity family of models
-'''
+"""
 
 __author__ = "Luc Anselin luc.anselin@asu.edu, \
         Pedro V. Amaral pedro.amaral@asu.edu, \
@@ -37,7 +37,7 @@ class BaseGM_Error_Het(RegressionPropsY):
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : Sparse matrix
-                   Spatial weights sparse matrix 
+                   Spatial weights sparse matrix
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional
@@ -106,8 +106,7 @@ class BaseGM_Error_Het(RegressionPropsY):
      [ 0.4118  0.168 ]]
     """
 
-    def __init__(self, y, x, w,
-                 max_iter=1, epsilon=0.00001, step1c=False):
+    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, step1c=False):
 
         self.step1c = step1c
         # 1a. OLS --> \tilde{betas}
@@ -170,7 +169,7 @@ class GM_Error_Het(BaseGM_Error_Het):
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
-                   Spatial weights object   
+                   Spatial weights object
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Note: epsilon provides an additional
@@ -230,7 +229,7 @@ class GM_Error_Het(BaseGM_Error_Het):
     vm           : array
                    Variance covariance matrix (kxk)
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -260,7 +259,7 @@ class GM_Error_Het(BaseGM_Error_Het):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
@@ -332,24 +331,40 @@ class GM_Error_Het(BaseGM_Error_Het):
 
     """
 
-    def __init__(self, y, x, w,
-                 max_iter=1, epsilon=0.00001, step1c=False,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        max_iter=1,
+        epsilon=0.00001,
+        step1c=False,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
         BaseGM_Error_Het.__init__(
-            self, y, x_constant, w.sparse, max_iter=max_iter,
-            step1c=step1c, epsilon=epsilon)
+            self,
+            y,
+            x_constant,
+            w.sparse,
+            max_iter=max_iter,
+            step1c=step1c,
+            epsilon=epsilon,
+        )
         self.title = "SPATIALLY WEIGHTED LEAST SQUARES (HET)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
-        self.name_x.append('lambda')
+        self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Error_Het(reg=self, w=w, vm=vm)
 
@@ -373,10 +388,10 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : Sparse matrix
-                   Spatial weights sparse matrix   
+                   Spatial weights sparse matrix
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional
@@ -418,7 +433,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable used as instruments 
+                   external exogenous variable used as instruments
     z            : array
                    nxk array of variables (combination of x and yend)
     h            : array
@@ -465,15 +480,30 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
      [ 0.4114  0.1777]]
     """
 
-    def __init__(self, y, x, yend, q, w,
-                 max_iter=1, epsilon=0.00001,
-                 step1c=False, inv_method='power_exp'):
+    def __init__(
+        self,
+        y,
+        x,
+        yend,
+        q,
+        w,
+        max_iter=1,
+        epsilon=0.00001,
+        step1c=False,
+        inv_method="power_exp",
+    ):
 
         self.step1c = step1c
         # 1a. reg --> \tilde{betas}
         tsls = TSLS.BaseTSLS(y=y, x=x, yend=yend, q=q)
         self.x, self.z, self.h, self.y = tsls.x, tsls.z, tsls.h, tsls.y
-        self.yend, self.q, self.n, self.k, self.hth = tsls.yend, tsls.q, tsls.n, tsls.k, tsls.hth
+        self.yend, self.q, self.n, self.k, self.hth = (
+            tsls.yend,
+            tsls.q,
+            tsls.n,
+            tsls.k,
+            tsls.hth,
+        )
         wA1 = UTILS.get_A1_het(w)
 
         # 1b. GMM --> \tilde{\lambda1}
@@ -484,8 +514,9 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             # 1c. GMM --> \tilde{\lambda2}
             self.u = tsls.u
             zs = UTILS.get_spFilter(w, lambda1, self.z)
-            vc1 = get_vc_het_tsls(w, wA1, self, lambda1,
-                                  tsls.pfora1a2, zs, inv_method, filt=False)
+            vc1 = get_vc_het_tsls(
+                w, wA1, self, lambda1, tsls.pfora1a2, zs, inv_method, filt=False
+            )
             lambda2 = UTILS.optim_moments(moments, vc1)
         else:
             lambda2 = lambda1
@@ -502,8 +533,15 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             self.u = self.y - self.predy
 
             # 2b. GMM --> \hat{\lambda}
-            vc2 = get_vc_het_tsls(w, wA1, self, lambda_old,
-                                  tsls_s.pfora1a2, sphstack(xs, yend_s), inv_method)
+            vc2 = get_vc_het_tsls(
+                w,
+                wA1,
+                self,
+                lambda_old,
+                tsls_s.pfora1a2,
+                sphstack(xs, yend_s),
+                inv_method,
+            )
             moments_i = UTILS._moments2eqs(wA1, w, self.u)
             lambda3 = UTILS.optim_moments(moments_i, vc2)
             eps = abs(lambda3 - lambda_old)
@@ -514,8 +552,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
 
         zs = UTILS.get_spFilter(w, lambda3, self.z)
         P = get_P_hat(self, tsls.hthi, zs)
-        vc3 = get_vc_het_tsls(w, wA1, self, lambda3, P,
-                              zs, inv_method, save_a1a2=True)
+        vc3 = get_vc_het_tsls(w, wA1, self, lambda3, P, zs, inv_method, save_a1a2=True)
         self.vm = get_Omega_GS2SLS(w, lambda3, self, moments_i[0], vc3, P)
         self.betas = np.vstack((tsls_s.betas, lambda3))
         self.e_filtered = self.u - lambda3 * w * self.u
@@ -541,10 +578,10 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : pysal W object
-                   Spatial weights object   
+                   Spatial weights object
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional
@@ -603,7 +640,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable used as instruments 
+                   external exogenous variable used as instruments
     z            : array
                    nxk array of variables (combination of x and yend)
     h            : array
@@ -622,7 +659,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     pr2          : float
                    Pseudo R squared (squared correlation between y and ypred)
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -633,7 +670,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     name_yend     : list of strings
                     Names of endogenous variables for use in output
     name_z        : list of strings
-                    Names of exogenous and endogenous variables for use in 
+                    Names of exogenous and endogenous variables for use in
                     output
     name_q        : list of strings
                     Names of external instruments
@@ -663,7 +700,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
@@ -744,28 +781,50 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
 
     """
 
-    def __init__(self, y, x, yend, q, w,
-                 max_iter=1, epsilon=0.00001,
-                 step1c=False, inv_method='power_exp',
-                 vm=False, name_y=None, name_x=None,
-                 name_yend=None, name_q=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        yend,
+        q,
+        w,
+        max_iter=1,
+        epsilon=0.00001,
+        step1c=False,
+        inv_method="power_exp",
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        BaseGM_Endog_Error_Het.__init__(self, y=y, x=x_constant, yend=yend,
-                                        q=q, w=w.sparse, max_iter=max_iter,
-                                        step1c=step1c, epsilon=epsilon, inv_method=inv_method)
+        BaseGM_Endog_Error_Het.__init__(
+            self,
+            y=y,
+            x=x_constant,
+            yend=yend,
+            q=q,
+            w=w.sparse,
+            max_iter=max_iter,
+            step1c=step1c,
+            epsilon=epsilon,
+            inv_method=inv_method,
+        )
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HET)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
-        self.name_z.append('lambda')  # listing lambda last
+        self.name_z.append("lambda")  # listing lambda last
         self.name_q = USER.set_name_q(name_q, q)
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
@@ -791,16 +850,16 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : Sparse matrix
-                   Spatial weights sparse matrix 
+                   Spatial weights sparse matrix
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
     lag_q        : boolean
-                   If True, then include spatial lags of the additional 
+                   If True, then include spatial lags of the additional
                    instruments (q).
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
@@ -843,7 +902,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable used as instruments 
+                   external exogenous variable used as instruments
     z            : array
                    nxk array of variables (combination of x and yend)
     h            : array
@@ -911,14 +970,33 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
      ['lambda' '0.65608' '0.15719']]
     """
 
-    def __init__(self, y, x, yend=None, q=None,
-                 w=None, w_lags=1, lag_q=True,
-                 max_iter=1, epsilon=0.00001,
-                 step1c=False, inv_method='power_exp'):
+    def __init__(
+        self,
+        y,
+        x,
+        yend=None,
+        q=None,
+        w=None,
+        w_lags=1,
+        lag_q=True,
+        max_iter=1,
+        epsilon=0.00001,
+        step1c=False,
+        inv_method="power_exp",
+    ):
 
         BaseGM_Endog_Error_Het.__init__(
-            self, y=y, x=x, w=w, yend=yend, q=q, max_iter=max_iter,
-            step1c=step1c, epsilon=epsilon, inv_method=inv_method)
+            self,
+            y=y,
+            x=x,
+            w=w,
+            yend=yend,
+            q=q,
+            max_iter=max_iter,
+            step1c=step1c,
+            epsilon=epsilon,
+            inv_method=inv_method,
+        )
 
 
 class GM_Combo_Het(BaseGM_Combo_Het):
@@ -940,16 +1018,16 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : pysal W object
-                   Spatial weights object (always needed)   
+                   Spatial weights object (always needed)
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
     lag_q        : boolean
-                   If True, then include spatial lags of the additional 
+                   If True, then include spatial lags of the additional
                    instruments (q).
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
@@ -1013,7 +1091,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable used as instruments 
+                   external exogenous variable used as instruments
     z            : array
                    nxk array of variables (combination of x and yend)
     h            : array
@@ -1035,7 +1113,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                    Pseudo R squared (squared correlation between y and ypred_e
                    (using reduced form))
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
@@ -1046,7 +1124,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     name_yend     : list of strings
                     Names of endogenous variables for use in output
     name_z        : list of strings
-                    Names of exogenous and endogenous variables for use in 
+                    Names of exogenous and endogenous variables for use in
                     output
     name_q        : list of strings
                     Names of external instruments
@@ -1076,7 +1154,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
@@ -1169,27 +1247,52 @@ class GM_Combo_Het(BaseGM_Combo_Het):
 
     """
 
-    def __init__(self, y, x, yend=None, q=None,
-                 w=None, w_lags=1, lag_q=True,
-                 max_iter=1, epsilon=0.00001,
-                 step1c=False, inv_method='power_exp',
-                 vm=False, name_y=None, name_x=None,
-                 name_yend=None, name_q=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        yend=None,
+        q=None,
+        w=None,
+        w_lags=1,
+        lag_q=True,
+        max_iter=1,
+        epsilon=0.00001,
+        step1c=False,
+        inv_method="power_exp",
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        yend2, q2 = set_endog(y, x_constant[:,1:], w, yend, q, w_lags, lag_q)
-        BaseGM_Combo_Het.__init__(self, y=y, x=x_constant, yend=yend2, q=q2,
-                                  w=w.sparse, w_lags=w_lags,
-                                  max_iter=max_iter, step1c=step1c, lag_q=lag_q,
-                                  epsilon=epsilon, inv_method=inv_method)
+        yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+        BaseGM_Combo_Het.__init__(
+            self,
+            y=y,
+            x=x_constant,
+            yend=yend2,
+            q=q2,
+            w=w.sparse,
+            w_lags=w_lags,
+            max_iter=max_iter,
+            step1c=step1c,
+            lag_q=lag_q,
+            epsilon=epsilon,
+            inv_method=inv_method,
+        )
         self.rho = self.betas[-2]
-        self.predy_e, self.e_pred, warn = UTILS.sp_att(w, self.y, self.predy,
-                                                       yend2[:, -1].reshape(self.n, 1), self.rho)
+        self.predy_e, self.e_pred, warn = UTILS.sp_att(
+            w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho
+        )
         UTILS.set_warn(self, warn)
         self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HET)"
         self.name_ds = USER.set_name_ds(name_ds)
@@ -1198,16 +1301,16 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend
-        self.name_z.append('lambda')  # listing lambda last
+        self.name_z.append("lambda")  # listing lambda last
         self.name_q = USER.set_name_q(name_q, q)
-        self.name_q.extend(
-            USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+        self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.GM_Combo_Het(reg=self, w=w, vm=vm)
 
 
 # Functions
+
 
 def get_psi_sigma(w, u, lamb):
     """
@@ -1267,7 +1370,7 @@ def get_vc_het(w, wA1, E):
     psi12 = aPatE * wPwtE
     psi22 = wPwtE * wPwtE
     psi = list(map(np.sum, [psi11.diagonal(), psi12.diagonal(), psi22.diagonal()]))
-    return np.array([[psi[0], psi[1]], [psi[1], psi[2]]]) / (2. * w.shape[0])
+    return np.array([[psi[0], psi[1]], [psi[1], psi[2]]]) / (2.0 * w.shape[0])
 
 
 def get_vm_het(G, lamb, reg, w, psi):
@@ -1311,8 +1414,10 @@ def get_vm_het(G, lamb, reg, w, psi):
     omega11 = w.shape[0] * np.dot(np.dot(ZsZsi, ZstEZs), ZsZsi)
     omega22 = la.inv(np.dot(np.dot(J.T, la.inv(psi)), J))
     zero = np.zeros((reg.k, 1), float)
-    vm = np.vstack((np.hstack((omega11, zero)), np.hstack((zero.T, omega22)))) / \
-        w.shape[0]
+    vm = (
+        np.vstack((np.hstack((omega11, zero)), np.hstack((zero.T, omega22))))
+        / w.shape[0]
+    )
     return vm
 
 
@@ -1354,13 +1459,17 @@ def get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt):
     a2 = np.dot(spdot(reg.h, P), alpha2)
     if not filt:
         a1 = UTILS.inverse_prod(
-            w, a1, lambdapar, post_multiply=True, inv_method=inv_method).T
+            w, a1, lambdapar, post_multiply=True, inv_method=inv_method
+        ).T
         a2 = UTILS.inverse_prod(
-            w, a2, lambdapar, post_multiply=True, inv_method=inv_method).T
+            w, a2, lambdapar, post_multiply=True, inv_method=inv_method
+        ).T
     return [a1, a2]
 
 
-def get_vc_het_tsls(w, wA1, reg, lambdapar, P, zs, inv_method, filt=True, save_a1a2=False):
+def get_vc_het_tsls(
+    w, wA1, reg, lambdapar, P, zs, inv_method, filt=True, save_a1a2=False
+):
 
     sigma = get_psi_sigma(w, reg.u, lambdapar)
     vc1 = get_vc_het(w, wA1, sigma)
@@ -1399,18 +1508,17 @@ def get_Omega_GS2SLS(w, lamb, reg, G, psi, P):
     Returns
     -------
     omega       : array
-                  (k+1)x(k+1)                 
+                  (k+1)x(k+1)
     """
     psi, a1, a2 = psi
     sigma = get_psi_sigma(w, reg.u, lamb)
     psi_dd_1 = (1.0 / w.shape[0]) * reg.h.T * sigma
     psi_dd = spdot(psi_dd_1, reg.h)
     psi_dl = spdot(psi_dd_1, np.hstack((a1, a2)))
-    psi_o = np.hstack(
-        (np.vstack((psi_dd, psi_dl.T)), np.vstack((psi_dl, psi))))
+    psi_o = np.hstack((np.vstack((psi_dd, psi_dl.T)), np.vstack((psi_dl, psi))))
     psii = la.inv(psi)
 
-    j = np.dot(G, np.array([[1.], [2 * lamb]]))
+    j = np.dot(G, np.array([[1.0], [2 * lamb]]))
     jtpsii = np.dot(j.T, psii)
     jtpsiij = np.dot(jtpsii, j)
     jtpsiiji = la.inv(jtpsiij)
@@ -1419,17 +1527,27 @@ def get_Omega_GS2SLS(w, lamb, reg, G, psi, P):
     om_1_s = omega_1.shape
     om_2_s = omega_2.shape
     p_s = P.shape
-    omega_left = np.hstack((np.vstack((P.T, np.zeros((om_1_s[0], p_s[0])))),
-                            np.vstack((np.zeros((p_s[1], om_1_s[1])), omega_1))))
-    omega_right = np.hstack((np.vstack((P, np.zeros((om_2_s[0], p_s[1])))),
-                             np.vstack((np.zeros((p_s[0], om_2_s[1])), omega_2))))
+    omega_left = np.hstack(
+        (
+            np.vstack((P.T, np.zeros((om_1_s[0], p_s[0])))),
+            np.vstack((np.zeros((p_s[1], om_1_s[1])), omega_1)),
+        )
+    )
+    omega_right = np.hstack(
+        (
+            np.vstack((P, np.zeros((om_2_s[0], p_s[1])))),
+            np.vstack((np.zeros((p_s[0], om_2_s[1])), omega_2)),
+        )
+    )
     omega = np.dot(np.dot(omega_left, psi_o), omega_right)
     return omega / w.shape[0]
 
 
 def _test():
     import doctest
+
     doctest.testmod()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

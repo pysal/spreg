@@ -4,15 +4,17 @@ Spatial diagnostics module
 __author__ = "Luc Anselin luc.anselin@asu.edu, Daniel Arribas-Bel darribas@asu.edu"
 
 from .utils import spdot
-#from scipy.stats.stats import chisqprob
+
+# from scipy.stats.stats import chisqprob
 from scipy import stats
-#stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
+
+# stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 from scipy.stats import norm
 import numpy as np
 import numpy.linalg as la
 
-__all__ = ['LMtests', 'MoranRes', 'AKtest']
+__all__ = ["LMtests", "MoranRes", "AKtest"]
 
 
 class LMtests:
@@ -123,19 +125,19 @@ class LMtests:
     4.1907 0.123
     """
 
-    def __init__(self, ols, w, tests=['all']):
+    def __init__(self, ols, w, tests=["all"]):
         cache = spDcache(ols, w)
-        if tests == ['all']:
-            tests = ['lme', 'lml', 'rlme', 'rlml', 'sarma']
-        if 'lme' in tests:
+        if tests == ["all"]:
+            tests = ["lme", "lml", "rlme", "rlml", "sarma"]
+        if "lme" in tests:
             self.lme = lmErr(ols, w, cache)
-        if 'lml' in tests:
+        if "lml" in tests:
             self.lml = lmLag(ols, w, cache)
-        if 'rlme' in tests:
+        if "rlme" in tests:
             self.rlme = rlmErr(ols, w, cache)
-        if 'rlml' in tests:
+        if "rlml" in tests:
             self.rlml = rlmLag(ols, w, cache)
-        if 'sarma' in tests:
+        if "sarma" in tests:
             self.sarma = lmSarma(ols, w, cache)
 
 
@@ -375,20 +377,22 @@ class AKtest:
 
     """
 
-    def __init__(self, iv, w, case='nosp'):
-        if case == 'gen':
+    def __init__(self, iv, w, case="nosp"):
+        if case == "gen":
             cache = spDcache(iv, w)
             self.mi, self.ak, self.p = akTest(iv, w, cache)
-        elif case == 'nosp':
+        elif case == "nosp":
             cache = spDcache(iv, w)
             self.mi = get_mI(iv, w, cache)
             self.ak, self.p = lmErr(iv, w, cache)
         else:
-            print("""\n
+            print(
+                """\n
             Fix the optional argument 'case' to match the requirements:
                 * 'gen': General case (spatial lag + end. reg.)
                 * 'nosp': No spatial end. reg.
-            \n""")
+            \n"""
+            )
 
 
 class spDcache:
@@ -434,66 +438,66 @@ class spDcache:
 
     @property
     def j(self):
-        if 'j' not in self._cache:
+        if "j" not in self._cache:
             wxb = self.w.sparse * self.reg.predy
             wxb2 = np.dot(wxb.T, wxb)
             xwxb = spdot(self.reg.x.T, wxb)
             num1 = wxb2 - np.dot(xwxb.T, np.dot(self.reg.xtxi, xwxb))
             num = num1 + (self.t * self.reg.sig2n)
             den = self.reg.n * self.reg.sig2n
-            self._cache['j'] = num / den
-        return self._cache['j']
+            self._cache["j"] = num / den
+        return self._cache["j"]
 
     @property
     def wu(self):
-        if 'wu' not in self._cache:
-            self._cache['wu'] = self.w.sparse * self.reg.u
-        return self._cache['wu']
+        if "wu" not in self._cache:
+            self._cache["wu"] = self.w.sparse * self.reg.u
+        return self._cache["wu"]
 
     @property
     def utwuDs(self):
-        if 'utwuDs' not in self._cache:
+        if "utwuDs" not in self._cache:
             res = np.dot(self.reg.u.T, self.wu) / self.reg.sig2n
-            self._cache['utwuDs'] = res
-        return self._cache['utwuDs']
+            self._cache["utwuDs"] = res
+        return self._cache["utwuDs"]
 
     @property
     def utwyDs(self):
-        if 'utwyDs' not in self._cache:
+        if "utwyDs" not in self._cache:
             res = np.dot(self.reg.u.T, self.w.sparse * self.reg.y)
-            self._cache['utwyDs'] = res / self.reg.sig2n
-        return self._cache['utwyDs']
+            self._cache["utwyDs"] = res / self.reg.sig2n
+        return self._cache["utwyDs"]
 
     @property
     def t(self):
-        if 't' not in self._cache:
+        if "t" not in self._cache:
             prod = (self.w.sparse.T + self.w.sparse) * self.w.sparse
-            self._cache['t'] = np.sum(prod.diagonal())
-        return self._cache['t']
+            self._cache["t"] = np.sum(prod.diagonal())
+        return self._cache["t"]
 
     @property
     def trA(self):
-        if 'trA' not in self._cache:
+        if "trA" not in self._cache:
             xtwx = spdot(self.reg.x.T, spdot(self.w.sparse, self.reg.x))
             mw = np.dot(self.reg.xtxi, xtwx)
-            self._cache['trA'] = np.sum(mw.diagonal())
-        return self._cache['trA']
+            self._cache["trA"] = np.sum(mw.diagonal())
+        return self._cache["trA"]
 
     @property
     def AB(self):
         """
         Computes A and B matrices as in Cliff-Ord 1981, p. 203
         """
-        if 'AB' not in self._cache:
-            U = (self.w.sparse + self.w.sparse.T) / 2.
+        if "AB" not in self._cache:
+            U = (self.w.sparse + self.w.sparse.T) / 2.0
             z = spdot(U, self.reg.x, array_out=False)
             c1 = spdot(self.reg.x.T, z, array_out=False)
             c2 = spdot(z.T, z, array_out=False)
             G = self.reg.xtxi
             A = spdot(G, c1)
             B = spdot(G, c2)
-            self._cache['AB'] = [A, B]
-        return self._cache['AB']
+            self._cache["AB"] = [A, B]
+        return self._cache["AB"]
 
 
 def lmErr(reg, w, spDcache):
@@ -571,7 +575,7 @@ def rlmErr(ols, w, spDcache):
     """
     nj = ols.n * spDcache.j
     num = (spDcache.utwuDs - (spDcache.t * spDcache.utwyDs) / nj) ** 2
-    den = spDcache.t * (1. - (spDcache.t / nj))
+    den = spDcache.t * (1.0 - (spDcache.t / nj))
     lm = num / den
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
@@ -597,8 +601,7 @@ def rlmLag(ols, w, spDcache):
                       Pair of statistic and p-value for the Robust LM lag test.
 
     """
-    lm = (spDcache.utwyDs - spDcache.utwuDs) ** 2 / \
-        ((ols.n * spDcache.j) - spDcache.t)
+    lm = (spDcache.utwyDs - spDcache.utwuDs) ** 2 / ((ols.n * spDcache.j) - spDcache.t)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -624,8 +627,7 @@ def lmSarma(ols, w, spDcache):
 
     """
 
-    first = (spDcache.utwyDs - spDcache.utwuDs) ** 2 / \
-        (w.n * spDcache.j - spDcache.t)
+    first = (spDcache.utwyDs - spDcache.utwuDs) ** 2 / (w.n * spDcache.j - spDcache.t)
     secnd = spDcache.utwuDs ** 2 / spDcache.t
     lm = first + secnd
     pval = chisqprob(lm, 2)
@@ -665,10 +667,10 @@ def get_vI(ols, w, ei, spDcache):
     trA2 = np.sum(trA2.diagonal())
 
     B = spDcache.AB[1]
-    trB = np.sum(B.diagonal()) * 4.
-    vi = (w.n ** 2 / (w.s0 ** 2 * (w.n - ols.k) * (w.n - ols.k + 2.))) * \
-         (w.s1 + 2. * trA2 - trB -
-          ((2. * (spDcache.trA ** 2)) / (w.n - ols.k)))
+    trB = np.sum(B.diagonal()) * 4.0
+    vi = (w.n ** 2 / (w.s0 ** 2 * (w.n - ols.k) * (w.n - ols.k + 2.0))) * (
+        w.s1 + 2.0 * trA2 - trB - ((2.0 * (spDcache.trA ** 2)) / (w.n - ols.k))
+    )
     return vi
 
 
@@ -676,7 +678,7 @@ def get_eI(ols, w, spDcache):
     """
     Moran's I expectation using matrix M
     """
-    return - (w.n * spDcache.trA) / (w.s0 * (w.n - ols.k))
+    return -(w.n * spDcache.trA) / (w.s0 * (w.n - ols.k))
 
 
 def get_zI(I, ei, vi):
@@ -686,7 +688,7 @@ def get_zI(I, ei, vi):
     Returns two-sided p-values as provided in the GeoDa family
     """
     z = abs((I - ei) / np.sqrt(vi))
-    pval = norm.sf(z) * 2.
+    pval = norm.sf(z) * 2.0
     return (z, pval)
 
 
@@ -731,7 +733,9 @@ def akTest(iv, w, spDcache):
 
 def _test():
     import doctest
+
     doctest.testmod()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

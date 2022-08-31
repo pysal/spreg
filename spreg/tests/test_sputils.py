@@ -5,26 +5,39 @@ import unittest as ut
 import numpy as np
 import scipy.sparse as spar
 
-filterwarnings('ignore', category=spar.SparseEfficiencyWarning)
+filterwarnings("ignore", category=spar.SparseEfficiencyWarning)
 
-ALL_FUNCS = [f for f,v in list(spu.__dict__.items()) \
-	     if (callable(v) \
-		 and not f.startswith('_'))]
-COVERAGE = ['spinv', 'splogdet', 'spisfinite', 'spmin', 'spfill_diagonal', \
-	    'spmax', 'spbroadcast', 'sphstack', 'spmultiply', 'spdot']
+ALL_FUNCS = [
+    f for f, v in list(spu.__dict__.items()) if (callable(v) and not f.startswith("_"))
+]
+COVERAGE = [
+    "spinv",
+    "splogdet",
+    "spisfinite",
+    "spmin",
+    "spfill_diagonal",
+    "spmax",
+    "spbroadcast",
+    "sphstack",
+    "spmultiply",
+    "spdot",
+]
 
 NOT_COVERED = set(ALL_FUNCS).difference(COVERAGE)
 
 if len(NOT_COVERED) > 0:
-    Warn('The following functions in {} are not covered:\n'
-         '{}'.format(spu.__file__, NOT_COVERED))
+    Warn(
+        "The following functions in {} are not covered:\n"
+        "{}".format(spu.__file__, NOT_COVERED)
+    )
+
 
 class Test_Sparse_Utils(ut.TestCase):
     def setUp(self):
         np.random.seed(8879)
 
         self.n = 20
-        self.dense0 = np.random.randint(2, size=(self.n,self.n))
+        self.dense0 = np.random.randint(2, size=(self.n, self.n))
         self.d0td0 = self.dense0.T.dot(self.dense0)
         self.dense1 = np.eye(self.n)
         self.sparse0 = spar.csc_matrix(self.dense0)
@@ -41,7 +54,7 @@ class Test_Sparse_Utils(ut.TestCase):
         self.assertIsInstance(rs2d, np.ndarray)
 
         np.testing.assert_allclose(r, rs2d)
-    
+
     def test_spdot(self):
         dd = spu.spdot(self.dense0, self.dense1)
         ds = spu.spdot(self.dense0, self.sparse1)
@@ -64,13 +77,13 @@ class Test_Sparse_Utils(ut.TestCase):
         sld = spu.splogdet(self.s0ts0)
 
         np.testing.assert_allclose(dld, sld)
-   
+
     def test_isfinite(self):
         self.assertTrue(spu.spisfinite(self.dense0))
         self.assertTrue(spu.spisfinite(self.sparse0))
-        
+
         dense_inf = np.float64(self.dense0.copy())
-        dense_inf[0,0] = np.nan
+        dense_inf[0, 0] = np.nan
         sparse_inf = spar.csc_matrix(dense_inf)
 
         self.assertTrue(not spu.spisfinite(dense_inf))
@@ -83,7 +96,7 @@ class Test_Sparse_Utils(ut.TestCase):
     def test_max(self):
         self.assertEqual(spu.spmax(self.dense1), 1)
         self.assertEqual(spu.spmax(self.sparse1), 1)
-    
+
     def test_fill_diagonal(self):
         current_dsum = self.dense0.trace()
         current_ssum = self.sparse0.diagonal().sum()
@@ -94,17 +107,17 @@ class Test_Sparse_Utils(ut.TestCase):
         tmps = self.sparse0.copy()
         d_4diag = spu.spfill_diagonal(tmpd, 4)
         s_4diag = spu.spfill_diagonal(tmps, 4)
-        
+
         known = 4 * self.n
 
         self.assertEqual(known, d_4diag.trace())
         self.assertEqual(known, s_4diag.diagonal().sum())
 
     def test_broadcast(self):
-        test_vec = np.ones((self.n,1)) * .2
-        
+        test_vec = np.ones((self.n, 1)) * 0.2
+
         tmpd = spu.spbroadcast(self.dense0, test_vec)
-        tmps = spu.spbroadcast(self.sparse0.tocsr(), test_vec) 
+        tmps = spu.spbroadcast(self.sparse0.tocsr(), test_vec)
 
         self.assertIsInstance(tmpd, np.ndarray)
         self.assertIsInstance(tmps, spar.csr_matrix)
@@ -124,13 +137,13 @@ class Test_Sparse_Utils(ut.TestCase):
         dd = spu.spmultiply(self.dense0, self.dense1)
         ss = spu.spmultiply(self.sparse0, self.sparse1, array_out=False)
 
-        #typing
+        # typing
         self.assertIsInstance(dd, np.ndarray)
         self.assertIsInstance(ss, spar.csc_matrix)
 
-        #equality
+        # equality
         np.testing.assert_array_equal(dd, ss.toarray())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ut.main()

@@ -2,22 +2,31 @@
 Utilities for SUR and 3SLS estimation
 """
 
-__author__= "Luc Anselin lanselin@gmail.com,    \
+__author__ = "Luc Anselin lanselin@gmail.com,    \
              Pedro V. Amaral pedrovma@gmail.com"
-            
+
 import numpy as np
 import numpy.linalg as la
 from .utils import spdot
 
-__all__ = ['sur_dictxy','sur_dictZ','sur_mat2dict','sur_dict2mat',\
-           'sur_corr','sur_crossprod','sur_est','sur_resids',\
-           'filter_dict','check_k']
+__all__ = [
+    "sur_dictxy",
+    "sur_dictZ",
+    "sur_mat2dict",
+    "sur_dict2mat",
+    "sur_corr",
+    "sur_crossprod",
+    "sur_est",
+    "sur_resids",
+    "filter_dict",
+    "check_k",
+]
 
 
-def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
+def sur_dictxy(db, y_vars, x_vars, space_id=None, time_id=None):
     """
     Stack X and y matrices and variable names as dictionaries by equation
-    
+
     Parameters
     ----------
     db          : data object
@@ -31,10 +40,10 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
                   used for splm format
     time_id     : variable with time ID
                   used for splm format
-    
+
     Return
     ------
-    (bigy,bigX,bigy_vars,bigX_vars) 
+    (bigy,bigX,bigy_vars,bigX_vars)
                 : tuple
                   with dictionaries for y and X, one for
                   each equation, bigy and bigX
@@ -43,17 +52,17 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
                   (includes constant for X)
     """
     c = "Constant"
-    if (len(y_vars) > 1):    # old format
+    if len(y_vars) > 1:  # old format
         n_eq = len(y_vars)
         try:
             y = np.array([db[name] for name in y_vars]).T
-        except:    
+        except:
             y = np.array([db.by_col(name) for name in y_vars]).T
         n = y.shape[0]
         bigy = {}
-        bigy_vars = dict((r,y_vars[r]) for r in range(n_eq))
-        bigy = dict((r,np.resize(y[:,r],(n,1))) for r in range(n_eq))
-        if not(len(x_vars) == n_eq):  #CHANGE into exception
+        bigy_vars = dict((r, y_vars[r]) for r in range(n_eq))
+        bigy = dict((r, np.resize(y[:, r], (n, 1))) for r in range(n_eq))
+        if not (len(x_vars) == n_eq):  # CHANGE into exception
             print("Error: mismatch variable lists")
         bigX = {}
         bigX_vars = {}
@@ -62,20 +71,20 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
                 litx = np.array([db[name] for name in x_vars[r]]).T
             except:
                 litx = np.array([db.by_col(name) for name in x_vars[r]]).T
-            ic = c + "_" + str(r+1)
-            x_vars[r].insert(0,ic)
+            ic = c + "_" + str(r + 1)
+            x_vars[r].insert(0, ic)
             litxc = np.hstack((np.ones((n, 1)), litx))
             bigX[r] = litxc
             bigX_vars[r] = x_vars[r]
             k = litxc.shape[1]
-        return (bigy,bigX,bigy_vars,bigX_vars)
-    elif (len(y_vars) == 1):  #splm format
-        if not(time_id):   #CHANGE into exception
+        return (bigy, bigX, bigy_vars, bigX_vars)
+    elif len(y_vars) == 1:  # splm format
+        if not (time_id):  # CHANGE into exception
             print("Error: time id must be specified")
         try:
             y = np.array([db[name] for name in y_vars]).T
         except:
-            y = np.array([db.by_col(name) for name in y_vars]).T            
+            y = np.array([db.by_col(name) for name in y_vars]).T
         bign = y.shape[0]
         try:
             ss = np.array([db[name] for name in space_id]).T
@@ -89,25 +98,25 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
         n_eq = len(tt1)
         tt2 = list(tt1)
         tt2.sort()
-        tt3 = [str(a) for a in tt2] # in case of string type time_id
-        n = bign/n_eq
+        tt3 = [str(a) for a in tt2]  # in case of string type time_id
+        n = bign / n_eq
         try:
-            longx = np.array([db[name] for name in x_vars[0]]).T            
+            longx = np.array([db[name] for name in x_vars[0]]).T
         except:
             longx = np.array([db.by_col(name) for name in x_vars[0]]).T
         longxc = np.hstack((np.ones((bign, 1)), longx))
         xvars = x_vars[0][:]
-        xvars.insert(0,c)
+        xvars.insert(0, c)
 
         # get unique values of space_id and time_id, since they could be
         # randomly organized in a table
         skeys = []
         sdict = {}
-        tmpy = { t : {} for t in tt1 }
-        tmpX = { t : {} for t in tt1 }
+        tmpy = {t: {} for t in tt1}
+        tmpX = {t: {} for t in tt1}
         for i in range(bign):
             sval = ss[i][0]  # e.g. FIPSNO 27077
-            tval = tt[i][0]   # e.g. TIME 1960
+            tval = tt[i][0]  # e.g. TIME 1960
             if tmpy.has_key(tval):
                 tmpy[tval][sval] = y[i]
             if tmpX.has_key(tval):
@@ -126,15 +135,15 @@ def sur_dictxy(db,y_vars,x_vars,space_id=None,time_id=None):
             bigX[r] = np.array([tmpX[tval][v] for v in skeys])
             bigy_vars[r] = y_vars[0] + "_" + tt3[r]
             bigX_vars[r] = [i + "_" + tt3[r] for i in xvars]
-        return (bigy,bigX,bigy_vars,bigX_vars)
+        return (bigy, bigX, bigy_vars, bigX_vars)
     else:
         print("error message, but should never be here")
-        
 
-def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
+
+def sur_dictZ(db, z_vars, form="spreg", const=False, space_id=None, time_id=None):
     """
     Generic stack data matrices and variable names as dictionaries by equation
-    
+
     Parameters
     ----------
     db          : data object
@@ -152,17 +161,17 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
                   used for plm format
     time_id     : variable with time ID
                   used for plm format
-    
+
     Return
     ------
     (bigZ,bigZ_names) : tuple
                         with dictionaries variables and variable
                         names, one for each equation
                         Note: bigX already includes the constant term
- 
+
     """
     c = "Constant"
-    if form == "spreg":    # old format
+    if form == "spreg":  # old format
         n_eq = len(z_vars)
         bigZ = {}
         bigZ_names = {}
@@ -172,15 +181,15 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
             except:
                 litz = np.array([db.by_col(name) for name in z_vars[r]]).T
             if const:
-                ic = c + "_" + str(r+1)
-                z_vars[r].insert(0,ic)
+                ic = c + "_" + str(r + 1)
+                z_vars[r].insert(0, ic)
                 litz = np.hstack((np.ones((litz.shape[0], 1)), litz))
             bigZ[r] = litz
             bigZ_names[r] = z_vars[r]
-        return (bigZ,bigZ_names)
-    
-    elif (form == "plm"):  #plm format
-        if not(time_id):   #CHANGE into exception
+        return (bigZ, bigZ_names)
+
+    elif form == "plm":  # plm format
+        if not (time_id):  # CHANGE into exception
             raise Exception("Error: time id must be specified for plm format")
         try:
             ss = np.array([db[name] for name in space_id]).T
@@ -196,7 +205,7 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
         tt2 = list(tt1)
         tt2.sort()
         tt3 = [str(int(a)) for a in tt2]
-        n = bign/n_eq
+        n = bign / n_eq
         try:
             longz = np.array([db[name] for name in z_vars[0]]).T
         except:
@@ -204,7 +213,7 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
         zvars = z_vars[0][:]
         if const:
             longz = np.hstack((np.ones((bign, 1)), longz))
-            zvars.insert(0,c)
+            zvars.insert(0, c)
 
         skeys = []
         sdict = {}
@@ -217,7 +226,7 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
             if not sdict.has_key(sval):
                 skeys.append(sval)
                 sdict[sval] = True
-                
+
         bigZ = {}
         bigZ_names = {}
         for r in range(n_eq):
@@ -225,18 +234,19 @@ def sur_dictZ(db,z_vars,form="spreg",const=False,space_id=None,time_id=None):
             bigZ[r] = np.array([tmpz[tval][v] for v in skeys])
             bzvars = [i + "_" + tt3[r] for i in zvars]
             bigZ_names[r] = bzvars
-        return (bigZ,bigZ_names)
+        return (bigZ, bigZ_names)
     else:
-        raise KeyError("Invalid format used for data set. form must be either "
-		       " 'spreg' or 'plm', and {} was provided.".format(form))
-    
+        raise KeyError(
+            "Invalid format used for data set. form must be either "
+            " 'spreg' or 'plm', and {} was provided.".format(form)
+        )
 
-        
-def sur_mat2dict(mat,ndim):
+
+def sur_mat2dict(mat, ndim):
     """
     Utility to convert a vector or matrix to a dictionary with ndim keys,
     one for each equation
-        
+
     Parameters
     ----------
     mat      : array
@@ -249,43 +259,45 @@ def sur_mat2dict(mat,ndim):
     -------
     dicts    : dictionary
                with len(ndim) keys, from 0 to len(ndim)-1
-    
-    
+
+
     """
-    kwork = np.vstack((np.zeros((1,1),dtype=np.int_),ndim))
+    kwork = np.vstack((np.zeros((1, 1), dtype=np.int_), ndim))
     dicts = {}
     ki = 0
-    for r in range(1,len(kwork)):
-        ki = ki + kwork[r-1][0] 
+    for r in range(1, len(kwork)):
+        ki = ki + kwork[r - 1][0]
         ke = ki + kwork[r][0]
-        dicts[r-1] = mat[ki:ke,:]
-    return(dicts)
+        dicts[r - 1] = mat[ki:ke, :]
+    return dicts
+
 
 def sur_dict2mat(dicts):
     """
     Utility to stack the elements of a dictionary of vectors
-    
+
     Parameters
     ----------
     dicts    : dictionary
                dictionary of vectors or matrices with same number
                of columns (no checks yet!)
-    
+
     Returns
     -------
     mat     : array
               a vector or matrix of vertically stacked vectors
-    
-    
+
+
     """
     n_dicts = len(dicts.keys())
     mat = np.vstack((dicts[t] for t in range(n_dicts)))
-    return(mat)
-    
+    return mat
+
+
 def sur_corr(sig):
     """
     SUR error correlation matrix
-         
+
     Parameters
     ----------
     sig      : array
@@ -295,19 +307,20 @@ def sur_corr(sig):
     -------
     corr  : array
             correlation matrix corresponding to sig
-            
+
     """
     v = sig.diagonal()
     s = np.sqrt(v)
-    s.resize(len(s),1)
-    sxs = np.dot(s,s.T)
+    s.resize(len(s), 1)
+    sxs = np.dot(s, s.T)
     corr = sig / sxs
     return corr
-    
-def sur_crossprod(bigZ,bigy):
-    '''
+
+
+def sur_crossprod(bigZ, bigy):
+    """
     Creates dictionaries of cross products by time period for both SUR and 3SLS
-    
+
     Parameters
     ----------
 
@@ -325,21 +338,21 @@ def sur_crossprod(bigZ,bigy):
                  of all r,s cross-products of Z_r'y_s
     bigZZ      : dictionary
                  of all r,s cross-products of Z_r'Z_s
-    '''
+    """
     bigZZ = {}
     n_eq = len(bigy.keys())
     for r in range(n_eq):
         for t in range(n_eq):
-            bigZZ[(r,t)] = spdot(bigZ[r].T,bigZ[t])
+            bigZZ[(r, t)] = spdot(bigZ[r].T, bigZ[t])
     bigZy = {}
     for r in range(n_eq):
         for t in range(n_eq):
-            bigZy[(r,t)] = spdot(bigZ[r].T,bigy[t])
-    return bigZZ,bigZy
-    
-    
-def sur_est(bigXX,bigXy,bigE,bigK):
-    '''
+            bigZy[(r, t)] = spdot(bigZ[r].T, bigy[t])
+    return bigZZ, bigZy
+
+
+def sur_est(bigXX, bigXy, bigE, bigK):
+    """
     Basic SUR estimation equations for both SUR and 3SLS
 
     Parameters
@@ -363,32 +376,34 @@ def sur_est(bigXX,bigXy,bigE,bigK):
              variance-covariance matrix for the regression coefficients
     sig    : array
              residual covariance matrix (using previous residuals)
-    
-    '''
+
+    """
     n = bigE.shape[0]
     n_eq = bigE.shape[1]
-    sig = np.dot(bigE.T,bigE) / n
+    sig = np.dot(bigE.T, bigE) / n
     sigi = la.inv(sig)
     sigiXX = {}
     for r in range(n_eq):
         for t in range(n_eq):
-            sigiXX[(r,t)] = bigXX[(r,t)]*sigi[r,t]
+            sigiXX[(r, t)] = bigXX[(r, t)] * sigi[r, t]
     sigiXy = {}
     for r in range(n_eq):
-        sxy=0.0
+        sxy = 0.0
         for t in range(n_eq):
-            sxy = sxy + sigi[r,t]*bigXy[(r,t)]
+            sxy = sxy + sigi[r, t] * bigXy[(r, t)]
         sigiXy[r] = sxy
     xsigy = np.vstack((sigiXy[t] for t in range(n_eq)))
-    xsigx = np.vstack(((np.hstack(sigiXX[(r,t)] for t in range(n_eq))) for r in range(n_eq)))
+    xsigx = np.vstack(
+        ((np.hstack(sigiXX[(r, t)] for t in range(n_eq))) for r in range(n_eq))
+    )
     varb = la.inv(xsigx)
-    beta = np.dot(varb,xsigy)
-    bSUR = sur_mat2dict(beta,bigK)
+    beta = np.dot(varb, xsigy)
+    bSUR = sur_mat2dict(beta, bigK)
     return bSUR, varb, sig
-        
 
-def sur_resids(bigy,bigX,beta):
-    '''
+
+def sur_resids(bigy, bigX, beta):
+    """
     Computation of a matrix with residuals by equation
 
     Parameters
@@ -405,16 +420,17 @@ def sur_resids(bigy,bigX,beta):
     -------
     bigE     : array
                a n x n_eq matrix of vectors of residuals
-    
-    '''
+
+    """
     n_eq = len(bigy.keys())
-    bigE = np.hstack((bigy[r] - spdot(bigX[r],beta[r])) for r in range(n_eq))
-    return(bigE) 
-    
-def sur_predict(bigy,bigX,beta):
-    '''
+    bigE = np.hstack((bigy[r] - spdot(bigX[r], beta[r])) for r in range(n_eq))
+    return bigE
+
+
+def sur_predict(bigy, bigX, beta):
+    """
     Computation of a matrix with predicted values by equation
-    
+
     Parameters
     ----------
 
@@ -430,17 +446,17 @@ def sur_predict(bigy,bigX,beta):
     -------
     bigYP     : array
                 a n x n_eq matrix of vectors of predicted values
-    
-    '''
+
+    """
     n_eq = len(bigy.keys())
-    bigYP = np.hstack(spdot(bigX[r],beta[r]) for r in range(n_eq))
-    return(bigYP) 
-    
-    
-def filter_dict(lam,bigZ,bigZlag):
+    bigYP = np.hstack(spdot(bigX[r], beta[r]) for r in range(n_eq))
+    return bigYP
+
+
+def filter_dict(lam, bigZ, bigZlag):
     """
     Dictionary of spatially filtered variables for use in SUR
-    
+
     Parameters
     ----------
     lam        : array
@@ -451,38 +467,38 @@ def filter_dict(lam,bigZ,bigZlag):
     bigZlag    : dictionary
                  of vector or matrix of spatially lagged
                  variables, one for each equation
-    
+
     Returns
     -------
     Zfilt      : dictionary
                  with spatially filtered variables
                  Z - lam*WZ, one for each equation
-    
+
     """
     n_eq = lam.shape[0]
-    if not(len(bigZ.keys()) == n_eq and len(bigZlag.keys()) == n_eq):
+    if not (len(bigZ.keys()) == n_eq and len(bigZlag.keys()) == n_eq):
         raise Exception("Error: incompatible dimensions")
     Zfilt = {}
     for r in range(n_eq):
         lami = lam[r][0]
-        Zfilt[r] = bigZ[r] - lami*bigZlag[r]
+        Zfilt[r] = bigZ[r] - lami * bigZlag[r]
     return Zfilt
+
 
 def check_k(bigK):
     """
     Check on equality of number of variables by equation
-    
+
     Parameter
     ---------
     bigK     : array
                n_eq x 1 array of number of variables (includes constant)
-    
+
     Returns
     -------
     True/False : result of test
     """
     kk = bigK.flatten()
     k = kk[0]
-    check = np.equal(k,kk)
+    check = np.equal(k, kk)
     return all(check)
-    

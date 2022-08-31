@@ -6,6 +6,7 @@ import numpy as np
 import numpy.linalg as la
 import scipy.optimize as op
 from scipy.stats import norm, chi2
+
 chisqprob = chi2.sf
 import scipy.sparse as SP
 from . import user_output as USER
@@ -39,7 +40,7 @@ class BaseProbit(object):
                   Default: 'phimean' (Mean of individual marginal effects)
                   Alternative: 'xmean' (Marginal effects at variables mean)
     maxiter     : int
-                  Maximum number of iterations until optimizer stops                  
+                  Maximum number of iterations until optimizer stops
 
     Attributes
     ----------
@@ -61,7 +62,7 @@ class BaseProbit(object):
                   Variance-covariance matrix (kxk)
     z_stat      : list of tuples
                   z statistic; each tuple contains the pair (statistic,
-                  p-value), where each is a float                  
+                  p-value), where each is a float
     xmean       : array
                   Mean of the independent variables (kx1)
     predpc      : float
@@ -74,12 +75,12 @@ class BaseProbit(object):
                   Scale of the marginal effects.
     slopes      : array
                   Marginal effects of the independent variables (k-1x1)
-		          Note: Disregards the presence of dummies.
+                          Note: Disregards the presence of dummies.
     slopes_vm   : array
                   Variance-covariance matrix of the slopes (k-1xk-1)
     LR          : tuple
                   Likelihood Ratio test of all coefficients = 0
-		          (test statistics, p-value)
+                          (test statistics, p-value)
     Pinkse_error: float
                   Lagrange Multiplier test against spatial error correlation.
                   Implemented as presented in :cite:`Pinkse2004`.
@@ -90,7 +91,7 @@ class BaseProbit(object):
                   Lagrange Multiplier test against spatial error correlation.
                   Implemented as presented in :cite:`Pinkse1998`.
     warning     : boolean
-                  if True Maximum number of iterations exceeded or gradient 
+                  if True Maximum number of iterations exceeded or gradient
                   and/or function calls not changing.
 
     Examples
@@ -125,7 +126,7 @@ class BaseProbit(object):
      ['PS_error' '2.558166' '0.109726']]
     """
 
-    def __init__(self, y, x, w=None, optim='newton', scalem='phimean', maxiter=100):
+    def __init__(self, y, x, w=None, optim="newton", scalem="phimean", maxiter=100):
         self.y = y
         self.x = x
         self.n, self.k = x.shape
@@ -140,163 +141,181 @@ class BaseProbit(object):
     @property
     def vm(self):
         try:
-            return self._cache['vm']
+            return self._cache["vm"]
         except AttributeError:
             self._cache = {}
             H = self.hessian(self.betas)
-            self._cache['vm'] = -la.inv(H)
+            self._cache["vm"] = -la.inv(H)
         except KeyError:
             H = self.hessian(self.betas)
-            self._cache['vm'] = -la.inv(H)
-        return self._cache['vm']
-    
+            self._cache["vm"] = -la.inv(H)
+        return self._cache["vm"]
+
     @vm.setter
     def vm(self, val):
         try:
-            self._cache['vm'] = val
+            self._cache["vm"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['vm'] = val
+        self._cache["vm"] = val
 
-    @property #could this get packaged into a separate function or something? It feels weird to duplicate this.  
+    @property  # could this get packaged into a separate function or something? It feels weird to duplicate this.
     def z_stat(self):
-        try: 
-            return self._cache['z_stat']
+        try:
+            return self._cache["z_stat"]
         except AttributeError:
             self._cache = {}
             variance = self.vm.diagonal()
-            zStat = self.betas.reshape(len(self.betas),) / np.sqrt(variance)
+            zStat = (
+                self.betas.reshape(
+                    len(self.betas),
+                )
+                / np.sqrt(variance)
+            )
             rs = {}
             for i in range(len(self.betas)):
                 rs[i] = (zStat[i], norm.sf(abs(zStat[i])) * 2)
-            self._cache['z_stat'] = rs.values()
+            self._cache["z_stat"] = rs.values()
         except KeyError:
             variance = self.vm.diagonal()
-            zStat = self.betas.reshape(len(self.betas),) / np.sqrt(variance)
+            zStat = (
+                self.betas.reshape(
+                    len(self.betas),
+                )
+                / np.sqrt(variance)
+            )
             rs = {}
             for i in range(len(self.betas)):
                 rs[i] = (zStat[i], norm.sf(abs(zStat[i])) * 2)
-            self._cache['z_stat'] = rs.values()
-        return self._cache['z_stat']
+            self._cache["z_stat"] = rs.values()
+        return self._cache["z_stat"]
 
     @z_stat.setter
     def z_stat(self, val):
         try:
-            self._cache['z_stat'] = val
+            self._cache["z_stat"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['z_stat'] = val
+        self._cache["z_stat"] = val
 
     @property
     def slopes_std_err(self):
         try:
-            return self._cache['slopes_std_err']
+            return self._cache["slopes_std_err"]
         except AttributeError:
             self._cache = {}
-            self._cache['slopes_std_err'] = np.sqrt(self.slopes_vm.diagonal())
+            self._cache["slopes_std_err"] = np.sqrt(self.slopes_vm.diagonal())
         except KeyError:
-            self._cache['slopes_std_err'] = np.sqrt(self.slopes_vm.diagonal())
-        return self._cache['slopes_std_err']    
-    
+            self._cache["slopes_std_err"] = np.sqrt(self.slopes_vm.diagonal())
+        return self._cache["slopes_std_err"]
+
     @slopes_std_err.setter
     def slopes_std_err(self, val):
         try:
-            self._cache['slopes_std_err'] = val
+            self._cache["slopes_std_err"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['slopes_std_err'] = val
+        self._cache["slopes_std_err"] = val
 
     @property
     def slopes_z_stat(self):
         try:
-            return self._cache['slopes_z_stat']
+            return self._cache["slopes_z_stat"]
         except AttributeError:
             self._cache = {}
             return self.slopes_z_stat
         except KeyError:
-            zStat = self.slopes.reshape(
-                len(self.slopes),) / self.slopes_std_err
+            zStat = (
+                self.slopes.reshape(
+                    len(self.slopes),
+                )
+                / self.slopes_std_err
+            )
             rs = {}
             for i in range(len(self.slopes)):
                 rs[i] = (zStat[i], norm.sf(abs(zStat[i])) * 2)
-            self._cache['slopes_z_stat'] = list(rs.values())
-        return self._cache['slopes_z_stat']
+            self._cache["slopes_z_stat"] = list(rs.values())
+        return self._cache["slopes_z_stat"]
 
     @slopes_z_stat.setter
     def slopes_z_stat(self, val):
         try:
-            self._cache['slopes_z_stat'] = val
+            self._cache["slopes_z_stat"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['slopes_z_stat'] = val
+        self._cache["slopes_z_stat"] = val
 
     @property
     def xmean(self):
         try:
-            return self._cache['xmean']
+            return self._cache["xmean"]
         except AttributeError:
             self._cache = {}
-            try: #why is this try-accept? can x be a list??
-                self._cache['xmean'] = np.reshape(sum(self.x) / self.n, (self.k, 1))
+            try:  # why is this try-accept? can x be a list??
+                self._cache["xmean"] = np.reshape(sum(self.x) / self.n, (self.k, 1))
             except:
-                self._cache['xmean'] = np.reshape(sum(self.x).toarray() / self.n, (self.k, 1))
+                self._cache["xmean"] = np.reshape(
+                    sum(self.x).toarray() / self.n, (self.k, 1)
+                )
         except KeyError:
             try:
-                self._cache['xmean'] = np.reshape(sum(self.x) / self.n, (self.k, 1))
+                self._cache["xmean"] = np.reshape(sum(self.x) / self.n, (self.k, 1))
             except:
-                self._cache['xmean'] = np.reshape(sum(self.x).toarray() / self.n, (self.k, 1))
-        return self._cache['xmean']
+                self._cache["xmean"] = np.reshape(
+                    sum(self.x).toarray() / self.n, (self.k, 1)
+                )
+        return self._cache["xmean"]
 
     @xmean.setter
     def xmean(self, val):
         try:
-            self._cache['xmean'] = val
+            self._cache["xmean"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['xmean'] = val
+        self._cache["xmean"] = val
 
     @property
     def xb(self):
         try:
-            return self._cache['xb']
+            return self._cache["xb"]
         except AttributeError:
             self._cache = {}
-            self._cache['xb'] = spdot(self.x, self.betas)
+            self._cache["xb"] = spdot(self.x, self.betas)
         except KeyError:
-            self._cache['xb'] = spdot(self.x, self.betas)
-        return self._cache['xb']
+            self._cache["xb"] = spdot(self.x, self.betas)
+        return self._cache["xb"]
 
     @xb.setter
     def xb(self, val):
         try:
-            self._cache['xb'] = val
+            self._cache["xb"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['xb'] = val
+        self._cache["xb"] = val
 
     @property
     def predy(self):
         try:
-            return self._cache['predy']
+            return self._cache["predy"]
         except AttributeError:
             self._cache = {}
-            self._cache['predy'] = norm.cdf(self.xb)
+            self._cache["predy"] = norm.cdf(self.xb)
         except KeyError:
-            self._cache['predy'] = norm.cdf(self.xb)
-        return self._cache['predy']
-    
+            self._cache["predy"] = norm.cdf(self.xb)
+        return self._cache["predy"]
+
     @predy.setter
     def predy(self, val):
         try:
-            self._cache['predy'] = val
+            self._cache["predy"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['predy'] = val
+        self._cache["predy"] = val
 
     @property
     def predpc(self):
         try:
-            return self._cache['predpc']
+            return self._cache["predpc"]
         except AttributeError:
             self._cache = {}
             predpc = abs(self.y - self.predy)
@@ -305,7 +324,7 @@ class BaseProbit(object):
                     predpc[i] = 0
                 else:
                     predpc[i] = 1
-            self._cache['predpc'] = float(100.0 * np.sum(predpc) / self.n)
+            self._cache["predpc"] = float(100.0 * np.sum(predpc) / self.n)
         except KeyError:
             predpc = abs(self.y - self.predy)
             for i in range(len(predpc)):
@@ -313,259 +332,276 @@ class BaseProbit(object):
                     predpc[i] = 0
                 else:
                     predpc[i] = 1
-            self._cache['predpc'] = float(100.0 * np.sum(predpc) / self.n)
-        return self._cache['predpc']
+            self._cache["predpc"] = float(100.0 * np.sum(predpc) / self.n)
+        return self._cache["predpc"]
 
     @predpc.setter
     def predpc(self, val):
         try:
-            self._cache['predpc'] = val
+            self._cache["predpc"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['predpc'] = val
-    
+        self._cache["predpc"] = val
+
     @property
     def phiy(self):
         try:
-            return self._cache['phiy']
+            return self._cache["phiy"]
         except AttributeError:
             self._cache = {}
-            self._cache['phiy'] = norm.pdf(self.xb)
+            self._cache["phiy"] = norm.pdf(self.xb)
         except KeyError:
-            self._cache['phiy'] = norm.pdf(self.xb)
-        return self._cache['phiy']
-    
+            self._cache["phiy"] = norm.pdf(self.xb)
+        return self._cache["phiy"]
+
     @phiy.setter
     def phiy(self, val):
         try:
-            self._cache['phiy'] = val
+            self._cache["phiy"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['phiy'] = val
+        self._cache["phiy"] = val
 
     @property
     def scale(self):
         try:
-            return self._cache['scale']
+            return self._cache["scale"]
         except AttributeError:
             self._cache = {}
-            if self.scalem == 'phimean':
-                self._cache['scale'] = float(1.0 * np.sum(self.phiy) / self.n)
-            elif self.scalem == 'xmean':
-                self._cache['scale'] = float(norm.pdf(np.dot(self.xmean.T, self.betas)))
+            if self.scalem == "phimean":
+                self._cache["scale"] = float(1.0 * np.sum(self.phiy) / self.n)
+            elif self.scalem == "xmean":
+                self._cache["scale"] = float(norm.pdf(np.dot(self.xmean.T, self.betas)))
         except KeyError:
-            if self.scalem == 'phimean':
-                self._cache['scale'] = float(1.0 * np.sum(self.phiy) / self.n)
-            if self.scalem == 'xmean':
-                self._cache['scale'] = float(norm.pdf(np.dot(self.xmean.T, self.betas)))
-        return self._cache['scale']
+            if self.scalem == "phimean":
+                self._cache["scale"] = float(1.0 * np.sum(self.phiy) / self.n)
+            if self.scalem == "xmean":
+                self._cache["scale"] = float(norm.pdf(np.dot(self.xmean.T, self.betas)))
+        return self._cache["scale"]
 
     @scale.setter
     def scale(self, val):
         try:
-            self._cache['scale'] = val
+            self._cache["scale"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['scale'] = val
+        self._cache["scale"] = val
 
     @property
     def slopes(self):
         try:
-            return self._cache['slopes']
+            return self._cache["slopes"]
         except AttributeError:
             self._cache = {}
-            self._cache['slopes'] = self.betas[1:] * self.scale
+            self._cache["slopes"] = self.betas[1:] * self.scale
         except KeyError:
-            self._cache['slopes'] = self.betas[1:] * self.scale
-        return self._cache['slopes']
+            self._cache["slopes"] = self.betas[1:] * self.scale
+        return self._cache["slopes"]
 
     @slopes.setter
     def slopes(self, val):
         try:
-            self._cache['slopes'] = val
+            self._cache["slopes"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['slopes'] = val
+        self._cache["slopes"] = val
 
     @property
     def slopes_vm(self):
         try:
-            return self._cache['slopes_vm']
+            return self._cache["slopes_vm"]
         except AttributeError:
             self._cache = {}
             x = self.xmean
             b = self.betas
             dfdb = np.eye(self.k) - spdot(b.T, x) * spdot(b, x.T)
-            slopes_vm = (self.scale ** 2) * \
-                np.dot(np.dot(dfdb, self.vm), dfdb.T)
-            self._cache['slopes_vm'] = slopes_vm[1:, 1:]
+            slopes_vm = (self.scale ** 2) * np.dot(np.dot(dfdb, self.vm), dfdb.T)
+            self._cache["slopes_vm"] = slopes_vm[1:, 1:]
         except KeyError:
             x = self.xmean
             b = self.betas
             dfdb = np.eye(self.k) - spdot(b.T, x) * spdot(b, x.T)
-            slopes_vm = (self.scale ** 2) * \
-                np.dot(np.dot(dfdb, self.vm), dfdb.T)
-            self._cache['slopes_vm'] = slopes_vm[1:, 1:]
-        return self._cache['slopes_vm']
+            slopes_vm = (self.scale ** 2) * np.dot(np.dot(dfdb, self.vm), dfdb.T)
+            self._cache["slopes_vm"] = slopes_vm[1:, 1:]
+        return self._cache["slopes_vm"]
 
     @slopes_vm.setter
     def slopes_vm(self, val):
         try:
-            self._cache['slopes_vm'] = val
+            self._cache["slopes_vm"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['slopes_vm'] = val
+        self._cache["slopes_vm"] = val
 
     @property
     def LR(self):
         try:
-            return self._cache['LR']
+            return self._cache["LR"]
         except AttributeError:
             self._cache = {}
             P = 1.0 * np.sum(self.y) / self.n
             LR = float(
-                -2 * (self.n * (P * np.log(P) + (1 - P) * np.log(1 - P)) - self.logl))
-            self._cache['LR'] = (LR, chisqprob(LR, self.k))
+                -2 * (self.n * (P * np.log(P) + (1 - P) * np.log(1 - P)) - self.logl)
+            )
+            self._cache["LR"] = (LR, chisqprob(LR, self.k))
         except KeyError:
             P = 1.0 * np.sum(self.y) / self.n
             LR = float(
-                -2 * (self.n * (P * np.log(P) + (1 - P) * np.log(1 - P)) - self.logl))
-            self._cache['LR'] = (LR, chisqprob(LR, self.k))
-        return self._cache['LR']
+                -2 * (self.n * (P * np.log(P) + (1 - P) * np.log(1 - P)) - self.logl)
+            )
+            self._cache["LR"] = (LR, chisqprob(LR, self.k))
+        return self._cache["LR"]
 
     @LR.setter
     def LR(self, val):
         try:
-            self._cache['LR'] = val
+            self._cache["LR"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['LR'] = val
+        self._cache["LR"] = val
 
     @property
     def u_naive(self):
         try:
-            return self._cache['u_naive']
+            return self._cache["u_naive"]
         except AttributeError:
             self._cache = {}
-            self._cache['u_naive'] = self.y - self.predy
+            self._cache["u_naive"] = self.y - self.predy
         except KeyError:
             u_naive = self.y - self.predy
-            self._cache['u_naive'] = u_naive
-        return self._cache['u_naive']
+            self._cache["u_naive"] = u_naive
+        return self._cache["u_naive"]
 
     @u_naive.setter
     def u_naive(self, val):
         try:
-            self._cache['u_naive'] = val
+            self._cache["u_naive"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['u_naive'] = val
-    
+        self._cache["u_naive"] = val
+
     @property
     def u_gen(self):
         try:
-            return self._cache['u_gen']
+            return self._cache["u_gen"]
         except AttributeError:
             self._cache = {}
             Phi_prod = self.predy * (1 - self.predy)
             u_gen = self.phiy * (self.u_naive / Phi_prod)
-            self._cache['u_gen'] = u_gen
+            self._cache["u_gen"] = u_gen
         except KeyError:
             Phi_prod = self.predy * (1 - self.predy)
             u_gen = self.phiy * (self.u_naive / Phi_prod)
-            self._cache['u_gen'] = u_gen
-        return self._cache['u_gen']
-    
+            self._cache["u_gen"] = u_gen
+        return self._cache["u_gen"]
+
     @u_gen.setter
     def u_gen(self, val):
         try:
-            self._cache['u_gen'] = val
+            self._cache["u_gen"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['u_gen'] = val
+        self._cache["u_gen"] = val
 
     @property
     def Pinkse_error(self):
         try:
-            return self._cache['Pinkse_error']
+            return self._cache["Pinkse_error"]
         except AttributeError:
             self._cache = {}
-            self._cache['Pinkse_error'], self._cache[
-                'KP_error'], self._cache['PS_error'] = sp_tests(self)
+            (
+                self._cache["Pinkse_error"],
+                self._cache["KP_error"],
+                self._cache["PS_error"],
+            ) = sp_tests(self)
         except KeyError:
-            self._cache['Pinkse_error'], self._cache[
-                'KP_error'], self._cache['PS_error'] = sp_tests(self)
-        return self._cache['Pinkse_error']
+            (
+                self._cache["Pinkse_error"],
+                self._cache["KP_error"],
+                self._cache["PS_error"],
+            ) = sp_tests(self)
+        return self._cache["Pinkse_error"]
 
     @Pinkse_error.setter
     def Pinkse_error(self, val):
         try:
-            self._cache['Pinkse_error'] = val
+            self._cache["Pinkse_error"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['Pinkse_error'] = val
+        self._cache["Pinkse_error"] = val
 
     @property
     def KP_error(self):
         try:
-            return self._cache['KP_error']
+            return self._cache["KP_error"]
         except AttributeError:
             self._cache = {}
-            self._cache['Pinkse_error'], self._cache[
-                'KP_error'], self._cache['PS_error'] = sp_tests(self)
+            (
+                self._cache["Pinkse_error"],
+                self._cache["KP_error"],
+                self._cache["PS_error"],
+            ) = sp_tests(self)
         except KeyError:
-            self._cache['Pinkse_error'], self._cache[
-                'KP_error'], self._cache['PS_error'] = sp_tests(self)
-        return self._cache['KP_error']
+            (
+                self._cache["Pinkse_error"],
+                self._cache["KP_error"],
+                self._cache["PS_error"],
+            ) = sp_tests(self)
+        return self._cache["KP_error"]
 
     @KP_error.setter
     def KP_error(self, val):
         try:
-            self._cache['KP_error'] = val
+            self._cache["KP_error"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['KP_error'] = val
+        self._cache["KP_error"] = val
 
     @property
     def PS_error(self):
         try:
-            return self._cache['PS_error']
+            return self._cache["PS_error"]
         except AttributeError:
             self._cache = {}
-            self._cache['Pinkse_error'], self._cache[
-                'KP_error'], self._cache['PS_error'] = sp_tests(self)
+            (
+                self._cache["Pinkse_error"],
+                self._cache["KP_error"],
+                self._cache["PS_error"],
+            ) = sp_tests(self)
         except KeyError:
-            self._cache['Pinkse_error'], self._cache[
-                'KP_error'], self._cache['PS_error'] = sp_tests(self)
-        return self._cache['PS_error']
+            (
+                self._cache["Pinkse_error"],
+                self._cache["KP_error"],
+                self._cache["PS_error"],
+            ) = sp_tests(self)
+        return self._cache["PS_error"]
 
     @PS_error.setter
     def PS_error(self, val):
         try:
-            self._cache['PS_error'] = val
+            self._cache["PS_error"] = val
         except AttributeError:
             self._cache = {}
-        self._cache['PS_error'] = val
+        self._cache["PS_error"] = val
 
     def par_est(self):
-        start = np.dot(la.inv(spdot(self.x.T, self.x)),
-                       spdot(self.x.T, self.y))
+        start = np.dot(la.inv(spdot(self.x.T, self.x)), spdot(self.x.T, self.y))
         flogl = lambda par: -self.ll(par)
-        if self.optim == 'newton':
+        if self.optim == "newton":
             fgrad = lambda par: self.gradient(par)
             fhess = lambda par: self.hessian(par)
             par_hat = newton(flogl, start, fgrad, fhess, self.maxiter)
             warn = par_hat[2]
         else:
             fgrad = lambda par: -self.gradient(par)
-            if self.optim == 'bfgs':
-                par_hat = op.fmin_bfgs(
-                    flogl, start, fgrad, full_output=1, disp=0)
+            if self.optim == "bfgs":
+                par_hat = op.fmin_bfgs(flogl, start, fgrad, full_output=1, disp=0)
                 warn = par_hat[6]
-            if self.optim == 'ncg':
+            if self.optim == "ncg":
                 fhess = lambda par: -self.hessian(par)
                 par_hat = op.fmin_ncg(
-                    flogl, start, fgrad, fhess=fhess, full_output=1, disp=0)
+                    flogl, start, fgrad, fhess=fhess, full_output=1, disp=0
+                )
                 warn = par_hat[5]
         if warn > 0:
             warn = True
@@ -594,7 +630,7 @@ class BaseProbit(object):
         xb = spdot(self.x, beta)
         qxb = q * xb
         lamb = q * norm.pdf(qxb) / norm.cdf(qxb)
-        hessian = spdot(self.x.T, spbroadcast(self.x,-lamb * (lamb + xb)))
+        hessian = spdot(self.x.T, spbroadcast(self.x, -lamb * (lamb + xb)))
         return hessian
 
 
@@ -630,7 +666,7 @@ class Probit(BaseProbit):
                   Default: 'phimean' (Mean of individual marginal effects)
                   Alternative: 'xmean' (Marginal effects at variables mean)
     maxiter     : int
-                  Maximum number of iterations until optimizer stops                  
+                  Maximum number of iterations until optimizer stops
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -660,7 +696,7 @@ class Probit(BaseProbit):
                   Variance-covariance matrix (kxk)
     z_stat      : list of tuples
                   z statistic; each tuple contains the pair (statistic,
-                  p-value), where each is a float                  
+                  p-value), where each is a float
     xmean       : array
                   Mean of the independent variables (kx1)
     predpc      : float
@@ -688,7 +724,7 @@ class Probit(BaseProbit):
                   Lagrange Multiplier test against spatial error correlation.
                   Implemented as presented in :cite:`Pinkse1998`
     warning     : boolean
-                  if True Maximum number of iterations exceeded or gradient 
+                  if True Maximum number of iterations exceeded or gradient
                   and/or function calls not changing.
     name_y       : string
                    Name of dependent variable for use in output
@@ -716,7 +752,7 @@ class Probit(BaseProbit):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
 
@@ -760,7 +796,7 @@ class Probit(BaseProbit):
     We are all set with the preliminaries, we are good to run the model. In this
     case, we will need the variables and the weights matrix. If we want to
     have the names of the variables printed in the output summary, we will
-    have to pass them in as well, although this is optional. 
+    have to pass them in as well, although this is optional.
 
     >>> from spreg import Probit
     >>> model = Probit(y, x, w=w, name_y='crime', name_x=['income','home value'], name_ds='columbus', name_w='columbus.gal')
@@ -797,9 +833,20 @@ class Probit(BaseProbit):
     """
 
     def __init__(
-        self, y, x, w=None, optim='newton', scalem='phimean', maxiter=100,
-        vm=False, name_y=None, name_x=None, name_w=None, name_ds=None,
-            spat_diag=False):
+        self,
+        y,
+        x,
+        w=None,
+        optim="newton",
+        scalem="phimean",
+        maxiter=100,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+        spat_diag=False,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
@@ -809,11 +856,12 @@ class Probit(BaseProbit):
             ws = w.sparse
         else:
             ws = None
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
 
-        BaseProbit.__init__(self, y=y, x=x_constant, w=ws,
-                            optim=optim, scalem=scalem, maxiter=maxiter)
+        BaseProbit.__init__(
+            self, y=y, x=x_constant, w=ws, optim=optim, scalem=scalem, maxiter=maxiter
+        )
         self.title = "CLASSIC PROBIT ESTIMATOR"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
@@ -838,13 +886,13 @@ def newton(flogl, start, fgrad, fhess, maxiter):
     fhess       : lambda
                   Function to calculate the hessian
     maxiter     : int
-                  Maximum number of iterations until optimizer stops                
+                  Maximum number of iterations until optimizer stops
     """
     warn = 0
     iteration = 0
     par_hat0 = start
     m = 1
-    while (iteration < maxiter and m >= 1e-04):
+    while iteration < maxiter and m >= 1e-04:
         H = -la.inv(fhess(par_hat0))
         g = fgrad(par_hat0).reshape(start.shape)
         Hg = np.dot(H, g)
@@ -864,7 +912,7 @@ def sp_tests(reg):
     Parameters
     ----------
     reg         : regression object
-                  output instance from a probit model            
+                  output instance from a probit model
     """
     if reg.w != None:
         try:
@@ -899,7 +947,7 @@ def sp_tests(reg):
 
 def moran_KP(w, u, sig2i):
     """
-    Calculates Moran-flavoured tests 
+    Calculates Moran-flavoured tests
 
     Parameters
     ----------
@@ -909,7 +957,7 @@ def moran_KP(w, u, sig2i):
     u           : array
                   nx1 array of naive residuals
     sig2i       : array
-                  nx1 array of individual variance               
+                  nx1 array of individual variance
     """
     try:
         w = w.sparse
@@ -918,32 +966,41 @@ def moran_KP(w, u, sig2i):
     moran_num = np.dot(u.T, (w * u))
     E = SP.lil_matrix(w.get_shape())
     E.setdiag(sig2i.flat)
-    E = E.asformat('csr')
+    E = E.asformat("csr")
     WE = w * E
     moran_den = np.sqrt(np.sum((WE * WE + (w.T * E) * WE).diagonal()))
     moran = float(1.0 * moran_num / moran_den)
-    moran = np.array([moran, norm.sf(abs(moran)) * 2.])
+    moran = np.array([moran, norm.sf(abs(moran)) * 2.0])
     return moran
 
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
-    dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
-    y = np.array([dbf.by_col('CRIME')]).T
-    var_x = ['INC', 'HOVAL']
+
+    dbf = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y = np.array([dbf.by_col("CRIME")]).T
+    var_x = ["INC", "HOVAL"]
     x = np.array([dbf.by_col(name) for name in var_x]).T
-    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
-    w.transform = 'r'
+    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), "r").read()
+    w.transform = "r"
     probit1 = Probit(
-        (y > 40).astype(float), x, w=w, name_x=var_x, name_y="CRIME",
-        name_ds="Columbus", name_w="columbus.dbf")
+        (y > 40).astype(float),
+        x,
+        w=w,
+        name_x=var_x,
+        name_y="CRIME",
+        name_ds="Columbus",
+        name_w="columbus.dbf",
+    )
     print(probit1.summary)
