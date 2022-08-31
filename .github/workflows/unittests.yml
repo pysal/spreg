@@ -12,21 +12,28 @@
 
  jobs:
    unittests:
+     env:
+       RUN_TEST: pytest -v spreg -n auto --cov=spreg --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
+       ############################################## replace above with this chunk when docstring testing gets worked out
+       #RUN_TEST: pytest -v spreg -n auto --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
+       ##############################################
      name: ${{ matrix.os }}, ${{ matrix.environment-file }}
      runs-on: ${{ matrix.os }}
      timeout-minutes: 30
      strategy:
        matrix:
-         os: [macos-latest, ubuntu-latest]
-         ############################################ replace above with this chunk when Windows testing gets worked out
-         #os: [macos-latest, ubuntu-latest, windows-latest]
-         ############################################
-         environment-file: [ci/37.yaml, ci/38.yaml, ci/39.yaml]
+         os: [ubuntu-latest]
+         environment-file:
+           - ci/38.yaml
+           - ci/39.yaml
+           - ci/310.yaml
+           - ci/310-BASE.yaml
+           - ci/310-DEV.yaml
          include:
-           - environment-file: ci/39-BASE.yaml
-             os: ubuntu-latest
-           - environment-file: ci/39-DEV.yaml
-             os: ubuntu-latest
+           - environment-file: ci/310.yaml
+             os: macos-latest
+           - environment-file: ci/310.yaml
+             os: windows-latest
      
      steps:
        - name: checkout repo
@@ -45,18 +52,12 @@
        
        - name: run tests - bash
          shell: bash -l {0}
-         run: pytest -v spreg --cov=spreg --cov-config=.coveragerc --cov-report=xml
-         ############################################## replace above with this chunk when docstring testing gets worked out
-         #run: pytest -v spreg --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml
-         ##############################################
+         run: ${{ env.RUN_TEST }}
          if: matrix.os != 'windows-latest'
        
        - name: run tests - powershell
          shell: powershell
-         run: pytest -v spreg --cov=spreg --cov-config=.coveragerc --cov-report=xml
-         ############################################## replace above with this chunk when docstring testing gets worked out
-         #run: pytest -v spreg --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml
-         ##############################################
+         run: ${{ env.RUN_TEST }}
          if: matrix.os == 'windows-latest'
        
        - name: codecov

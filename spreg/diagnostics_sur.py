@@ -2,7 +2,7 @@
 Diagnostics for SUR and 3SLS estimation
 """
 
-__author__= "Luc Anselin lanselin@gmail.com,    \
+__author__ = "Luc Anselin lanselin@gmail.com,    \
              Pedro V. Amaral pedrovma@gmail.com  \
              Tony Aburaad taburaad@uchicago.edu"
 
@@ -10,15 +10,15 @@ __author__= "Luc Anselin lanselin@gmail.com,    \
 import numpy as np
 import scipy.stats as stats
 import numpy.linalg as la
-from .sur_utils import sur_dict2mat,sur_mat2dict,sur_corr,spdot
-from .regimes import buildR1var,wald_test
+from .sur_utils import sur_dict2mat, sur_mat2dict, sur_corr, spdot
+from .regimes import buildR1var, wald_test
 
 
-__all__ = ['sur_setp','sur_lrtest','sur_lmtest','lam_setp','surLMe','surLMlag']
+__all__ = ["sur_setp", "sur_lrtest", "sur_lmtest", "lam_setp", "surLMe", "surLMlag"]
 
 
-def sur_setp(bigB,varb):
-    '''
+def sur_setp(bigB, varb):
+    """
     Utility to compute standard error, t and p-value
 
     Parameters
@@ -35,22 +35,23 @@ def sur_setp(bigB,varb):
                  with standard error, t-value, and
                  p-value array, one for each equation
 
-    '''
+    """
     vvb = varb.diagonal()
     n_eq = len(bigB.keys())
-    bigK = np.zeros((n_eq,1),dtype=np.int_)
+    bigK = np.zeros((n_eq, 1), dtype=np.int_)
     for r in range(n_eq):
         bigK[r] = bigB[r].shape[0]
     b = sur_dict2mat(bigB)
     se = np.sqrt(vvb)
-    se.resize(len(se),1)
-    t = np.divide(b,se)
-    tp = stats.norm.sf(abs(t))*2
-    surinf = np.hstack((se,t,tp))
-    surinfdict = sur_mat2dict(surinf,bigK)
+    se.resize(len(se), 1)
+    t = np.divide(b, se)
+    tp = stats.norm.sf(abs(t)) * 2
+    surinf = np.hstack((se, t, tp))
+    surinfdict = sur_mat2dict(surinf, bigK)
     return surinfdict
 
-def lam_setp(lam,vm):
+
+def lam_setp(lam, vm):
     """
     Standard errors, t-test and p-value for lambda in SUR Error ML
 
@@ -73,13 +74,14 @@ def lam_setp(lam,vm):
     """
     vvb = vm.diagonal()
     se = np.sqrt(vvb)
-    se.resize(len(se),1)
-    t = np.divide(lam,se)
-    tp = stats.norm.sf(abs(t))*2
-    return (se,t,tp)
+    se.resize(len(se), 1)
+    t = np.divide(lam, se)
+    tp = stats.norm.sf(abs(t)) * 2
+    return (se, t, tp)
 
-def sur_lrtest(n,n_eq,ldetS0,ldetS1):
-    '''
+
+def sur_lrtest(n, n_eq, ldetS0, ldetS1):
+    """
     Likelihood Ratio test on off-diagonal elements of Sigma
 
     Parameters
@@ -100,15 +102,15 @@ def sur_lrtest(n,n_eq,ldetS0,ldetS1):
                         degrees of freedom (M, as an integer)
                         p-value
 
-    '''
-    M = n_eq * (n_eq - 1)/2.0
+    """
+    M = n_eq * (n_eq - 1) / 2.0
     lrtest = n * (ldetS0 - ldetS1)
-    pvalue = stats.chi2.sf(lrtest,M)
-    return (lrtest,int(M),pvalue)
+    pvalue = stats.chi2.sf(lrtest, M)
+    return (lrtest, int(M), pvalue)
 
 
-def sur_lmtest(n,n_eq,sig):
-    '''
+def sur_lmtest(n, n_eq, sig):
+    """
     Lagrange Multiplier test on off-diagonal elements of Sigma
 
     Parameters
@@ -126,16 +128,16 @@ def sur_lmtest(n,n_eq,sig):
                         with value of test statistic (lmtest),
                         degrees of freedom (M, as an integer)
                         p-value
-    '''
+    """
     R = sur_corr(sig)
-    tr = np.trace(np.dot(R.T,R))
-    M = n_eq * (n_eq - 1)/2.0
-    lmtest = (n/2.0) * (tr - n_eq)
-    pvalue = stats.chi2.sf(lmtest,M)
-    return (lmtest,int(M),pvalue)
+    tr = np.trace(np.dot(R.T, R))
+    M = n_eq * (n_eq - 1) / 2.0
+    lmtest = (n / 2.0) * (tr - n_eq)
+    pvalue = stats.chi2.sf(lmtest, M)
+    return (lmtest, int(M), pvalue)
 
 
-def surLMe(n_eq,WS,bigE,sig):
+def surLMe(n_eq, WS, bigE, sig):
     """
     Lagrange Multiplier test on error spatial autocorrelation in SUR
 
@@ -160,17 +162,16 @@ def surLMe(n_eq,WS,bigE,sig):
     # spatially lagged residuals
     WbigE = WS * bigE
     # score
-    EWE = np.dot(bigE.T,WbigE)
+    EWE = np.dot(bigE.T, WbigE)
     sigi = la.inv(sig)
     SEWE = sigi * EWE
-    #score = SEWE.sum(axis=1)
-    #score.resize(n_eq,1)
+    # score = SEWE.sum(axis=1)
+    # score.resize(n_eq,1)
     # note score is column sum of Sig_i * E'WE, a 1 by n_eq row vector
     # previously stored as column
     score = SEWE.sum(axis=0)
-    score.resize(1,n_eq)
-    
-    
+    score.resize(1, n_eq)
+
     # trace terms
     WW = WS * WS
     trWW = np.sum(WW.diagonal())
@@ -183,13 +184,14 @@ def surLMe(n_eq,WS,bigE,sig):
     denom = Tii + tSiS
     idenom = la.inv(denom)
     # test statistic
-    #LMe = np.dot(np.dot(score.T,idenom),score)[0][0]
+    # LMe = np.dot(np.dot(score.T,idenom),score)[0][0]
     # score is now row vector
-    LMe = np.dot(np.dot(score,idenom),score.T)[0][0]
-    pvalue = stats.chi2.sf(LMe,n_eq)
-    return (LMe,n_eq,pvalue)
+    LMe = np.dot(np.dot(score, idenom), score.T)[0][0]
+    pvalue = stats.chi2.sf(LMe, n_eq)
+    return (LMe, n_eq, pvalue)
 
-def surLMlag(n_eq,WS,bigy,bigX,bigE,bigYP,sig,varb):
+
+def surLMlag(n_eq, WS, bigy, bigX, bigE, bigYP, sig, varb):
     """
     Lagrange Multiplier test on lag spatial autocorrelation in SUR
 
@@ -221,48 +223,56 @@ def surLMlag(n_eq,WS,bigy,bigX,bigE,bigYP,sig,varb):
     # Score
     Y = np.hstack((bigy[r]) for r in range(n_eq))
     WY = WS * Y
-    EWY = np.dot(bigE.T,WY)
+    EWY = np.dot(bigE.T, WY)
     sigi = la.inv(sig)
     SEWE = sigi * EWY
     score = SEWE.sum(axis=0)  # column sums
-    score.resize(1,n_eq)  # score as a row vector
-    
+    score.resize(1, n_eq)  # score as a row vector
+
     # I(rho,rho) as partitioned inverse, eq 72
     # trace terms
     WW = WS * WS
-    trWW = np.sum(WW.diagonal()) #T1
+    trWW = np.sum(WW.diagonal())  # T1
     WTW = WS.T * WS
-    trWtW = np.sum(WTW.diagonal()) #T2
+    trWtW = np.sum(WTW.diagonal())  # T2
 
     # I(rho,rho)
     SiS = sigi * sig
-    Tii = trWW * np.identity(n_eq) #T1It
+    Tii = trWW * np.identity(n_eq)  # T1It
     tSiS = trWtW * SiS
     firstHalf = Tii + tSiS
     WbigYP = WS * bigYP
     inner = np.dot(WbigYP.T, WbigYP)
-    secondHalf= sigi * inner
-    Ipp= firstHalf + secondHalf #eq. 75
-    
+    secondHalf = sigi * inner
+    Ipp = firstHalf + secondHalf  # eq. 75
+
     # I(b,b) inverse is varb
-    
+
     # I(b,rho)
-    bp = sigi[0,] * spdot(bigX[0].T,WbigYP)  #initialize
-    for r in range(1,n_eq):
-        bpwork = sigi[r,] * spdot(bigX[r].T,WbigYP)
-        bp = np.vstack((bp,bpwork))
-    # partitioned part    
+    bp = sigi[0,] * spdot(
+        bigX[0].T, WbigYP
+    )  # initialize
+    for r in range(1, n_eq):
+        bpwork = (
+            sigi[
+                r,
+            ]
+            * spdot(bigX[r].T, WbigYP)
+        )
+        bp = np.vstack((bp, bpwork))
+    # partitioned part
     i_inner = Ipp - np.dot(np.dot(bp.T, varb), bp)
     # partitioned inverse of information matrix
     Ippi = la.inv(i_inner)
-    
-    # test statistic
-    LMlag = np.dot(np.dot(score,Ippi),score.T)[0][0]
-    # p-value
-    pvalue = stats.chi2.sf(LMlag,n_eq)
-    return (LMlag,n_eq,pvalue)
 
-def sur_chow(n_eq,bigK,bSUR,varb):
+    # test statistic
+    LMlag = np.dot(np.dot(score, Ippi), score.T)[0][0]
+    # p-value
+    pvalue = stats.chi2.sf(LMlag, n_eq)
+    return (LMlag, n_eq, pvalue)
+
+
+def sur_chow(n_eq, bigK, bSUR, varb):
     """
     test on constancy of regression coefficients across equations in
     a SUR specification
@@ -299,12 +309,13 @@ def sur_chow(n_eq,bigK,bSUR,varb):
     nr = n_eq
     df = n_eq - 1
     for i in range(kr):
-        Ri = buildR1var(i,kr,kf,0,nr)
-        tt,p = wald_test(bb,Ri,np.zeros((df,1)),varb)
-        test.append((tt,df,p))
+        Ri = buildR1var(i, kr, kf, 0, nr)
+        tt, p = wald_test(bb, Ri, np.zeros((df, 1)), varb)
+        test.append((tt, df, p))
     return test
 
-def sur_joinrho(n_eq,bigK,bSUR,varb):
+
+def sur_joinrho(n_eq, bigK, bSUR, varb):
     """
     Test on joint significance of spatial autoregressive coefficient in SUR
 
@@ -329,11 +340,11 @@ def sur_joinrho(n_eq,bigK,bSUR,varb):
 
     """
     bb = sur_dict2mat(bSUR)
-    R = np.zeros((n_eq,varb.shape[0]))
-    q = np.zeros((n_eq,1))
+    R = np.zeros((n_eq, varb.shape[0]))
+    q = np.zeros((n_eq, 1))
     kc = -1
     for i in range(n_eq):
         kc = kc + bigK[i]
-        R[i,kc] = 1
-    w,p = wald_test(bb,R,q,varb)
-    return (w,n_eq,p)
+        R[i, kc] = 1
+    w, p = wald_test(bb, R, q, varb)
+    return (w, n_eq, p)

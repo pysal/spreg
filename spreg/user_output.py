@@ -1,14 +1,16 @@
 """Internal helper files for user output."""
 
-__author__ = ("Luc Anselin luc.anselin@asu.edu, "
-              "David C. Folch david.folch@asu.edu, "
-              "Levi John Wolf levi.john.wolf@gmail.com, "
-              "Jing Yao jingyao@asu.edu")
+__author__ = (
+    "Luc Anselin luc.anselin@asu.edu, "
+    "David C. Folch david.folch@asu.edu, "
+    "Levi John Wolf levi.john.wolf@gmail.com, "
+    "Jing Yao jingyao@asu.edu"
+)
 import numpy as np
 import copy as COPY
 from . import diagnostics
 from . import sputils as spu
-from libpysal import weights 
+from libpysal import weights
 from scipy.sparse.csr import csr_matrix
 
 
@@ -29,7 +31,7 @@ def set_name_ds(name_ds):
 
     """
     if not name_ds:
-        name_ds = 'unknown'
+        name_ds = "unknown"
     return name_ds
 
 
@@ -48,7 +50,7 @@ def set_name_y(name_y):
 
     """
     if not name_y:
-        name_y = 'dep_var'
+        name_y = "dep_var"
     return name_y
 
 
@@ -73,11 +75,11 @@ def set_name_x(name_x, x, constant=False):
 
     """
     if not name_x:
-        name_x = ['var_' + str(i + 1) for i in range(x.shape[1]-1+int(constant))]
+        name_x = ["var_" + str(i + 1) for i in range(x.shape[1] - 1 + int(constant))]
     else:
         name_x = name_x[:]
     if not constant:
-        name_x.insert(0, 'CONSTANT')
+        name_x.insert(0, "CONSTANT")
     return name_x
 
 
@@ -97,7 +99,7 @@ def set_name_yend(name_yend, yend):
     """
     if yend is not None:
         if not name_yend:
-            return ['endogenous_' + str(i + 1) for i in range(len(yend[0]))]
+            return ["endogenous_" + str(i + 1) for i in range(len(yend[0]))]
         else:
             return name_yend[:]
     else:
@@ -122,7 +124,7 @@ def set_name_q(name_q, q):
     """
     if q is not None:
         if not name_q:
-            return ['instrument_' + str(i + 1) for i in range(len(q[0]))]
+            return ["instrument_" + str(i + 1) for i in range(len(q[0]))]
         else:
             return name_q[:]
     else:
@@ -143,7 +145,7 @@ def set_name_yend_sp(name_y):
     name_yend_sp : string
 
     """
-    return 'W_' + name_y
+    return "W_" + name_y
 
 
 def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
@@ -170,11 +172,11 @@ def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
         names = names + name_q
     sp_inst_names = []
     for j in names:
-        sp_inst_names.append('W_' + j)
+        sp_inst_names.append("W_" + j)
     if w_lags > 1:
         for i in range(2, w_lags + 1):
             for j in names:
-                sp_inst_names.append('W' + str(i) + '_' + j)
+                sp_inst_names.append("W" + str(i) + "_" + j)
     return sp_inst_names
 
 
@@ -213,7 +215,7 @@ def set_robust(robust):
 
     """
     if not robust:
-        return 'unadjusted'
+        return "unadjusted"
     return robust
 
 
@@ -238,11 +240,25 @@ def set_name_w(name_w, w):
         if name_w != None:
             return name_w
         else:
-            return 'unknown'
+            return "unknown"
     return None
 
 
-def set_name_multi(multireg, multi_set, name_multiID, y, x, name_y, name_x, name_ds, title, name_w, robust, endog=False, sp_lag=False):
+def set_name_multi(
+    multireg,
+    multi_set,
+    name_multiID,
+    y,
+    x,
+    name_y,
+    name_x,
+    name_ds,
+    title,
+    name_w,
+    robust,
+    endog=False,
+    sp_lag=False,
+):
     """Returns multiple regression objects with generic names
 
     Parameters
@@ -267,17 +283,19 @@ def set_name_multi(multireg, multi_set, name_multiID, y, x, name_y, name_x, name
         multireg[r].name_ds = name_ds
         multireg[r].robust = set_robust(robust)
         multireg[r].name_w = name_w
-        multireg[r].name_y = '%s_%s' % (str(r), name_y)
-        multireg[r].name_x = ['%s_%s' % (str(r), i) for i in name_x]
+        multireg[r].name_y = "%s_%s" % (str(r), name_y)
+        multireg[r].name_x = ["%s_%s" % (str(r), i) for i in name_x]
         multireg[r].name_multiID = name_multiID
         if endog or sp_lag:
-            multireg[r].name_yend = ['%s_%s' % (str(r), i) for i in name_yend]
-            multireg[r].name_q = ['%s_%s' % (str(r), i) for i in name_q]
+            multireg[r].name_yend = ["%s_%s" % (str(r), i) for i in name_yend]
+            multireg[r].name_q = ["%s_%s" % (str(r), i) for i in name_q]
             if sp_lag:
-                multireg[r].name_yend.append(
-                    set_name_yend_sp(multireg[r].name_y))
+                multireg[r].name_yend.append(set_name_yend_sp(multireg[r].name_y))
                 multireg[r].name_q.extend(
-                    set_name_q_sp(multireg[r].name_x, sp_lag[0], multireg[r].name_q, sp_lag[1]))
+                    set_name_q_sp(
+                        multireg[r].name_x, sp_lag[0], multireg[r].name_q, sp_lag[1]
+                    )
+                )
             multireg[r].name_z = multireg[r].name_x + multireg[r].name_yend
             multireg[r].name_h = multireg[r].name_x + multireg[r].name_q
     return multireg
@@ -286,7 +304,7 @@ def set_name_multi(multireg, multi_set, name_multiID, y, x, name_y, name_x, name
 def check_arrays(*arrays):
     """Check if the objects passed by a user to a regression class are
     correctly structured. If the user's data is correctly formed this function
-    returns nothing, if not then an exception is raised. Note, this does not 
+    returns nothing, if not then an exception is raised. Note, this does not
     check for model setup, simply the shape and types of the objects.
 
     Parameters
@@ -324,12 +342,14 @@ def check_arrays(*arrays):
         if i is None:
             continue
         if not isinstance(i, (np.ndarray, csr_matrix)):
-            raise Exception("all input data must be either numpy arrays or sparse csr matrices")
+            raise Exception(
+                "all input data must be either numpy arrays or sparse csr matrices"
+            )
         shape = i.shape
         if len(shape) > 2:
             raise Exception("all input arrays must have two dimensions")
         if len(shape) == 1:
-            shape = (shape[0],1)
+            shape = (shape[0], 1)
         if shape[0] < shape[1]:
             raise Exception("one or more input arrays have more columns than rows")
         if not spu.spisfinite(i):
@@ -343,7 +363,7 @@ def check_arrays(*arrays):
 def check_y(y, n):
     """Check if the y object passed by a user to a regression class is
     correctly structured. If the user's data is correctly formed this function
-    returns nothing, if not then an exception is raised. Note, this does not 
+    returns nothing, if not then an exception is raised. Note, this does not
     check for model setup, simply the shape and types of the objects.
 
     Parameters
@@ -385,12 +405,17 @@ def check_y(y, n):
         raise Exception("all input arrays must have two dimensions")
     if len(shape) == 1:
         try:
-            y = y.reshape(n,1)
+            y = y.reshape(n, 1)
         except:
-            raise Exception("y must be a single column array matching the length of other arrays")
+            raise Exception(
+                "y must be a single column array matching the length of other arrays"
+            )
     if y.shape != (n, 1):
-        raise Exception("y must be a single column array matching the length of other arrays")
+        raise Exception(
+            "y must be a single column array matching the length of other arrays"
+        )
     return y
+
 
 def check_weights(w, y, w_required=False, time=False):
     """Check if the w parameter passed by the user is a libpysal.W object and
@@ -440,6 +465,7 @@ def check_weights(w, y, w_required=False, time=False):
             raise Exception("A weights matrix w must be provided to run this method.")
         if not isinstance(w, weights.W):
             from warnings import warn
+
             warn("w must be API-compatible pysal weights object")
         if w.n != y.shape[0] and time == False:
             raise Exception("y must have n rows, and w must be an nxn PySAL W object")
@@ -453,7 +479,7 @@ def check_weights(w, y, w_required=False, time=False):
 
 def check_robust(robust, wk):
     """Check if the combination of robust and wk parameters passed by the user
-    are valid. Note: this does not check if the W object is a valid adaptive 
+    are valid. Note: this does not check if the W object is a valid adaptive
     kernel weights matrix needed for the HAC.
 
     Parameters
@@ -489,17 +515,21 @@ def check_robust(robust, wk):
 
     """
     if robust:
-        if robust.lower() == 'hac':
+        if robust.lower() == "hac":
             if not isinstance(wk, weights.Kernel):
                 raise Exception("HAC requires that wk be a Kernel Weights object")
             diag = wk.sparse.diagonal()
             # check to make sure all entries equal 1
             if diag.min() < 1.0:
                 print(diag.min())
-                raise Exception("All entries on diagonal of kernel weights matrix must equal 1.")
+                raise Exception(
+                    "All entries on diagonal of kernel weights matrix must equal 1."
+                )
             if diag.max() > 1.0:
                 print(diag.max())
-                raise Exception("All entries on diagonal of kernel weights matrix must equal 1.")
+                raise Exception(
+                    "All entries on diagonal of kernel weights matrix must equal 1."
+                )
             # ensure off-diagonal entries are in the set of real numbers [0,1)
             wegt = wk.weights
             for i in wk.id_order:
@@ -507,15 +537,19 @@ def check_robust(robust, wk):
                 vmin = min(vals)
                 vmax = max(vals)
                 if vmin < 0.0:
-                    raise Exception("Off-diagonal entries must be greater than or equal to 0.")
+                    raise Exception(
+                        "Off-diagonal entries must be greater than or equal to 0."
+                    )
                 if vmax > 1.0:
                     # NOTE: we are not checking for the case of exactly 1.0 ###
                     raise Exception("Off-diagonal entries must be less than 1.")
-        elif robust.lower() == 'white' or robust.lower() == 'ogmm':
+        elif robust.lower() == "white" or robust.lower() == "ogmm":
             if wk:
                 raise Exception("White requires that wk be set to None")
         else:
-            raise Exception("invalid value passed to robust, see docs for valid options")
+            raise Exception(
+                "invalid value passed to robust, see docs for valid options"
+            )
 
 
 def check_spat_diag(spat_diag, w):
@@ -574,12 +608,16 @@ def check_regimes(reg_set, N=None, K=None):
 
     """
     if len(reg_set) < 2:
-        raise Exception("At least 2 regimes are needed to run regimes methods. Please check your regimes variable.")
+        raise Exception(
+            "At least 2 regimes are needed to run regimes methods. Please check your regimes variable."
+        )
     if 1.0 * N / len(reg_set) < K + 1:
-        raise Exception("There aren't enough observations for the given number of regimes and variables. Please check your regimes variable.")
+        raise Exception(
+            "There aren't enough observations for the given number of regimes and variables. Please check your regimes variable."
+        )
 
 
-def check_constant(x,name_x=None,just_rem=False):
+def check_constant(x, name_x=None, just_rem=False):
     """Check if the X matrix contains a constant. If it does, drop the constant and replace by a vector of ones.
 
     Parameters
@@ -616,32 +654,38 @@ def check_constant(x,name_x=None,just_rem=False):
     keep_x = COPY.copy(name_x)
     warn = None
     if isinstance(x_constant, np.ndarray):
-        diffs = np.ptp(x_constant,axis=0)
-        if sum(diffs==0) > 0:
-            x_constant = np.delete(x_constant,np.nonzero(diffs==0),1)
+        diffs = np.ptp(x_constant, axis=0)
+        if sum(diffs == 0) > 0:
+            x_constant = np.delete(x_constant, np.nonzero(diffs == 0), 1)
     else:
-        diffs = (x_constant.max(axis=0).toarray()-x_constant.min(axis=0).toarray())[0]
-        if sum(diffs==0) > 0:
-            x_constant = x_constant[:,np.nonzero(diffs>0)[0]]
+        diffs = (x_constant.max(axis=0).toarray() - x_constant.min(axis=0).toarray())[0]
+        if sum(diffs == 0) > 0:
+            x_constant = x_constant[:, np.nonzero(diffs > 0)[0]]
 
-    if sum(diffs==0) > 0:
+    if sum(diffs == 0) > 0:
         if keep_x:
-            rem_x = [keep_x[i] for i in np.nonzero(diffs==0)[0]]
-            warn = 'Variable(s) '+str(rem_x)+' removed for being constant.'
-            keep_x[:] = [keep_x[i] for i in np.nonzero(diffs>0)[0]]
+            rem_x = [keep_x[i] for i in np.nonzero(diffs == 0)[0]]
+            warn = "Variable(s) " + str(rem_x) + " removed for being constant."
+            keep_x[:] = [keep_x[i] for i in np.nonzero(diffs > 0)[0]]
         else:
-            if sum(diffs==0) == 1:
-                warn = 'One variable has been removed for being constant.'           
+            if sum(diffs == 0) == 1:
+                warn = "One variable has been removed for being constant."
             else:
-                warn = str(sum(diffs==0))+' variables have been removed for being constant.'        
+                warn = (
+                    str(sum(diffs == 0))
+                    + " variables have been removed for being constant."
+                )
     if not just_rem:
-        return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant),keep_x,warn
+        return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant), keep_x, warn
     else:
-        return x_constant,keep_x,warn
+        return x_constant, keep_x, warn
+
 
 def _test():
     import doctest
+
     doctest.testmod()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

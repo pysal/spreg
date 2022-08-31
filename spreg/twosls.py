@@ -131,8 +131,9 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
 
     """
 
-    def __init__(self, y, x, yend, q=None, h=None,
-                 robust=None, gwk=None, sig2n_k=False):
+    def __init__(
+        self, y, x, yend, q=None, h=None, robust=None, gwk=None, sig2n_k=False
+    ):
 
         if issubclass(type(q), np.ndarray) and issubclass(type(h), np.ndarray):
             raise Exception("Please do not provide 'q' and 'h' together")
@@ -146,7 +147,7 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
         self.kstar = yend.shape[1]
         # including exogenous and endogenous variables
         z = sphstack(self.x, yend)
-        if type(h).__name__ not in ['ndarray', 'csr_matrix']:
+        if type(h).__name__ not in ["ndarray", "csr_matrix"]:
             # including exogenous variables and instrument
             h = sphstack(self.x, q)
         self.z = z
@@ -178,8 +179,8 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
         self.u = u
 
         # attributes used in property
-        self.hth = hth     # Required for condition index
-        self.hthi = hthi   # Used in error models
+        self.hth = hth  # Required for condition index
+        self.hthi = hthi  # Used in error models
         self.htz = zth.T
 
         if robust:
@@ -192,31 +193,31 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
 
     @property
     def pfora1a2(self):
-        if 'pfora1a2' not in self._cache:
-            self._cache['pfora1a2'] = self.n * \
-                np.dot(self.zthhthi.T, self.varb)
-        return self._cache['pfora1a2']
+        if "pfora1a2" not in self._cache:
+            self._cache["pfora1a2"] = self.n * np.dot(self.zthhthi.T, self.varb)
+        return self._cache["pfora1a2"]
 
     @property
     def vm(self):
         try:
-            return self._cache['vm']
+            return self._cache["vm"]
         except AttributeError:
             self._cache = {}
-            self._cache['vm'] = np.dot(self.sig2, self.varb)
+            self._cache["vm"] = np.dot(self.sig2, self.varb)
         except KeyError:
-            self._cache['vm'] = np.dot(self.sig2, self.varb)
-        return self._cache['vm']
+            self._cache["vm"] = np.dot(self.sig2, self.varb)
+        return self._cache["vm"]
 
     @vm.setter
     def vm(self, val):
         try:
-            self._cache['vm'] = val
+            self._cache["vm"] = val
         except AttributeError:
             self._cache = {}
-            self._cache['vm'] = val
+            self._cache["vm"] = val
         except KeyError:
-            self._cache['vm'] = val
+            self._cache["vm"] = val
+
 
 class TSLS(BaseTSLS):
     """
@@ -429,23 +430,44 @@ class TSLS(BaseTSLS):
 
     """
 
-    def __init__(self, y, x, yend, q,
-                 w=None,
-                 robust=None, gwk=None, sig2n_k=False,
-                 spat_diag=False,
-                 vm=False, name_y=None, name_x=None,
-                 name_yend=None, name_q=None,
-                 name_w=None, name_gwk=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        yend,
+        q,
+        w=None,
+        robust=None,
+        gwk=None,
+        sig2n_k=False,
+        spat_diag=False,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_gwk=None,
+        name_ds=None,
+    ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
         USER.check_spat_diag(spat_diag, w)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        BaseTSLS.__init__(self, y=y, x=x_constant, yend=yend, q=q,
-                          robust=robust, gwk=gwk, sig2n_k=sig2n_k)
+        BaseTSLS.__init__(
+            self,
+            y=y,
+            x=x_constant,
+            yend=yend,
+            q=q,
+            robust=robust,
+            gwk=gwk,
+            sig2n_k=sig2n_k,
+        )
         self.title = "TWO STAGE LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
@@ -462,27 +484,41 @@ class TSLS(BaseTSLS):
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()
 
     import libpysal
-    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), 'r')
-    y_var = 'CRIME'
+
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y_var = "CRIME"
     y = np.array([db.by_col(y_var)]).reshape(49, 1)
-    x_var = ['INC']
+    x_var = ["INC"]
     x = np.array([db.by_col(name) for name in x_var]).T
-    yd_var = ['HOVAL']
+    yd_var = ["HOVAL"]
     yd = np.array([db.by_col(name) for name in yd_var]).T
-    q_var = ['DISCBD']
+    q_var = ["DISCBD"]
     q = np.array([db.by_col(name) for name in q_var]).T
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-    w.transform = 'r'
-    tsls = TSLS(y, x, yd, q, w=w, spat_diag=True, name_y=y_var, name_x=x_var,
-                name_yend=yd_var, name_q=q_var, name_ds='columbus', name_w='columbus.gal')
+    w.transform = "r"
+    tsls = TSLS(
+        y,
+        x,
+        yd,
+        q,
+        w=w,
+        spat_diag=True,
+        name_y=y_var,
+        name_x=x_var,
+        name_yend=yd_var,
+        name_q=q_var,
+        name_ds="columbus",
+        name_w="columbus.gal",
+    )
     print(tsls.summary)

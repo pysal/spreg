@@ -16,8 +16,10 @@ from . import user_output as USER
 from . import summary_output as SUMMARY
 from . import regimes as REGI
 from .w_utils import symmetrize
+
 try:
     from scipy.optimize import minimize_scalar
+
     minimize_scalar_available = True
 except ImportError:
     minimize_scalar_available = False
@@ -156,7 +158,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
 
     """
 
-    def __init__(self, y, x, w, method='full', epsilon=0.0000001, regimes_att=None):
+    def __init__(self, y, x, w, method="full", epsilon=0.0000001, regimes_att=None):
         # set up main regression variables and spatial filters
         self.y = y
         if regimes_att:
@@ -167,30 +169,38 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
         self.method = method
         self.epsilon = epsilon
 
-        #W = w.full()[0] #wait to build pending what is needed
-        #Wsp = w.sparse
+        # W = w.full()[0] #wait to build pending what is needed
+        # Wsp = w.sparse
 
         ylag = weights.lag_spatial(w, self.y)
         xlag = self.get_x_lag(w, regimes_att)
 
         # call minimizer using concentrated log-likelihood to get lambda
         methodML = method.upper()
-        if methodML in ['FULL', 'LU', 'ORD']:
-            if methodML == 'FULL':  
-                W = w.full()[0]      # need dense here
-                res = minimize_scalar(err_c_loglik, 0.0, bounds=(-1.0, 1.0),
-                                      args=(self.n, self.y, ylag, self.x,
-                                            xlag, W), method='bounded',
-                                      tol=epsilon)
-            elif methodML == 'LU':
+        if methodML in ["FULL", "LU", "ORD"]:
+            if methodML == "FULL":
+                W = w.full()[0]  # need dense here
+                res = minimize_scalar(
+                    err_c_loglik,
+                    0.0,
+                    bounds=(-1.0, 1.0),
+                    args=(self.n, self.y, ylag, self.x, xlag, W),
+                    method="bounded",
+                    tol=epsilon,
+                )
+            elif methodML == "LU":
                 I = sp.identity(w.n)
-                Wsp = w.sparse   # need sparse here
-                res = minimize_scalar(err_c_loglik_sp, 0.0, bounds=(-1.0,1.0),
-                                      args=(self.n, self.y, ylag, 
-                                            self.x, xlag, I, Wsp),
-                                      method='bounded', tol=epsilon)
+                Wsp = w.sparse  # need sparse here
+                res = minimize_scalar(
+                    err_c_loglik_sp,
+                    0.0,
+                    bounds=(-1.0, 1.0),
+                    args=(self.n, self.y, ylag, self.x, xlag, I, Wsp),
+                    method="bounded",
+                    tol=epsilon,
+                )
                 W = Wsp
-            elif methodML == 'ORD':
+            elif methodML == "ORD":
                 # check on symmetry structure
                 if w.asymmetry(intrinsic=False) == []:
                     ww = symmetrize(w)
@@ -198,13 +208,16 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
                     evals = la.eigvalsh(WW)
                     W = WW
                 else:
-                    W = w.full()[0]      # need dense here
+                    W = w.full()[0]  # need dense here
                     evals = la.eigvals(W)
                 res = minimize_scalar(
-                    err_c_loglik_ord, 0.0, bounds=(-1.0, 1.0),
-                    args=(self.n, self.y, ylag, self.x,
-                          xlag, evals), method='bounded',
-                    tol=epsilon)
+                    err_c_loglik_ord,
+                    0.0,
+                    bounds=(-1.0, 1.0),
+                    args=(self.n, self.y, ylag, self.x, xlag, evals),
+                    method="bounded",
+                    tol=epsilon,
+                )
         else:
             raise Exception("{0} is an unsupported method".format(method))
 
@@ -253,10 +266,8 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
         waiTwai = spdot(wai.T, wai)
         tr3 = waiTwai.diagonal().sum()
 
-        v1 = np.vstack((tr2 + tr3,
-                        tr1 / self.sig2))
-        v2 = np.vstack((tr1 / self.sig2,
-                        self.n / (2.0 * self.sig2 ** 2)))
+        v1 = np.vstack((tr2 + tr3, tr1 / self.sig2))
+        v2 = np.vstack((tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2)))
 
         v = np.hstack((v1, v2))
 
@@ -264,17 +275,20 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
 
         # create variance matrix for beta, lambda
         vv = np.hstack((varb, np.zeros((self.k, 1))))
-        vv1 = np.hstack(
-            (np.zeros((1, self.k)), self.vm1[0, 0] * np.ones((1, 1))))
+        vv1 = np.hstack((np.zeros((1, self.k)), self.vm1[0, 0] * np.ones((1, 1))))
 
         self.vm = np.vstack((vv, vv1))
 
-
     def get_x_lag(self, w, regimes_att):
         if regimes_att:
-            xlag = weights.lag_spatial(w, regimes_att['x'])
-            xlag = REGI.Regimes_Frame.__init__(self, xlag,
-                                               regimes_att['regimes'], constant_regi=None, cols2regi=regimes_att['cols2regi'])[0]
+            xlag = weights.lag_spatial(w, regimes_att["x"])
+            xlag = REGI.Regimes_Frame.__init__(
+                self,
+                xlag,
+                regimes_att["regimes"],
+                constant_regi=None,
+                cols2regi=regimes_att["cols2regi"],
+            )[0]
             xlag = xlag.toarray()
         else:
             xlag = weights.lag_spatial(w, self.x)
@@ -444,23 +458,33 @@ class ML_Error(BaseML_Error):
 
     """
 
-    def __init__(self, y, x, w, method='full', epsilon=0.0000001,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        method="full",
+        epsilon=0.0000001,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
         method = method.upper()
-        BaseML_Error.__init__(self, y=y, x=x_constant,
-                              w=w, method=method, epsilon=epsilon)
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR" + \
-            " (METHOD = " + method + ")"
+        BaseML_Error.__init__(
+            self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon
+        )
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR" + " (METHOD = " + method + ")"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x)
-        self.name_x.append('lambda')
+        self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
@@ -487,11 +511,12 @@ def err_c_loglik(lam, n, y, ylag, x, xlag, W):
     clik = nlsig2 - jacob
     return clik
 
+
 def err_c_loglik_sp(lam, n, y, ylag, x, xlag, I, Wsp):
     # concentrated log-lik for error model, no constants, LU
     if isinstance(lam, np.ndarray):
-        if lam.shape == (1,1):
-            lam = lam[0][0] #why does the interior value change?
+        if lam.shape == (1, 1):
+            lam = lam[0][0]  # why does the interior value change?
     ys = y - lam * ylag
     xs = x - lam * xlag
     ysys = np.dot(ys.T, ys)
@@ -505,7 +530,7 @@ def err_c_loglik_sp(lam, n, y, ylag, x, xlag, I, Wsp):
     nlsig2 = (n / 2.0) * np.log(sig2)
     a = I - lam * Wsp
     LU = SuperLU(a.tocsc())
-    jacob = np.sum(np.log(np.abs(LU.U.diagonal()))) 
+    jacob = np.sum(np.log(np.abs(LU.U.diagonal())))
     # this is the negative of the concentrated log lik for minimization
     clik = nlsig2 - jacob
     return clik
@@ -535,7 +560,8 @@ def err_c_loglik_ord(lam, n, y, ylag, x, xlag, evals):
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)

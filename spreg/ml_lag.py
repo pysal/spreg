@@ -17,8 +17,10 @@ from . import user_output as USER
 from . import summary_output as SUMMARY
 from .w_utils import symmetrize
 from libpysal import weights
+
 try:
     from scipy.optimize import minimize_scalar
+
     minimize_scalar_available = True
 except ImportError:
     minimize_scalar_available = False
@@ -30,7 +32,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
     """
     ML estimation of the spatial lag model (note no consistency
-    checks, diagnostics or constants added) :cite:`Anselin1988` 
+    checks, diagnostics or constants added) :cite:`Anselin1988`
 
     Parameters
     ----------
@@ -177,15 +179,15 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
     """
 
-    def __init__(self, y, x, w, method='full', epsilon=0.0000001):
+    def __init__(self, y, x, w, method="full", epsilon=0.0000001):
         # set up main regression variables and spatial filters
         self.y = y
         self.x = x
         self.n, self.k = self.x.shape
         self.method = method
         self.epsilon = epsilon
-        #W = w.full()[0]
-        #Wsp = w.sparse
+        # W = w.full()[0]
+        # Wsp = w.sparse
         ylag = weights.lag_spatial(w, y)
         # b0, b1, e0 and e1
         xtx = spdot(self.x.T, self.x)
@@ -198,21 +200,30 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         e1 = ylag - spdot(x, b1)
         methodML = method.upper()
         # call minimizer using concentrated log-likelihood to get rho
-        if methodML in ['FULL', 'LU', 'ORD']:
-            if methodML == 'FULL':
-                W = w.full()[0]     # moved here
-                res = minimize_scalar(lag_c_loglik, 0.0, bounds=(-1.0, 1.0),
-                                      args=(
-                                          self.n, e0, e1, W), method='bounded',
-                                      tol=epsilon)
-            elif methodML == 'LU':
+        if methodML in ["FULL", "LU", "ORD"]:
+            if methodML == "FULL":
+                W = w.full()[0]  # moved here
+                res = minimize_scalar(
+                    lag_c_loglik,
+                    0.0,
+                    bounds=(-1.0, 1.0),
+                    args=(self.n, e0, e1, W),
+                    method="bounded",
+                    tol=epsilon,
+                )
+            elif methodML == "LU":
                 I = sp.identity(w.n)
                 Wsp = w.sparse  # moved here
                 W = Wsp
-                res = minimize_scalar(lag_c_loglik_sp, 0.0, bounds=(-1.0,1.0),
-                                      args=(self.n, e0, e1, I, Wsp),
-                                      method='bounded', tol=epsilon)
-            elif methodML == 'ORD':
+                res = minimize_scalar(
+                    lag_c_loglik_sp,
+                    0.0,
+                    bounds=(-1.0, 1.0),
+                    args=(self.n, e0, e1, I, Wsp),
+                    method="bounded",
+                    tol=epsilon,
+                )
+            elif methodML == "ORD":
                 # check on symmetry structure
                 if w.asymmetry(intrinsic=False) == []:
                     ww = symmetrize(w)
@@ -220,12 +231,16 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
                     evals = la.eigvalsh(WW)
                     W = WW
                 else:
-                    W = w.full()[0]     # moved here
+                    W = w.full()[0]  # moved here
                     evals = la.eigvals(W)
-                res = minimize_scalar(lag_c_loglik_ord, 0.0, bounds=(-1.0, 1.0),
-                                      args=(
-                                          self.n, e0, e1, evals), method='bounded',
-                                      tol=epsilon)
+                res = minimize_scalar(
+                    lag_c_loglik_ord,
+                    0.0,
+                    bounds=(-1.0, 1.0),
+                    args=(self.n, e0, e1, evals),
+                    method="bounded",
+                    tol=epsilon,
+                )
         else:
             # program will crash, need to catch
             print(("{0} is an unsupported method".format(methodML)))
@@ -242,14 +257,15 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         # b, residuals and predicted values
 
         b = b0 - self.rho * b1
-        self.betas = np.vstack((b, self.rho))   # rho added as last coefficient
+        self.betas = np.vstack((b, self.rho))  # rho added as last coefficient
         self.u = e0 - self.rho * e1
         self.predy = self.y - self.u
 
         xb = spdot(x, b)
 
         self.predy_e = inverse_prod(
-            w.sparse, xb, self.rho, inv_method="power_exp", threshold=epsilon)
+            w.sparse, xb, self.rho, inv_method="power_exp", threshold=epsilon
+        )
         self.e_pred = self.y - self.predy_e
 
         # residual variance
@@ -262,7 +278,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         spfill_diagonal(a, 1.0)
         ai = spinv(a)
         wai = spdot(W, ai)
-        tr1 = wai.diagonal().sum() #same for sparse and dense
+        tr1 = wai.diagonal().sum()  # same for sparse and dense
 
         wai2 = spdot(wai, wai)
         tr2 = wai2.diagonal().sum()
@@ -277,12 +293,13 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
         # order of variables is beta, rho, sigma2
 
-        v1 = np.vstack(
-            (xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((1, self.k))))
+        v1 = np.vstack((xtx / self.sig2, xTwpy.T / self.sig2, np.zeros((1, self.k))))
         v2 = np.vstack(
-            (xTwpy / self.sig2, tr2 + tr3 + wpyTwpy / self.sig2, tr1 / self.sig2))
+            (xTwpy / self.sig2, tr2 + tr3 + wpyTwpy / self.sig2, tr1 / self.sig2)
+        )
         v3 = np.vstack(
-            (np.zeros((self.k, 1)), tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2)))
+            (np.zeros((self.k, 1)), tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2))
+        )
 
         v = np.hstack((v1, v2, v3))
 
@@ -545,21 +562,31 @@ class ML_Lag(BaseML_Lag):
 
     """
 
-    def __init__(self, y, x, w, method='full', epsilon=0.0000001,
-                 vm=False, name_y=None, name_x=None,
-                 name_w=None, name_ds=None):
+    def __init__(
+        self,
+        y,
+        x,
+        w,
+        method="full",
+        epsilon=0.0000001,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_ds=None,
+    ):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x)
+        x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
         method = method.upper()
         BaseML_Lag.__init__(
-            self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon)
+            self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon
+        )
         # increase by 1 to have correct aic and sc, include rho in count
         self.k += 1
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + \
-            " (METHOD = " + method + ")"
+        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x)
@@ -569,6 +596,7 @@ class ML_Lag(BaseML_Lag):
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
         SUMMARY.ML_Lag(reg=self, w=w, vm=vm, spat_diag=False)
+
 
 def lag_c_loglik(rho, n, e0, e1, W):
     # concentrated log-lik for lag model, no constants, brute force
@@ -582,11 +610,12 @@ def lag_c_loglik(rho, n, e0, e1, W):
     clik = nlsig2 - jacob
     return clik
 
+
 def lag_c_loglik_sp(rho, n, e0, e1, I, Wsp):
     # concentrated log-lik for lag model, sparse algebra
     if isinstance(rho, np.ndarray):
-        if rho.shape == (1,1):
-            rho = rho[0][0] #why does the interior value change?
+        if rho.shape == (1, 1):
+            rho = rho[0][0]  # why does the interior value change?
     er = e0 - rho * e1
     sig2 = spdot(er.T, er) / n
     nlsig2 = (n / 2.0) * np.log(sig2)
@@ -595,6 +624,7 @@ def lag_c_loglik_sp(rho, n, e0, e1, I, Wsp):
     jacob = np.sum(np.log(np.abs(LU.U.diagonal())))
     clike = nlsig2 - jacob
     return clike
+
 
 def lag_c_loglik_ord(rho, n, e0, e1, evals):
     # concentrated log-lik for lag model, no constants, Ord eigenvalue method
@@ -609,10 +639,11 @@ def lag_c_loglik_ord(rho, n, e0, e1, evals):
     clik = nlsig2 - jacob
     return clik
 
+
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
-

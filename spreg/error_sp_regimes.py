@@ -36,7 +36,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
-                   Spatial weights object   
+                   Spatial weights object
     constant_regi: string, optional
                    Switcher controlling the constant term setup. It may take
                    the following values:
@@ -116,7 +116,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     z_stat       : list of tuples
@@ -190,7 +190,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     This is the DBF associated with the NAT shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> nat = load_example('Natregimes')
     >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
@@ -213,7 +213,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     >>> x_var = ['PS90','UE90']
     >>> x = np.array([db.by_col(name) for name in x_var]).T
 
-    The different regimes in this data are given according to the North and 
+    The different regimes in this data are given according to the North and
     South dummy (SOUTH).
 
     >>> r_var = 'SOUTH'
@@ -221,7 +221,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     Since we want to run a spatial error model, we need to specify
     the spatial weights matrix that includes the spatial configuration of the
-    observations. To do that, we can open an already existing gal file or 
+    observations. To do that, we can open an already existing gal file or
     create a new one. In this case, we will create one from ``NAT.shp``.
 
     >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
@@ -275,17 +275,30 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     """
 
-    def __init__(self, y, x, regimes, w,
-                 vm=False, name_y=None, name_x=None, name_w=None,
-                 constant_regi='many', cols2regi='all', regime_err_sep=False,
-                 regime_lag_sep=False,
-                 cores=False, name_ds=None, name_regimes=None):
+    def __init__(
+        self,
+        y,
+        x,
+        regimes,
+        w,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        constant_regi="many",
+        cols2regi="all",
+        regime_err_sep=False,
+        regime_lag_sep=False,
+        cores=False,
+        name_ds=None,
+        name_regimes=None,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
-        set_warn(self,warn)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.name_x_r = USER.set_name_x(name_x, x_constant)
 
@@ -305,23 +318,33 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         self.regime_err_sep = regime_err_sep
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
-                self._error_regimes_multi(y, x_constant, regimes, w, cores,
-                                          cols2regi, vm, name_x)
+                self._error_regimes_multi(
+                    y, x_constant, regimes, w, cores, cols2regi, vm, name_x
+                )
             else:
-                raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
+                raise Exception(
+                    "All coefficients must vary accross regimes if regime_err_sep = True."
+                )
         else:
             x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
             name_x = USER.set_name_x(name_x, x_constant)
-            self.x, self.name_x = REGI.Regimes_Frame.__init__(self, x_constant,
-                                                              regimes, constant_regi=None, cols2regi=cols2regi, names=name_x)
+            self.x, self.name_x = REGI.Regimes_Frame.__init__(
+                self,
+                x_constant,
+                regimes,
+                constant_regi=None,
+                cols2regi=cols2regi,
+                names=name_x,
+            )
             ols = BaseOLS(y=y, x=self.x)
             self.k = ols.x.shape[1]
             moments = _momentsGM_Error(w, ols.u)
             lambda1 = optim_moments(moments)
             xs = get_spFilter(w, lambda1, x_constant)
             ys = get_spFilter(w, lambda1, y)
-            xs = REGI.Regimes_Frame.__init__(self, xs,
-                                             regimes, constant_regi=None, cols2regi=cols2regi)[0]
+            xs = REGI.Regimes_Frame.__init__(
+                self, xs, regimes, constant_regi=None, cols2regi=cols2regi
+            )[0]
             ols2 = BaseOLS(y=ys, x=xs)
 
             # Output
@@ -332,16 +355,16 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.e_filtered = self.u - lambda1 * lag_spatial(w, self.u)
             self.vm = self.sig2 * ols2.xtxi
             self.title = "SPATIALLY WEIGHTED LEAST SQUARES - REGIMES"
-            self.name_x.append('lambda')
+            self.name_x.append("lambda")
             self.kf += 1
             self.chow = REGI.Chow(self)
             self._cache = {}
             SUMMARY.GM_Error(reg=self, w=w, vm=vm, regimes=True)
 
-    def _error_regimes_multi(self, y, x, regimes, w, cores,
-                             cols2regi, vm, name_x):
+    def _error_regimes_multi(self, y, x, regimes, w, cores, cols2regi, vm, name_x):
         regi_ids = dict(
-            (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set)
+            (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
+        )
         results_p = {}
         """
         for r in self.regimes_set:
@@ -353,16 +376,41 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work_error,args=(y,x,regi_ids,r,w,self.name_ds,self.name_y,name_x+['lambda'],self.name_w,self.name_regimes, ))
                 is_win = False
         """
-        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
+        x_constant, name_x = REGI.check_const_regi(self, x, name_x, regi_ids)
         self.name_x_r = name_x
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
-                results_p[r] = pool.apply_async(_work_error, args=(
-                    y, x_constant, regi_ids, r, w, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes, ))
+                results_p[r] = pool.apply_async(
+                    _work_error,
+                    args=(
+                        y,
+                        x_constant,
+                        regi_ids,
+                        r,
+                        w,
+                        self.name_ds,
+                        self.name_y,
+                        name_x + ["lambda"],
+                        self.name_w,
+                        self.name_regimes,
+                    ),
+                )
             else:
                 results_p[r] = _work_error(
-                    *(y, x_constant, regi_ids, r, w, self.name_ds, self.name_y, name_x + ['lambda'], self.name_w, self.name_regimes))
+                    *(
+                        y,
+                        x_constant,
+                        regi_ids,
+                        r,
+                        w,
+                        self.name_ds,
+                        self.name_y,
+                        name_x + ["lambda"],
+                        self.name_w,
+                        self.name_regimes,
+                    )
+                )
 
         self.kryd = 0
         self.kr = len(cols2regi)
@@ -397,25 +445,33 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             else:
                 results[r] = results_p[r].get()
 
-            self.vm[(counter * self.kr):((counter + 1) * self.kr),
-                    (counter * self.kr):((counter + 1) * self.kr)] = results[r].vm
+            self.vm[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].vm
             self.betas[
-                (counter * (self.kr + 1)):((counter + 1) * (self.kr + 1)), ] = results[r].betas
-            self.u[regi_ids[r], ] = results[r].u
-            self.predy[regi_ids[r], ] = results[r].predy
-            self.e_filtered[regi_ids[r], ] = results[r].e_filtered
+                (counter * (self.kr + 1)) : ((counter + 1) * (self.kr + 1)),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.e_filtered[
+                regi_ids[r],
+            ] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
-        SUMMARY.GM_Error_multi(
-            reg=self, multireg=self.multi, vm=vm, regimes=True)
+        SUMMARY.GM_Error_multi(reg=self, multireg=self.multi, vm=vm, regimes=True)
 
 
 class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
-    '''
+    """
     GMM method for a spatial error model with regimes and endogenous variables, with
     results and diagnostics; based on Kelejian and Prucha (1998,
     1999) :cite:`Kelejian1998` :cite:`Kelejian1999`.
@@ -432,13 +488,13 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
-                   Spatial weights object   
+                   Spatial weights object
     constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
@@ -530,7 +586,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    (see 'multi' below for details)
                    Sigma squared used in computations
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     z_stat       : list of tuples
@@ -545,7 +601,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     name_yend     : list of strings
                     Names of endogenous variables for use in output
     name_z        : list of strings
-                    Names of exogenous and endogenous variables for use in 
+                    Names of exogenous and endogenous variables for use in
                     output
     name_q        : list of strings
                     Names of external instruments
@@ -613,7 +669,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     This is the DBF associated with the NAT shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> nat = load_example('Natregimes')
     >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
@@ -644,7 +700,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     >>> q_var = ['FP89']
     >>> q = np.array([db.by_col(name) for name in q_var]).T
 
-    The different regimes in this data are given according to the North and 
+    The different regimes in this data are given according to the North and
     South dummy (SOUTH).
 
     >>> r_var = 'SOUTH'
@@ -652,8 +708,8 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     Since we want to run a spatial error model, we need to specify the spatial
     weights matrix that includes the spatial configuration of the observations
-    into the error component of the model. To do that, we can open an already 
-    existing gal file or create a new one. In this case, we will create one 
+    into the error component of the model. To do that, we can open an already
+    existing gal file or create a new one. In this case, we will create one
     from ``NAT.shp``.
 
     >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
@@ -702,19 +758,38 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     array([0.522633, 0.137555, 0.063054, 0.473654, 0.18335 , 0.072786,
            0.300711, 0.240413])
 
-    '''
+    """
 
-    def __init__(self, y, x, yend, q, regimes, w, cores=False,
-                 vm=False, constant_regi='many', cols2regi='all',
-                 regime_err_sep=False, regime_lag_sep=False, name_y=None,
-                 name_x=None, name_yend=None, name_q=None, name_w=None,
-                 name_ds=None, name_regimes=None, summ=True, add_lag=False):
+    def __init__(
+        self,
+        y,
+        x,
+        yend,
+        q,
+        regimes,
+        w,
+        cores=False,
+        vm=False,
+        constant_regi="many",
+        cols2regi="all",
+        regime_err_sep=False,
+        regime_lag_sep=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_ds=None,
+        name_regimes=None,
+        summ=True,
+        add_lag=False,
+    ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
-        set_warn(self,warn)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -731,7 +806,8 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         self.name_x_r = USER.set_name_x(name_x, x_constant) + name_yend
 
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x_constant, yend=yend)
+            constant_regi, cols2regi, x_constant, yend=yend
+        )
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
         USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
@@ -739,21 +815,48 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
-                self._endog_error_regimes_multi(y, x_constant, regimes, w, yend, q, cores,
-                                                cols2regi, vm, name_x, name_yend, name_q, add_lag)
+                self._endog_error_regimes_multi(
+                    y,
+                    x_constant,
+                    regimes,
+                    w,
+                    yend,
+                    q,
+                    cores,
+                    cols2regi,
+                    vm,
+                    name_x,
+                    name_yend,
+                    name_q,
+                    add_lag,
+                )
             else:
-                raise Exception("All coefficients must vary accross regimes if regime_err_sep = True.")
+                raise Exception(
+                    "All coefficients must vary accross regimes if regime_err_sep = True."
+                )
         else:
             x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
             name_x = USER.set_name_x(name_x, x_constant)
-            q, name_q = REGI.Regimes_Frame.__init__(self, q,
-                                                    regimes, constant_regi=None, cols2regi='all', names=name_q)
-            x, name_x = REGI.Regimes_Frame.__init__(self, x_constant,
-                                                    regimes, constant_regi=None, cols2regi=cols2regi,
-                                                    names=name_x)
-            yend2, name_yend = REGI.Regimes_Frame.__init__(self, yend,
-                                                           regimes, constant_regi=None,
-                                                           cols2regi=cols2regi, yend=True, names=name_yend)
+            q, name_q = REGI.Regimes_Frame.__init__(
+                self, q, regimes, constant_regi=None, cols2regi="all", names=name_q
+            )
+            x, name_x = REGI.Regimes_Frame.__init__(
+                self,
+                x_constant,
+                regimes,
+                constant_regi=None,
+                cols2regi=cols2regi,
+                names=name_x,
+            )
+            yend2, name_yend = REGI.Regimes_Frame.__init__(
+                self,
+                yend,
+                regimes,
+                constant_regi=None,
+                cols2regi=cols2regi,
+                yend=True,
+                names=name_yend,
+            )
 
             tsls = BaseTSLS(y=y, x=x, yend=yend2, q=q)
             self.k = tsls.z.shape[1]
@@ -762,13 +865,19 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             moments = _momentsGM_Error(w, tsls.u)
             lambda1 = optim_moments(moments)
             xs = get_spFilter(w, lambda1, x_constant)
-            xs = REGI.Regimes_Frame.__init__(self, xs,
-                                             regimes, constant_regi=None, cols2regi=cols2regi)[0]
+            xs = REGI.Regimes_Frame.__init__(
+                self, xs, regimes, constant_regi=None, cols2regi=cols2regi
+            )[0]
             ys = get_spFilter(w, lambda1, y)
             yend_s = get_spFilter(w, lambda1, yend)
-            yend_s = REGI.Regimes_Frame.__init__(self, yend_s,
-                                                 regimes, constant_regi=None, cols2regi=cols2regi,
-                                                 yend=True)[0]
+            yend_s = REGI.Regimes_Frame.__init__(
+                self,
+                yend_s,
+                regimes,
+                constant_regi=None,
+                cols2regi=cols2regi,
+                yend=True,
+            )[0]
             tsls2 = BaseTSLS(ys, xs, yend_s, h=tsls.h)
 
             # Output
@@ -781,7 +890,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.name_x = USER.set_name_x(name_x, x_constant, constant=True)
             self.name_yend = USER.set_name_yend(name_yend, yend)
             self.name_z = self.name_x + self.name_yend
-            self.name_z.append('lambda')
+            self.name_z.append("lambda")
             self.name_q = USER.set_name_q(name_q, q)
             self.name_h = USER.set_name_h(self.name_x, self.name_q)
             self.kf += 1
@@ -791,11 +900,26 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES - REGIMES"
                 SUMMARY.GM_Endog_Error(reg=self, w=w, vm=vm, regimes=True)
 
-    def _endog_error_regimes_multi(self, y, x, regimes, w, yend, q, cores,
-                                   cols2regi, vm, name_x, name_yend, name_q, add_lag):
+    def _endog_error_regimes_multi(
+        self,
+        y,
+        x,
+        regimes,
+        w,
+        yend,
+        q,
+        cores,
+        cols2regi,
+        vm,
+        name_x,
+        name_yend,
+        name_q,
+        add_lag,
+    ):
 
         regi_ids = dict(
-            (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set)
+            (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
+        )
         if add_lag != False:
             self.cols2regi += [True]
             cols2regi += [True]
@@ -812,16 +936,51 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 results_p[r] = pool.apply_async(_work_endog_error,args=(y,x,yend,q,regi_ids,r,w,self.name_ds,self.name_y,name_x,name_yend,name_q,self.name_w,self.name_regimes,add_lag, ))
                 is_win = False
         """
-        x_constant,name_x = REGI.check_const_regi(self,x,name_x,regi_ids)
-        self.name_x_r = name_x  + name_yend
+        x_constant, name_x = REGI.check_const_regi(self, x, name_x, regi_ids)
+        self.name_x_r = name_x + name_yend
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
-                results_p[r] = pool.apply_async(_work_endog_error, args=(
-                    y, x_constant, yend, q, regi_ids, r, w, self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes, add_lag, ))
+                results_p[r] = pool.apply_async(
+                    _work_endog_error,
+                    args=(
+                        y,
+                        x_constant,
+                        yend,
+                        q,
+                        regi_ids,
+                        r,
+                        w,
+                        self.name_ds,
+                        self.name_y,
+                        name_x,
+                        name_yend,
+                        name_q,
+                        self.name_w,
+                        self.name_regimes,
+                        add_lag,
+                    ),
+                )
             else:
                 results_p[r] = _work_endog_error(
-                    *(y, x_constant, yend, q, regi_ids, r, w, self.name_ds, self.name_y, name_x, name_yend, name_q, self.name_w, self.name_regimes, add_lag))
+                    *(
+                        y,
+                        x_constant,
+                        yend,
+                        q,
+                        regi_ids,
+                        r,
+                        w,
+                        self.name_ds,
+                        self.name_y,
+                        name_x,
+                        name_yend,
+                        name_q,
+                        self.name_w,
+                        self.name_regimes,
+                        add_lag,
+                    )
+                )
 
         self.kryd, self.kf = 0, 0
         self.kr = len(cols2regi)
@@ -841,8 +1000,14 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             pool.join()
 
         results = {}
-        self.name_y, self.name_x, self.name_yend, self.name_q, self.name_z, self.name_h = [
-        ], [], [], [], [], []
+        (
+            self.name_y,
+            self.name_x,
+            self.name_yend,
+            self.name_q,
+            self.name_z,
+            self.name_h,
+        ) = ([], [], [], [], [], [])
         counter = 0
         for r in self.regimes_set:
             """
@@ -856,13 +1021,22 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             else:
                 results[r] = results_p[r].get()
 
-            self.vm[(counter * self.kr):((counter + 1) * self.kr),
-                    (counter * self.kr):((counter + 1) * self.kr)] = results[r].vm
+            self.vm[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].vm
             self.betas[
-                (counter * (self.kr + 1)):((counter + 1) * (self.kr + 1)), ] = results[r].betas
-            self.u[regi_ids[r], ] = results[r].u
-            self.predy[regi_ids[r], ] = results[r].predy
-            self.e_filtered[regi_ids[r], ] = results[r].e_filtered
+                (counter * (self.kr + 1)) : ((counter + 1) * (self.kr + 1)),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.e_filtered[
+                regi_ids[r],
+            ] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.name_yend += results[r].name_yend
@@ -870,17 +1044,21 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.name_z += results[r].name_z
             self.name_h += results[r].name_h
             if add_lag != False:
-                self.predy_e[regi_ids[r], ] = results[r].predy_e
-                self.e_pred[regi_ids[r], ] = results[r].e_pred
+                self.predy_e[
+                    regi_ids[r],
+                ] = results[r].predy_e
+                self.e_pred[
+                    regi_ids[r],
+                ] = results[r].e_pred
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
         if add_lag != False:
-            SUMMARY.GM_Combo_multi(
-                reg=self, multireg=self.multi, vm=vm, regimes=True)
+            SUMMARY.GM_Combo_multi(reg=self, multireg=self.multi, vm=vm, regimes=True)
         else:
             SUMMARY.GM_Endog_Error_multi(
-                reg=self, multireg=self.multi, vm=vm, regimes=True)
+                reg=self, multireg=self.multi, vm=vm, regimes=True
+            )
 
 
 class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
@@ -905,10 +1083,10 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                    endogenous variable
     q            : array
                    Two dimensional array with n rows and one column for each
-                   external exogenous variable to use as instruments (note: 
+                   external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
     w            : pysal W object
-                   Spatial weights object (always needed)   
+                   Spatial weights object (always needed)
     constant_regi: string
                    Switcher controlling the constant term setup. It may take
                    the following values:
@@ -934,7 +1112,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
     lag_q        : boolean
-                   If True, then include spatial lags of the additional 
+                   If True, then include spatial lags of the additional
                    instruments (q).
     vm           : boolean
                    If True, include variance-covariance matrix in summary
@@ -1019,7 +1197,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     std_err      : array
-                   1xk array of standard errors of the betas    
+                   1xk array of standard errors of the betas
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     z_stat       : list of tuples
@@ -1034,7 +1212,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     name_yend     : list of strings
                     Names of endogenous variables for use in output
     name_z        : list of strings
-                    Names of exogenous and endogenous variables for use in 
+                    Names of exogenous and endogenous variables for use in
                     output
     name_q        : list of strings
                     Names of external instruments
@@ -1072,7 +1250,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                     If True, a separate regression is run for each regime.
     regime_lag_sep: boolean
                     If True, the spatial parameter for spatial lag is also
-                    computed according to different regimes. If False (default), 
+                    computed according to different regimes. If False (default),
                     the spatial parameter is fixed accross regimes.
     kr            : int
                     Number of variables/columns to be "regimized" or subject
@@ -1106,7 +1284,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     This is the DBF associated with the NAT shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> nat = load_example('Natregimes')
     >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
@@ -1129,7 +1307,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     >>> x_var = ['PS90','UE90']
     >>> x = np.array([db.by_col(name) for name in x_var]).T
 
-    The different regimes in this data are given according to the North and 
+    The different regimes in this data are given according to the North and
     South dummy (SOUTH).
 
     >>> r_var = 'SOUTH'
@@ -1137,7 +1315,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
 
     Since we want to run a spatial lag model, we need to specify
     the spatial weights matrix that includes the spatial configuration of the
-    observations. To do that, we can open an already existing gal file or 
+    observations. To do that, we can open an already existing gal file or
     create a new one. In this case, we will create one from ``NAT.shp``.
 
     >>> w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
@@ -1169,7 +1347,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     values in model.se_betas). Also, this regression uses a two stage least
     squares estimation method that accounts for the endogeneity created by the
     spatial lag of the dependent variable. We can have a summary of the
-    output by typing: model.summary 
+    output by typing: model.summary
     Alternatively, we can check the betas:
 
     >>> print(model.name_z)
@@ -1225,28 +1403,45 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
     lambda:  [0.1868]
     """
 
-    def __init__(self, y, x, regimes, yend=None, q=None,
-                 w=None, w_lags=1, lag_q=True, cores=False,
-                 constant_regi='many', cols2regi='all',
-                 regime_err_sep=False, regime_lag_sep=False,
-                 vm=False, name_y=None, name_x=None,
-                 name_yend=None, name_q=None,
-                 name_w=None, name_ds=None, name_regimes=None):
+    def __init__(
+        self,
+        y,
+        x,
+        regimes,
+        yend=None,
+        q=None,
+        w=None,
+        w_lags=1,
+        lag_q=True,
+        cores=False,
+        constant_regi="many",
+        cols2regi="all",
+        regime_err_sep=False,
+        regime_lag_sep=False,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_yend=None,
+        name_q=None,
+        name_w=None,
+        name_ds=None,
+        name_regimes=None,
+    ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
-        x_constant,name_x,warn = USER.check_constant(x,name_x,just_rem=True)
-        set_warn(self,warn)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
-        name_q.extend(
-            USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
+        name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
 
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x_constant, yend=yend, add_cons=False)
+            constant_regi, cols2regi, x_constant, yend=yend, add_cons=False
+        )
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
         USER.check_regimes(self.regimes_set, n, x_constant.shape[1])
@@ -1255,27 +1450,49 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
 
         if regime_lag_sep == True:
             if regime_err_sep == False:
-                raise Exception("For spatial combo models, if spatial lag is set by regimes (regime_lag_sep=True), spatial error must also be set by regimes (regime_err_sep=True).")
+                raise Exception(
+                    "For spatial combo models, if spatial lag is set by regimes (regime_lag_sep=True), spatial error must also be set by regimes (regime_err_sep=True)."
+                )
             add_lag = [w_lags, lag_q]
         else:
             if regime_err_sep == True:
-                raise Exception("For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes.")
+                raise Exception(
+                    "For spatial combo models, if spatial error is set by regimes (regime_err_sep=True), all coefficients including lambda (regime_lag_sep=True) must be set by regimes."
+                )
             cols2regi += [False]
             add_lag = False
             yend, q = set_endog(y, x_constant, w, yend, q, w_lags, lag_q)
         name_yend.append(USER.set_name_yend_sp(self.name_y))
 
-        GM_Endog_Error_Regimes.__init__(self, y=y, x=x_constant, yend=yend,
-                                        q=q, regimes=regimes, w=w, vm=vm, constant_regi=constant_regi,
-                                        cols2regi=cols2regi, regime_err_sep=regime_err_sep, cores=cores,
-                                        name_y=self.name_y, name_x=name_x,
-                                        name_yend=name_yend, name_q=name_q, name_w=name_w,
-                                        name_ds=name_ds, name_regimes=name_regimes, summ=False, add_lag=add_lag)
+        GM_Endog_Error_Regimes.__init__(
+            self,
+            y=y,
+            x=x_constant,
+            yend=yend,
+            q=q,
+            regimes=regimes,
+            w=w,
+            vm=vm,
+            constant_regi=constant_regi,
+            cols2regi=cols2regi,
+            regime_err_sep=regime_err_sep,
+            cores=cores,
+            name_y=self.name_y,
+            name_x=name_x,
+            name_yend=name_yend,
+            name_q=name_q,
+            name_w=name_w,
+            name_ds=name_ds,
+            name_regimes=name_regimes,
+            summ=False,
+            add_lag=add_lag,
+        )
 
         if regime_err_sep != True:
             self.rho = self.betas[-2]
-            self.predy_e, self.e_pred, warn = sp_att(w, self.y,
-                                                     self.predy, yend[:, -1].reshape(self.n, 1), self.rho)
+            self.predy_e, self.e_pred, warn = sp_att(
+                w, self.y, self.predy, yend[:, -1].reshape(self.n, 1), self.rho
+            )
             set_warn(self, warn)
             self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES - REGIMES"
             SUMMARY.GM_Combo(reg=self, w=w, vm=vm, regimes=True)
@@ -1290,14 +1507,30 @@ def _work_error(y, x, regi_ids, r, w, name_ds, name_y, name_x, name_w, name_regi
     model.w = w_r
     model.title = "SPATIALLY WEIGHTED LEAST SQUARES ESTIMATION - REGIME %s" % r
     model.name_ds = name_ds
-    model.name_y = '%s_%s' % (str(r), name_y)
-    model.name_x = ['%s_%s' % (str(r), i) for i in name_x]
+    model.name_y = "%s_%s" % (str(r), name_y)
+    model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
     model.name_w = name_w
     model.name_regimes = name_regimes
     return model
 
 
-def _work_endog_error(y, x, yend, q, regi_ids, r, w, name_ds, name_y, name_x, name_yend, name_q, name_w, name_regimes, add_lag):
+def _work_endog_error(
+    y,
+    x,
+    yend,
+    q,
+    regi_ids,
+    r,
+    w,
+    name_ds,
+    name_y,
+    name_x,
+    name_yend,
+    name_q,
+    name_w,
+    name_regimes,
+    add_lag,
+):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
@@ -1308,22 +1541,24 @@ def _work_endog_error(y, x, yend, q, regi_ids, r, w, name_ds, name_y, name_x, na
         yend_r, q_r = None, None
     if add_lag != False:
         yend_r, q_r = set_endog(
-            y_r, x_r[:,1:], w_r, yend_r, q_r, add_lag[0], add_lag[1])
+            y_r, x_r[:, 1:], w_r, yend_r, q_r, add_lag[0], add_lag[1]
+        )
     model = BaseGM_Endog_Error(y_r, x_r, yend_r, q_r, w_r.sparse)
     set_warn(model, warn)
     if add_lag != False:
         model.rho = model.betas[-2]
-        model.predy_e, model.e_pred, warn = sp_att(w_r, model.y,
-                                                   model.predy, model.yend[:, -1].reshape(model.n, 1), model.rho)
+        model.predy_e, model.e_pred, warn = sp_att(
+            w_r, model.y, model.predy, model.yend[:, -1].reshape(model.n, 1), model.rho
+        )
         set_warn(model, warn)
     model.w = w_r
     model.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES - REGIME %s" % r
     model.name_ds = name_ds
-    model.name_y = '%s_%s' % (str(r), name_y)
-    model.name_x = ['%s_%s' % (str(r), i) for i in name_x]
-    model.name_yend = ['%s_%s' % (str(r), i) for i in name_yend]
-    model.name_z = model.name_x + model.name_yend + ['lambda']
-    model.name_q = ['%s_%s' % (str(r), i) for i in name_q]
+    model.name_y = "%s_%s" % (str(r), name_y)
+    model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
+    model.name_yend = ["%s_%s" % (str(r), i) for i in name_yend]
+    model.name_z = model.name_x + model.name_yend + ["lambda"]
+    model.name_q = ["%s_%s" % (str(r), i) for i in name_q]
     model.name_h = model.name_x + model.name_q
     model.name_w = name_w
     model.name_regimes = name_regimes
@@ -1332,27 +1567,39 @@ def _work_endog_error(y, x, yend, q, regi_ids, r, w, name_ds, name_y, name_x, na
 
 def _test():
     import doctest
-    start_suppress = np.get_printoptions()['suppress']
+
+    start_suppress = np.get_printoptions()["suppress"]
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     _test()
     import libpysal
     import numpy as np
-    dbf = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
-    y = np.array([dbf.by_col('CRIME')]).T
-    names_to_extract = ['INC']
+
+    dbf = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y = np.array([dbf.by_col("CRIME")]).T
+    names_to_extract = ["INC"]
     x = np.array([dbf.by_col(name) for name in names_to_extract]).T
-    yd_var = ['HOVAL']
+    yd_var = ["HOVAL"]
     yend = np.array([dbf.by_col(name) for name in yd_var]).T
-    q_var = ['DISCBD']
+    q_var = ["DISCBD"]
     q = np.array([dbf.by_col(name) for name in q_var]).T
-    regimes = regimes = dbf.by_col('NSA')
-    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
-    w.transform = 'r'
-    model = GM_Error_Regimes(y, x, regimes=regimes, w=w, name_y='crime', name_x=[
-                             'income'], name_regimes='nsa', name_ds='columbus', regime_err_sep=True)
+    regimes = regimes = dbf.by_col("NSA")
+    w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), "r").read()
+    w.transform = "r"
+    model = GM_Error_Regimes(
+        y,
+        x,
+        regimes=regimes,
+        w=w,
+        name_y="crime",
+        name_x=["income"],
+        name_regimes="nsa",
+        name_ds="columbus",
+        regime_err_sep=True,
+    )
     print(model.summary)

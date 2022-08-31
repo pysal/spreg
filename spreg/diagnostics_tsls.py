@@ -3,7 +3,9 @@ Diagnostics for two stage least squares regression estimations.
         
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu "
+__author__ = (
+    "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu "
+)
 
 from libpysal.common import *
 from scipy.stats import pearsonr
@@ -24,7 +26,7 @@ def t_stat(reg, z_stat=False):
                       If True run z-stat instead of t-stat
 
     Returns
-    -------    
+    -------
     ts_result       : list of tuples
                       each tuple includes value of t statistic (or z
                       statistic) and associated p-value
@@ -48,7 +50,7 @@ def t_stat(reg, z_stat=False):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(examples.get_path("columbus.dbf"),'r')
 
@@ -91,7 +93,7 @@ def t_stat(reg, z_stat=False):
 
     >>> X = []
     >>> X.append(db.by_col("INC"))
-    >>> X = np.array(X).T    
+    >>> X = np.array(X).T
     >>> yd = []
     >>> yd.append(db.by_col("HOVAL"))
     >>> yd = np.array(yd).T
@@ -111,12 +113,17 @@ def t_stat(reg, z_stat=False):
     5.8452644705 0.0000000051 0.3676015668 0.7131703463 -1.9946891308 0.0460767956
     """
 
-    k = reg.k           # (scalar) number of ind. vas (includes constant)
-    n = reg.n           # (scalar) number of observations
-    vm = reg.vm         # (array) coefficients of variance matrix (k x k)
-    betas = reg.betas   # (array) coefficients of the regressors (1 x k)
+    k = reg.k  # (scalar) number of ind. vas (includes constant)
+    n = reg.n  # (scalar) number of observations
+    vm = reg.vm  # (array) coefficients of variance matrix (k x k)
+    betas = reg.betas  # (array) coefficients of the regressors (1 x k)
     variance = vm.diagonal()
-    tStat = betas.reshape(len(betas),) / np.sqrt(variance)
+    tStat = (
+        betas.reshape(
+            len(betas),
+        )
+        / np.sqrt(variance)
+    )
     ts_result = []
     for t in tStat:
         if z_stat:
@@ -159,7 +166,7 @@ def pr2_aspatial(tslsreg):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(examples.get_path("columbus.dbf"),'r')
 
@@ -206,7 +213,7 @@ def pr2_aspatial(tslsreg):
     function and we are done!
 
     >>> result = pr2_aspatial(reg)
-    >>> print("%1.6f"%result)    
+    >>> print("%1.6f"%result)
     0.279361
 
     """
@@ -220,17 +227,17 @@ def pr2_aspatial(tslsreg):
 
 def pr2_spatial(tslsreg):
     """
-    Calculates the pseudo r^2 for the spatial two stage least squares 
+    Calculates the pseudo r^2 for the spatial two stage least squares
     regression.
 
     Parameters
     ----------
     stslsreg            : spatial two stage least squares regression object
-                          output instance from a spatial two stage least 
+                          output instance from a spatial two stage least
                           squares regression model
 
     Returns
-    -------    
+    -------
     pr2_result          : float
                           value of the squared pearson correlation between
                           the y and stsls-predicted y vectors
@@ -254,7 +261,7 @@ def pr2_spatial(tslsreg):
     This is the DBF associated with the Columbus shapefile.  Note that
     libpysal.io.open() also reads data in CSV format; since the actual class
     requires data to be passed in as numpy arrays, the user can read their
-    data in using any method.  
+    data in using any method.
 
     >>> db = libpysal.io.open(examples.get_path("columbus.dbf"),'r')
 
@@ -294,7 +301,7 @@ def pr2_spatial(tslsreg):
     existing gal file or create a new one. In this case, we will create one
     from ``columbus.shp``.
 
-    >>> w = libpysal.weights.Rook.from_shapefile(examples.get_path("columbus.shp")) 
+    >>> w = libpysal.weights.Rook.from_shapefile(examples.get_path("columbus.shp"))
 
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
@@ -328,8 +335,9 @@ def pr2_spatial(tslsreg):
 
 def _test():
     import doctest
+
     doctest.testmod()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()
