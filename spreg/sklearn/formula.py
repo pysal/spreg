@@ -29,8 +29,7 @@ def expand_lag(w_name, fields):
     return " + ".join(output)
 
 
-def from_formula(formula, df, w=None, method="gm", skedastic=None,
-                 debug=False, **kwargs):
+def from_formula(formula, df, w=None, method="gm", debug=False, fit_kwargs, init_kwargs): 
     """
     Given a formula and a dataframe, parse the formula and return a configured
     `spreg` model.
@@ -49,15 +48,13 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
                "full" for brute force ML estimation, "lu" for ML estimation with
                LU log Jacobian calculation, or "ord" for ML estimation with Ord
                log Jacobian calculation. Default set to "gm".
-    skedastic: string
-               specifies form of skedasticity in an error term. "het" for 
-               heteroskedastic spatial error, "hom" for homoskedastic spatial error.
-               Default set to None (regular spatial error estimation).
     debug    : boolean
                if true, outputs the preprocessed formula alongside the spatial model.
                Default set to False.
-    **kwargs : dictionary
-               additional keyword arguments to be passed to the underlying model class.
+    init_kwargs : dictionary
+                  additional keyword arguments to be passed to the underlying model class.
+    fit_kwargs  : dictionary
+                  additional keyword arguments to be passed to the underlying model fit.
 
 
     Description
@@ -80,14 +77,23 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
           a spatial error component in a model.
 
     The parser accepts combinations of `<...>` and `&`: `<FIELD1 + ... + FIELDN> + &` 
-    is the most general possible spatial model available. Additionally, any 
-    transformations from [`formulaic`'s grammar](https://matthewwardrop.github.io/formulaic/concepts/grammar/) are admissible anywhere in the formula string.
+    is the most general possible spatial model available. However, unlike in the default
+    `spreg.from_formula()` function, the parser does not accept Combo models (spatial lag 
+    of y and spatial error components). Durbin models are accepted (`DurbinError` is spatial
+    lag of X and spatial error; `DurbinLag` is spatial lag of X and spatial lag of y), 
+    but are passed directly to the `Error` and `Lag` classes instead of referring to 
+    the syntactic sugar Durbin model classes. Additionally, any transformations from 
+    [`formulaic`'s grammar](https://matthewwardrop.github.io/formulaic/concepts/grammar/) 
+    are admissible anywhere in the formula string.
 
     Variable names do not need to be provided separately to the model classes 
     (i.e., through the `name_x` and `name_y` keyword arguments) as they can be 
     automatically detected from the formula string. Variables which read 
     ``w.sparse @ `FIELD` `` are the spatial lags of those fields 
     (future TODO: make this prettier).
+    
+    The skedastic option is not supported in this version of the function
+    as hetero/homoskedastic errors are not supported by the sklearn-style models.
 
     Finally, if `yend` is included as a keyword argument for an error model,
     the dispatcher will send it to the correct endogenous error model.
@@ -216,44 +222,16 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
         raise ValueError(f"Method must be 'gm', 'full', 'lu', 'ord'; was {method}")
 
     if not (err_model or lag_model):
-        model = OLS(y, X, w=w, **kwargs)
+        model = LinearRegression(fit_intercept=fit_intercept, **init_kwargs)
+        model = model.fit(X, y, **fit_kwargs)
     elif err_model and lag_model:
-        if method != "gm":
-            print("Can't use ML estimation for combo model, switching to GMM")
-
-        if skedastic == "het":
-            model = GM_Combo_Het(y, X, w=w, **kwargs)
-        elif skedastic == "hom":
-            model = GM_Combo_Hom(y, X, w=w, **kwargs)
-        else:
-            model = GM_Combo(y, X, w=w, **kwargs)
+        raise ValueError("Combo models not supported in sklearn style")
     elif lag_model:
-        if method == "gm":
-            model = GM_Lag(y, X, w=w, **kwargs)
-        else:
-            model = ML_Lag(y, X, w=w, method=method, **kwargs)
+        model = Lag(w=w, **init_kwargs)
+        model = model.fit(X, y, method=method, **fit_kwargs)
     elif err_model:
-        if method == "gm":
-            if skedastic == "het":
-                if "yend" in kwargs:
-                    model = GM_Endog_Error_Het(y, X, kwargs["yend"], kwargs["q"],
-                                               w=w, **kwargs)
-                else:
-                    model = GM_Error_Het(y, X, w=w, **kwargs)
-            elif skedastic == "hom":
-                if "yend" in kwargs:
-                    model = GM_Endog_Error_Hom(y, X, kwargs["yend"], kwargs["q"],
-                                               w=w, **kwargs)
-                else:
-                    model = GM_Error_Hom(y, X, w=w, **kwargs)
-            else:
-                if "yend" in kwargs:
-                    model = GM_Endog_Error(y, X, kwargs["yend"], kwargs["q"],
-                                           w=w, **kwargs)
-                else:
-                    model = GM_Error(y, X, w=w, **kwargs)
-        else:
-            model = ML_Error(y, X, w=w, method=method, **kwargs)
+        model = Error(w=w, **init_kwargs)
+        model = model.fit(X, y, method=method, **fit_kwargs)
 
     if debug:
         return model, parsed_formula
