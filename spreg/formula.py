@@ -6,7 +6,7 @@ import geopandas as gpd
 from formulaic import model_matrix
 from sklearn.linear_model import LinearRegression
 from .lag import Lag
-from .Error import Error
+from .error import Error
 
 
 def noninplace_remove(lst, el):

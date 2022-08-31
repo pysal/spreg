@@ -10,7 +10,6 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from . import user_output as USER
-from . import OLS
 from .utils import spdot
 from scipy import stats
 from .panel_utils import check_panel

@@ -8,6 +8,7 @@ current goal is to make this work on its own, then progress down dependencies
 import numpy as np
 from scipy import sparse as sp
 from .utils import set_endog
+from .w_utils import symmetrize
 from .sputils import spdot, sphstack, spfill_diagonal
 from sklearn.base import RegressorMixin
 from sklearn.utils.extmath import safe_sparse_dot
@@ -22,12 +23,12 @@ class Lag(RegressorMixin, LinearModel):
         self.w = w
         self.fit_intercept = fit_intercept
 
-    def _decision_function(self, X, y):
+    def _decision_function(self, X):
         check_is_fitted(self)
 
-        X, y = self._validate_data(X, y, accept_sparse=True)
+        X = self._validate_data(X, accept_sparse=True, reset=False)
         return safe_sparse_dot(
-            np.linalg.inv(sp.eye(y.shape[0]) - self.indir_coef_ * self.w),
+            np.linalg.inv(sp.eye(X.shape[0]) - self.indir_coef_ * self.w.full()[0]),
             safe_sparse_dot(X, self.coef_.T, dense_output=True), dense_output=True)
 
     def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True, method="gm", epsilon=1e-7):
@@ -72,10 +73,10 @@ class Lag(RegressorMixin, LinearModel):
         params_ = np.dot(factor_3, hty)
 
         if self.fit_intercept:
-            self.coef_ = params_[1:-1]
+            self.coef_ = params_[1:-1].T
             self.intercept_ = params_[0]
         else:
-            self.coef_ = params_[:-1]
+            self.coef_ = params_[:-1].T
         self.indir_coef_ = params_[-1]
     
     def _fit_ml(self, X, y, method, epsilon):
@@ -108,10 +109,10 @@ class Lag(RegressorMixin, LinearModel):
         params_ = b0 - self.indir_coef_ * b1
 
         if self.fit_intercept:
-            self.coef_ = params_[1:]
+            self.coef_ = params_[1:].T
             self.intercept_ = params_[0]
         else:
-            self.coef_ = params_
+            self.coef_ = params_.T
 
     def _log_likelihood(self, rho, e0, e1, evals, method):
         n = self.w.n
@@ -169,6 +170,7 @@ if __name__ == "__main__":
     print(model.intercept_)
     print(model.coef_)
     print(model.indir_coef_)
+    print(model.score(X, y))
 
     old_model = spreg.GM_Lag(y, X, w=weights)
     print(old_model.betas)
@@ -177,6 +179,7 @@ if __name__ == "__main__":
     print(model.intercept_)
     print(model.coef_)
     print(model.indir_coef_)
+    print(model.score(X, y))
 
     old_model = spreg.ML_Lag(y, X, w=weights, method="full")
     print(old_model.betas)
@@ -185,6 +188,7 @@ if __name__ == "__main__":
     print(model.intercept_)
     print(model.coef_)
     print(model.indir_coef_)
+    print(model.score(X, y))
 
     old_model = spreg.ML_Lag(y, X, w=weights, method="lu")
     print(old_model.betas)
@@ -193,6 +197,7 @@ if __name__ == "__main__":
     print(model.intercept_)
     print(model.coef_)
     print(model.indir_coef_)
+    print(model.score(X, y))
 
     old_model = spreg.ML_Lag(y, X, w=weights, method="ord")
     print(old_model.betas)

@@ -86,10 +86,10 @@ class Error(RegressorMixin, LinearModel):
             params_ = ols(xs, ys)
 
         if self.fit_intercept:
-            self.coef_ = params_[1:]
+            self.coef_ = params_[1:].T
             self.intercept_ = params_[0]
         else:
-            self.coef_ = params_
+            self.coef_ = params_.T
 
     def _fit_ml(self, X, y, method, epsilon):
         ylag = lag_spatial(self.w, y)
@@ -119,10 +119,10 @@ class Error(RegressorMixin, LinearModel):
         params_ = np.dot(xsxsi, xsys)
 
         if self.fit_intercept:
-            self.coef_ = params_[1:]
+            self.coef_ = params_[1:].T
             self.intercept_ = params_[0]
         else:
-            self.coef_ = params_
+            self.coef_ = params_.T
 
     def _log_likelihood(self, lam, X, y, xlag, ylag, evals, method):
         # Common stuff for all methods
@@ -215,6 +215,7 @@ if __name__ == "__main__":
     print(model.intercept_)
     print(model.coef_)
     print(model.indir_coef_)
+    print(model.score(X, y))
 
     old_model = spreg.GM_Error(y, X, weights)
     print(old_model.betas)
@@ -223,6 +224,7 @@ if __name__ == "__main__":
     print(model.intercept_)
     print(model.coef_)
     print(model.indir_coef_)
+    print(model.score(X, y))
 
     old_model = spreg.ML_Error(y, X, weights, method="full")
     print(old_model.betas)
