@@ -5,7 +5,7 @@ Implements diagnostics not present in sklearn.metrics
 """
 import numpy as np
 from scipy.stats import chi2
-from .utils import spdot
+from ..utils import spdot
 from libpysal.weights import lag_spatial
 
 

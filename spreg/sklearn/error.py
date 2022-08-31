@@ -6,8 +6,8 @@ current goal is to make this work on its own, then progress down dependencies
 """
 
 import numpy as np
-from .utils import optim_moments, get_spFilter
-from .sputils import spdot, sphstack
+from ..utils import optim_moments, get_spFilter
+from ..sputils import spdot, sphstack
 from sklearn.base import RegressorMixin
 from sklearn.linear_model._base import LinearModel
 from libpysal.weights import lag_spatial

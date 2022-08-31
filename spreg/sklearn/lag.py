@@ -7,9 +7,9 @@ current goal is to make this work on its own, then progress down dependencies
 
 import numpy as np
 from scipy import sparse as sp
-from .utils import set_endog
-from .w_utils import symmetrize
-from .sputils import spdot, sphstack, spfill_diagonal
+from ..utils import set_endog
+from ..w_utils import symmetrize
+from ..sputils import spdot, sphstack, spfill_diagonal
 from sklearn.base import RegressorMixin
 from sklearn.utils.extmath import safe_sparse_dot
 from sklearn.utils.validation import check_is_fitted
