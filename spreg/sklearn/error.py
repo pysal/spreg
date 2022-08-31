@@ -210,7 +210,7 @@ if __name__ == "__main__":
     weights = Kernel(boston_df[["x", "y"]], k=50, fixed=False)
     weights = fill_diagonal(weights, 0)
 
-    model = spreg.Error(w=weights)
+    model = spreg.sklearn.Error(w=weights)
     model.fit(X, y)
     print(model.intercept_)
     print(model.coef_)

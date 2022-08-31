@@ -29,7 +29,8 @@ def expand_lag(w_name, fields):
     return " + ".join(output)
 
 
-def from_formula(formula, df, w=None, method="gm", debug=False, fit_kwargs, init_kwargs): 
+def from_formula(formula, df, w=None, method="gm", debug=False,
+                 fit_kwargs={}, init_kwargs={}): 
     """
     Given a formula and a dataframe, parse the formula and return a configured
     `spreg` model.
