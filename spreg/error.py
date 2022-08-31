@@ -1,4 +1,4 @@
-__author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
+__author__ = "Tyler D. Hoffman pysal@tdhoffman.com"
 
 """
 Implement spatial error model in the format of scikit-learn

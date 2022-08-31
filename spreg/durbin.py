@@ -1,4 +1,4 @@
-__author__ = "Tyler D. Hoffman tdhoffman@asu.edu"
+__author__ = "Tyler D. Hoffman pysal@tdhoffman.com"
 
 """
 Implements Durbin Lag (lagged X and lagged y) and Durbin Error 
