@@ -188,7 +188,6 @@ class Error(RegressorMixin, LinearModel):
 if __name__ == "__main__":
     import spreg
     import numpy as np
-    import pandas as pd
     import geopandas as gpd
     from libpysal.examples import load_example
     from libpysal.weights import Kernel, fill_diagonal
