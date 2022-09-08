@@ -15,9 +15,107 @@ def chisqprob(chisq, df):
     return chi2.sf(chisq, df)
 
 
-def lm_test(y_true, y_pred, X, w, tests=['all']):
+def lm_test(y_true, y_pred, w, X=None, tests=['all']):
+    """
+    Lagrange Multiplier tests. Implemented as presented in :cite:`Anselin1996a`.
+
+    Parameters
+    ----------
+    y_true          : array
+                      nx1 array of true y values
+    y_pred          : array
+                      nx1 array of predicted y values (from a regression)
+    w               : libpysal.weights.W
+                      spatial weights object
+    X               : array
+                      nxk array of covariates used in the model (used for all tests except
+                      error; default None)
+    tests           : list of strings
+                      names of tests to be done
+
+    Returns
+    -------
+    out             : dictionary
+                      contains key-value pairs corresponding to the name of the test (key)
+                      and the statistic and p-value from the test (value)
+
+    Examples
+    -------
+    >>> import numpy as np
+    >>> import libpysal
+    >>> import spreg.sklearn
+    >>> from sklearn.linear_model import LinearRegression
+
+    Open the csv file to access the data for analysis
+
+    >>> csv = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
+
+    Pull out from the csv the files we need ('HOVAL' as dependent as well as
+    'INC' and 'CRIME' as independent) and directly transform them into nx1 and
+    nx2 arrays, respectively
+
+    >>> y = np.array([csv.by_col('HOVAL')]).T
+    >>> x = np.array([csv.by_col('INC'), csv.by_col('CRIME')]).T
+
+    Create the weights object from existing .gal file
+
+    >>> w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
+
+    Row-standardize the weight object (not required although desirable in some
+    cases)
+
+    >>> w.transform='r'
+
+    Run an OLS regression
+
+    >>> ols = LinearRegression()
+    >>> ols = ols.fit(X, y)
+
+    Get predicted y values.
+
+    >>> y_pred = ols.predict(X)
+
+    Run all the LM tests in the residuals. These diagnostics test for the
+    presence of remaining spatial autocorrelation in the residuals of an OLS
+    model and give indication about the type of spatial model. There are five
+    types: presence of a spatial lag model (simple and robust version),
+    presence of a spatial error model (simple and robust version) and joint presence
+    of both a spatial lag as well as a spatial error model.
+
+    >>> lms = spreg.sklearn.lm_tests(y_true, y_pred, w, X=X)
+
+    LM error test:
+
+    >>> print(round(lms["lme"][0], 4), round(lms["lme"][1], 4))
+    3.0971 0.0784
+
+    LM lag test:
+
+    >>> print(round(lms["lml"][0], 4), round(lms["lml"][1], 4))
+    0.9816 0.3218
+
+    Robust LM error test:
+
+    >>> print(round(lms["rlme"][0], 4), round(lms.["rlme"][1], 4))
+    3.2092 0.0732
+
+    Robust LM lag test:
+
+    >>> print(round(lms["rlml"][0], 4), round(lms["rlml"][1], 4))
+    1.0936 0.2957
+
+    LM SARMA test:
+
+    >>> print(round(lms["sarma"][0], 4), round(lms["sarma"][1], 4))
+    4.1907 0.123
+    """
+
     if 'all' in tests:
         tests = ['lme', 'lml', 'rlme', 'rlml', 'sarma']
+
+    if X is None:
+        print("X not provided, performing only LM Error test")
+        tests = ["lme"]
 
     out = dict.fromkeys(tests)
     for test in tests:
@@ -155,8 +253,6 @@ def lm_sarma_test(y_true, y_pred, X, w):
 
 if __name__ == "__main__":
     import spreg
-    import numpy as np
-    import pandas as pd
     import geopandas as gpd
     from libpysal.examples import load_example
     from libpysal.weights import Kernel, fill_diagonal
