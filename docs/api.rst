@@ -128,3 +128,30 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.surLMe
     spreg.surLMlag
     spreg.constant_check
+
+
+Scikit-Learn Interface
+----------------------
+
+The `spreg.sklearn` submodule provides a `scikit-learn` style interface to the modeling classes available in `spreg`. For more information, check out [this notebook](https://github.com/tdhoffman/spreg/blob/api-dev/notebooks/sklearn_example.ipynb).
+
+.. autosummary::
+    :toctree: generated/
+
+    spreg.sklearn.Error
+    spreg.sklearn.Lag
+    spreg.sklearn.DurbinError
+    spreg.sklearn.DurbinLag
+    spreg.sklearn.from_formula
+    spreg.sklearn.lm_test
+
+    
+Formula Interface
+-----------------
+
+The `spreg.from_formula` function provides a way for users to specify and fit spatial regression models using R-style Wilkinson formulas. For more information, check out [this notebook](https://github.com/tdhoffman/spreg/blob/api-dev/notebooks/formula_example.ipynb).
+
+.. autosummary::
+    :toctree: generated/
+
+    spreg.from_formula

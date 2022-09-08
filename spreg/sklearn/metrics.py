@@ -8,6 +8,8 @@ from scipy.stats import chi2
 from ..utils import spdot
 from libpysal.weights import lag_spatial
 
+ALL_TESTS = ['lme', 'lml', 'rlme', 'rlml', 'sarma']
+
 
 def chisqprob(chisq, df):
     return chi2.sf(chisq, df)
@@ -16,6 +18,23 @@ def chisqprob(chisq, df):
 def lm_test(y_true, y_pred, X, w, tests=['all']):
     if 'all' in tests:
         tests = ['lme', 'lml', 'rlme', 'rlml', 'sarma']
+
+    out = dict.fromkeys(tests)
+    for test in tests:
+        if test == "lme":
+            out[test] = lm_err_test(y_true, y_pred, w)
+        elif test == "lml":
+            out[test] = lm_lag_test(y_true, y_pred, X, w)
+        elif test == "rlme":
+            out[test] = rlm_err_test(y_true, y_pred, X, w)
+        elif test == "rlml":
+            out[test] = rlm_lag_test(y_true, y_pred, X, w)
+        elif test == "sarma":
+            out[test] = lm_sarma_test(y_true, y_pred, X, w)
+        else:
+            raise ValueError(f"Test must be one of {ALL_TESTS}, was {test}")
+
+    return out
 
 
 def lm_err_test(y_true, y_pred, w):
