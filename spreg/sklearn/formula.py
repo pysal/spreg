@@ -105,7 +105,7 @@ def from_formula(formula, df, w=None, method="gm", debug=False,
 
     Import necessary libraries.
 
-    >>> import spreg
+    >>> import spreg.sklearn
     >>> import numpy as np
     >>> import geopandas as gpd
     >>> from libpysal.examples import load_example
@@ -125,30 +125,26 @@ def from_formula(formula, df, w=None, method="gm", debug=False,
     Write a formula. This formula incorporates transformations, a spatial lag of
     a covariate, a spatial lag of the dependent variable, and a spatial error component.
 
-    >>> formula = "log(CMEDV) ~ {RM**2} + AGE + <log(CMEDV) + INDUS> + &"
+    >>> formula = "log(CMEDV) ~ {RM**2} + AGE + <log(CMEDV) + INDUS>"
     
-    Fit model and output the formula as well.
+    Fit model and output the formula as well. Notice that there's a "- 1" at the end --
+    that's so that the underlying model classes will behave correctly if `fit_intercept`
+    is given as an element in `fit_kwargs`.
 
-    >>> model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
+    >>> model, parsed_formula = spreg.sklearn.from_formula(formula, boston_df, w=weights, debug=True)
     >>> print(type(model))
-    <class 'spreg.error_sp.GM_Combo'>
+    <class 'spreg.sklearn.lag.Lag'>
     >>> print(parsed_formula)
-    log(CMEDV) ~ {RM**2} + AGE + INDUS + {w.sparse @ `INDUS`}
-    >>> np.around(model.betas, decimals=4)
-    array([[ 2.4324e+00],
-        [-1.2000e-03],
-        [-0.0000e+00],
-        [ 2.4000e-02],
-        [-1.4000e-03],
-        [ 1.0000e-04],
-        [-8.1000e-03]])
-    >>> np.around(model.z_stat, decimals=6)
-    array([[ 2.0607149e+01,  0.0000000e+00],
-        [-1.7615890e+00,  7.8139000e-02],
-        [-1.2940000e-03,  9.9896700e-01],
-        [ 1.6212263e+01,  0.0000000e+00],
-        [-3.4082950e+00,  6.5400000e-04],
-        [ 8.4226000e-02,  9.3287700e-01]])
+    log(CMEDV) ~ {RM**2} + AGE + INDUS + {w.sparse @ `INDUS`} - 1
+
+    Check out the results!
+
+    >>> np.around(model.coef_, decimals=4)
+    array([[-0.0014, -0.0021,  0.0233, -0.0013]])
+    >>> np.around(model.indir_coef_, decimals=4)
+    array([0.0002])
+    >>> np.around(model.intercept_, decimals=4)
+    array([2.4616])
     """
 
     # Error checking. Minimum formula size is 5, e.g. "a ~ b"
@@ -210,11 +206,6 @@ def from_formula(formula, df, w=None, method="gm", debug=False,
         df = pd.DataFrame(df)
     y, X = model_matrix(parsed_formula, df)
 
-    # Get names of parsed/transformed variables and remove
-    # names from kwargs if provided
-    kwargs["name_x"] = list(X.columns)
-    kwargs["name_y"] = y.columns[0]
-
     y = np.array(y)
     X = np.array(X)  
 
@@ -223,7 +214,7 @@ def from_formula(formula, df, w=None, method="gm", debug=False,
         raise ValueError(f"Method must be 'gm', 'full', 'lu', 'ord'; was {method}")
 
     if not (err_model or lag_model):
-        model = LinearRegression(fit_intercept=fit_intercept, **init_kwargs)
+        model = LinearRegression(**init_kwargs)
         model = model.fit(X, y, **fit_kwargs)
     elif err_model and lag_model:
         raise ValueError("Combo models not supported in sklearn style")
@@ -237,97 +228,3 @@ def from_formula(formula, df, w=None, method="gm", debug=False,
     if debug:
         return model, parsed_formula
     return model
-
-
-# Testing
-if __name__ == "__main__":
-    # Imports required for example
-    import spreg
-    import numpy as np
-    import pandas as pd
-    import geopandas as gpd
-    from libpysal.examples import load_example
-    from libpysal.weights import Kernel, fill_diagonal
-
-    # Load boston example
-    boston = load_example("Bostonhsg")
-    boston_df = gpd.read_file(boston.get_path("boston.shp"))
-
-    # Manually transform data and set up model matrices
-    boston_df["NOXSQ"] = (10 * boston_df["NOX"])**2
-    boston_df["RMSQ"] = boston_df["RM"]**2
-    boston_df["LOGDIS"] = np.log(boston_df["DIS"].values)
-    boston_df["LOGRAD"] = np.log(boston_df["RAD"].values)
-    boston_df["TRANSB"] = boston_df["B"].values / 1000
-    boston_df["LOGSTAT"] = np.log(boston_df["LSTAT"].values)
-
-    fields = ["RMSQ", "AGE", "LOGDIS", "LOGRAD", "TAX", "PTRATIO",
-              "TRANSB", "LOGSTAT", "CRIM", "ZN", "INDUS", "CHAS", "NOXSQ"]
-    X = boston_df[fields].values
-    y = np.log(boston_df["CMEDV"].values)  # predict log corrected median house prices from covars
-
-    # Make weights matrix and set diagonal to 0 (necessary for lag model)
-    weights = Kernel(boston_df[["x", "y"]], k=50, fixed=False)
-    weights = fill_diagonal(weights, 0)
-
-
-    #-------------- Testing section ----------------#
-    
-    # Original OLS model, manually transformed fields
-    formula = "log(CMEDV) ~ RMSQ + AGE + LOGDIS + LOGRAD + TAX + PTRATIO + TRANSB" + \
-              " + LOGSTAT + CRIM + ZN + INDUS + CHAS + NOXSQ"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True,
-                                               name_y="LCMEDV", name_x=fields)
-    print(type(model))
-    print(parsed_formula)
-    print(model.summary)
-    
-    # OLS model, fields transformed using formulaic
-    formula = "log(CMEDV) ~ {RM**2} + AGE + log(DIS) + log(RAD) + TAX + PTRATIO" + \
-              " + {B/1000} + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2}"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, debug=True,
-                                               name_y="CMEDV", name_x=fields)
-    print(type(model))
-    print(parsed_formula)
-    print(model.summary)
-
-    # SLX model
-    # note that type(model) == spreg.OLS as SLX is just smoothing covars
-    formula = "log(CMEDV) ~ {RM**2} + AGE + log(RAD) + TAX + PTRATIO" + \
-              " + {B/1000} + log(LSTAT) + <CRIM + ZN + INDUS + CHAS> + {(10*NOX)**2}"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
-    print(type(model))
-    print(parsed_formula)
-    print(model.summary)
-
-    # SLY model
-    formula = "log(CMEDV) ~ {RM**2} + AGE + <log(CMEDV)>"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
-    print(type(model))
-    print(parsed_formula)
-    print(model.summary)
-
-    # Error model
-    formula = "log(CMEDV) ~ {RM**2} + AGE + TAX + PTRATIO + {B/1000}" + \
-              " + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2} + &"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, w=weights, debug=True)
-    print(type(model))
-    print(parsed_formula)
-    print(model.summary)
-
-    # Error model with ML estimation
-    formula = "log(CMEDV) ~ {RM**2} + AGE + TAX + PTRATIO + {B/1000}" + \
-              " + log(LSTAT) + CRIM + ZN + INDUS + CHAS + {(10*NOX)**2} + &"
-    model, parsed_formula = spreg.from_formula(formula, boston_df, method="full",
-                                               w=weights, debug=True)
-    print(type(model))
-    print(parsed_formula)
-    print(model.summary)
-
-
-    #-------------- Regimes testing ----------------#
-    # Set up some regimes
-    from spopt.region import RegionKMeansHeuristic
-    kmeans = RegionKMeansHeuristic(boston_df[fields].values, 5, weights)
-    kmeans.solve()
-    boston_df["regime"] = kmeans.labels_

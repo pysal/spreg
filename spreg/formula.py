@@ -39,8 +39,8 @@ def from_formula(formula, df, w=None, method="gm", skedastic=None,
     Given a formula and a dataframe, parse the formula and return a configured
     `spreg` model.
     
-    Inputs
-    ------
+    Parameters
+    ----------
     
     formula  : string
                formula description following formulaic's grammar and the below syntax

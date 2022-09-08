@@ -26,7 +26,7 @@ class TestFormula(unittest.TestCase):
             model = spreg.from_formula("", self.boston_df)
 
     def test_empty_df(self):
-        with self.assertRaises(NameError):
+        with self.assertRaises(formulaic.errors.FactorEvaluationError):
             model = spreg.from_formula("log(CMEDV) ~ ZN + CHAS", pd.DataFrame())
 
     def test_spatial_no_w(self):
