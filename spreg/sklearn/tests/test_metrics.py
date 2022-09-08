@@ -1,3 +1,5 @@
+__author__ = "Tyler D. Hoffman pysal@tdhoffman.com"
+
 import unittest
 import numpy as np
 import libpysal

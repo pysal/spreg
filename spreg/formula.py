@@ -4,9 +4,13 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 from formulaic import model_matrix
-from sklearn.linear_model import LinearRegression
-from .lag import Lag
-from .error import Error
+from .ols import OLS
+from .ml_lag import ML_Lag
+from .ml_error import ML_Error
+from .twosls_sp import GM_Lag
+from .error_sp import GM_Error, GM_Endog_Error, GM_Combo
+from .error_sp_hom import GM_Error_Hom, GM_Endog_Error_Hom, GM_Combo_Hom
+from .error_sp_het import GM_Error_Het, GM_Endog_Error_Het, GM_Combo_Het
 
 
 def noninplace_remove(lst, el):

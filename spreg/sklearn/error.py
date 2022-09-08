@@ -16,11 +16,120 @@ from scipy.optimize import minimize_scalar
 
 
 class Error(RegressorMixin, LinearModel):
+    """
+    Unified scikit-learn style estimator for spatial error models.
+
+    Parameters
+    ----------
+    w            : libpysal.weights.W
+                   spatial weights object (always needed; default None)
+    fit_intercept: boolean
+                   when True, fits model with an intercept (default True)
+
+    Attributes
+    ----------
+    w            : libpysal.weights.W
+                   spatial weights object (always needed; default None)
+    coef_        : array
+                   kx1 array of estimated coefficients corresponding to direct effects
+    indir_coef_  : float
+                   scalar corresponding to indirect effect on the spatial error term
+    intercept_   : float
+                   if fit_intercept is True, this is the intercept, otherwise undefined
+
+    Examples
+    --------
+
+    >>> import spreg.sklearn
+    >>> import numpy as np
+    >>> import geopandas as gpd
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Kernel, fill_diagonal
+
+    Load data.
+
+    >>> boston = load_example("Bostonhsg")
+    >>> boston_df = gpd.read_file(boston.get_path("boston.shp"))
+
+    Transform variables prior to fitting regression.
+
+    >>> boston_df["RMSQ"] = boston_df["RM"]**2
+    >>> boston_df["LCMEDV"] = np.log(boston_df["CMEDV"])
+
+    Set up model matrices. We're going to predict log corrected median
+    house prices from the covariates.
+
+    >>> fields = ["RMSQ", "CRIM"]
+    >>> X = boston_df[fields].values
+    >>> y = boston_df["LCMEDV"].values
+
+    Create weights matrix.
+
+    >>> weights = Kernel(boston_df[["x", "y"]], k=50, fixed=False)
+    >>> weights = fill_diagonal(weights, 0)
+
+    Fit spatial error model using default estimation method
+    (generalized method of moments).
+
+    >>> model = spreg.sklearn.Error(w=weights)
+    >>> model = model.fit(X, y)
+    >>> print(model.intercept_)
+    [2.05623048]
+    >>> print(model.coef_)
+    [[ 0.02630646 -0.02201035]]
+    >>> print(model.indir_coef_)
+    -0.017493400401888144
+    >>> print(model.score(X, y))
+    0.5755042763160537
+
+    Fit spatial error model using default estimation method (maximum
+    likelihood).
+
+    >>> model.fit(X, y, method="full")
+    >>> print(model.intercept_)
+    [1.79049179]
+    >>> print(model.coef_)
+    [[ 0.03330595 -0.02815453]]
+    >>> print(model.indir_coef_)
+    0.9913828713964514
+    >>> print(model.score(X, y))
+    0.5002107937316029
+    """
+    
     def __init__(self, w=None, fit_intercept=True):
         self.w = w
         self.fit_intercept = fit_intercept
 
     def fit(self, X, y, yend=None, q=None, method="gm", epsilon=1e-7):
+        """
+        Fit spatial error model.
+        
+        Parameters
+        ----------
+        X               : array
+                          nxk array of covariates
+        y               : array
+                          nx1 array of dependent variable
+        yend            : array
+                          nxp array of endogenous variables (default None)
+        q               : array
+                          nxp array of external endogenous variables to use as instruments
+                          (should not contain any variables in X; default None)
+        method          : string
+                          name of estimation method to use (default "gm"). available options
+                          are: "gm" (generalized method of moments), "full" (brute force 
+                          maximum likelihood), "lu" (LU sparse decomposition maximum 
+                          likelihood), and "ord" (Ord eigenvalue method)
+        epsilon         : float
+                          tolerance to use for fitting maximum likelihood models
+                          (default 1e-7)
+
+        Returns
+        -------
+        self            : Error
+                          fitted spreg.sklearn.Error object
+        """
+        
         # Input validation
         X, y = self._validate_data(X, y, accept_sparse=True, y_numeric=True)
         y = y.reshape(-1, 1)  # ensure vector TODO FORMALIZE THIS
@@ -43,6 +152,10 @@ class Error(RegressorMixin, LinearModel):
         return self
 
     def _fit_gm(self, X, y, yend, q):
+        """
+        Helper method for fitting with GMM
+        """
+
         def ols(X, y):
             xtx = spdot(X.T, X)
             xty = spdot(X.T, y)
@@ -92,6 +205,10 @@ class Error(RegressorMixin, LinearModel):
             self.coef_ = params_.T
 
     def _fit_ml(self, X, y, method, epsilon):
+        """
+        Helper method for fitting with maximum likelihood
+        """
+
         ylag = lag_spatial(self.w, y)
         xlag = lag_spatial(self.w, X)
 
@@ -125,6 +242,10 @@ class Error(RegressorMixin, LinearModel):
             self.coef_ = params_.T
 
     def _log_likelihood(self, lam, X, y, xlag, ylag, evals, method):
+        """
+        Defines log likelihoods for each of the three maximum likelihood methods
+        """
+
         # Common stuff for all methods
         n = y.shape[0]
         ys = y - lam * ylag
@@ -163,6 +284,10 @@ class Error(RegressorMixin, LinearModel):
         return clik
 
     def _moments_gm_error(self, w, u):
+        """
+        Helper method to calculate moments for GMM estimation
+        """
+
         try:
             wsparse = w.sparse
         except AttributeError:
@@ -183,47 +308,3 @@ class Error(RegressorMixin, LinearModel):
             [[2 * uwu[0][0], -wu2[0][0], n], [2 * wuwwu[0][0], -wwu2[0][0], trWtW],
             [uwwu[0][0] + wu2[0][0], -wuwwu[0][0], 0.]]) / n
         return [G, g]
-
-
-if __name__ == "__main__":
-    import spreg
-    import numpy as np
-    import geopandas as gpd
-    from libpysal.examples import load_example
-    from libpysal.weights import Kernel, fill_diagonal
-
-    boston = load_example("Bostonhsg")
-    boston_df = gpd.read_file(boston.get_path("boston.shp"))
-
-    boston_df["NOXSQ"] = (10 * boston_df["NOX"])**2
-    boston_df["RMSQ"] = boston_df["RM"]**2
-    boston_df["LOGDIS"] = np.log(boston_df["DIS"].values)
-    boston_df["LOGRAD"] = np.log(boston_df["RAD"].values)
-    boston_df["TRANSB"] = boston_df["B"].values / 1000
-    boston_df["LOGSTAT"] = np.log(boston_df["LSTAT"].values)
-
-    fields = ["RMSQ", "CRIM"]
-    X = boston_df[fields].values
-    y = np.log(boston_df["CMEDV"].values)  # predict log corrected median house prices from covars
-
-    weights = Kernel(boston_df[["x", "y"]], k=50, fixed=False)
-    weights = fill_diagonal(weights, 0)
-
-    model = spreg.sklearn.Error(w=weights)
-    model.fit(X, y)
-    print(model.intercept_)
-    print(model.coef_)
-    print(model.indir_coef_)
-    print(model.score(X, y))
-
-    old_model = spreg.GM_Error(y, X, weights)
-    print(old_model.betas)
-
-    model.fit(X, y, method="full")
-    print(model.intercept_)
-    print(model.coef_)
-    print(model.indir_coef_)
-    print(model.score(X, y))
-
-    old_model = spreg.ML_Error(y, X, weights, method="full")
-    print(old_model.betas)

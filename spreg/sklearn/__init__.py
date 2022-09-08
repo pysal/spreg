@@ -1,3 +1,5 @@
+__author__ = "Tyler D. Hoffman pysal@tdhoffman.com"
+
 """
 Import all sklearn style functionality as subpackage
 """

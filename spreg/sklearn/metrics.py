@@ -31,7 +31,10 @@ def lm_test(y_true, y_pred, w, X=None, tests=['all']):
                       nxk array of covariates used in the model (used for all tests except
                       error; default None)
     tests           : list of strings
-                      names of tests to be done
+                      names of tests to be done (default ["all"]). available tests are:
+                      "lme" (LM error), "lml" (LM lag), "rlme" (robust LM error),
+                      "rlml" (robust LM lag), and "sarma" (LM SARMA). use "all"
+                      to run all available tests.
 
     Returns
     -------
@@ -41,74 +44,56 @@ def lm_test(y_true, y_pred, w, X=None, tests=['all']):
 
     Examples
     -------
+
     >>> import numpy as np
-    >>> import libpysal
     >>> import spreg.sklearn
     >>> from sklearn.linear_model import LinearRegression
+    >>> import geopandas as gpd
+    >>> from libpysal.examples import load_example
+    >>> from libpysal.weights import Kernel, fill_diagonal
 
-    Open the csv file to access the data for analysis
+    Load data.
 
-    >>> csv = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
+    >>> boston = load_example("Bostonhsg")
+    >>> boston_df = gpd.read_file(boston.get_path("boston.shp"))
 
-    Pull out from the csv the files we need ('HOVAL' as dependent as well as
-    'INC' and 'CRIME' as independent) and directly transform them into nx1 and
-    nx2 arrays, respectively
+    Transform variables prior to fitting regression.
 
-    >>> y = np.array([csv.by_col('HOVAL')]).T
-    >>> x = np.array([csv.by_col('INC'), csv.by_col('CRIME')]).T
+    >>> boston_df["RMSQ"] = boston_df["RM"]**2
+    >>> boston_df["LCMEDV"] = np.log(boston_df["CMEDV"])
 
-    Create the weights object from existing .gal file
+    Set up model matrices. We're going to predict log corrected median
+    house prices from the covariates.
 
-    >>> w = libpysal.io.open(libpysal.examples.get_path('columbus.gal'), 'r').read()
+    >>> fields = ["RMSQ", "CRIM"]
+    >>> X = boston_df[fields].values
+    >>> y = boston_df["LCMEDV"].values
 
-    Row-standardize the weight object (not required although desirable in some
-    cases)
+    Create weights matrix.
 
-    >>> w.transform='r'
+    >>> weights = Kernel(boston_df[["x", "y"]], k=50, fixed=False)
+    >>> weights = fill_diagonal(weights, 0)
 
-    Run an OLS regression
+    Fit OLS model.
 
-    >>> ols = LinearRegression()
-    >>> ols = ols.fit(X, y)
+    >>> model = LinearRegression()
+    >>> model = model.fit(X, y)
+    >>> print(model.intercept_)
+    2.1028110827643336
+    >>> print(model.coef_)
+    [ 0.02508573 -0.01976315]
+    >>> print(model.score(X, y))
+    0.5792144821996128
 
-    Get predicted y values.
+    Predict new y values and look at the LM test results.
 
-    >>> y_pred = ols.predict(X)
-
-    Run all the LM tests in the residuals. These diagnostics test for the
-    presence of remaining spatial autocorrelation in the residuals of an OLS
-    model and give indication about the type of spatial model. There are five
-    types: presence of a spatial lag model (simple and robust version),
-    presence of a spatial error model (simple and robust version) and joint presence
-    of both a spatial lag as well as a spatial error model.
-
-    >>> lms = spreg.sklearn.lm_tests(y_true, y_pred, w, X=X)
-
-    LM error test:
-
-    >>> print(round(lms["lme"][0], 4), round(lms["lme"][1], 4))
-    3.0971 0.0784
-
-    LM lag test:
-
-    >>> print(round(lms["lml"][0], 4), round(lms["lml"][1], 4))
-    0.9816 0.3218
-
-    Robust LM error test:
-
-    >>> print(round(lms["rlme"][0], 4), round(lms.["rlme"][1], 4))
-    3.2092 0.0732
-
-    Robust LM lag test:
-
-    >>> print(round(lms["rlml"][0], 4), round(lms["rlml"][1], 4))
-    1.0936 0.2957
-
-    LM SARMA test:
-
-    >>> print(round(lms["sarma"][0], 4), round(lms["sarma"][1], 4))
-    4.1907 0.123
+    >>> y_pred = model.predict(X)
+    >>> print(spreg.sklearn.lm_test(y, y_pred, weights, X=X))
+    {'lme': (798.0561649785933, 1.4278628273902582e-175), 'lml': (20.247083115373105, 6.805714788173705e-06), 'rlme': (-6395.976402372408, 1.0), 'rlml': (-7173.785484235628, 1.0), 'sarma': (-6375.729319257035, 1.0)}
     """
+
+    if type(tests) == str:
+        tests = [tests]
 
     if 'all' in tests:
         tests = ['lme', 'lml', 'rlme', 'rlml', 'sarma']
@@ -147,7 +132,7 @@ def lm_err_test(y_true, y_pred, w):
 
     lm = resX ** 2 / trW
     pval = chisqprob(lm, 1)
-    return (lm[0][0], pval[0][0])
+    return (lm, pval)
 
 
 def lm_lag_test(y_true, y_pred, X, w):
@@ -169,7 +154,7 @@ def lm_lag_test(y_true, y_pred, X, w):
 
     lm = resY ** 2 / (n * j)
     pval = chisqprob(lm, 1)
-    return (lm[0][0], pval[0][0])
+    return (lm, pval)
 
 
 def rlm_err_test(y_true, y_pred, X, w):
@@ -196,7 +181,7 @@ def rlm_err_test(y_true, y_pred, X, w):
     den = trW * (1. - (trW / nj))
     lm = num / den
     pval = chisqprob(lm, 1)
-    return (lm[0][0], pval[0][0])
+    return (lm, pval)
 
 
 def rlm_lag_test(y_true, y_pred, X, w):
@@ -221,7 +206,7 @@ def rlm_lag_test(y_true, y_pred, X, w):
     lm = (resY - resX) ** 2 / \
         ((n * j) - trW)
     pval = chisqprob(lm, 1)
-    return (lm[0][0], pval[0][0])
+    return (lm, pval)
 
 
 def lm_sarma_test(y_true, y_pred, X, w):
@@ -248,45 +233,5 @@ def lm_sarma_test(y_true, y_pred, X, w):
     secnd = resX ** 2 / trW
     lm = first + secnd
     pval = chisqprob(lm, 2)
-    return (lm[0][0], pval[0][0])
+    return (lm, pval)
 
-
-if __name__ == "__main__":
-    import spreg
-    import geopandas as gpd
-    from libpysal.examples import load_example
-    from libpysal.weights import Kernel, fill_diagonal
-
-    boston = load_example("Bostonhsg")
-    boston_df = gpd.read_file(boston.get_path("boston.shp"))
-
-    boston_df["NOXSQ"] = (10 * boston_df["NOX"])**2
-    boston_df["RMSQ"] = boston_df["RM"]**2
-    boston_df["LOGDIS"] = np.log(boston_df["DIS"].values)
-    boston_df["LOGRAD"] = np.log(boston_df["RAD"].values)
-    boston_df["TRANSB"] = boston_df["B"].values / 1000
-    boston_df["LOGSTAT"] = np.log(boston_df["LSTAT"].values)
-
-    fields = ["RMSQ", "CRIM"]
-    X = boston_df[fields].values
-    y = np.log(boston_df["CMEDV"].values)  # predict log corrected median house prices from covars
-
-    weights = Kernel(boston_df[["x", "y"]], k=50, fixed=False)
-    weights = fill_diagonal(weights, 0)
-
-    model = spreg.sklearn.Error(w=weights)
-    model.fit(X, y)
-    print(model.intercept_)
-    print(model.coef_)
-    print(model.indir_coef_)
-    print(model.score(X, y))
-
-    old_model = spreg.GM_Error(y, X, weights)
-    print(old_model.betas)
-
-    y_pred = model.predict(X)
-    print(spreg.sklearn.lm_err_test(y, y_pred, weights))
-    print(spreg.sklearn.lm_lag_test(y, y_pred, X, weights))
-    print(spreg.sklearn.rlm_err_test(y, y_pred, X, weights))
-    print(spreg.sklearn.rlm_lag_test(y, y_pred, X, weights))
-    print(spreg.sklearn.lm_sarma_test(y, y_pred, X, weights))
