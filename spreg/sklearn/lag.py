@@ -1,4 +1,4 @@
-__author__ = "Tyler D. Hoffman pysal@tdhoffman.com" 
+__author__ = "Tyler D. Hoffman pysal@tdhoffman.com"
 
 """
 Implement spatial lag model in the format of scikit-learn
@@ -109,7 +109,8 @@ class Lag(RegressorMixin, LinearModel):
         X = self._validate_data(X, accept_sparse=True, reset=False)
         return safe_sparse_dot(
             np.linalg.inv(np.eye(self.w.n) - self.indir_coef_ * self.w.full()[0]),
-            safe_sparse_dot(X, self.coef_.T, dense_output=True), dense_output=True)
+            safe_sparse_dot(X, self.coef_.T, dense_output=True), dense_output=True) +
+            self.intercept_
 
     def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True, method="gm", epsilon=1e-7):
         """
@@ -155,6 +156,8 @@ class Lag(RegressorMixin, LinearModel):
 
         if self.fit_intercept:
             X = np.insert(X, 0, np.ones((X.shape[0],)), axis=1)
+        else:
+            self.intercept_ = 0
 
         if method == "gm":
             self._fit_gm(X, y, yend, q, w_lags, lag_q)

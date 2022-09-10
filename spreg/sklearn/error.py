@@ -139,6 +139,8 @@ class Error(RegressorMixin, LinearModel):
 
         if self.fit_intercept:
             X = np.insert(X, 0, np.ones((X.shape[0],)), axis=1)
+        else:
+            self.intercept_ = 0
 
         method = method.lower()
         if method == "gm":
