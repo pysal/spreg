@@ -74,59 +74,55 @@ class TestDurbinErrorML(unittest.TestCase):
 
 class TestDurbinLagGM(unittest.TestCase):
     def setUp(self):
-        self.w = libpysal.weights.Rook.from_shapefile(
-            libpysal.examples.get_path("columbus.shp")
+        self.w = libpysal.weights.Kernel.from_shapefile(
+            libpysal.examples.get_path("boston.shp"), k=50, fixed=False
         )
         self.w.transform = "r"
-        self.db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
-        y = np.array(self.db.by_col("HOVAL"))
-        self.y = np.reshape(y, (49, 1))
+        self.db = libpysal.io.open(libpysal.examples.get_path("boston.dbf"), "r")
+        self.y = np.log(np.array(self.db.by_col("CMEDV")))
         X = []
-        X.append(self.db.by_col("INC"))
-        X.append(self.db.by_col("CRIME"))
+        X.append(self.db.by_col("RM"))
+        X.append(self.db.by_col("CRIM"))
         self.X = np.array(X).T
+        self.X[:, 0] **= 2
 
     def test_gm(self):
-        w_lags = 2
-        reg = Lag(self.w)
-        reg = reg.fit(self.X, self.y, w_lags=w_lags)
-        betas = np.array([[6.20888617e-01], [-4.80723451e-01]])
+        reg = DurbinLag(self.w)
+        reg = reg.fit(self.X, self.y)
+        betas = np.array([[-5.80084095, -0.33434679,  0.19776338, -0.01614501]])
         np.testing.assert_allclose(reg.coef_, betas, RTOL)
-        intercept = np.array([4.53017056e01])
+        intercept = np.array([188.63346406])
         np.testing.assert_allclose(reg.intercept_, intercept, RTOL)
-        indir = np.array([2.83622122e-02])
+        indir = np.array([0.03903555])
         np.testing.assert_allclose(reg.indir_coef_, indir, RTOL)
-        pr2 = 0.3551928222612527
+        pr2 = 0.11141781555390184
         np.testing.assert_allclose(reg.score(self.X, self.y), pr2, RTOL)
 
 
 class TestLagML(unittest.TestCase):
     def setUp(self):
-        db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), "r")
-        self.ds_name = "baltim.dbf"
-        self.y_name = "PRICE"
-        self.y = np.array(db.by_col(self.y_name)).T
-        self.y.shape = (len(self.y), 1)
-        self.X_names = ["NROOM", "AGE", "SQFT"]
-        self.X = np.array([db.by_col(var) for var in self.X_names]).T
-        ww = libpysal.io.open(libpysal.examples.get_path("baltim_q.gal"))
-        self.w = ww.read()
-        ww.close()
-        self.w_name = "baltim_q.gal"
+        self.w = libpysal.weights.Kernel.from_shapefile(
+            libpysal.examples.get_path("boston.shp"), k=50, fixed=False
+        )
         self.w.transform = "r"
+        self.db = libpysal.io.open(libpysal.examples.get_path("boston.dbf"), "r")
+        self.y = np.log(np.array(self.db.by_col("CMEDV")))
+        X = []
+        X.append(self.db.by_col("RM"))
+        X.append(self.db.by_col("CRIM"))
+        self.X = np.array(X).T
+        self.X[:, 0] **= 2
 
     def _test_core(self, method="full"):
-        reg = Lag(self.w)
+        reg = DurbinLag(self.w)
         reg = reg.fit(self.X, self.y, method=method)
-        betas = np.array([[3.48995114], [-0.20103955], [0.65462382]])
+        betas = np.array([[6.74302163, -0.17307699, -0.2677622, 0.01342728]])
         np.testing.assert_allclose(reg.coef_, betas, RTOL)
-        intercept = np.array([-6.04040164])
+        intercept = np.array([-12.76181797])
         np.testing.assert_allclose(reg.intercept_, intercept, RTOL)
-        indir = np.array([0.62351143])
+        indir = np.array([0.057416905973280974])
         np.testing.assert_allclose(reg.indir_coef_, indir, RTOL)
-        predy = np.array([-0.51218398])
-        np.testing.assert_allclose(reg.predict(self.X)[0], predy, RTOL)
-        pr2 = 0.6133020721559487
+        pr2 = 0.0038602569028663267
         np.testing.assert_allclose(reg.score(self.X, self.y), pr2, RTOL)
 
     def test_full(self):
