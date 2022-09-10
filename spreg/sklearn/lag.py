@@ -109,7 +109,7 @@ class Lag(RegressorMixin, LinearModel):
         X = self._validate_data(X, accept_sparse=True, reset=False)
         return safe_sparse_dot(
             np.linalg.inv(np.eye(self.w.n) - self.indir_coef_ * self.w.full()[0]),
-            safe_sparse_dot(X, self.coef_.T, dense_output=True), dense_output=True) +
+            safe_sparse_dot(X, self.coef_.T, dense_output=True), dense_output=True) + \
             self.intercept_
 
     def fit(self, X, y, yend=None, q=None, w_lags=1, lag_q=True, method="gm", epsilon=1e-7):
