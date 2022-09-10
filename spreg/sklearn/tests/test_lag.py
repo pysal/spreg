@@ -28,9 +28,9 @@ class TestLagGM(unittest.TestCase):
         intercept = np.array([4.53017056e01])
         np.testing.assert_allclose(reg.intercept_, intercept, RTOL)
         indir = np.array([2.83622122e-02])
-        np.testing.assert_allclose(reg.indir_, indir, RTOL)
+        np.testing.assert_allclose(reg.indir_coef_, indir, RTOL)
         pr2 = 0.3551928222612527
-        np.testing.assert_allclose(reg.score(self.X), pr2, RTOL)
+        np.testing.assert_allclose(reg.score(self.X, self.y), pr2, RTOL)
 
 
 class TestLagML(unittest.TestCase):
@@ -56,11 +56,11 @@ class TestLagML(unittest.TestCase):
         intercept = np.array([-6.04040164])
         np.testing.assert_allclose(reg.intercept_, intercept, RTOL)
         indir = np.array([0.62351143])
-        np.testing.assert_allclose(reg.indir_, indir, RTOL)
+        np.testing.assert_allclose(reg.indir_coef_, indir, RTOL)
         predy = np.array([-0.51218398])
         np.testing.assert_allclose(reg.predict(self.X)[0], predy, RTOL)
         pr2 = 0.6133020721559487
-        np.testing.assert_allclose(reg.score(self.X), pr2, RTOL)
+        np.testing.assert_allclose(reg.score(self.X, self.y), pr2, RTOL)
 
     def test_full(self):
         self._test_core(method="full")

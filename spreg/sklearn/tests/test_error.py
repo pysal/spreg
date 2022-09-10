@@ -35,7 +35,7 @@ class TestErrorGM(unittest.TestCase):
     def test_gm(self):
         reg = Error(self.w)
         reg = reg.fit(self.X1, self.y)
-        betas = np.array([[0.70598088], [-0.55571746] ])
+        betas = np.array([[0.70598088], [-0.55571746]])
         np.testing.assert_allclose(reg.coef_, betas, RTOL)
         intercept = np.array([47.94371455])
         np.testing.assert_allclose(reg.intercept_, intercept, RTOL)
@@ -44,7 +44,7 @@ class TestErrorGM(unittest.TestCase):
         predy = np.array([52.9930255])
         np.testing.assert_allclose(reg.predict(self.X1)[0], predy, RTOL)
         pr2 = 0.3495097406012179
-        np.testing.assert_allclose(reg.score(self.X1), pr2, RTOL)
+        np.testing.assert_allclose(reg.score(self.X1, self.y), pr2, RTOL)
 
     def test_gm_endog(self):
         reg = Error(self.w)
@@ -58,7 +58,7 @@ class TestErrorGM(unittest.TestCase):
         predy = np.array([53.9074875])
         np.testing.assert_allclose(reg.predict(self.X2)[0], predy, RTOL)
         pr2 = 0.346472557570858
-        np.testing.assert_allclose(reg.score(self.X2), pr2, RTOL)
+        np.testing.assert_allclose(reg.score(self.X2, self.y), pr2, RTOL)
 
 
 class TestErrorML(unittest.TestCase):
@@ -81,11 +81,11 @@ class TestErrorML(unittest.TestCase):
         intercept = np.array([6.1492])
         np.testing.assert_allclose(reg.intercept_, intercept, RTOL + 0.0001)
         indir = np.array([0.2991])
-        np.testing.assert_allclose(reg.u[0], indir, RTOL)
+        np.testing.assert_allclose(reg.indir_coef_, indir, RTOL)
         predy = np.array([6.92258051])
         np.testing.assert_allclose(reg.predict(self.X)[0], predy, RTOL)
         pr2 = 0.3057664820364818
-        np.testing.assert_allclose(reg.score(self.X), pr2)
+        np.testing.assert_allclose(reg.score(self.X, self.y), pr2)
 
     def test_dense(self):
         self._test_core(method="full")
