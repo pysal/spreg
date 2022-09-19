@@ -10,19 +10,15 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from . import user_output as USER
+from . import OLS
 from .utils import spdot
 from scipy import stats
 from .panel_utils import check_panel
 
 chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 
-__all__ = [
-    "panel_LMlag",
-    "panel_LMerror",
-    "panel_rLMlag",
-    "panel_rLMerror",
-    "panel_Hausman",
-]
+__all__ = ["panel_LMlag", "panel_LMerror", "panel_rLMlag", "panel_rLMerror",
+           "panel_Hausman"]
 
 
 def panel_LMlag(y, x, w):
@@ -56,12 +52,12 @@ def panel_LMlag(y, x, w):
     ww = spdot(W, W)
     wTw = spdot(W.T, W)
     trw = ww.diagonal().sum() + wTw.diagonal().sum()
-    num1 = np.asarray(sp.identity(t * n) - spdot(x, spdot(ols.xtxi, x.T)))
+    num1 = np.asarray(sp.identity(t*n) - spdot(x, spdot(ols.xtxi, x.T)))
     num2 = spdot(wxb.T, spdot(num1, wxb))
     num = num2 + (trw * trw * ols.sig2)
     J = num / ols.sig2
     utwy = spdot(ols.u.T, spdot(Wsp_nt, y))
-    lm = utwy ** 2 / (ols.sig2 ** 2 * J)
+    lm = utwy**2 / (ols.sig2**2 * J)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -97,7 +93,7 @@ def panel_LMerror(y, x, w):
     wTw = spdot(W.T, W)
     trw = ww.diagonal().sum() + wTw.diagonal().sum()
     utwu = spdot(ols.u.T, spdot(Wsp_nt, ols.u))
-    lm = utwu ** 2 / (ols.sig2 ** 2 * t * trw)
+    lm = utwu**2 / (ols.sig2**2 * t * trw)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -134,12 +130,12 @@ def panel_rLMlag(y, x, w):
     wTw = spdot(W.T, W)
     trw = ww.diagonal().sum() + wTw.diagonal().sum()
     utwu = spdot(ols.u.T, spdot(Wsp_nt, ols.u))
-    num1 = np.asarray(sp.identity(t * n) - spdot(x, spdot(ols.xtxi, x.T)))
+    num1 = np.asarray(sp.identity(t*n) - spdot(x, spdot(ols.xtxi, x.T)))
     num2 = spdot(wxb.T, spdot(num1, wxb))
     num = num2 + (t * trw * ols.sig2)
     J = num / ols.sig2
     utwy = spdot(ols.u.T, spdot(Wsp_nt, y))
-    lm = (utwy / ols.sig2 - utwu / ols.sig2) ** 2 / (J - t * trw)
+    lm = (utwy/ols.sig2 - utwu/ols.sig2)**2 / (J - t*trw)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -176,14 +172,12 @@ def panel_rLMerror(y, x, w):
     wTw = spdot(W.T, W)
     trw = ww.diagonal().sum() + wTw.diagonal().sum()
     utwu = spdot(ols.u.T, spdot(Wsp_nt, ols.u))
-    num1 = np.asarray(sp.identity(t * n) - spdot(x, spdot(ols.xtxi, x.T)))
+    num1 = np.asarray(sp.identity(t*n) - spdot(x, spdot(ols.xtxi, x.T)))
     num2 = spdot(wxb.T, spdot(num1, wxb))
     num = num2 + (t * trw * ols.sig2)
     J = num / ols.sig2
     utwy = spdot(ols.u.T, spdot(Wsp_nt, y))
-    lm = (utwu / ols.sig2 - t * trw / J * utwy / ols.sig2) ** 2 / (
-        t * trw * (1 - t * trw / J)
-    )
+    lm = (utwu/ols.sig2 - t*trw/J*utwy/ols.sig2)**2 / (t*trw*(1 - t*trw/J))
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -206,9 +200,9 @@ def panel_Hausman(panel_fe, panel_re, sp_lag=True):
     h            : tuple
                    Pair of statistic and p-value for the Hausman test.
     """
-    if hasattr(panel_fe, "rho") & hasattr(panel_re, "rho"):
+    if hasattr(panel_fe, 'rho') & hasattr(panel_re, 'rho'):
         d = panel_fe.betas - panel_re.betas[1:-1]
-    elif hasattr(panel_fe, "lam") & hasattr(panel_re, "lam"):
+    elif hasattr(panel_fe, 'lam') & hasattr(panel_re, 'lam'):
         d = panel_fe.betas[0:-1] - panel_re.betas[1:-2]
     else:
         raise Exception("Only same spatial interaction allowed")
