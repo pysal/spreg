@@ -46,6 +46,7 @@ extensions = [  #'sphinx_gallery.gen_gallery',
     "nbsphinx",
     "numpydoc",
 ]
+bibtex_bibfiles = ["_static/references.bib"]
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -198,7 +199,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "spreg.tex", u"spreg Documentation", u"pysal developers", "manual"),
+    (master_doc, "spreg.tex", "spreg Documentation", "pysal developers", "manual"),
 ]
 
 
@@ -206,7 +207,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, project, u"%s Documentation" % project, [author], 1)]
+man_pages = [(master_doc, project, "%s Documentation" % project, [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -218,7 +219,7 @@ texinfo_documents = [
     (
         master_doc,
         project,
-        u"%s Documentation" % project,
+        "%s Documentation" % project,
         author,
         project,
         "The Python Spatial Econometrics Package.",
