@@ -25,3 +25,9 @@ dependencies:
   - scikit-learn>=0.17.1
   - seaborn>=0.7.0
   - statsmodels>=0.6.1
+  # for docs build action (this env only)
+  - nbsphinx
+  - numpydoc
+  - sphinx
+  - sphinxcontrib-bibtex
+  - sphinx_bootstrap_theme
