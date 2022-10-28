@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/pysal/spreg/branch/master/graph/badge.svg?token=9VrJpIYIl3)](https://codecov.io/gh/pysal/spreg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/spreg)
 ![PyPI](https://img.shields.io/pypi/v/spreg)
-![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/spreg)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/spreg/badges/version.svg)](https://anaconda.org/conda-forge/spreg)
 ![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/pysal/spreg/latest)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4421373.svg)](https://zenodo.org/record/4421373)
 
