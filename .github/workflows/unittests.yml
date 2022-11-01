@@ -13,10 +13,7 @@
  jobs:
    unittests:
      env:
-       RUN_TEST: pytest -v spreg -n auto --cov=spreg --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
-       ############################################## replace above with this chunk when docstring testing gets worked out
-       #RUN_TEST: pytest -v spreg -n auto --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
-       ##############################################
+       RUN_TEST: pytest -v spreg -n auto --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
      name: ${{ matrix.os }}, ${{ matrix.environment-file }}
      runs-on: ${{ matrix.os }}
      timeout-minutes: 30
