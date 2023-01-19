@@ -59,6 +59,7 @@ Regimes models are variants of spatial regression models which allow for structu
     spreg.GM_Endog_Error_Regimes
     spreg.GM_Endog_Error_Hom_Regimes
     spreg.GM_Endog_Error_Het_Regimes
+    spreg.Skater_reg
 
 Seemingly-Unrelated Regressions
 --------------------------------
