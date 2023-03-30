@@ -318,7 +318,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
-        self.name_x_r = name_x + [USER.set_name_yend_sp(name_y)]
+        self.name_x_r = USER.set_name_x(name_x, x_constant) + [USER.set_name_yend_sp(name_y)]
         self.method = method
         self.epsilon = epsilon
         self.name_regimes = USER.set_name_ds(name_regimes)
