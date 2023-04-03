@@ -47,6 +47,7 @@ Regimes models are variants of spatial regression models which allow for structu
     :toctree: generated/
 
     spreg.OLS_Regimes
+    spreg.TSLS_Regimes
     spreg.ML_Lag_Regimes
     spreg.ML_Error_Regimes
     spreg.GM_Lag_Regimes
