@@ -329,7 +329,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
-        self.name_x_r = name_x
+        self.name_x_r = USER.set_name_x(name_x, x_constant)
 
         cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant)
         self.regimes_set = REGI._get_regimes_set(regimes)
