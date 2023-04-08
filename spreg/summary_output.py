@@ -1195,7 +1195,7 @@ def _get_var_indices(reg, zt_stat, lambd=False):
             j = i * krex
             jyd = krex * reg.nr + i * reg.kryd + kf - kfyd
             if len(zt_stat) == len(reg.betas) and lambd:
-                jyd += -1
+                jyd += -1 #discount lambda as fixed coefficient in this counter
             name_reg = var_names[j + j_con : j + krex] + var_names[jyd : jyd + reg.kryd]
             # name_reg.sort()
             if reg.constant_regi == "many":
