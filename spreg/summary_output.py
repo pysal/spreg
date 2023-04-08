@@ -1194,6 +1194,8 @@ def _get_var_indices(reg, zt_stat, lambd=False):
         for i in range(reg.nr):
             j = i * krex
             jyd = krex * reg.nr + i * reg.kryd + kf - kfyd
+            if len(zt_stat) == len(reg.betas) and lambd:
+                jyd += -1
             name_reg = var_names[j + j_con : j + krex] + var_names[jyd : jyd + reg.kryd]
             # name_reg.sort()
             if reg.constant_regi == "many":
@@ -1203,10 +1205,14 @@ def _get_var_indices(reg, zt_stat, lambd=False):
         if reg.constant_regi == "one":
             indices += [krex * reg.nr]
         if len(indices) < last_v:
-            name_reg = (
+            if len(indices) - last_v == -1 and lambd:
+                name_reg = ['lambda']
+            else:
+                name_reg = (
                 var_names[krex * reg.nr + 1 - j_con : krex * reg.nr + kf - kfyd]
                 + var_names[reg.kr * reg.nr + kf - kfyd : reg.kr * reg.nr + kf]
             )
+
             # name_reg.sort()
             indices += [var_names.index(ind) for ind in name_reg]
     except:
