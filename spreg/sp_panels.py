@@ -25,6 +25,7 @@ class BaseGM_KKP(RegressionPropsY):
     '''
     Base GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
+
     Parameters
     ----------
     y          : array
@@ -120,6 +121,7 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
     '''
     GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
+
     Parameters
     ----------
     y          : array
@@ -356,6 +358,7 @@ def _moments_kkp(ws, u, i, trace_w2=None):
     """
     Compute G and g matrices for the KKP model.
     ...
+
     Parameters
     ----------
     ws          : Sparse matrix
