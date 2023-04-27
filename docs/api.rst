@@ -76,17 +76,6 @@ Seemingly-unrelated regression models are a generalization of linear regression.
     spreg.SURlagIV
     spreg.ThreeSLS
 
-Panel Models
-------------
-
-.. autosummary::
-    :toctree: generated/
-
-    spreg.Panel_FE_Lag
-    spreg.Panel_FE_Error
-    spreg.Panel_RE_Lag
-    spreg.Panel_RE_Error
-
 Spatial Panel Models
 --------------------
 
@@ -95,6 +84,10 @@ Spatial panel models allow for evaluating correlation in both spatial and time d
 .. autosummary::
    :toctree: generated/
     
+    spreg.Panel_FE_Lag
+    spreg.Panel_FE_Error
+    spreg.Panel_RE_Lag
+    spreg.Panel_RE_Error
     spreg.GM_KKP
 
 Diagnostics
