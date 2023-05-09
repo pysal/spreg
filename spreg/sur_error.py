@@ -38,7 +38,7 @@ __all__ = ["BaseSURerrorGM", "SURerrorGM", "BaseSURerrorML", "SURerrorML"]
 
 
 class BaseSURerrorGM:
-    """Base class for SUR Error estimation by Generalized Moment Estimation
+    """Base class for SUR Error estimation by Generalized Moments
 
     Parameters
     ----------
@@ -162,7 +162,7 @@ def _momentsGM_sur_Error(w, u):
 
 class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     """
-    User class for SUR Error estimation by Maximum Likelihood
+    User class for SUR Error estimation by Generalized Moments
 
     Parameters
     ----------

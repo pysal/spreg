@@ -1205,13 +1205,12 @@ def _get_var_indices(reg, zt_stat, lambd=False):
         if reg.constant_regi == "one":
             indices += [krex * reg.nr]
         if len(indices) < last_v:
-            if len(indices) - last_v == -1 and lambd:
+            if len(indices) - last_v == -1 and reg.kryd>0 and lambd:
                 name_reg = ['lambda']
             else:
                 name_reg = (
                 var_names[krex * reg.nr + 1 - j_con : krex * reg.nr + kf - kfyd]
-                + var_names[reg.kr * reg.nr + kf - kfyd : reg.kr * reg.nr + kf]
-            )
+                + var_names[reg.kr * reg.nr + kf - kfyd : reg.kr * reg.nr + kf])
 
             # name_reg.sort()
             indices += [var_names.index(ind) for ind in name_reg]
