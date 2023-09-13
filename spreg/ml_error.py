@@ -501,7 +501,7 @@ class ML_Error(BaseML_Error):
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
