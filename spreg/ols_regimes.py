@@ -2,23 +2,20 @@
 Ordinary Least Squares regression with regimes.
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.edu, Daniel Arribas-Bel darribas@asu.edu"
+__author__ = "Luc Anselin, Pedro V. Amaral, Daniel Arribas-Bel"
 
-from . import regimes as REGI
-from . import user_output as USER
-from .ols import BaseOLS
-from .utils import set_warn, spbroadcast, RegressionProps_basic, RegressionPropsY, spdot
-from .robust import hac_multi
-from . import summary_output as SUMMARY
 import numpy as np
 import multiprocessing as mp
-from platform import system
-import scipy.sparse as SP
-import copy as COPY
+import pandas as pd
+from . import regimes as REGI
+from . import user_output as USER
+from .utils import set_warn, RegressionProps_basic, spdot, RegressionPropsY, get_lags
+from .ols import BaseOLS
+from .robust import hac_multi
+from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top
 
 
 class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
-
     """
     Ordinary least squares with results and diagnostics.
 
@@ -43,6 +40,10 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
+    slx_lags       : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SLX type.
+                   Note: WX is computed using the complete weights matrix
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     nonspat_diag : boolean
@@ -92,10 +93,13 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                    Name of dataset for use in output
     name_regimes : string
                    Name of regime variable for use in the output
-
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -307,7 +311,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
 
     >>> y_var = 'HR90'
     >>> y = db.by_col(y_var)
-    >>> y = np.array(y).reshape(len(y), 1)
+    >>> y = np.array(y)
 
     Extract UE90 (unemployment rate) and PS90 (population structure) vectors from
     the DBF to be used as independent variables in the regression. Other variables
@@ -327,58 +331,122 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
 
     We can now run the regression and then have a summary of the output
     by typing: olsr.summary
-    Alternatively, we can just check the betas and standard errors of the
-    parameters:
 
     >>> olsr = OLS_Regimes(y, x, regimes, nonspat_diag=False, name_y=y_var, name_x=['PS90','UE90'], name_regimes=r_var, name_ds='NAT')
-    >>> olsr.betas
-    array([[0.39642899],
-           [0.65583299],
-           [0.48703937],
-           [5.59835   ],
-           [1.16210453],
-           [0.53163886]])
-    >>> np.sqrt(olsr.vm.diagonal())
-    array([0.24816345, 0.09662678, 0.03628629, 0.46894564, 0.21667395,
-           0.05945651])
-    >>> olsr.cols2regi
-    'all'
+    >>> print(olsr.summary)
+    REGRESSION RESULTS
+    ------------------
+    <BLANKLINE>
+    SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 0
+    ---------------------------------------------------------------
+    Data set            :         NAT
+    Weights matrix      :        None
+    Dependent Variable  :      0_HR90                Number of Observations:        1673
+    Mean dependent var  :      3.3416                Number of Variables   :           3
+    S.D. dependent var  :      4.6795                Degrees of Freedom    :        1670
+    R-squared           :      0.1271
+    Adjusted R-squared  :      0.1260
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     t-Statistic     Probability
+    ------------------------------------------------------------------------------------
+              0_CONSTANT       0.3964290       0.2481634       1.5974512       0.1103544
+                  0_PS90       0.6558330       0.0966268       6.7872800       0.0000000
+                  0_UE90       0.4870394       0.0362863      13.4221336       0.0000000
+    ------------------------------------------------------------------------------------
+    Regimes variable: SOUTH
+    <BLANKLINE>
+    SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 1
+    ---------------------------------------------------------------
+    Data set            :         NAT
+    Weights matrix      :        None
+    Dependent Variable  :      1_HR90                Number of Observations:        1412
+    Mean dependent var  :      9.5493                Number of Variables   :           3
+    S.D. dependent var  :      7.0389                Degrees of Freedom    :        1409
+    R-squared           :      0.0661
+    Adjusted R-squared  :      0.0647
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     t-Statistic     Probability
+    ------------------------------------------------------------------------------------
+              1_CONSTANT       5.5983500       0.4689456      11.9381640       0.0000000
+                  1_PS90       1.1621045       0.2166740       5.3633790       0.0000001
+                  1_UE90       0.5316389       0.0594565       8.9416422       0.0000000
+    ------------------------------------------------------------------------------------
+    Regimes variable: SOUTH
+    ------------------------------------------------------------------------------------
+    GLOBAL DIAGNOSTICS
+    <BLANKLINE>
+    REGIMES DIAGNOSTICS - CHOW TEST
+                     VARIABLE        DF        VALUE           PROB
+                     CONSTANT         1          96.129           0.0000
+                         PS90         1           4.554           0.0328
+                         UE90         1           0.410           0.5220
+                  Global test         3         680.960           0.0000
+    ================================ END OF REPORT =====================================
     """
 
     def __init__(
-        self,
-        y,
-        x,
-        regimes,
-        w=None,
-        robust=None,
-        gwk=None,
-        sig2n_k=True,
-        nonspat_diag=True,
-        spat_diag=False,
-        moran=False,
-        white_test=False,
-        vm=False,
-        constant_regi="many",
-        cols2regi="all",
-        regime_err_sep=True,
-        cores=False,
-        name_y=None,
-        name_x=None,
-        name_regimes=None,
-        name_w=None,
-        name_gwk=None,
-        name_ds=None,
+            self,
+            y,
+            x,
+            regimes,
+            w=None,
+            robust=None,
+            gwk=None,
+            slx_lags=0,
+            sig2n_k=True,
+            nonspat_diag=True,
+            spat_diag=False,
+            moran=False,
+            white_test=False,
+            vm=False,
+            constant_regi="many",
+            cols2regi="all",
+            regime_err_sep=True,
+            cores=False,
+            name_y=None,
+            name_x=None,
+            name_regimes=None,
+            name_w=None,
+            name_gwk=None,
+            name_ds=None,
+            latex=False
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
-        USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
+        if robust == "hac":
+            if regime_err_sep:
+                set_warn(
+                    self,
+                    "Error by regimes is not available for HAC estimation. The error by regimes has been disabled for this model.",
+                )
+                regime_err_sep = False
+            if spat_diag:
+                set_warn(
+                    self,
+                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+                )
+                spat_diag = False
+        if robust in ["hac", "white"] and white_test:
+            set_warn(
+                self,
+                "White test not available when standard errors are estimated by HAC or White correction.",
+            )
+            white_test = False
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
-        set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
+        if slx_lags > 0:
+            USER.check_weights(w, y, w_required=True)
+            lag_x = get_lags(w, x_constant, slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+        else:
+            USER.check_weights(w, y, w_required=False)
+        set_warn(self, warn)
         self.name_x_r = USER.set_name_x(name_x, x_constant)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -394,17 +462,11 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
         USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
-        if regime_err_sep == True and robust == "hac":
-            set_warn(
-                self,
-                "Error by regimes is incompatible with HAC estimation. Hence, error by regimes has been disabled for this model.",
-            )
-            regime_err_sep = False
         self.regime_err_sep = regime_err_sep
         if (
-            regime_err_sep == True
-            and set(cols2regi) == set([True])
-            and constant_regi == "many"
+                regime_err_sep == True
+                and set(cols2regi) == set([True])
+                and constant_regi == "many"
         ):
             self.y = y
             regi_ids = dict(
@@ -416,6 +478,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 regi_ids,
                 cores,
                 gwk,
+                slx_lags,
                 sig2n_k,
                 robust,
                 nonspat_diag,
@@ -424,11 +487,19 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 name_x,
                 moran,
                 white_test,
+                latex
             )
         else:
-            x, self.name_x = REGI.Regimes_Frame.__init__(
-                self, x_constant, regimes, constant_regi, cols2regi, name_x
+            x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
+                self, x_constant, regimes, constant_regi, cols2regi, name_x, rlist=True
             )
+
+            self.output = pd.DataFrame(self.name_x,
+                                       columns=['var_names'])
+            self.output['var_type'] = ['x'] * len(self.name_x)
+            self.output['regime'] = x_rlist
+            self.output['equation'] = 0
+
             BaseOLS.__init__(self, y=y, x=x, robust=robust, gwk=gwk, sig2n_k=sig2n_k)
             if regime_err_sep == True and robust == None:
                 y2, x2 = REGI._get_weighted_var(
@@ -439,41 +510,45 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 self.title = (
                     "ORDINARY LEAST SQUARES - REGIMES (Group-wise heteroskedasticity)"
                 )
+                if slx_lags > 0:
+                    self.title = "ORDINARY LEAST SQUARES WITH SLX - REGIMES (Group-wise heteroskedasticity)"
                 nonspat_diag = None
                 set_warn(
                     self,
                     "Residuals treated as homoskedastic for the purpose of diagnostics.",
                 )
             else:
-                self.title = "ORDINARY LEAST SQUARES - REGIMES"
+                if slx_lags == 0:
+                    self.title = "ORDINARY LEAST SQUARES - REGIMES"
+                else:
+                    self.title = "ORDINARY LEAST SQUARES WITH SLX - REGIMES"
             self.robust = USER.set_robust(robust)
             self.chow = REGI.Chow(self)
-            SUMMARY.OLS(
-                reg=self,
-                vm=vm,
-                w=w,
-                nonspat_diag=nonspat_diag,
-                spat_diag=spat_diag,
-                moran=moran,
-                white_test=white_test,
-                regimes=True,
-            )
+            self.other_top, self.other_mid, other_end = ("", "", "")  # strings where function-specific diag. are stored
+            if nonspat_diag:
+                self.other_mid += _nonspat_mid(self, white_test=white_test)
+                self.other_top += _nonspat_top(self)
+            if spat_diag:
+                other_end += _spat_diag_out(self, w, 'ols', moran=moran)
+            output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _ols_regimes_multi(
-        self,
-        x,
-        w,
-        regi_ids,
-        cores,
-        gwk,
-        sig2n_k,
-        robust,
-        nonspat_diag,
-        spat_diag,
-        vm,
-        name_x,
-        moran,
-        white_test,
+            self,
+            x,
+            w,
+            regi_ids,
+            cores,
+            gwk,
+            slx_lags,
+            sig2n_k,
+            robust,
+            nonspat_diag,
+            spat_diag,
+            vm,
+            name_x,
+            moran,
+            white_test,
+            latex
     ):
         results_p = {}
         """
@@ -506,6 +581,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                         name_x,
                         self.name_w,
                         self.name_regimes,
+                        slx_lags
                     ),
                 )
             else:
@@ -523,6 +599,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                         name_x,
                         self.name_w,
                         self.name_regimes,
+                        slx_lags
                     )
                 )
         self.kryd = 0
@@ -545,6 +622,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         results = {}
         self.name_y, self.name_x = [], []
         counter = 0
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -558,11 +636,11 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 results[r] = results_p[r].get()
 
             self.vm[
-                (counter * self.kr) : ((counter + 1) * self.kr),
-                (counter * self.kr) : ((counter + 1) * self.kr),
+            (counter * self.kr): ((counter + 1) * self.kr),
+            (counter * self.kr): ((counter + 1) * self.kr),
             ] = results[r].vm
             self.betas[
-                (counter * self.kr) : ((counter + 1) * self.kr),
+            (counter * self.kr): ((counter + 1) * self.kr),
             ] = results[r].betas
             self.u[
                 regi_ids[r],
@@ -572,25 +650,24 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
             ] = results[r].predy
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
+                                                       'var_type': ['x']*len(results[r].name_x),
+                                                       'regime': r, 'equation': r})], ignore_index=True)
+            results[r].other_top, results[r].other_mid = ("", "")
+            if nonspat_diag:
+                results[r].other_mid += _nonspat_mid(results[r], white_test=white_test)
+                results[r].other_top += _nonspat_top(results[r])
             counter += 1
         self.multi = results
         self.hac_var = x_constant[:, 1:]
         if robust == "hac":
             hac_multi(self, gwk)
         self.chow = REGI.Chow(self)
+        other_end = ""
         if spat_diag:
             self._get_spat_diag_props(x_constant, sig2n_k)
-        SUMMARY.OLS_multi(
-            reg=self,
-            multireg=self.multi,
-            vm=vm,
-            nonspat_diag=nonspat_diag,
-            spat_diag=spat_diag,
-            moran=moran,
-            white_test=white_test,
-            regimes=True,
-            w=w,
-        )
+            other_end += _spat_diag_out(self, w, 'ols', moran=moran)
+        output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _get_spat_diag_props(self, x, sig2n_k):
         self.k = self.kr
@@ -603,7 +680,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
 
 
 def _work(
-    y, x, w, regi_ids, r, robust, sig2n_k, name_ds, name_y, name_x, name_w, name_regimes
+        y, x, w, regi_ids, r, robust, sig2n_k, name_ds, name_y, name_x, name_w, name_regimes, slx_lags
 ):
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
@@ -612,7 +689,10 @@ def _work(
     if robust == "hac":
         robust = None
     model = BaseOLS(y_r, x_r, robust=robust, sig2n_k=sig2n_k)
-    model.title = "ORDINARY LEAST SQUARES ESTIMATION - REGIME %s" % r
+    if slx_lags == 0:
+        model.title = "ORDINARY LEAST SQUARES ESTIMATION - REGIME %s" % r
+    else:
+        model.title = "ORDINARY LEAST SQUARES ESTIMATION WITH SLX - REGIME %s" % r
     model.robust = USER.set_robust(robust)
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
@@ -639,32 +719,35 @@ if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
+    import pysal
 
     db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"), "r")
-    y_var = "CRIME"
-    y = np.array([db.by_col(y_var)]).reshape(49, 1)
-    x_var = ["INC", "HOVAL"]
+    y_var = "HR90"
+    y = np.array(db.by_col(y_var)).reshape(-1,1)
+    x_var = ['PS90','UE90']
     x = np.array([db.by_col(name) for name in x_var]).T
-    r_var = "NSA"
+    r_var = "SOUTH"
     regimes = db.by_col(r_var)
-    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
+    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     w.transform = "r"
+    #olsr = pysal.model.spreg.OLS_Regimes(
     olsr = OLS_Regimes(
-        y,
+            y,
         x,
         regimes,
         w=w,
         constant_regi="many",
-        nonspat_diag=False,
-        spat_diag=False,
+        nonspat_diag=True,
+        spat_diag=True,
         name_y=y_var,
-        name_x=["INC", "HOVAL"],
-        name_ds="columbus",
+        name_x=x_var,
+        name_ds="NAT",
         name_regimes=r_var,
-        name_w="columbus.gal",
         regime_err_sep=True,
         cols2regi=[True, True],
-        sig2n_k=True,
-        robust="white",
+        sig2n_k=False,
+        white_test=True,
+        #robust="white"
     )
+    print(olsr.output)
     print(olsr.summary)

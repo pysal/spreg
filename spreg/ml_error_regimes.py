@@ -9,12 +9,13 @@ import numpy as np
 import multiprocessing as mp
 from . import regimes as REGI
 from . import user_output as USER
-from . import summary_output as SUMMARY
 from . import diagnostics as DIAG
-from .utils import set_warn
+from .utils import set_warn, get_lags
 from .sputils import sphstack
 from .ml_error import BaseML_Error
 from platform import system
+import pandas as pd
+from .output import output, _nonspat_top
 
 __all__ = ["ML_Error_Regimes"]
 
@@ -51,6 +52,9 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                    If 'all' (default), all the variables vary by regime.
     w            : Sparse matrix
                    Spatial weights sparse matrix 
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SDEM type.                          
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue computation
@@ -78,9 +82,13 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                    Name of dataset for use in output
     name_regimes : string
                    Name of regimes variable for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -276,6 +284,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         x,
         regimes,
         w=None,
+        slx_lags=0,
         constant_regi="many",
         cols2regi="all",
         method="full",
@@ -289,14 +298,13 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         name_w=None,
         name_ds=None,
         name_regimes=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         self.constant_regi = constant_regi
-        self.cols2regi = cols2regi
-        self.regime_err_sep = regime_err_sep
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_w = USER.set_name_w(name_w, w)
@@ -307,9 +315,16 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
+
+        if slx_lags >0:
+            lag_x = get_lags(w, x_constant, slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+
         self.name_x_r = USER.set_name_x(name_x, x_constant)
 
-        cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x)
+        cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant)
+        self.cols2regi = cols2regi        
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
         USER.check_regimes(self.regimes_set, self.n, x.shape[1])
@@ -322,16 +337,18 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                     x_constant,
                     regimes,
                     w,
+                    slx_lags,
                     cores,
                     method,
                     epsilon,
                     cols2regi,
                     vm,
                     name_x,
+                    latex,
                 )
             else:
                 raise Exception(
-                    "All coefficients must vary accross regimes if regime_err_sep = True."
+                    "All coefficients must vary across regimes if regime_err_sep = True."
                 )
         else:
             x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
@@ -340,15 +357,15 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
             regimes_att["x"] = x_constant
             regimes_att["regimes"] = regimes
             regimes_att["cols2regi"] = cols2regi
-            x, name_x = REGI.Regimes_Frame.__init__(
+            x, name_x, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
                 constant_regi=None,
                 cols2regi=cols2regi,
                 names=name_x,
+                rlist=True
             )
-
             BaseML_Error.__init__(
                 self,
                 y=y,
@@ -359,22 +376,26 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                 regimes_att=regimes_att,
             )
 
-            self.title = (
-                "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIMES"
-                + " (METHOD = "
-                + method
-                + ")"
-            )
+            self.title = "ML SPATIAL ERROR"
+            if slx_lags >0:
+                self.title += " WITH SLX (SDEM)"
+            self.title += " - REGIMES (METHOD = " + method + ")"
+
             self.name_x = USER.set_name_x(name_x, x, constant=True)
             self.name_x.append("lambda")
             self.kf += 1  # Adding a fixed k to account for lambda.
             self.chow = REGI.Chow(self)
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
-            SUMMARY.ML_Error(reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
+            self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+            self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['lambda']
+            self.output['regime'] = x_rlist + ['_Global']
+            self.output['equation'] = 0
+            self.other_top = _nonspat_top(self, ml=True)
+            output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _error_regimes_multi(
-        self, y, x, regimes, w, cores, method, epsilon, cols2regi, vm, name_x
+        self, y, x, regimes, w, slx_lags, cores, method, epsilon, cols2regi, vm, name_x, latex
     ):
 
         regi_ids = dict(
@@ -404,6 +425,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                         regi_ids,
                         r,
                         w,
+                        slx_lags,
                         method,
                         epsilon,
                         self.name_ds,
@@ -421,6 +443,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                         regi_ids,
                         r,
                         w,
+                        slx_lags,
                         method,
                         epsilon,
                         self.name_ds,
@@ -452,6 +475,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
         results = {}
         counter = 0
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -482,16 +506,18 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
             ] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
+            results[r].other_top = _nonspat_top(results[r], ml=True)
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
+                                                                'var_type': ['x'] * (len(results[r].name_x) - 1) + ['lambda'],
+                                                                'regime': r, 'equation': r})], ignore_index=True)
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
-        SUMMARY.ML_Error_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w
-        )
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 def _work_error(
-    y, x, regi_ids, r, w, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes
+    y, x, regi_ids, r, w, slx_lags, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes
 ):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
@@ -499,13 +525,10 @@ def _work_error(
     model = BaseML_Error(y=y_r, x=x_r, w=w_r, method=method, epsilon=epsilon)
     set_warn(model, warn)
     model.w = w_r
-    model.title = (
-        "MAXIMUM LIKELIHOOD SPATIAL ERROR - REGIME "
-        + str(r)
-        + " (METHOD = "
-        + method
-        + ")"
-    )
+    model.title = "ML SPATIAL ERROR"
+    if slx_lags >0:
+        model.title += " WITH SLX (SDEM)"
+    model.title += " - REGIME " + str(r) + " (METHOD = " + method + ")"
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
@@ -528,30 +551,23 @@ def _test():
 if __name__ == "__main__":
     _test()
     import numpy as np
-    import libpysal
+    import libpysal as ps
 
-    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), "r")
+    db = ps.io.open(ps.examples.get_path("baltim.dbf"), "r")
     ds_name = "baltim.dbf"
     y_name = "PRICE"
     y = np.array(db.by_col(y_name)).T
     y.shape = (len(y), 1)
     x_names = ["NROOM", "NBATH", "PATIO", "FIREPL", "AC", "GAR", "AGE", "LOTSZ", "SQFT"]
     x = np.array([db.by_col(var) for var in x_names]).T
-    ww = ps.open(ps.examples.get_path("baltim_q.gal"))
+    ww = ps.io.open(ps.examples.get_path("baltim_q.gal"))
     w = ww.read()
     ww.close()
     w_name = "baltim_q.gal"
     w.transform = "r"
+    regimes = db.by_col("CITCOU")
 
-    regimes = []
-    y_coord = np.array(db.by_col("Y"))
-    for i in y_coord:
-        if i > 544.5:
-            regimes.append("North")
-        else:
-            regimes.append("South")
-
-    mlerror = ML_Error_Regimes(
+    model = ML_Error_Regimes(
         y,
         x,
         regimes,
@@ -561,7 +577,9 @@ if __name__ == "__main__":
         name_x=x_names,
         name_w=w_name,
         name_ds=ds_name,
-        regime_err_sep=False,
-        name_regimes="North",
+        regime_err_sep=True,
+        constant_regi="many",
+        name_regimes="CITCOU",
     )
-    print(mlerror.summary)
+    print(model.output)
+    print(model.summary)

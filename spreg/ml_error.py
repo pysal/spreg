@@ -10,12 +10,13 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
-from .utils import RegressionPropsY, RegressionPropsVM, set_warn
+from .utils import RegressionPropsY, RegressionPropsVM, set_warn, get_lags
 from . import diagnostics as DIAG
 from . import user_output as USER
-from . import summary_output as SUMMARY
 from . import regimes as REGI
 from .w_utils import symmetrize
+import pandas as pd
+from .output import output, _nonspat_top
 
 try:
     from scipy.optimize import minimize_scalar
@@ -310,6 +311,9 @@ class ML_Error(BaseML_Error):
                    independent (exogenous) variable, excluding the constant
     w            : Sparse matrix
                    Spatial weights sparse matrix
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SDEM type.                   
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -327,9 +331,13 @@ class ML_Error(BaseML_Error):
                    Name of weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     betas        : array
                    (k+1)x1 array of estimated coefficients (rho first)
     lam          : float
@@ -463,6 +471,7 @@ class ML_Error(BaseML_Error):
         y,
         x,
         w,
+        slx_lags=0,
         method="full",
         epsilon=0.0000001,
         vm=False,
@@ -470,17 +479,26 @@ class ML_Error(BaseML_Error):
         name_x=None,
         name_w=None,
         name_ds=None,
+        latex=False,
     ):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
+
+        self.title = "ML SPATIAL ERROR"
+        if slx_lags >0:
+            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            self.title += " WITH SLX (SDEM)"
+        self.title += " (METHOD = " + method + ")"
+
         method = method.upper()
         BaseML_Error.__init__(
             self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon
         )
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR" + " (METHOD = " + method + ")"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x)
@@ -488,7 +506,11 @@ class ML_Error(BaseML_Error):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        SUMMARY.ML_Error(reg=self, w=w, vm=vm, spat_diag=False)
+        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+        self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['lambda']
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top = _nonspat_top(self, ml=True)
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 def err_c_loglik(lam, n, y, ylag, x, xlag, W):
@@ -565,3 +587,29 @@ def _test():
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
+
+if __name__ == "__main__":
+    _test()
+
+    import numpy as np
+    import libpysal
+
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y_var = "CRIME"
+    y = np.array([db.by_col(y_var)]).reshape(49, 1)
+    x_var = ["INC"]
+    x = np.array([db.by_col(name) for name in x_var]).T
+    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
+    w.transform = "r"
+    model = ML_Error(
+        y,
+        x,
+        w=w,
+        vm=False,
+        name_y=y_var,
+        name_x=x_var,
+        name_ds="columbus",
+        name_w="columbus.gal",
+    )
+    print(model.output)
+    print(model.summary)

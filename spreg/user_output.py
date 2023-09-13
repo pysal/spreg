@@ -1,7 +1,8 @@
 """Internal helper files for user output."""
 
 __author__ = (
-    "Luc Anselin luc.anselin@asu.edu, "
+    "Luc Anselin lanselin@gmail.com, "
+    "Pedro Amaral pedrovma@gmail.com"
     "David C. Folch david.folch@asu.edu, "
     "Levi John Wolf levi.john.wolf@gmail.com, "
     "Jing Yao jingyao@asu.edu"
@@ -147,6 +148,23 @@ def set_name_yend_sp(name_y):
     """
     return "W_" + name_y
 
+def set_name_spatial_lags(names, w_lags):
+    """Set the spatial lag names for multiple variables and lag orders"
+
+    Parameters
+    ----------
+    names      : string
+                 Original variables' names.
+
+    Returns
+    -------
+    lag_names : string
+
+    """
+    lag_names = ["W_" + s for s in names]
+    for i in range(w_lags-1):
+        lag_names += ["W" + str(i+2) + "_" + s for s in names]
+    return lag_names
 
 def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
     """Set the spatial instrument names in regression; return generic name if user
@@ -544,8 +562,9 @@ def check_robust(robust, wk):
                     # NOTE: we are not checking for the case of exactly 1.0 ###
                     raise Exception("Off-diagonal entries must be less than 1.")
         elif robust.lower() == "white" or robust.lower() == "ogmm":
-            if wk:
-                raise Exception("White requires that wk be set to None")
+  #          if wk:
+  #              raise Exception("White requires that wk be set to None")
+            pass      # these options are not affected by wk
         else:
             raise Exception(
                 "invalid value passed to robust, see docs for valid options"
