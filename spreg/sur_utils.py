@@ -290,7 +290,9 @@ def sur_dict2mat(dicts):
 
     """
     n_dicts = len(dicts.keys())
-    mat = np.vstack((dicts[t] for t in range(n_dicts)))
+    #mat = np.vstack((dicts[t] for t in range(n_dicts)))
+    mat = np.vstack([dicts[t] for t in range(n_dicts)])
+
     return mat
 
 
@@ -392,10 +394,11 @@ def sur_est(bigXX, bigXy, bigE, bigK):
         for t in range(n_eq):
             sxy = sxy + sigi[r, t] * bigXy[(r, t)]
         sigiXy[r] = sxy
-    xsigy = np.vstack((sigiXy[t] for t in range(n_eq)))
-    xsigx = np.vstack(
-        ((np.hstack(sigiXX[(r, t)] for t in range(n_eq))) for r in range(n_eq))
-    )
+    #xsigy = np.vstack((sigiXy[t] for t in range(n_eq)))
+    xsigy = np.vstack(tuple(sigiXy[t] for t in range(n_eq)))
+    #xsigx = np.vstack(((np.hstack(sigiXX[(r, t)] for t in range(n_eq))) for r in range(n_eq)))
+    array_lists = [[sigiXX[(r, t)] for t in range(n_eq)] for r in range(n_eq)]
+    xsigx = np.vstack([np.hstack(arr_list) for arr_list in array_lists])    
     varb = la.inv(xsigx)
     beta = np.dot(varb, xsigy)
     bSUR = sur_mat2dict(beta, bigK)
@@ -423,7 +426,9 @@ def sur_resids(bigy, bigX, beta):
 
     """
     n_eq = len(bigy.keys())
-    bigE = np.hstack((bigy[r] - spdot(bigX[r], beta[r])) for r in range(n_eq))
+    #bigE = np.hstack((bigy[r] - spdot(bigX[r], beta[r])) for r in range(n_eq))
+    bigE = np.hstack(tuple(bigy[r] - spdot(bigX[r], beta[r]) for r in range(n_eq)))
+
     return bigE
 
 
@@ -449,7 +454,9 @@ def sur_predict(bigy, bigX, beta):
 
     """
     n_eq = len(bigy.keys())
-    bigYP = np.hstack(spdot(bigX[r], beta[r]) for r in range(n_eq))
+    #bigYP = np.hstack(spdot(bigX[r], beta[r]) for r in range(n_eq))
+    bigYP = np.hstack([spdot(bigX[r], beta[r]) for r in range(n_eq)])
+
     return bigYP
 
 
