@@ -553,7 +553,7 @@ class BaseSURerrorML:
             bigE = sur_resids(self.bigy, self.bigX, b1)
             res = minimize(
                 clik,
-                lam,
+                np.array(lam).flatten(),
                 args=(self.n, self.n2, self.n_eq, bigE, I, WS),
                 method="L-BFGS-B",
                 bounds=lambdabounds,
@@ -1119,7 +1119,7 @@ if __name__ == "__main__":
         bigy0,
         bigX0,
         w,
-        regimes=regimes,
+        #regimes=regimes,
         name_bigy=bigyvars0,
         name_bigX=bigXvars0,
         name_w="natqueen",
