@@ -16,6 +16,8 @@ __all__ = []
 ###############################################################################
 
 def output(reg, vm, other_end=False, robust=False, latex=False):
+    if latex:
+        print("Warning: Latex output not implemented yet. Using standard output instead.")
     strSummary = output_start(reg)
     for eq in reg.output['equation'].unique():
         try:
