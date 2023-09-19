@@ -1,13 +1,13 @@
 """Ordinary Least Squares regression classes."""
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, David C. Folch david.folch@asu.edu"
+__author__ = "Luc Anselin lanselin@gmail.com, Pedro Amaral pedrovma@gmail.com, David C. Folch david.folch@asu.edu"
 import numpy as np
-import copy as COPY
 import numpy.linalg as la
 from . import user_output as USER
-from . import summary_output as SUMMARY
+from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top
 from . import robust as ROBUST
-from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn
+from .utils import spdot, RegressionPropsY, RegressionPropsVM, set_warn, get_lags
+import pandas as pd
 
 __all__ = ["OLS"]
 
@@ -144,6 +144,9 @@ class OLS(BaseOLS):
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SLX type.
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     nonspat_diag : boolean
@@ -171,10 +174,13 @@ class OLS(BaseOLS):
                    Name of kernel weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
-
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -349,8 +355,9 @@ class OLS(BaseOLS):
     ready to be printed:
 
     >>> print(ols.summary)
-    REGRESSION
-    ----------
+    REGRESSION RESULTS
+    ------------------
+    <BLANKLINE>
     SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES
     -----------------------------------------
     Data set            :    columbus
@@ -360,7 +367,7 @@ class OLS(BaseOLS):
     S.D. dependent var  :     18.4661                Degrees of Freedom    :          46
     R-squared           :      0.3495
     Adjusted R-squared  :      0.3212
-    Sum squared residual:   10647.015                F-statistic           :     12.3582
+    Sum squared residual:       10647                F-statistic           :     12.3582
     Sigma-square        :     231.457                Prob(F-statistic)     :   5.064e-05
     S.E. of regression  :      15.214                Log likelihood        :    -201.368
     Sigma-square ML     :     217.286                Akaike info criterion :     408.735
@@ -426,6 +433,7 @@ class OLS(BaseOLS):
         w=None,
         robust=None,
         gwk=None,
+        slx_lags = 0,
         sig2n_k=True,
         nonspat_diag=True,
         spat_diag=False,
@@ -437,34 +445,57 @@ class OLS(BaseOLS):
         name_w=None,
         name_gwk=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
-        USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
+        if robust == "hac" and spat_diag:
+                set_warn(
+                    self,
+                    "Spatial diagnostics are not available for HAC estimation. Hence, spatial diagnostics have been disabled for this model.",
+                )
+                spat_diag = False
+        if robust in ["hac", "white"] and white_test:
+                set_warn(
+                    self,
+                    "White test not available when standard errors are estimated by HAC or White correction.",
+                )
+                white_test = False
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
+        if slx_lags >0:
+            USER.check_weights(w, y, w_required=True)
+            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+        else:
+            USER.check_weights(w, y, w_required=False)
         set_warn(self, warn)
         BaseOLS.__init__(
             self, y=y, x=x_constant, robust=robust, gwk=gwk, sig2n_k=sig2n_k
         )
-        self.title = "ORDINARY LEAST SQUARES"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.title = "ORDINARY LEAST SQUARES"
+        if slx_lags > 0:
+            self.title += " WITH SPATIALLY LAGGED X (SLX)"
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        SUMMARY.OLS(
-            reg=self,
-            vm=vm,
-            w=w,
-            nonspat_diag=nonspat_diag,
-            spat_diag=spat_diag,
-            moran=moran,
-            white_test=white_test,
-        )
+        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+        self.output['var_type'] = ['x'] * len(self.name_x)
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top, self.other_mid, other_end = ("", "", "")  # strings where function-specific diag. are stored
+        if nonspat_diag:
+            self.other_mid += _nonspat_mid(self, white_test=white_test)
+            self.other_top += _nonspat_top(self)
+        if spat_diag:
+            other_end += _spat_diag_out(self, w, 'ols', moran=moran)
+        output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
+
 
 
 def _test():
@@ -505,4 +536,5 @@ if __name__ == "__main__":
         sig2n_k=True,
         moran=True,
     )
+    print(ols.output)
     print(ols.summary)

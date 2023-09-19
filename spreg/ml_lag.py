@@ -10,11 +10,12 @@ import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
-from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod, set_warn
+from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod, set_warn, get_lags
 from .sputils import spdot, spfill_diagonal, spinv, spbroadcast
 from . import diagnostics as DIAG
 from . import user_output as USER
-from . import summary_output as SUMMARY
+import pandas as pd
+from .output import output, _nonspat_top, _spat_pseudo_r2
 from .w_utils import symmetrize
 from libpysal import weights
 
@@ -43,6 +44,9 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
                    Spatial weights object
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the Spatial Durbin type.
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -179,25 +183,29 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
     """
 
-    def __init__(self, y, x, w, method="full", epsilon=0.0000001):
+    def __init__(self, y, x, w, slx_lags=0, method="full", epsilon=0.0000001):
         # set up main regression variables and spatial filters
         self.y = y
         self.x = x
-        self.n, self.k = self.x.shape
         self.method = method
         self.epsilon = epsilon
         # W = w.full()[0]
         # Wsp = w.sparse
         ylag = weights.lag_spatial(w, y)
         # b0, b1, e0 and e1
+
+        if slx_lags>0:
+            self.x = np.hstack((self.x, get_lags(w, self.x[:, 1:], slx_lags)))
+
+        self.n, self.k = self.x.shape
         xtx = spdot(self.x.T, self.x)
         xtxi = la.inv(xtx)
         xty = spdot(self.x.T, self.y)
         xtyl = spdot(self.x.T, ylag)
         b0 = spdot(xtxi, xty)
         b1 = spdot(xtxi, xtyl)
-        e0 = self.y - spdot(x, b0)
-        e1 = ylag - spdot(x, b1)
+        e0 = self.y - spdot(self.x, b0)
+        e1 = ylag - spdot(self.x, b1)
         methodML = method.upper()
         # call minimizer using concentrated log-likelihood to get rho
         if methodML in ["FULL", "LU", "ORD"]:
@@ -209,19 +217,19 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
                     bounds=(-1.0, 1.0),
                     args=(self.n, e0, e1, W),
                     method="bounded",
-                    tol=epsilon,
+                    options={'xatol': epsilon},
                 )
             elif methodML == "LU":
                 I = sp.identity(w.n)
                 Wsp = w.sparse  # moved here
-                W = Wsp
+                W = Wsp#.tocsc()
                 res = minimize_scalar(
                     lag_c_loglik_sp,
                     0.0,
                     bounds=(-1.0, 1.0),
                     args=(self.n, e0, e1, I, Wsp),
                     method="bounded",
-                    tol=epsilon,
+                    options={'xatol': epsilon},
                 )
             elif methodML == "ORD":
                 # check on symmetry structure
@@ -239,7 +247,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
                     bounds=(-1.0, 1.0),
                     args=(self.n, e0, e1, evals),
                     method="bounded",
-                    tol=epsilon,
+                    options={'xatol': epsilon},
                 )
         else:
             # program will crash, need to catch
@@ -261,7 +269,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         self.u = e0 - self.rho * e1
         self.predy = self.y - self.u
 
-        xb = spdot(x, b)
+        xb = spdot(self.x, b)
 
         self.predy_e = inverse_prod(
             w.sparse, xb, self.rho, inv_method="power_exp", threshold=epsilon
@@ -289,7 +297,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
         wpredy = weights.lag_spatial(w, self.predy_e)
         wpyTwpy = spdot(wpredy.T, wpredy)
-        xTwpy = spdot(x.T, wpredy)
+        xTwpy = spdot(self.x.T, wpredy)
 
         # order of variables is beta, rho, sigma2
 
@@ -321,6 +329,9 @@ class ML_Lag(BaseML_Lag):
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
                    Spatial weights object
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the Spatial Durbin type.
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -337,9 +348,13 @@ class ML_Lag(BaseML_Lag):
                    Name of weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     betas        : array
                    (k+1)x1 array of estimated coefficients (rho first)
     rho          : float
@@ -567,6 +582,7 @@ class ML_Lag(BaseML_Lag):
         y,
         x,
         w,
+        slx_lags=0,
         method="full",
         epsilon=0.0000001,
         vm=False,
@@ -574,6 +590,7 @@ class ML_Lag(BaseML_Lag):
         name_x=None,
         name_w=None,
         name_ds=None,
+        latex=False,
     ):
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
@@ -582,11 +599,16 @@ class ML_Lag(BaseML_Lag):
         set_warn(self, warn)
         method = method.upper()
         BaseML_Lag.__init__(
-            self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon
+            self, y=y, x=x_constant, w=w, slx_lags=slx_lags, method=method, epsilon=epsilon
         )
         # increase by 1 to have correct aic and sc, include rho in count
         self.k += 1
-        self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
+
+        if slx_lags>0:
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG WITH SLX - SPATIAL DURBIN MODEL" + " (METHOD = " + method + ")"
+        else:
+            self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x)
@@ -595,8 +617,12 @@ class ML_Lag(BaseML_Lag):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        SUMMARY.ML_Lag(reg=self, w=w, vm=vm, spat_diag=False)
-
+        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+        self.output['var_type'] = ['x'] * (len(self.name_x)-1) + ['rho']
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top = _spat_pseudo_r2(self)
+        self.other_top += _nonspat_top(self, ml=True)
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 def lag_c_loglik(rho, n, e0, e1, W):
     # concentrated log-lik for lag model, no constants, brute force
@@ -647,3 +673,29 @@ def _test():
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
+
+if __name__ == "__main__":
+    _test()
+
+    import numpy as np
+    import libpysal
+
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    y_var = "CRIME"
+    y = np.array([db.by_col(y_var)]).reshape(49, 1)
+    x_var = ["INC"]
+    x = np.array([db.by_col(name) for name in x_var]).T
+    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
+    w.transform = "r"
+    model = ML_Lag(
+        y,
+        x,
+        w=w,
+        vm=False,
+        name_y=y_var,
+        name_x=x_var,
+        name_ds="columbus",
+        name_w="columbus.gal",
+    )
+    print(model.output)
+    print(model.summary)

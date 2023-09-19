@@ -1,11 +1,12 @@
 import numpy as np
 import numpy.linalg as la
-from . import summary_output as SUMMARY
 from . import robust as ROBUST
 from . import user_output as USER
-from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn
+from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn, get_lags
+import pandas as pd
+from .output import output, _spat_diag_out
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, David C. Folch david.folch@asu.edu, Jing Yao jingyao@asu.edu"
+__author__ = "Luc Anselin lanselin@gmail.com, Pedro Amaral pedrovma@gmail.com, David C. Folch david.folch@asu.edu, Jing Yao jingyao@asu.edu"
 __all__ = ["TSLS"]
 
 
@@ -123,10 +124,8 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
     >>> q.append(db.by_col("DISCBD"))
     >>> q = np.array(q).T
     >>> reg = spreg.twosls.BaseTSLS(y, X, yd, q=q)
-    >>> print(reg.betas)
-     [[88.46579584]
-     [ 0.5200379 ]
-     [-1.58216593]]
+    >>> print(reg.betas.T)
+    [[88.46579584  0.5200379  -1.58216593]]
     >>> reg = spreg.twosls.BaseTSLS(y, X, yd, q=q, robust="white")
 
     """
@@ -248,6 +247,9 @@ class TSLS(BaseTSLS):
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SLX type.
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     spat_diag    : boolean
@@ -269,10 +271,13 @@ class TSLS(BaseTSLS):
                    Name of kernel weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
-
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -423,11 +428,8 @@ class TSLS(BaseTSLS):
 
     >>> from spreg import TSLS
     >>> reg = TSLS(y, X, yd, q, name_x=['inc'], name_y='crime', name_yend=['hoval'], name_q=['discbd'], name_ds='columbus')
-    >>> print(reg.betas)
-    [[88.46579584]
-     [ 0.5200379 ]
-     [-1.58216593]]
-
+    >>> print(reg.betas.T)
+    [[88.46579584  0.5200379  -1.58216593]]
     """
 
     def __init__(
@@ -439,6 +441,7 @@ class TSLS(BaseTSLS):
         w=None,
         robust=None,
         gwk=None,
+        slx_lags=0,
         sig2n_k=False,
         spat_diag=False,
         vm=False,
@@ -449,14 +452,28 @@ class TSLS(BaseTSLS):
         name_w=None,
         name_gwk=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
-        USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
+        if robust == "hac" and spat_diag:
+                set_warn(
+                    self,
+                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+                )
+                spat_diag = False
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        self.name_x = USER.set_name_x(name_x, x_constant)
+        if slx_lags>0:
+            USER.check_weights(w, y, w_required=True)
+            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+        else:
+            USER.check_weights(w, y, w_required=False)
         set_warn(self, warn)
         BaseTSLS.__init__(
             self,
@@ -469,9 +486,10 @@ class TSLS(BaseTSLS):
             sig2n_k=sig2n_k,
         )
         self.title = "TWO STAGE LEAST SQUARES"
+        if slx_lags > 0:
+            self.title += " WITH SPATIALLY LAGGED X (2SLS-SLX)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_q = USER.set_name_q(name_q, q)
@@ -479,8 +497,15 @@ class TSLS(BaseTSLS):
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        SUMMARY.TSLS(reg=self, vm=vm, w=w, spat_diag=spat_diag)
-
+        self.output = pd.DataFrame(self.name_x + self.name_yend,
+                                   columns=['var_names'])
+        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend)
+        self.output['regime'], self.output['equation'] = (0, 0)
+        if spat_diag:
+            diag_out = _spat_diag_out(self, w, 'yend')
+        else:
+            diag_out = None
+        output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
 def _test():
     import doctest
@@ -521,4 +546,5 @@ if __name__ == "__main__":
         name_ds="columbus",
         name_w="columbus.gal",
     )
+    print(tsls.output)
     print(tsls.summary)

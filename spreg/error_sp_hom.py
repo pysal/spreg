@@ -10,14 +10,14 @@ from scipy import sparse as SP
 import numpy as np
 from numpy import linalg as la
 from . import ols as OLS
-from libpysal.weights.spatial_lag import lag_spatial
-from .utils import power_expansion, set_endog, iter_msg, sp_att
+from .utils import set_endog, iter_msg, sp_att
 from .utils import get_A1_hom, get_A2_hom, get_A1_het, optim_moments
-from .utils import get_spFilter, get_lags, _moments2eqs
+from .utils import get_spFilter, get_lags
 from .utils import spdot, RegressionPropsY, set_warn
 from . import twosls as TSLS
 from . import user_output as USER
-from . import summary_output as SUMMARY
+import pandas as pd
+from .output import output, _spat_pseudo_r2, _summary_iteration
 
 __all__ = ["GM_Error_Hom", "GM_Endog_Error_Hom", "GM_Combo_Hom"]
 
@@ -178,6 +178,9 @@ class GM_Error_Hom(BaseGM_Error_Hom):
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
                    Spatial weights object
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SDEM type.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Note: epsilon provides an additional stop condition.
@@ -201,10 +204,13 @@ class GM_Error_Hom(BaseGM_Error_Hom):
                    Name of weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
-
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -341,6 +347,7 @@ class GM_Error_Hom(BaseGM_Error_Hom):
         y,
         x,
         w,
+        slx_lags=0,
         max_iter=1,
         epsilon=0.00001,
         A1="hom_sc",
@@ -349,6 +356,7 @@ class GM_Error_Hom(BaseGM_Error_Hom):
         name_x=None,
         name_w=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x)
@@ -356,6 +364,12 @@ class GM_Error_Hom(BaseGM_Error_Hom):
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
+        self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES (HOM)"
+        if slx_lags >0:
+            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            self.title += " WITH SLX (SDEM)"        
         BaseGM_Error_Hom.__init__(
             self,
             y=y,
@@ -365,13 +379,17 @@ class GM_Error_Hom(BaseGM_Error_Hom):
             max_iter=max_iter,
             epsilon=epsilon,
         )
-        self.title = "SPATIALLY WEIGHTED LEAST SQUARES (HOM)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
-        SUMMARY.GM_Error_Hom(reg=self, w=w, vm=vm)
+        self.A1 = A1
+        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+        self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['lambda']
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top = _summary_iteration(self)
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 class BaseGM_Endog_Error_Hom(RegressionPropsY):
@@ -564,6 +582,9 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
                    this should not contain any variables from x)
     w            : pysal W object
                    Spatial weights object
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SDEM type.                   
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
@@ -591,9 +612,13 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
                    Name of weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -769,6 +794,7 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         yend,
         q,
         w,
+        slx_lags=0,
         max_iter=1,
         epsilon=0.00001,
         A1="hom_sc",
@@ -779,6 +805,7 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         name_q=None,
         name_w=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
@@ -786,6 +813,12 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
+        self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HOM)"
+        if slx_lags > 0:
+            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            self.title += " WITH SLX (SDEM)"
         BaseGM_Endog_Error_Hom.__init__(
             self,
             y=y,
@@ -797,7 +830,6 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
             max_iter=max_iter,
             epsilon=epsilon,
         )
-        self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HOM)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
@@ -807,7 +839,13 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         self.name_q = USER.set_name_q(name_q, q)
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
-        SUMMARY.GM_Endog_Error_Hom(reg=self, w=w, vm=vm)
+        self.A1 = A1
+        self.output = pd.DataFrame(self.name_z,
+                                   columns=['var_names'])
+        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend) + ['lambda']
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top = _summary_iteration(self)
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
@@ -1007,6 +1045,10 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
                    instruments are WX; if w_lags=2, then WX, WWX; and so on.
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the General Nesting
+                   Spatial Model (GNSM) type.
     lag_q        : boolean
                    If True, then include spatial lags of the additional 
                    instruments (q).
@@ -1038,9 +1080,13 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
                    Name of weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -1232,6 +1278,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         q=None,
         w=None,
         w_lags=1,
+        slx_lags=0,
         lag_q=True,
         max_iter=1,
         epsilon=0.00001,
@@ -1243,6 +1290,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         name_q=None,
         name_w=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
@@ -1250,7 +1298,11 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
-        yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+        if slx_lags == 0:
+            yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+        else:
+            yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
+            x_constant = np.hstack((x_constant, wx))
         BaseGM_Combo_Hom.__init__(
             self,
             y=y,
@@ -1269,7 +1321,10 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
             w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho
         )
         set_warn(self, warn)
-        self.title = "SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HOM)"
+        self.title = "SPATIALLY WEIGHTED 2SLS- GM-COMBO MODEL (HOM)"
+        if slx_lags > 0:
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            self.title += " WITH SLX (GNSM)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = USER.set_name_x(name_x, x_constant)
@@ -1281,8 +1336,14 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
-        SUMMARY.GM_Combo_Hom(reg=self, w=w, vm=vm)
-
+        self.A1 = A1
+        self.output = pd.DataFrame(self.name_z,
+                                   columns=['var_names'])
+        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho', 'lambda']
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top = _spat_pseudo_r2(self)
+        self.other_top += _summary_iteration(self)
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 # Functions
 
@@ -1514,5 +1575,31 @@ def _test():
 
 
 if __name__ == "__main__":
-
     _test()
+
+    import numpy as np
+    import libpysal
+
+    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
+    y = np.array(db.by_col("HOVAL"))
+    y = np.reshape(y, (49,1))
+    X = []
+    X.append(db.by_col("INC"))
+    X = np.array(X).T
+    yd = []
+    yd.append(db.by_col("CRIME"))
+    yd = np.array(yd).T
+    q = []
+    q.append(db.by_col("DISCBD"))
+    q = np.array(q).T
+
+    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
+    w.transform = 'r'
+    #reg = GM_Error_Hom(y, X, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus', vm=True)
+    #reg = GM_Endog_Error_Hom(y, X, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
+    #                         name_q=['discbd'], name_ds='columbus',vm=True)
+    reg = GM_Combo_Hom(y, X, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'], name_q=['discbd'],
+                       name_ds='columbus', vm=True)
+
+    print(reg.output)
+    print(reg.summary)
