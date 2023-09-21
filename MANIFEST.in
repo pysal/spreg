@@ -1,3 +1,0 @@
-include LICENSE.txt MANIFEST.in requirements_tests.txt requirements_docs.txt requirements_plus.txt requirements.txt
-include versioneer.py
-include spreg/_version.py
