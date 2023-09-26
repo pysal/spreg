@@ -123,3 +123,8 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.surLMe
     spreg.surLMlag
     spreg.constant_check
+    spreg.panel_LMlag
+    spreg.panel_LMerror
+    spreg.panel_rLMlag
+    spreg.panel_rLMerror
+    spreg.panel_Hausman
