@@ -2,8 +2,10 @@
 Spatial Error SUR estimation
 """
 
-__author__ = "Luc Anselin lanselin@gmail.com,    \
-             Pedro V. Amaral pedrovma@gmail.com"
+__author__ = """
+Luc Anselin [lanselin@gmail.com], 
+Pedro V. Amaral [pedrovma@gmail.com]
+"""
 
 
 import numpy
@@ -557,7 +559,7 @@ class BaseSURerrorML:
             bigE = sur_resids(self.bigy, self.bigX, b1)
             res = minimize(
                 clik,
-                np.array(lam).flatten(),
+                numpy.array(lam).flatten(),
                 args=(self.n, self.n2, self.n_eq, bigE, I, WS),
                 method="L-BFGS-B",
                 bounds=lambdabounds,
@@ -1110,15 +1112,15 @@ def surerrvm(n, n_eq, w, lam, sig):
 def _test():
     import doctest
 
-    start_suppress = np.get_printoptions()["suppress"]
-    np.set_printoptions(suppress=True)
+    start_suppress = numpy.get_printoptions()["suppress"]
+    numpy.set_printoptions(suppress=True)
     doctest.testmod()
-    np.set_printoptions(suppress=start_suppress)
+    numpy.set_printoptions(suppress=start_suppress)
 
 
 if __name__ == "__main__":
     _test()
-    import numpy as np
+    import numpy
     import libpysal
     from .sur_utils import sur_dictxy, sur_dictZ
     from libpysal.examples import load_example
