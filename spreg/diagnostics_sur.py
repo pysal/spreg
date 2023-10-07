@@ -221,7 +221,7 @@ def surLMlag(n_eq, WS, bigy, bigX, bigE, bigYP, sig, varb):
 
     """
     # Score
-    Y = np.hstack((bigy[r]) for r in range(n_eq))
+    Y = np.hstack([bigy[r] for r in range(n_eq)])
     WY = WS * Y
     EWY = np.dot(bigE.T, WY)
     sigi = la.inv(sig)

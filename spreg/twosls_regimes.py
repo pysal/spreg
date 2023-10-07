@@ -1,19 +1,18 @@
 import numpy as np
+import multiprocessing as mp
+import pandas as pd
 from . import regimes as REGI
 from . import user_output as USER
-import multiprocessing as mp
-import scipy.sparse as SP
-from .utils import sphstack, set_warn, RegressionProps_basic, spdot, sphstack
+from .utils import set_warn, RegressionProps_basic, spdot, sphstack, get_lags
 from .twosls import BaseTSLS
 from .robust import hac_multi
-from . import summary_output as SUMMARY
-from platform import system
+from .output import output, _spat_diag_out
 
 """
 Two-stage Least Squares estimation with regimes.
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.edu, David C. Folch david.folch@asu.edu"
+__author__ = "Luc Anselin, Pedro V. Amaral, David C. Folch"
 
 
 class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
@@ -65,6 +64,10 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     gwk          : pysal W object
                    Kernel spatial weights needed for HAC estimation. Note:
                    matrix must have ones along the main diagonal.
+    slx_lags       : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SLX type.
+                   Note: WX is computed using the complete weights matrix
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     vm           : boolean
@@ -89,9 +92,16 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                    Name of kernel weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
+    summary      : string
+                   Summary of regression results and diagnostics (note: use in
+                   conjunction with the print command)
     betas        : array
                    kx1 array of estimated coefficients
     u            : array
@@ -269,6 +279,62 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     array([0.38389901, 0.09963973, 0.04672091, 0.22725012, 0.49181223,
            0.19630774, 0.07784587, 0.25529011])
 
+    >>> print(tslsr.summary)
+    REGRESSION RESULTS
+    ------------------
+    <BLANKLINE>
+    SUMMARY OF OUTPUT: TWO STAGE LEAST SQUARES ESTIMATION - REGIME 0
+    ----------------------------------------------------------------
+    Data set            :         NAT
+    Weights matrix      :     NAT.shp
+    Dependent Variable  :      0_HR90                Number of Observations:        1673
+    Mean dependent var  :      3.3416                Number of Variables   :           4
+    S.D. dependent var  :      4.6795                Degrees of Freedom    :        1669
+    Pseudo R-squared    :      0.2092
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     z-Statistic     Probability
+    ------------------------------------------------------------------------------------
+              0_CONSTANT       3.6697356       0.3838990       9.5591172       0.0000000
+                  0_PS90       1.0695047       0.0996397      10.7337170       0.0000000
+                  0_UE90       0.1468095       0.0467209       3.1422643       0.0016765
+                  0_RD90       2.4586420       0.2272501      10.8191009       0.0000000
+    ------------------------------------------------------------------------------------
+    Instrumented: 0_RD90
+    Instruments: 0_FP89
+    Regimes variable: SOUTH
+    <BLANKLINE>
+    SUMMARY OF OUTPUT: TWO STAGE LEAST SQUARES ESTIMATION - REGIME 1
+    ----------------------------------------------------------------
+    Data set            :         NAT
+    Weights matrix      :     NAT.shp
+    Dependent Variable  :      1_HR90                Number of Observations:        1412
+    Mean dependent var  :      9.5493                Number of Variables   :           4
+    S.D. dependent var  :      7.0389                Degrees of Freedom    :        1408
+    Pseudo R-squared    :      0.2987
+    <BLANKLINE>
+    ------------------------------------------------------------------------------------
+                Variable     Coefficient       Std.Error     z-Statistic     Probability
+    ------------------------------------------------------------------------------------
+              1_CONSTANT       9.5587324       0.4918122      19.4357356       0.0000000
+                  1_PS90       1.9466635       0.1963077       9.9163867       0.0000000
+                  1_UE90      -0.3081021       0.0778459      -3.9578483       0.0000756
+                  1_RD90       3.6871812       0.2552901      14.4431026       0.0000000
+    ------------------------------------------------------------------------------------
+    Instrumented: 1_RD90
+    Instruments: 1_FP89
+    Regimes variable: SOUTH
+    ------------------------------------------------------------------------------------
+    GLOBAL DIAGNOSTICS
+    <BLANKLINE>
+    REGIMES DIAGNOSTICS - CHOW TEST
+                     VARIABLE        DF        VALUE           PROB
+                     CONSTANT         1          89.093           0.0000
+                         PS90         1          15.876           0.0001
+                         UE90         1          25.106           0.0000
+                         RD90         1          12.920           0.0003
+                  Global test         4         201.237           0.0000
+    ================================ END OF REPORT =====================================
     """
 
     def __init__(
@@ -281,6 +347,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         w=None,
         robust=None,
         gwk=None,
+        slx_lags=0,
         sig2n_k=True,
         spat_diag=False,
         vm=False,
@@ -297,16 +364,36 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         name_gwk=None,
         name_ds=None,
         summ=True,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
-        USER.check_weights(w, y)
         USER.check_robust(robust, gwk)
+        if robust == "hac":
+            if regime_err_sep:
+                set_warn(
+                    self,
+                    "Error by regimes is not available for HAC estimation. The error by regimes has been disabled for this model.",
+                )
+                regime_err_sep = False
+            if spat_diag:
+                set_warn(
+                    self,
+                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+                )
+                spat_diag = False
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
+        if slx_lags > 0:
+            USER.check_weights(w, y, w_required=True)
+            lag_x = get_lags(w, x_constant, slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+        else:
+            USER.check_weights(w, y, w_required=False)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
         self.name_ds = USER.set_name_ds(name_ds)
@@ -324,12 +411,6 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
         USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
-        if regime_err_sep == True and robust == "hac":
-            set_warn(
-                self,
-                "Error by regimes is incompatible with HAC estimation for 2SLS models. Hence, the error by regimes has been disabled for this model.",
-            )
-            regime_err_sep = False
         self.regime_err_sep = regime_err_sep
         if (
             regime_err_sep == True
@@ -348,6 +429,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 regi_ids,
                 cores,
                 gwk,
+                slx_lags,
                 sig2n_k,
                 robust,
                 spat_diag,
@@ -355,20 +437,23 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 name_x,
                 name_yend,
                 name_q,
+                summ,
+                latex
             )
         else:
             q, self.name_q = REGI.Regimes_Frame.__init__(
                 self, q, regimes, constant_regi=None, cols2regi="all", names=name_q
             )
-            x, self.name_x = REGI.Regimes_Frame.__init__(
+            x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
                 constant_regi,
                 cols2regi=cols2regi,
                 names=name_x,
+                rlist=True
             )
-            yend, self.name_yend = REGI.Regimes_Frame.__init__(
+            yend, self.name_yend, yend_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 yend,
                 regimes,
@@ -376,13 +461,23 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 cols2regi=cols2regi,
                 yend=True,
                 names=name_yend,
+                rlist=True
             )
-            if regime_err_sep == True and robust == None:
-                robust = "white"
+            self.output = pd.DataFrame(self.name_x+self.name_yend,
+                                       columns=['var_names'])
+            self.output['var_type'] = ['x']*len(self.name_x)+['yend']*len(self.name_yend)
+            self.output['regime'] = x_rlist+yend_rlist
+            self.output['equation'] = 0
+
             BaseTSLS.__init__(
                 self, y=y, x=x, yend=yend, q=q, robust=robust, gwk=gwk, sig2n_k=sig2n_k
             )
-            self.title = "TWO STAGE LEAST SQUARES - REGIMES"
+
+            if slx_lags == 0:
+                self.title = "TWO STAGE LEAST SQUARES - REGIMES"
+            else:
+                self.title = "TWO STAGE LEAST SQUARES WITH SPATIALLY LAGGED X (2SLS-SLX) - REGIMES"
+
             if robust == "ogmm":
                 _optimal_weight(self, sig2n_k)
             self.name_z = self.name_x + self.name_yend
@@ -390,7 +485,12 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
             self.chow = REGI.Chow(self)
             self.robust = USER.set_robust(robust)
             if summ:
-                SUMMARY.TSLS(reg=self, vm=vm, w=w, spat_diag=spat_diag, regimes=True)
+                if spat_diag:
+                    diag_out = _spat_diag_out(self, w, 'yend')
+                else:
+                    diag_out = None
+                output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
+
 
     def _tsls_regimes_multi(
         self,
@@ -401,6 +501,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         regi_ids,
         cores,
         gwk,
+        slx_lags,
         sig2n_k,
         robust,
         spat_diag,
@@ -408,6 +509,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         name_x,
         name_yend,
         name_q,
+        summ,
+        latex
     ):
         results_p = {}
         """
@@ -421,7 +524,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 is_win = False
         """
         x_constant, name_x = REGI.check_const_regi(self, x, name_x, regi_ids)
-        self.name_x_r = name_x
+        self.name_x_r = name_x + name_yend
         for r in self.regimes_set:
             if cores:
                 pool = mp.Pool(None)
@@ -444,6 +547,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                         name_q,
                         self.name_w,
                         self.name_regimes,
+                        slx_lags
                     ),
                 )
             else:
@@ -465,6 +569,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                         name_q,
                         self.name_w,
                         self.name_regimes,
+                        slx_lags
                     )
                 )
 
@@ -495,6 +600,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
             self.name_h,
         ) = ([], [], [], [], [], [])
         counter = 0
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -526,8 +632,13 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
             self.name_q += results[r].name_q
             self.name_z += results[r].name_z
             self.name_h += results[r].name_h
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x+results[r].name_yend,
+                                                       'var_type': ['x']*len(results[r].name_x)+['yend']*len(results[r].name_yend),
+                                                       'regime': r, 'equation': r})], ignore_index=True)
+
             counter += 1
         self.multi = results
+
         self.hac_var = sphstack(x_constant[:, 1:], q)
         if robust == "hac":
             hac_multi(self, gwk)
@@ -539,9 +650,12 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         self.chow = REGI.Chow(self)
         if spat_diag:
             self._get_spat_diag_props(results, regi_ids, x_constant, yend, q)
-        SUMMARY.TSLS_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=spat_diag, regimes=True, w=w
-        )
+            diag_out = _spat_diag_out(self, w, 'yend')
+        else:
+            diag_out = None
+        if summ:
+            self.output.sort_values(by='regime', inplace=True)
+            output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
     def _get_spat_diag_props(self, results, regi_ids, x, yend, q):
         self._cache = {}
@@ -578,6 +692,7 @@ def _work(
     name_q,
     name_w,
     name_regimes,
+    slx_lags,
 ):
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
@@ -588,7 +703,10 @@ def _work(
     else:
         robust2 = robust
     model = BaseTSLS(y_r, x_r, yend_r, q_r, robust=robust2, sig2n_k=sig2n_k)
-    model.title = "TWO STAGE LEAST SQUARES ESTIMATION - REGIME %s" % r
+    if slx_lags == 0:
+        model.title = "TWO STAGE LEAST SQUARES ESTIMATION - REGIME %s" % r
+    else:
+        model.title = "TWO STAGE LEAST SQUARES ESTIMATION WITH SLX - REGIME %s" % r
     if robust == "ogmm":
         _optimal_weight(model, sig2n_k, warn=False)
     model.robust = USER.set_robust(robust)
@@ -628,7 +746,7 @@ def _optimal_weight(reg, sig2n_k, warn=True):
     else:
         vm = fac2 * reg.n
     RegressionProps_basic(reg, betas=betas, vm=vm, sig2=False)
-    reg.title += " (Optimal-Weighted GMM)"
+    #reg.title += " (Optimal-Weighted GMM)"
     if warn:
         set_warn(
             reg, "Residuals treated as homoskedastic for the purpose of diagnostics."
@@ -663,20 +781,31 @@ if __name__ == "__main__":
     q = np.array([db.by_col(name) for name in q_var]).T
     r_var = "SOUTH"
     regimes = db.by_col(r_var)
+    w = libpysal.weights.Rook.from_shapefile(nat.get_path("natregimes.shp"))
+    w.transform = "r"
     tslsr = TSLS_Regimes(
         y,
         x,
         yd,
         q,
         regimes,
+        w = w,
         constant_regi="many",
-        spat_diag=False,
+        spat_diag=True,
         name_y=y_var,
         name_x=x_var,
         name_yend=yd_var,
         name_q=q_var,
         name_regimes=r_var,
-        cols2regi=[False, True, True, True],
+        #cols2regi=[False, True, True, False],
         sig2n_k=False,
+        regime_err_sep = True,
+        #robust = 'hac',
+        vm = False
     )
+    print(tslsr.output)
     print(tslsr.summary)
+
+
+
+

@@ -3,8 +3,6 @@ from libpysal import weights
 import scipy.sparse as SP
 import itertools as iter
 from scipy.stats import f, chi2
-
-chisqprob = chi2.sf
 import itertools as iter
 import numpy.linalg as la
 from .utils import spbroadcast, set_warn
@@ -186,6 +184,10 @@ class Regimes_Frame:
                    If 'all' (default), all the variables vary by regime.
     names         : None, list of strings
                    Names of independent variables for use in output
+    yend         : boolean
+                   If True, the last columns of cols2regi are considered for endogenous variables
+    rlist        : boolean
+                   If True, returns a list with the regimes indicators for each variable
 
     Returns
     -------
@@ -212,7 +214,7 @@ class Regimes_Frame:
 
     """
 
-    def __init__(self, x, regimes, constant_regi, cols2regi, names=None, yend=False):
+    def __init__(self, x, regimes, constant_regi, cols2regi, names=None, yend=False, rlist=False):
         if cols2regi == "all":
             cols2regi = [True] * x.shape[1]
         else:
@@ -228,8 +230,8 @@ class Regimes_Frame:
                 cols2regi.insert(0, True)
             else:
                 raise Exception(
-                    "Invalid argument (%s) passed for 'constant_regi'. Please secify a valid term."
-                    % str(constant)
+                    "Invalid argument (%s) passed for 'constant_regi'. Please specify a valid term."
+                    % str(constant_regi)
                 )
         try:
             x = regimeX_setup(
@@ -252,12 +254,18 @@ class Regimes_Frame:
             self.kryd = 0
         self.nr = len(set(regimes))
 
-        if names:
-            names = set_name_x_regimes(
-                names, regimes, constant_regi, cols2regi, self.regimes_set
-            )
-
-        return (x, names)
+        if rlist:
+            if names:
+                names, r_list = set_name_x_regimes(
+                    names, regimes, constant_regi, cols2regi, self.regimes_set, rlist
+                )
+            return (x, names, r_list)
+        else:
+            if names:
+                names = set_name_x_regimes(
+                    names, regimes, constant_regi, cols2regi, self.regimes_set
+                )
+            return (x, names)
 
 
 def wald_test(betas, r, q, vm):
@@ -290,7 +298,7 @@ def wald_test(betas, r, q, vm):
     rvri = la.inv(np.dot(r, np.dot(vm, r.T)))
     w = np.dot(rbq.T, np.dot(rvri, rbq))[0][0]
     df = r.shape[0]
-    pvalue = chisqprob(w, df)
+    pvalue = chi2.sf(w, df)
     return w, pvalue
 
 
@@ -425,7 +433,7 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
     return xsp
 
 
-def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
+def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set, rlist=False):
     """
     Generate the set of variable names in a regimes setup, according to the
     order of the betas
@@ -475,11 +483,17 @@ def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set):
     vars_regi = nxa[np.where(c2ra == True)]
     vars_glob = nxa[np.where(c2ra == False)]
     name_x_regi = []
+    r_list = []
     for r in regimes_set:
         rl = ["%s_%s" % (str(r), i) for i in vars_regi]
         name_x_regi.extend(rl)
+        r_list.extend([str(r)] * len(rl))
     name_x_regi.extend(["_Global_%s" % i for i in vars_glob])
-    return name_x_regi
+    r_list.extend(["_Global"] * len(vars_glob))
+    if rlist:
+        return (name_x_regi, r_list)
+    else:
+        return name_x_regi
 
 
 def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):

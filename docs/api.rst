@@ -47,6 +47,7 @@ Regimes models are variants of spatial regression models which allow for structu
     :toctree: generated/
 
     spreg.OLS_Regimes
+    spreg.TSLS_Regimes
     spreg.ML_Lag_Regimes
     spreg.ML_Error_Regimes
     spreg.GM_Lag_Regimes
@@ -59,6 +60,7 @@ Regimes models are variants of spatial regression models which allow for structu
     spreg.GM_Endog_Error_Regimes
     spreg.GM_Endog_Error_Hom_Regimes
     spreg.GM_Endog_Error_Het_Regimes
+    spreg.Skater_reg
 
 Seemingly-Unrelated Regressions
 --------------------------------
@@ -74,17 +76,6 @@ Seemingly-unrelated regression models are a generalization of linear regression.
     spreg.SURlagIV
     spreg.ThreeSLS
 
-Panel Models
-------------
-
-.. autosummary::
-    :toctree: generated/
-
-    spreg.Panel_FE_Lag
-    spreg.Panel_FE_Error
-    spreg.Panel_RE_Lag
-    spreg.Panel_RE_Error
-
 Spatial Panel Models
 --------------------
 
@@ -93,6 +84,10 @@ Spatial panel models allow for evaluating correlation in both spatial and time d
 .. autosummary::
    :toctree: generated/
     
+    spreg.Panel_FE_Lag
+    spreg.Panel_FE_Error
+    spreg.Panel_RE_Lag
+    spreg.Panel_RE_Error
     spreg.GM_KKP
 
 Diagnostics
@@ -128,3 +123,8 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.surLMe
     spreg.surLMlag
     spreg.constant_check
+    spreg.panel_LMlag
+    spreg.panel_LMerror
+    spreg.panel_rLMlag
+    spreg.panel_rLMerror
+    spreg.panel_Hausman

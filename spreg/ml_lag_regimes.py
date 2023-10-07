@@ -7,12 +7,14 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.
 import numpy as np
 from . import regimes as REGI
 from . import user_output as USER
-from . import summary_output as SUMMARY
 from . import diagnostics as DIAG
 import multiprocessing as mp
 from .ml_lag import BaseML_Lag
-from .utils import set_warn
+from .utils import set_warn, get_lags
 from platform import system
+import pandas as pd
+from .output import output, _nonspat_top, _spat_pseudo_r2
+
 
 __all__ = ["ML_Lag_Regimes"]
 
@@ -55,6 +57,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    if 'LU', LU sparse matrix decomposition
     epsilon      : float
                    tolerance criterion in mimimize_scalar function and inverse_product
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the Spatial Durbin type.                   
     regime_lag_sep: boolean
                     If True, the spatial parameter for spatial lag is also
                     computed according to different regimes. If False (default),
@@ -76,9 +81,13 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    Name of dataset for use in output
     name_regimes : string
                    Name of regimes variable for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -297,8 +306,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         cols2regi="all",
         method="full",
         epsilon=0.0000001,
+        slx_lags=0,
         regime_lag_sep=False,
-        regime_err_sep=False,
         cores=False,
         vm=False,
         name_y=None,
@@ -306,6 +315,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         name_w=None,
         name_ds=None,
         name_regimes=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x)
@@ -318,7 +328,12 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
-        self.name_x_r = name_x + [USER.set_name_yend_sp(name_y)]
+        if slx_lags >0:
+            lag_x = get_lags(w, x_constant, slx_lags)
+            x_constant = np.hstack((x_constant, lag_x))
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+
+        self.name_x_r = USER.set_name_x(name_x, x_constant) + [USER.set_name_yend_sp(name_y)]
         self.method = method
         self.epsilon = epsilon
         self.name_regimes = USER.set_name_ds(name_regimes)
@@ -364,6 +379,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 w_i,
                 w,
                 regi_ids,
+                slx_lags=slx_lags,
                 cores=cores,
                 cols2regi=cols2regi,
                 method=method,
@@ -374,17 +390,19 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 name_regimes=self.name_regimes,
                 name_w=name_w,
                 name_ds=name_ds,
+                latex=latex,
             )
         else:
             # if regime_lag_sep == True:
             #    w = REGI.w_regimes_union(w, w_i, self.regimes_set)
-            x, self.name_x = REGI.Regimes_Frame.__init__(
+            x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
                 constant_regi,
                 cols2regi=cols2regi[:-1],
                 names=name_x,
+                rlist=True
             )
             self.name_x.append("_Global_" + USER.set_name_yend_sp(name_y))
             BaseML_Lag.__init__(self, y=y, x=x, w=w, method=method, epsilon=epsilon)
@@ -395,13 +413,17 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
             self.regime_lag_sep = regime_lag_sep
-            self.title = (
-                "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"
-                + " (METHOD = "
-                + method
-                + ")"
-            )
-            SUMMARY.ML_Lag(reg=self, w=w, vm=vm, spat_diag=False, regimes=True)
+            self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+            self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['rho']
+            self.output['regime'] = x_rlist+['_Global']
+            self.output['equation'] = 0
+            self.other_top = _spat_pseudo_r2(self)
+            self.other_top += _nonspat_top(self, ml=True)
+            if slx_lags == 0:
+                self.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"+ " (METHOD = "+ method+ ")")
+            else:
+                self.title = ("MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIMES"+ " (METHOD = "+ method+ ")")
+            output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def ML_Lag_Regimes_Multi(
         self,
@@ -410,6 +432,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         w_i,
         w,
         regi_ids,
+        slx_lags,
         cores,
         cols2regi,
         method,
@@ -420,8 +443,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         name_regimes,
         name_w,
         name_ds,
+        latex,
     ):
-        #        pool = mp.Pool(cores)
+        #pool = mp.Pool(cores)
         results_p = {}
         """
         for r in self.regimes_set:
@@ -445,6 +469,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                         regi_ids,
                         r,
                         w_i[r],
+                        slx_lags,
                         method,
                         epsilon,
                         name_ds,
@@ -462,6 +487,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                         regi_ids,
                         r,
                         w_i[r],
+                        slx_lags,
                         method,
                         epsilon,
                         name_ds,
@@ -496,6 +522,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         results = {}
         self.name_y, self.name_x = [], []
         counter = 0
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -528,12 +555,16 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             ] = results[r].e_pred
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
+            results[r].other_top = _spat_pseudo_r2(results[r])
+            results[r].other_top += _nonspat_top(results[r], ml=True)
+            results[r].other_mid = ""
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
+                                                                'var_type': ['x'] * (len(results[r].name_x) - 1) + ['rho'],
+                                                                'regime': r, 'equation': r})], ignore_index=True)
             counter += 1
         self.multi = results
         self.chow = REGI.Chow(self)
-        SUMMARY.ML_Lag_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=False, regimes=True, w=w
-        )
+        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 def _work(
@@ -542,6 +573,7 @@ def _work(
     regi_ids,
     r,
     w_r,
+    slx_lags,
     method,
     epsilon,
     name_ds,
@@ -553,13 +585,10 @@ def _work(
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
     model = BaseML_Lag(y_r, x_r, w_r, method=method, epsilon=epsilon)
-    model.title = (
-        "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIME "
-        + str(r)
-        + " (METHOD = "
-        + method
-        + ")"
-    )
+    if slx_lags == 0:
+        model.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIME "+ str(r)+ " (METHOD = "+ method+ ")")
+    else:
+        model.title = ("MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIME "+ str(r)+ " (METHOD = "+ method+ ")")
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
@@ -583,16 +612,16 @@ def _test():
 if __name__ == "__main__":
     _test()
     import numpy as np
-    import libpysal
+    import libpysal as ps
 
-    db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), "r")
+    db = ps.io.open(ps.examples.get_path("baltim.dbf"), "r")
     ds_name = "baltim.dbf"
     y_name = "PRICE"
     y = np.array(db.by_col(y_name)).T
     y.shape = (len(y), 1)
     x_names = ["NROOM", "NBATH", "PATIO", "FIREPL", "AC", "GAR", "AGE", "LOTSZ", "SQFT"]
     x = np.array([db.by_col(var) for var in x_names]).T
-    ww = ps.open(ps.examples.get_path("baltim_q.gal"))
+    ww = ps.io.open(ps.examples.get_path("baltim_q.gal"))
     w = ww.read()
     ww.close()
     w_name = "baltim_q.gal"
@@ -610,7 +639,9 @@ if __name__ == "__main__":
         name_w=w_name,
         name_ds=ds_name,
         regime_lag_sep=True,
+        regime_err_sep=False,
         constant_regi="many",
         name_regimes="CITCOU",
     )
+    print(mllag.output)
     print(mllag.summary)

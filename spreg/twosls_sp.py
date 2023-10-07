@@ -7,8 +7,9 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, David C. Folch david.folch@asu.ed
 import numpy as np
 from . import twosls as TSLS
 from . import user_output as USER
-from . import summary_output as SUMMARY
 from .utils import set_endog, sp_att, set_warn
+import pandas as pd
+from .output import output, _spat_diag_out, _spat_pseudo_r2
 
 __all__ = ["GM_Lag"]
 
@@ -44,6 +45,9 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     lag_q        : boolean
                    If True, then include spatial lags of the additional
                    instruments (q).
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the Spatial Durbin type.
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
@@ -172,15 +176,19 @@ class BaseGM_Lag(TSLS.BaseTSLS):
         q=None,
         w=None,
         w_lags=1,
+        slx_lags=0,
         lag_q=True,
         robust=None,
         gwk=None,
         sig2n_k=False,
     ):
 
-        yend2, q2 = set_endog(
-            y, x[:, 1:], w, yend, q, w_lags, lag_q
-        )  # assumes constant in first column
+        if slx_lags > 0:
+            yend2, q2, wx = set_endog(y, x[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
+            x = np.hstack((x, wx))
+        else:
+            yend2, q2 = set_endog(y, x[:, 1:], w, yend, q, w_lags, lag_q)
+
         TSLS.BaseTSLS.__init__(
             self, y=y, x=x, yend=yend2, q=q2, robust=robust, gwk=gwk, sig2n_k=sig2n_k
         )
@@ -216,6 +224,9 @@ class GM_Lag(BaseGM_Lag):
     lag_q        : boolean
                    If True, then include spatial lags of the additional
                    instruments (q).
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the Spatial Durbin type.
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
@@ -245,9 +256,13 @@ class GM_Lag(BaseGM_Lag):
                    Name of kernel weights matrix for use in output
     name_ds      : string
                    Name of dataset for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -478,6 +493,7 @@ class GM_Lag(BaseGM_Lag):
         w=None,
         w_lags=1,
         lag_q=True,
+        slx_lags=0,
         robust=None,
         gwk=None,
         sig2n_k=False,
@@ -490,13 +506,24 @@ class GM_Lag(BaseGM_Lag):
         name_w=None,
         name_gwk=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
+        if robust == "hac" and spat_diag:
+                set_warn(
+                    self,
+                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+                )
+                spat_diag = False
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+
+        if slx_lags > 0:
+            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+
         set_warn(self, warn)
         BaseGM_Lag.__init__(
             self,
@@ -506,6 +533,7 @@ class GM_Lag(BaseGM_Lag):
             yend=yend,
             q=q,
             w_lags=w_lags,
+            slx_lags=slx_lags,
             robust=robust,
             gwk=gwk,
             lag_q=lag_q,
@@ -517,20 +545,38 @@ class GM_Lag(BaseGM_Lag):
         )
         set_warn(self, warn)
         self.title = "SPATIAL TWO STAGE LEAST SQUARES"
+        if slx_lags > 0:
+            self.title += " WITH SLX (SPATIAL DURBIN MODEL)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = USER.set_name_x(name_x, x_constant)   # name_x contains SLX terms for slx_lags > 0
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend
         self.name_q = USER.set_name_q(name_q, q)
-        self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+        if slx_lags > 0:  # need to remove all but last SLX variables from name_x
+            self.name_x0 = []
+            self.name_x0.append(self.name_x[0])   # constant
+#            print(f"x0 first {self.name_x0}")
+            kx = int((self.k -self.kstar -1)/(slx_lags +1) )   # number of original exogenous vars
+            self.name_x0.extend(self.name_x[-kx:])
+#            print(f"in here {self.name_x0}")
+            self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
+        else:
+            self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        SUMMARY.GM_Lag(reg=self, w=w, vm=vm, spat_diag=spat_diag)
-
+        self.output = pd.DataFrame(self.name_x + self.name_yend, columns=['var_names'])
+        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend)-1) + ['rho']
+        self.output['regime'], self.output['equation'] = (0, 0)
+        self.other_top = _spat_pseudo_r2(self)
+        if spat_diag:
+            diag_out = _spat_diag_out(self, w, 'yend')
+        else:
+            diag_out = None
+        output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
 def _test():
     import doctest
@@ -572,4 +618,5 @@ if __name__ == "__main__":
         name_ds="columbus",
         name_w="columbus.gal",
     )
+    print(model.output)
     print(model.summary)

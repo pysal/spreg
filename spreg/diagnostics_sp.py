@@ -18,7 +18,6 @@ __all__ = ["LMtests", "MoranRes", "AKtest"]
 
 
 class LMtests:
-
     """
     Lagrange Multiplier tests. Implemented as presented in :cite:`Anselin1996a`
 
@@ -142,7 +141,6 @@ class LMtests:
 
 
 class MoranRes:
-
     """
     Moran's I for spatial autocorrelation in residuals from OLS regression
 
@@ -396,7 +394,6 @@ class AKtest:
 
 
 class spDcache:
-
     """
     Helper class to compute reusable pieces in the spatial diagnostics module
     ...
@@ -669,7 +666,7 @@ def get_vI(ols, w, ei, spDcache):
     B = spDcache.AB[1]
     trB = np.sum(B.diagonal()) * 4.0
     vi = (w.n ** 2 / (w.s0 ** 2 * (w.n - ols.k) * (w.n - ols.k + 2.0))) * (
-        w.s1 + 2.0 * trA2 - trB - ((2.0 * (spDcache.trA ** 2)) / (w.n - ols.k))
+            w.s1 + 2.0 * trA2 - trB - ((2.0 * (spDcache.trA ** 2)) / (w.n - ols.k))
     )
     return vi
 
@@ -716,9 +713,6 @@ def akTest(iv, w, spDcache):
     p           : float
                   P-value of the test
 
-    ToDo:
-        * Code in as Nancy
-        * Compare both
     """
     mi = get_mI(iv, w, spDcache)
     # Phi2
@@ -729,6 +723,42 @@ def akTest(iv, w, spDcache):
     ak = w.n * mi ** 2 / phi2
     pval = chisqprob(ak, 1)
     return (mi, ak[0][0], pval[0][0])
+
+
+def comfac_test(lambd, beta, gamma, vm):
+    """
+    Computes the Spatial Common Factor Hypothesis test as shown in Anselin (1988, p. 226-229)
+
+    Parameters
+    ----------
+
+    lambd       : float
+                  Spatial autoregressive coefficient (as in lambd*Wy)
+    beta        : array
+                  Coefficients of the exogenous (not spatially lagged) variables, without the constant (as in X*beta)
+    gamma       : array
+                  coefficients of the spatially lagged exogenous variables (as in WX*gamma)
+    vm          : array
+                  Variance-covariance matrix of the coefficients
+                  Obs. Needs to match the order of theta' = [beta', gamma', lambda]
+
+    Returns
+    -------
+    W       : float
+              Wald statistic
+    pvalue  : float
+              P value for Wald statistic calculated as a Chi sq. distribution
+              with k-1 degrees of freedom
+
+    """
+    g = lambd * beta + gamma
+    G = np.vstack((lambd * np.eye(beta.shape[0]), np.eye(beta.shape[0]), beta.T))
+
+    GVGi = la.inv(np.dot(G.T, np.dot(vm, G)))
+    W = np.dot(g.T, np.dot(GVGi, g))[0][0]
+    df = G.shape[1]
+    pvalue = chisqprob(W, df)
+    return W, pvalue
 
 
 def _test():

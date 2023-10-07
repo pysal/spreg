@@ -479,7 +479,7 @@ def get_lags(w, x, w_lags):
     Returns
     --------
     rs      : array
-              nxk*(w_lags+1) array with original and spatially lagged variables
+              nxk*(w_lags) array with spatially lagged variables
 
     """
     lag = lag_spatial(w, x)
@@ -489,6 +489,43 @@ def get_lags(w, x, w_lags):
         spat_lags = sphstack(spat_lags, lag)
     return spat_lags
 
+def get_lags_split(w, x, max_lags, split_at):
+    """
+    Calculates a given order of spatial lags and all the smaller orders,
+    separated into two groups (up to split_at and above)
+
+    Parameters
+    ----------
+    w       : weight
+              PySAL weights instance
+    x       : array
+              nxk arrays with the variables to be lagged
+    max_lags  : integer
+              Maximum order of spatial lag
+    split_at: integer
+              Separates the resulting lags into two groups: up to split_at and above
+
+    Returns
+    --------
+    rs_l,rs_h: tuple of arrays
+               rs_l: nxk*(split_at) array with spatially lagged variables up to split_at
+               rs_h: nxk*(w_lags-split_at) array with spatially lagged variables above split_at
+
+    """
+    rs_l = lag = lag_spatial(w, x)
+    rs_h = None
+    if 0 < split_at < max_lags:
+        for _ in range(split_at-1):
+            lag = lag_spatial(w, lag)
+            rs_l = sphstack(rs_l, lag)
+
+        for i in range(max_lags - split_at):
+            lag = lag_spatial(w, lag)
+            rs_h = sphstack(rs_h, lag) if i > 0 else lag
+    else:
+        raise ValueError("max_lags must be greater than split_at and split_at must be greater than 0")
+
+    return rs_l, rs_h
 
 def inverse_prod(
     w,
@@ -571,9 +608,11 @@ def inverse_prod(
         except:
             matrix = la.inv(np.eye(w.shape[0]) - (scalar * w))
         if post_multiply:
-            inv_prod = spdot(data.T, matrix)
+#            inv_prod = spdot(data.T, matrix)
+            inv_prod = np.matmul(data.T,matrix)   # inverse matrix is dense, wrong type in spdot
         else:
-            inv_prod = spdot(matrix, data)
+#            inv_prod = spdot(matrix, data)
+            inv_prod = np.matmul(matrix,data)
     else:
         raise Exception("Invalid method selected for inversion.")
     return inv_prod
@@ -623,24 +662,35 @@ def power_expansion(
     return running_total
 
 
-def set_endog(y, x, w, yend, q, w_lags, lag_q):
+def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0):
     # Create spatial lag of y
     yl = lag_spatial(w, y)
     # spatial and non-spatial instruments
     if issubclass(type(yend), np.ndarray):
-        if lag_q:
-            lag_vars = sphstack(x, q)
+        if slx_lags > 0:
+            lag_x, lag_xq = get_lags_split(w, x, slx_lags+1, slx_lags)
         else:
-            lag_vars = x
+            lag_xq = x
+        if lag_q:
+            lag_vars = sphstack(lag_xq, q)
+        else:
+            lag_vars = lag_xq
         spatial_inst = get_lags(w, lag_vars, w_lags)
         q = sphstack(q, spatial_inst)
         yend = sphstack(yend, yl)
     elif yend == None:  # spatial instruments only
-        q = get_lags(w, x, w_lags)
+        if slx_lags > 0:
+            lag_x, lag_xq = get_lags_split(w, x, slx_lags+w_lags, slx_lags)
+        else:
+            lag_xq = get_lags(w, x, w_lags)
+        q = lag_xq
         yend = yl
     else:
         raise Exception("invalid value passed to yend")
-    return yend, q
+    if slx_lags == 0:
+        return yend, q
+    else:
+        return yend, q, lag_x
 
     lag = lag_spatial(w, x)
     spat_lags = lag

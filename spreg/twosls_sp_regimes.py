@@ -7,12 +7,13 @@ __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.
 import numpy as np
 from . import regimes as REGI
 from . import user_output as USER
-from . import summary_output as SUMMARY
 import multiprocessing as mp
 from .twosls_regimes import TSLS_Regimes, _optimal_weight
 from .twosls import BaseTSLS
 from .utils import set_endog, set_endog_sparse, sp_att, set_warn, sphstack, spdot
 from .robust import hac_multi
+import pandas as pd
+from .output import output, _spat_diag_out, _spat_pseudo_r2
 
 
 class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
@@ -62,6 +63,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     lag_q        : boolean
                    If True, then include spatial lags of the additional
                    instruments (q).
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the Spatial Durbin type.
     regime_lag_sep: boolean
                     If True (default), the spatial parameter for spatial lag is also
                     computed according to different regimes. If False,
@@ -107,9 +111,13 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    Name of dataset for use in output
     name_regimes : string
                    Name of regimes variable for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
 
     Attributes
     ----------
+    output       : dataframe
+                   regression results pandas dataframe
     summary      : string
                    Summary of regression results and diagnostics (note: use in
                    conjunction with the print command)
@@ -378,15 +386,16 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     models, the argument regime_lag_sep must be set to True:
 
     >>> model=GM_Lag_Regimes(y, x, regimes, w=w, regime_lag_sep=True, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT', name_w='NAT.shp')
-    >>> print(np.hstack((np.array(model.name_z).reshape(8,1),model.betas,np.sqrt(model.vm.diagonal().reshape(8,1)))))
-    [['0_CONSTANT' '1.3658476998618099' '0.3985472089832652']
-     ['0_PS90' '0.8087573074246643' '0.11324884794883601']
-     ['0_UE90' '0.5694681319188577' '0.04625087717092595']
-     ['0_W_HR90' '-0.43424389464634316' '0.13350159258670305']
-     ['1_CONSTANT' '7.90731073341874' '1.6360187416950998']
-     ['1_PS90' '1.2746570332609135' '0.2470987049452741']
-     ['1_UE90' '0.6016769336173784' '0.07993322102145078']
-     ['1_W_HR90' '-0.2960338343846942' '0.19934459782427025']]
+    >>> print(model.output)
+        var_names coefficients   std_err    zt_stat      prob
+    0  0_CONSTANT     1.365848  0.398547   3.427066   0.00061
+    1      0_PS90     0.808757  0.113249   7.141418       0.0
+    2      0_UE90     0.569468  0.046251  12.312591       0.0
+    3    0_W_HR90    -0.434244  0.133502  -3.252724  0.001143
+    4  1_CONSTANT     7.907311  1.636019   4.833264  0.000001
+    5      1_PS90     1.274657  0.247099   5.158493       0.0
+    6      1_UE90     0.601677  0.079933   7.527245       0.0
+    7    1_W_HR90    -0.296034  0.199345  -1.485036  0.137534
 
     Alternatively, we can type: 'model.summary' to see the organized results output.
     The class is flexible enough to accomodate a spatial lag model that,
@@ -432,6 +441,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         q=None,
         w=None,
         w_lags=1,
+        slx_lags=0,
         lag_q=True,
         robust=None,
         gwk=None,
@@ -439,7 +449,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         spat_diag=False,
         constant_regi="many",
         cols2regi="all",
-        regime_lag_sep=False,
+        regime_lag_sep=True,
         regime_err_sep=True,
         cores=False,
         vm=False,
@@ -451,12 +461,32 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         name_w=None,
         name_gwk=None,
         name_ds=None,
+        latex=False,
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
+        if regime_lag_sep and not regime_err_sep:
+            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")                
+            regime_err_sep = True
+        if regime_err_sep and not regime_lag_sep:
+            set_warn(self, "Groupwise heteroskedasticity is not currently available for this method,\n so regime_err_sep has been set to False.")                
+            regime_err_sep = False
+        if robust == "hac":
+            if regime_err_sep:
+                set_warn(
+                    self,
+                    "Error by regimes is not available for HAC estimation. The error by regimes has been disabled for this model.",
+                )
+                regime_err_sep = False
+            if spat_diag:
+                set_warn(
+                    self,
+                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+                )
+                spat_diag = False
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
@@ -464,12 +494,20 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
-        name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.constant_regi = constant_regi
-        self.n = n
+        if slx_lags > 0:
+            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags)
+            x_constant = np.hstack((x_constant, wx))
+            name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
+            name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
+            name_x += name_slx   
+        else:
+            name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
+            yend2, q2 = yend, q
+        self.n = x_constant.shape[0]
         cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x_constant, yend=yend, add_cons=False
+            constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
         )
         self.cols2regi = cols2regi
         self.regimes_set = REGI._get_regimes_set(regimes)
@@ -485,8 +523,6 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         self.regime_err_sep = regime_err_sep
         self.regime_lag_sep = regime_lag_sep
         if regime_lag_sep == True:
-            if not regime_err_sep:
-                raise Exception("regime_err_sep must be True when regime_lag_sep=True.")
             cols2regi += [True]
             w_i, regi_ids, warn = REGI.w_regimes(
                 w,
@@ -513,9 +549,10 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 w_i,
                 w,
                 regi_ids,
-                yend=yend,
-                q=q,
+                yend=yend2,
+                q=q2,
                 w_lags=w_lags,
+                slx_lags=slx_lags,
                 lag_q=lag_q,
                 cores=cores,
                 robust=robust,
@@ -532,11 +569,13 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 name_w=name_w,
                 name_gwk=name_gwk,
                 name_ds=name_ds,
+                latex=latex,
             )
         else:
             if regime_lag_sep == True:
                 w = REGI.w_regimes_union(w, w_i, self.regimes_set)
-            yend2, q2 = set_endog(y, x_constant, w, yend, q, w_lags, lag_q)
+            if slx_lags == 0:
+                yend2, q2 = set_endog(y, x_constant, w, yend2, q2, w_lags, lag_q)
             name_yend.append(USER.set_name_yend_sp(name_y))
             TSLS_Regimes.__init__(
                 self,
@@ -564,17 +603,26 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 name_ds=name_ds,
                 summ=False,
             )
-            if regime_lag_sep:
+
+            if regime_lag_sep:  # not currently available.
                 self.sp_att_reg(w_i, regi_ids, yend2[:, -1].reshape(self.n, 1))
             else:
                 self.rho = self.betas[-1]
+                self.output.iat[-1, self.output.columns.get_loc('var_type')] = 'rho'
                 self.predy_e, self.e_pred, warn = sp_att(
                     w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho
                 )
                 set_warn(self, warn)
             self.regime_lag_sep = regime_lag_sep
             self.title = "SPATIAL " + self.title
-            SUMMARY.GM_Lag(reg=self, w=w, vm=vm, spat_diag=spat_diag, regimes=True)
+            if slx_lags > 0:
+                self.title = " SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIMES"
+            self.other_top = _spat_pseudo_r2(self)
+            if spat_diag:
+                diag_out = _spat_diag_out(self, w, 'yend')
+            else:
+                diag_out = None
+            output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
     def GM_Lag_Regimes_Multi(
         self,
@@ -587,6 +635,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         yend=None,
         q=None,
         w_lags=1,
+        slx_lags=0,
         lag_q=True,
         robust=None,
         gwk=None,
@@ -602,6 +651,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         name_w=None,
         name_gwk=None,
         name_ds=None,
+        latex=False,
     ):
         #        pool = mp.Pool(cores)
         self.name_ds = USER.set_name_ds(name_ds)
@@ -636,6 +686,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                         q,
                         w_r,
                         w_lags,
+                        slx_lags,
                         lag_q,
                         robust,
                         sig2n_k,
@@ -659,6 +710,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                         q,
                         w_r,
                         w_lags,
+                        slx_lags,
                         lag_q,
                         robust,
                         sig2n_k,
@@ -702,6 +754,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.name_h,
         ) = ([], [], [], [], [], [])
         counter = 0
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -752,6 +805,14 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.hac_var[
                 regi_ids[r],
             ] = results[r].h
+            results[r].other_top = _spat_pseudo_r2(results[r])
+            results[r].other_mid = ""
+            if spat_diag:
+                results[r].other_mid += _spat_diag_out(results[r], results[r].w, 'yend')
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x + results[r].name_yend,
+                                                                'var_type': ['x'] * len(results[r].name_x) + [
+                                                                    'yend'] * (len(results[r].name_yend)-1) + ['rho'],
+                                                                'regime': r, 'equation': r})], ignore_index=True)
             counter += 1
         self.multi = results
         if robust == "hac":
@@ -763,11 +824,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             )
         self.chow = REGI.Chow(self)
         if spat_diag:
-            pass
             # self._get_spat_diag_props(y, x, w, yend, q, w_lags, lag_q)
-        SUMMARY.GM_Lag_multi(
-            reg=self, multireg=self.multi, vm=vm, spat_diag=spat_diag, regimes=True, w=w
-        )
+            pass
+        output(reg=self, vm=vm, robust=robust, other_end=False, latex=latex)
 
     def sp_att_reg(self, w_i, regi_ids, wy):
         predy_e_r, e_pred_r = {}, {}
@@ -823,6 +882,7 @@ def _work(
     q,
     w_r,
     w_lags,
+    slx_lags,
     lag_q,
     robust,
     sig2n_k,
@@ -844,14 +904,18 @@ def _work(
         q_r = q[regi_ids[r]]
     else:
         q_r = q
-    yend_r, q_r = set_endog_sparse(y_r, x_r[:, 1:], w_r, yend_r, q_r, w_lags, lag_q)
+    if slx_lags == 0:
+        yend_r, q_r = set_endog_sparse(y_r, x_r[:, 1:], w_r, yend_r, q_r, w_lags, lag_q)
+        title = "SPATIAL TWO STAGE LEAST SQUARES ESTIMATION - REGIME %s" % r
+    else:
+        title = "SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIME %s" % r
     # x_constant = USER.check_constant(x_r)
     if robust == "hac" or robust == "ogmm":
         robust2 = None
     else:
         robust2 = robust
     model = BaseTSLS(y_r, x_r, yend_r, q_r, robust=robust2, sig2n_k=sig2n_k)
-    model.title = "SPATIAL TWO STAGE LEAST SQUARES ESTIMATION - REGIME %s" % r
+    model.title = title
     if robust == "ogmm":
         _optimal_weight(model, sig2n_k, warn=False)
     model.rho = model.betas[-1]
@@ -917,6 +981,8 @@ if __name__ == "__main__":
         name_ds="columbus",
         name_w="columbus.gal",
         regime_err_sep=True,
+        regime_lag_sep = True,
         robust="white",
     )
+    print(model.output)
     print(model.summary)

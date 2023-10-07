@@ -36,7 +36,8 @@ __all__ = ["BaseSURerrorGM", "SURerrorGM", "BaseSURerrorML", "SURerrorML"]
 
 
 class BaseSURerrorGM:
-    """Base class for SUR Error estimation by Generalized Moment Estimation.
+
+    """Base class for SUR Error estimation by Generalized Moments
 
     Parameters
     ----------
@@ -158,7 +159,7 @@ def _momentsGM_sur_Error(w, u):
 
 class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     """
-    User class for SUR Error estimation by Maximum Likelihood.
+    User class for SUR Error estimation by Generalized Moments
 
     Parameters
     ----------
@@ -556,7 +557,7 @@ class BaseSURerrorML:
             bigE = sur_resids(self.bigy, self.bigX, b1)
             res = minimize(
                 clik,
-                lam,
+                np.array(lam).flatten(),
                 args=(self.n, self.n2, self.n_eq, bigE, I, WS),
                 method="L-BFGS-B",
                 bounds=lambdabounds,
@@ -1104,3 +1105,47 @@ def surerrvm(n, n_eq, w, lam, sig):
     vm = la.inv(vbig)
 
     return vm
+
+
+def _test():
+    import doctest
+
+    start_suppress = np.get_printoptions()["suppress"]
+    np.set_printoptions(suppress=True)
+    doctest.testmod()
+    np.set_printoptions(suppress=start_suppress)
+
+
+if __name__ == "__main__":
+    _test()
+    import numpy as np
+    import libpysal
+    from .sur_utils import sur_dictxy, sur_dictZ
+    from libpysal.examples import load_example
+    from libpysal.weights import Queen
+
+    nat = load_example("Natregimes")
+    db = libpysal.io.open(nat.get_path("natregimes.dbf"), "r")
+    y_var = ["HR80", "HR90"]
+    x_var = [["PS80", "UE80"], ["PS90", "UE90"]]
+    w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
+    w.transform = "r"
+    bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(db, y_var, x_var)
+    reg0 = SURerrorML(
+        bigy0,
+        bigX0,
+        w,
+        # regimes=regimes,
+        name_bigy=bigyvars0,
+        name_bigX=bigXvars0,
+        name_w="natqueen",
+        name_ds="natregimes",
+        vm=True,
+        nonspat_diag=True,
+        spat_diag=True,
+    )
+
+    #    reg0 = SURerrorGM(bigy0,bigX0,w,regimes=regimes,name_bigy=bigyvars0,name_bigX=bigXvars0,\
+    #        name_w="natqueen",name_ds="natregimes",vm=False,nonspat_diag=True,spat_diag=False)
+
+    print(reg0.summary)
