@@ -7,7 +7,8 @@ __author__ = (
     "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu "
 )
 
-from libpysal.common import *
+import numpy as np
+from scipy import stats
 from scipy.stats import pearsonr
 
 __all__ = ["t_stat", "pr2_aspatial", "pr2_spatial"]
@@ -118,12 +119,9 @@ def t_stat(reg, z_stat=False):
     vm = reg.vm  # (array) coefficients of variance matrix (k x k)
     betas = reg.betas  # (array) coefficients of the regressors (1 x k)
     variance = vm.diagonal()
-    tStat = (
-        betas.reshape(
-            len(betas),
-        )
-        / np.sqrt(variance)
-    )
+    tStat = betas.reshape(
+        len(betas),
+    ) / np.sqrt(variance)
     ts_result = []
     for t in tStat:
         if z_stat:
@@ -221,7 +219,7 @@ def pr2_aspatial(tslsreg):
     y = tslsreg.y
     predy = tslsreg.predy
     pr = pearsonr(y.flatten(), predy.flatten())[0]
-    pr2_result = float(pr ** 2)
+    pr2_result = float(pr**2)
     return pr2_result
 
 
@@ -329,7 +327,7 @@ def pr2_spatial(tslsreg):
     y = tslsreg.y
     predy_e = tslsreg.predy_e
     pr = pearsonr(y.flatten(), predy_e.flatten())[0]
-    pr2_result = float(pr ** 2)
+    pr2_result = float(pr**2)
     return pr2_result
 
 
