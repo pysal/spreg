@@ -26,7 +26,7 @@
          with:
            path: ~/conda_pkgs_dir
            key: ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles(matrix.environment-file) }}
-       - uses: conda-incubator/setup-miniconda@v2
+       - uses: conda-incubator/setup-miniconda@v3
          with:
             miniconda-version: 'latest'
             channels: conda-forge
