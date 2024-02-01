@@ -6,9 +6,14 @@ __author__ = (
     "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu "
 )
 
-from libpysal.common import *
-import scipy.sparse as SP
 from math import sqrt, pi
+
+from libpysal.common import MISSINGVALUE
+import numpy as np
+import numpy.linalg as la
+import scipy.sparse as SP
+from scipy import stats
+
 from .utils import spmultiply, sphstack, spmin, spmax
 
 
@@ -160,12 +165,9 @@ def t_stat(reg, z_stat=False):
     vm = reg.vm  # (array) coefficients of variance matrix (k x k)
     betas = reg.betas  # (array) coefficients of the regressors (1 x k)
     variance = vm.diagonal()
-    tStat = (
-        betas[list(range(0, len(vm)))].reshape(
-            len(vm),
-        )
-        / np.sqrt(variance)
-    )
+    tStat = betas[list(range(0, len(vm)))].reshape(
+        len(vm),
+    ) / np.sqrt(variance)
     ts_result = []
     for t in tStat:
         if z_stat:
@@ -678,15 +680,15 @@ def jarque_bera(reg):
     """
     n = reg.n  # (scalar) number of observations
     u = reg.u  # (array) residuals from regression
-    u2 = u ** 2
-    u3 = u ** 3
-    u4 = u ** 4
+    u2 = u**2
+    u3 = u**3
+    u4 = u**4
     mu2 = np.mean(u2)
     mu3 = np.mean(u3)
     mu4 = np.mean(u4)
     S = mu3 / (mu2 ** (1.5))  # skewness measure
-    K = mu4 / (mu2 ** 2)  # kurtosis measure
-    jb = n * (((S ** 2) / 6) + ((K - 3) ** 2) / 24)
+    K = mu4 / (mu2**2)  # kurtosis measure
+    jb = n * (((S**2) / 6) + ((K - 3) ** 2) / 24)
     pvalue = stats.chisqprob(jb, 2)
     jb_result = {"df": 2, "jb": jb, "pvalue": pvalue}
     return jb_result
@@ -776,7 +778,7 @@ def breusch_pagan(reg, z=None):
     0.0193
 
     """
-    e2 = reg.u ** 2
+    e2 = reg.u**2
     e = reg.u
     n = reg.n
     k = reg.k
@@ -919,7 +921,7 @@ def white(reg):
     0.0013
 
     """
-    e = reg.u ** 2
+    e = reg.u**2
     k = int(reg.k)
     n = int(reg.n)
     y = reg.y
@@ -1084,7 +1086,7 @@ def koenker_bassett(reg, z=None):
 
     """
     # The notation here matches that of Greene (2003).
-    u = reg.u ** 2
+    u = reg.u**2
     e = reg.u
     n = reg.n
     k = reg.k

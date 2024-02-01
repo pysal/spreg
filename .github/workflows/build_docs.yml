@@ -20,13 +20,13 @@
          shell: bash -l {0}
      steps:
        - uses: actions/checkout@v4
-       - uses: actions/cache@v3
+       - uses: actions/cache@v4
          env:
            CACHE_NUMBER: 0
          with:
            path: ~/conda_pkgs_dir
            key: ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles(matrix.environment-file) }}
-       - uses: conda-incubator/setup-miniconda@v2
+       - uses: conda-incubator/setup-miniconda@v3
          with:
             miniconda-version: 'latest'
             channels: conda-forge
