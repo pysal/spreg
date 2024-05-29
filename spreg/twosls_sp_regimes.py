@@ -5,16 +5,18 @@ Spatial Two Stages Least Squares with Regimes
 __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.edu, David C. Folch david.folch@asu.edu"
 
 import numpy as np
+import pandas as pd
+import multiprocessing as mp
 from . import regimes as REGI
 from . import user_output as USER
-import multiprocessing as mp
 from .twosls_regimes import TSLS_Regimes, _optimal_weight
 from .twosls import BaseTSLS
-from .utils import set_endog, set_endog_sparse, sp_att, set_warn, sphstack, spdot
+from .utils import set_endog, set_endog_sparse, sp_att, set_warn, sphstack, spdot, optim_k
 from .robust import hac_multi
-import pandas as pd
-from .output import output, _spat_diag_out, _spat_pseudo_r2
-
+from .sputils import _spmultiplier
+from .output import output, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
+from .skater_reg import Skater_reg
+from .twosls_sp import BaseGM_Lag
 
 class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
@@ -86,8 +88,11 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    matrix must have ones along the main diagonal.
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
+    spat_impacts : boolean
+                   If True, include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results
     spat_diag    : boolean
-                   If True, then compute Anselin-Kelejian test
+                   If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -206,6 +211,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    p-value)
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
+    cfh_test     : tuple
+                   Common Factor Hypothesis test; tuple contains the pair (statistic,
+                   p-value). Only when it applies (see specific documentation).
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -443,14 +451,15 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         w_lags=1,
         slx_lags=0,
         lag_q=True,
-        robust=None,
+        robust='white',
         gwk=None,
         sig2n_k=False,
-        spat_diag=False,
+        spat_diag=True,
+        spat_impacts=True,
         constant_regi="many",
         cols2regi="all",
-        regime_lag_sep=True,
-        regime_err_sep=True,
+        regime_lag_sep=False,
+        regime_err_sep=False,
         cores=False,
         vm=False,
         name_y=None,
@@ -462,6 +471,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         name_gwk=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x)
@@ -501,14 +511,19 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             x_constant = np.hstack((x_constant, wx))
             name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
             name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
-            name_x += name_slx   
+            name_x += name_slx
+            if cols2regi == 'all':
+                cols2regi = REGI.check_cols2regi(
+                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)[0:-1]
+            else:
+                cols2regi = REGI.check_cols2regi(
+                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
         else:
             name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
             yend2, q2 = yend, q
+            cols2regi = REGI.check_cols2regi(
+                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
         self.n = x_constant.shape[0]
-        cols2regi = REGI.check_cols2regi(
-            constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
-        )
         self.cols2regi = cols2regi
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
@@ -522,6 +537,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             regime_lag_sep = False
         self.regime_err_sep = regime_err_sep
         self.regime_lag_sep = regime_lag_sep
+
         if regime_lag_sep == True:
             cols2regi += [True]
             w_i, regi_ids, warn = REGI.w_regimes(
@@ -533,7 +549,6 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 min_n=len(cols2regi) + 1,
             )
             set_warn(self, warn)
-
         else:
             cols2regi += [False]
 
@@ -559,6 +574,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 gwk=gwk,
                 sig2n_k=sig2n_k,
                 cols2regi=cols2regi,
+                spat_impacts=spat_impacts,
                 spat_diag=spat_diag,
                 vm=vm,
                 name_y=name_y,
@@ -570,6 +586,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 name_gwk=name_gwk,
                 name_ds=name_ds,
                 latex=latex,
+                hard_bound=hard_bound,
             )
         else:
             if regime_lag_sep == True:
@@ -610,18 +627,27 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 self.rho = self.betas[-1]
                 self.output.iat[-1, self.output.columns.get_loc('var_type')] = 'rho'
                 self.predy_e, self.e_pred, warn = sp_att(
-                    w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho
-                )
+                    w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho, hard_bound=hard_bound)
                 set_warn(self, warn)
             self.regime_lag_sep = regime_lag_sep
             self.title = "SPATIAL " + self.title
             if slx_lags > 0:
+                for m in self.regimes_set:
+                    r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
+                    wx_index = r_output.index[-((len(r_output)-1)//(slx_lags+1)) * slx_lags:]
+                    self.output.loc[wx_index, 'var_type'] = 'wx'
                 self.title = " SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIMES"
             self.other_top = _spat_pseudo_r2(self)
+            self.slx_lags = slx_lags
+            diag_out = None
             if spat_diag:
                 diag_out = _spat_diag_out(self, w, 'yend')
-            else:
-                diag_out = None
+            if spat_impacts and slx_lags == 0:
+                impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+                try:
+                    diag_out += impacts
+                except TypeError:
+                    diag_out = impacts
             output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
     def GM_Lag_Regimes_Multi(
@@ -641,6 +667,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         gwk=None,
         sig2n_k=False,
         cols2regi="all",
+        spat_impacts=False,
         spat_diag=False,
         vm=False,
         name_y=None,
@@ -652,6 +679,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         name_gwk=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
         #        pool = mp.Pool(cores)
         self.name_ds = USER.set_name_ds(name_ds)
@@ -771,7 +799,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 results[r].y,
                 results[r].predy,
                 results[r].yend[:, -1].reshape(results[r].n, 1),
-                results[r].rho,
+                results[r].rho, hard_bound=hard_bound
             )
             set_warn(results[r], warn)
             results[r].w = w_i[r]
@@ -807,12 +835,19 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             ] = results[r].h
             results[r].other_top = _spat_pseudo_r2(results[r])
             results[r].other_mid = ""
+            if slx_lags > 0:
+                kx = (results[r].k - results[r].kstar - 1) // (slx_lags + 1)
+                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(results[r].name_yend) - 1) + ['rho']
+            else:
+                var_types = ['x'] * len(results[r].name_x) + ['yend'] * (len(results[r].name_yend)-1) + ['rho']
+            results[r].output = pd.DataFrame({'var_names': results[r].name_x + results[r].name_yend,
+                                                                'var_type': var_types,
+                                                                'regime': r, 'equation': r})
+            self.output = pd.concat([self.output, results[r].output], ignore_index=True)
             if spat_diag:
                 results[r].other_mid += _spat_diag_out(results[r], results[r].w, 'yend')
-            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x + results[r].name_yend,
-                                                                'var_type': ['x'] * len(results[r].name_x) + [
-                                                                    'yend'] * (len(results[r].name_yend)-1) + ['rho'],
-                                                                'regime': r, 'equation': r})], ignore_index=True)
+            if spat_impacts and slx_lags == 0:
+                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho))
             counter += 1
         self.multi = results
         if robust == "hac":
@@ -823,9 +858,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 "Residuals treated as homoskedastic for the purpose of diagnostics.",
             )
         self.chow = REGI.Chow(self)
-        if spat_diag:
-            # self._get_spat_diag_props(y, x, w, yend, q, w_lags, lag_q)
-            pass
+        #if spat_diag:
+        #   self._get_spat_diag_props(y, x, w, yend, q, w_lags, lag_q)
         output(reg=self, vm=vm, robust=robust, other_end=False, latex=latex)
 
     def sp_att_reg(self, w_i, regi_ids, wy):
@@ -929,7 +963,46 @@ def _work(
     model.name_h = model.name_x + model.name_q
     model.name_w = name_w
     model.name_regimes = name_regimes
+    model.slx_lags = slx_lags
     return model
+
+
+class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
+    def __init__(
+        self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
+
+        n = USER.check_arrays(y, x)
+        y = USER.check_y(y, n)
+        USER.check_weights(w, y, w_required=True)
+
+        # Standardize the variables
+        x_std = (x - np.mean(x, axis=0)) / np.std(x, axis=0)
+
+        if not n_clusters:
+            if quorum < 0:
+                quorum = np.max([(x.shape[1]+1)*10, 30])
+            n_clusters_opt = x.shape[0]*0.70//quorum
+            if n_clusters_opt < 2:
+                raise ValueError(
+                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation.")
+            sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x,'w':w}, quorum=quorum, trace=True)
+            n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
+            self.clusters = sk_reg_results._trace[n_clusters-1][0]
+        else:
+            try:
+                # Call the Skater_reg method based on GM_Lag
+                sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x,'w':w}, quorum=quorum, trace=trace)
+                self.clusters = sk_reg_results.current_labels_
+            except Exception as e:
+                if str(e) == "one or more input arrays have more columns than rows":
+                    raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
+                else:
+                    print("An error occurred:", e)
+
+        self._trace = sk_reg_results._trace
+        self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
+
+        GM_Lag_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_regimes='Skater_reg', **kwargs)
 
 
 def _test():

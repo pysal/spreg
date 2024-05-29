@@ -2,7 +2,7 @@
 Spatial Error with Heteroskedasticity family of models
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, \
+__author__ = "Luc Anselin lanselin@gmail.com, \
         Pedro V. Amaral pedro.amaral@asu.edu, \
         Daniel Arribas-Bel darribas@asu.edu, \
         David C. Folch david.folch@asu.edu \
@@ -49,7 +49,9 @@ class BaseGM_Error_Het(RegressionPropsY):
                    an additional stop condition.
     step1c       : boolean
                    If True, then include Step 1c from :cite:`Arraiz2010`.
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     betas        : array
@@ -107,7 +109,7 @@ class BaseGM_Error_Het(RegressionPropsY):
      [ 0.4118  0.168 ]]
     """
 
-    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, step1c=False):
+    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, step1c=False, hard_bound=False):
 
         self.step1c = step1c
         # 1a. OLS --> \tilde{betas}
@@ -126,6 +128,13 @@ class BaseGM_Error_Het(RegressionPropsY):
             lambda2 = UTILS.optim_moments(moments, vc1)
         else:
             lambda2 = lambda1
+
+        # Forcing the 1st step lambda to be in the range [-0.9, 0.9] to avoid perfect collinearity in step 2 in case of SLX-Error or GNS models
+        #if lambda2 > 0.9:
+        #    lambda_old = 0.9
+        #elif lambda2 < -0.9:
+        #    lambda_old = -0.9
+        #else:
         lambda_old = lambda2
 
         self.iteration, eps = 0, 1
@@ -147,6 +156,12 @@ class BaseGM_Error_Het(RegressionPropsY):
             self.iteration += 1
 
         self.iter_stop = UTILS.iter_msg(self.iteration, max_iter)
+        if hard_bound:
+            if abs(lambda3) >= 0.99:
+                raise Exception("Spatial error parameter was outside the bounds of -0.99 and 0.99")
+        else:
+            if abs(lambda3) >= 0.99:
+                set_warn(self, "Spatial error parameter was outside the bounds of -0.99 and 0.99")
 
         sigma = get_psi_sigma(w, self.u, lambda3)
         vc3 = get_vc_het(w, wA1, sigma)
@@ -197,7 +212,9 @@ class GM_Error_Het(BaseGM_Error_Het):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -354,18 +371,21 @@ class GM_Error_Het(BaseGM_Error_Het):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES (HET)"
         if slx_lags >0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # no constant
             self.title += " WITH SLX (SDEM)"
         BaseGM_Error_Het.__init__(
             self,
@@ -375,10 +395,12 @@ class GM_Error_Het(BaseGM_Error_Het):
             max_iter=max_iter,
             step1c=step1c,
             epsilon=epsilon,
+            hard_bound = hard_bound
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # constant already included
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.output = pd.DataFrame(self.name_x, columns=['var_names'])
@@ -425,7 +447,9 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
                    Note that true_inv will fail for large n.
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
 
     Attributes
     ----------
@@ -510,11 +534,22 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
         epsilon=0.00001,
         step1c=False,
         inv_method="power_exp",
+        hard_bound=False,
     ):
 
         self.step1c = step1c
         # 1a. reg --> \tilde{betas}
         tsls = TSLS.BaseTSLS(y=y, x=x, yend=yend, q=q)
+
+        if abs(tsls.betas[-1]) <= 0.9:
+            pass
+        else:
+            if tsls.betas[-1] < -0.9:
+                tsls.betas[-1] = -0.9
+            else:
+                tsls.betas[-1] = 0.9
+            tsls.u = tsls.y - spdot(tsls.z, tsls.betas)
+
         self.x, self.z, self.h, self.y = tsls.x, tsls.z, tsls.h, tsls.y
         self.yend, self.q, self.n, self.k, self.hth = (
             tsls.yend,
@@ -539,6 +574,13 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             lambda2 = UTILS.optim_moments(moments, vc1)
         else:
             lambda2 = lambda1
+
+        # Forcing the 1st step lambda to be in the range [-0.9, 0.9] to avoid perfect collinearity in step 2 in case of SLX-Error or GNS models
+        #if lambda2 > 0.9:
+        #    lambda_old = 0.9
+        #elif lambda2 < -0.9:
+        #    lambda_old = -0.9
+        #else:
         lambda_old = lambda2
 
         self.iteration, eps = 0, 1
@@ -548,6 +590,16 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             ys = UTILS.get_spFilter(w, lambda_old, self.y)
             yend_s = UTILS.get_spFilter(w, lambda_old, self.yend)
             tsls_s = TSLS.BaseTSLS(ys, xs, yend_s, h=self.h)
+
+            if abs(tsls_s.betas[-1]) <= 0.9:
+                pass
+            else:
+                if tsls_s.betas[-1] < -0.9:
+                    tsls_s.betas[-1] = -0.9
+                else:
+                    tsls_s.betas[-1] = 0.9
+                tsls_s.u = tsls_s.y - spdot(tsls_s.z, tsls_s.betas)
+
             self.predy = spdot(self.z, tsls_s.betas)
             self.u = self.y - self.predy
 
@@ -563,11 +615,29 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             )
             moments_i = UTILS._moments2eqs(wA1, w, self.u)
             lambda3 = UTILS.optim_moments(moments_i, vc2)
+
+            #if abs(lambda3) <= 0.9:
+            #    pass
+            #elif lambda3 > 0.9:
+            #    lambda3 = 0.9
+            #elif lambda3 < -0.9:
+            #    lambda3 = -0.9
+
             eps = abs(lambda3 - lambda_old)
             lambda_old = lambda3
             self.iteration += 1
 
         self.iter_stop = UTILS.iter_msg(self.iteration, max_iter)
+        if hard_bound:
+            if abs(lambda3) >= 0.99:
+                raise Exception("Spatial error parameter was outside the bounds of -0.99 and 0.99")
+            if abs(tsls_s.betas[-1]) >= 0.99:
+                raise Exception("Spatial lag parameter was outside the bounds of -0.99 and 0.99")
+        else:
+            if abs(lambda3) >= 0.99:
+                set_warn(self, "Spatial error parameter was outside the bounds of -0.99 and 0.99")
+            if abs(tsls_s.betas[-1]) >= 0.99:
+                set_warn(self, "Spatial lag parameter was outside the bounds of -0.99 and 0.99")
 
         zs = UTILS.get_spFilter(w, lambda3, self.z)
         P = get_P_hat(self, tsls.hthi, zs)
@@ -635,7 +705,9 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -827,18 +899,20 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HET)"
         if slx_lags > 0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)    # no constant
             self.title += " WITH SLX (SDEM)"
         BaseGM_Endog_Error_Het.__init__(
             self,
@@ -851,10 +925,12 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
             step1c=step1c,
             epsilon=epsilon,
             inv_method=inv_method,
+            hard_bound=hard_bound,
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # constant already included
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_z.append("lambda")  # listing lambda last
@@ -913,7 +989,9 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
                    If "power_exp", then compute inverse using the power
                    expansion. If "true_inv", then compute the true inverse.
                    Note that true_inv will fail for large n.
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
 
     Attributes
     ----------
@@ -1021,6 +1099,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
         epsilon=0.00001,
         step1c=False,
         inv_method="power_exp",
+        hard_bound=False,
     ):
 
         BaseGM_Endog_Error_Het.__init__(
@@ -1034,6 +1113,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
             step1c=step1c,
             epsilon=epsilon,
             inv_method=inv_method,
+            hard_bound=hard_bound,
         )
 
 
@@ -1102,7 +1182,9 @@ class GM_Combo_Het(BaseGM_Combo_Het):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -1315,12 +1397,14 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
 
         if slx_lags == 0:
@@ -1342,6 +1426,7 @@ class GM_Combo_Het(BaseGM_Combo_Het):
             lag_q=lag_q,
             epsilon=epsilon,
             inv_method=inv_method,
+            hard_bound=hard_bound,
         )
         self.rho = self.betas[-2]
         self.predy_e, self.e_pred, warn = UTILS.sp_att(
@@ -1349,12 +1434,15 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         )
         UTILS.set_warn(self, warn)
         self.title = "SPATIALLY WEIGHTED 2SLS- GM-COMBO MODEL (HET)"
+
         if slx_lags > 0:
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)   # no constant
             self.title += " WITH SLX (GNSM)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x   # constant already included
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend

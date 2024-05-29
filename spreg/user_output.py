@@ -189,12 +189,29 @@ def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
     if lag_q:
         names = names + name_q
     sp_inst_names = []
-    for j in names:
-        sp_inst_names.append("W_" + j)
-    if w_lags > 1:
-        for i in range(2, w_lags + 1):
-            for j in names:
-                sp_inst_names.append("W" + str(i) + "_" + j)
+    existing_names = set(names)
+    name_count = {} # Dictionary to store the count of each name
+
+    for name in names:
+        if not name.startswith("W_"):
+            name_count[name] = 2
+        else:
+            if name[2:] not in name_count:
+                name_count[name[2:]] = 2
+
+    for i in range(w_lags):
+        for name in names:
+            if name.startswith("W_"):
+                lag_name = f"W{name_count[name[2:]]}_{name[2:]}"
+                name_count[name[2:]] += 1
+            else:
+                if ("W_" + name) not in existing_names:
+                    lag_name = f"W_{name}"
+                else:
+                    lag_name = f"W{name_count[name]}_{name}"
+                    name_count[name] += 1
+            sp_inst_names.append(lag_name)
+            existing_names.add(lag_name)
     return sp_inst_names
 
 

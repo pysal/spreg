@@ -175,7 +175,7 @@ class OLS(BaseOLS):
     name_ds      : string
                    Name of dataset for use in output
     latex        : boolean
-                   Specifies if summary is to be printed in latex format
+                   Specifies if the table with the coefficients' results and their inference is to be printed in LaTeX format
 
     Attributes
     ----------
@@ -479,6 +479,7 @@ class OLS(BaseOLS):
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
+        self.slx_lags = slx_lags
         self.title = "ORDINARY LEAST SQUARES"
         if slx_lags > 0:
             self.title += " WITH SPATIALLY LAGGED X (SLX)"

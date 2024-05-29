@@ -367,13 +367,13 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
             np.array([[float(par[0]), float(par[0]) ** 2.0]]).T, moments
         )
         start = [0.0]
-        bounds = [(-1.0, 1.0)]
+        bounds = [(-0.99, 0.99)]
     if moments[0].shape[0] == 3:
         optim_par = lambda par: foptim_par(
             np.array([[float(par[0]), float(par[0]) ** 2.0, float(par[1])]]).T, moments
         )
         start = [0.0, 1.0]
-        bounds = [(-1.0, 1.0), (0.0, None)]
+        bounds = [(-0.99, 0.99), (0.0, None)]
     if moments[0].shape[1] == 4:
         optim_par = lambda par: foptim_par(
             np.array(
@@ -383,8 +383,9 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
         )
         if not start:
             start = [0.0, 1.0, 1.0]
-        bounds = [(-1.0, 1.0), (0.0, None), (0.0, None)]
+        bounds = [(-0.99, 0.99), (0.0, None), (0.0, None)]
     lambdaX = op.fmin_l_bfgs_b(optim_par, start, approx_grad=True, bounds=bounds)
+
     if all_par:
         return lambdaX[0]
     return lambdaX[0][0]
@@ -734,7 +735,7 @@ def iter_msg(iteration, max_iter):
     return iter_stop
 
 
-def sp_att(w, y, predy, w_y, rho):
+def sp_att(w, y, predy, w_y, rho, hard_bound=False):
     xb = predy - rho * w_y
     if np.abs(rho) < 1:
         predy_sp = inverse_prod(w, xb, rho)
@@ -742,11 +743,16 @@ def sp_att(w, y, predy, w_y, rho):
         # Note 1: Here if omitting pseudo-R2; If not, see Note 2.
         resid_sp = y - predy_sp
     else:
-        # warn = "Warning: Estimate for rho is outside the boundary (-1, 1). Computation of true inverse of W was required (slow)."
-        # predy_sp = inverse_prod(w, xb, rho, inv_method="true_inv")
-        warn = "*** WARNING: Estimate for spatial lag coefficient is outside the boundary (-1, 1). ***"
-        predy_sp = np.zeros(y.shape, float)
-        resid_sp = np.zeros(y.shape, float)
+        if hard_bound:
+            raise Exception(
+                "Spatial autoregressive parameter is outside the maximum/minimum bounds."
+            )
+        else:
+            # warn = "Warning: Estimate for rho is outside the boundary (-1, 1). Computation of true inverse of W was required (slow)."
+            # predy_sp = inverse_prod(w, xb, rho, inv_method="true_inv")
+            warn = "*** WARNING: Estimate for spatial lag coefficient is outside the boundary (-1, 1). ***"
+            predy_sp = np.zeros(y.shape, float)
+            resid_sp = np.zeros(y.shape, float)
     # resid_sp = y - predy_sp #Note 2: Here if computing true inverse; If not,
     # see Note 1.
     return predy_sp, resid_sp, warn
@@ -789,6 +795,56 @@ def RegressionProps_basic(
     if vm is not None:
         reg.vm = vm
 
+def optim_k(trace, window_size=None):
+    """
+    Finds optimal number of regimes for the endogenous spatial regimes model
+    using a method adapted from Mojena (1977)'s Rule Two.
+
+    Parameters
+    ----------
+    trace      : list
+                    List of SSR values for different number of regimes
+    window_size : integer
+                    Size of the window to be used in the moving average
+                    (Defaults to N//4)
+    Returns
+    -------
+    i+window_size : integer
+                    Optimal number of regimes
+
+    Examples
+    --------
+    >>> import libpysal as ps
+    >>> import numpy as np
+    >>> import spreg
+    >>> data = ps.io.open(ps.examples.get_path('NAT.dbf'))
+    >>> y = np.array(data.by_col('HR90')).reshape((-1,1))
+    >>> x_var = ['PS90','UE90']
+    >>> x = np.array([data.by_col(name) for name in x_var]).T
+    >>> w = ps.weights.Queen.from_shapefile(ps.examples.get_path("NAT.shp"))
+    >>> x_std = (x - np.mean(x,axis=0)) / np.std(x,axis=0)
+    >>> reg = spreg.Skater_reg().fit(20, w, x_std, {'reg':spreg.OLS,'y':y,'x':x}, quorum=100, trace=True)
+    >>> spreg.utils.optim_k([reg._trace[i][1][2] for i in range(1, len(reg._trace))])
+    9
+
+
+    """
+
+    N = len(trace)
+    if not window_size:
+        window_size = N//4 # Mojena suggests from 70% to 90%
+    std_dev = [np.std(trace[i:i+window_size]) for i in range(N - window_size + 1)]
+    ma = np.convolve(trace, np.ones(window_size)/window_size, mode='valid')
+    treshold = [True]
+    i = 0
+    while treshold[-1] and i < (N - window_size):
+        b = (6/(window_size*(window_size*window_size-1))
+            )*((2*np.sum(np.arange(1, i+2)*trace[window_size-1:i+window_size])
+            )-((window_size+1)*np.sum(trace[window_size-1:i+window_size])))
+        l = (window_size-1)*b/2
+        treshold.append(trace[i+window_size] < ma[i] - b - l - 2.75*std_dev[i])
+        i += 1
+    return i+window_size
 
 def _test():
     import doctest

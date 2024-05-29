@@ -9,11 +9,11 @@ import multiprocessing as mp
 import pandas as pd
 from . import regimes as REGI
 from . import user_output as USER
-from .utils import set_warn, RegressionProps_basic, spdot, RegressionPropsY, get_lags
+from .utils import set_warn, RegressionProps_basic, spdot, RegressionPropsY, get_lags, optim_k
 from .ols import BaseOLS
 from .robust import hac_multi
 from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top
-
+from .skater_reg import Skater_reg
 
 class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     """
@@ -447,6 +447,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         else:
             USER.check_weights(w, y, w_required=False)
         set_warn(self, warn)
+        self.slx_lags = slx_lags
         self.name_x_r = USER.set_name_x(name_x, x_constant)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -529,7 +530,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 self.other_mid += _nonspat_mid(self, white_test=white_test)
                 self.other_top += _nonspat_top(self)
             if spat_diag:
-                other_end += _spat_diag_out(self, w, 'ols', moran=moran)
+                other_end += _spat_diag_out(self, w, 'ols', moran=moran) #Must decide what to do with W.
             output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _ols_regimes_multi(
@@ -666,7 +667,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         other_end = ""
         if spat_diag:
             self._get_spat_diag_props(x_constant, sig2n_k)
-            other_end += _spat_diag_out(self, w, 'ols', moran=moran)
+            #other_end += _spat_diag_out(self, w, 'ols', moran=moran) Need to consider W before implementing
         output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _get_spat_diag_props(self, x, sig2n_k):
@@ -705,6 +706,43 @@ def _work(
         model.w = w_r
     return model
 
+
+class OLS_Endog_Regimes(OLS_Regimes):
+    def __init__(
+        self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
+
+        n = USER.check_arrays(y, x)
+        y = USER.check_y(y, n)
+        USER.check_weights(w, y, w_required=True)
+
+        # Standardize the variables
+        x_std = (x - np.mean(x, axis=0)) / np.std(x, axis=0)
+
+        if not n_clusters:
+            if quorum < 0:
+                quorum = np.max([(x.shape[1]+1)*10, 30])
+            n_clusters_opt = x.shape[0]*0.70//quorum
+            if n_clusters_opt < 2:
+                raise ValueError(
+                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation.")
+            sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseOLS,'y':y,'x':x}, quorum=quorum, trace=True)
+            n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
+            self.clusters = sk_reg_results._trace[n_clusters-1][0]
+        else:
+            try:
+                # Call the Skater_reg method based on OLS
+                sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseOLS,'y':y,'x':x}, quorum=quorum, trace=trace)
+                self.clusters = sk_reg_results.current_labels_
+            except Exception as e:
+                if str(e) == "one or more input arrays have more columns than rows":
+                    raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
+                else:
+                    print("An error occurred:", e)
+
+        self._trace = sk_reg_results._trace
+        self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
+
+        OLS_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_regimes='Skater_reg', **kwargs)
 
 def _test():
     import doctest

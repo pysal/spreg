@@ -102,7 +102,9 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -332,6 +334,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         name_ds=None,
         name_regimes=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x)
@@ -380,6 +383,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     vm,
                     name_x,
                     latex,
+                    hard_bound,
                 )
             else:
                 raise Exception(
@@ -412,7 +416,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
             # 1b. GM --> \tilde{\rho}
             moments = moments_hom(w.sparse, wA1, wA2, ols.u)
-            lambda1 = optim_moments(moments)
+            lambda1 = optim_moments(moments, hard_bound=hard_bound)
             lambda_old = lambda1
 
             self.iteration, eps = 0, 1
@@ -430,7 +434,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 # 2b. GM 2nd iteration --> \hat{\rho}
                 moments = moments_hom(w.sparse, wA1, wA2, self.u)
                 psi = get_vc_hom(w.sparse, wA1, wA2, self, lambda_old)[0]
-                lambda2 = optim_moments(moments, psi)
+                lambda2 = optim_moments(moments, psi, hard_bound=hard_bound)
                 eps = abs(lambda2 - lambda_old)
                 lambda_old = lambda2
                 self.iteration += 1
@@ -461,7 +465,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _error_hom_regimes_multi(
-        self, y, x, regimes, w, slx_lags, cores, max_iter, epsilon, A1, cols2regi, vm, name_x, latex):
+        self, y, x, regimes, w, slx_lags, cores, max_iter, epsilon, A1, cols2regi, vm, name_x, latex, hard_bound):
 
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
@@ -499,6 +503,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                         self.name_w,
                         self.name_regimes,
                         slx_lags,
+                        hard_bound,
                     ),
                 )
             else:
@@ -518,6 +523,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                         self.name_w,
                         self.name_regimes,
                         slx_lags,
+                        hard_bound,
                     )
                 )
 
@@ -665,7 +671,9 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -943,6 +951,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         summ=True,
         add_lag=False,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
@@ -999,6 +1008,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     name_q,
                     add_lag,
                     latex,
+                    hard_bound,
                 )
             else:
                 raise Exception(
@@ -1046,7 +1056,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
             # 1b. GM --> \tilde{\rho}
             moments = moments_hom(w.sparse, wA1, wA2, tsls.u)
-            lambda1 = optim_moments(moments)
+            lambda1 = optim_moments(moments, hard_bound=hard_bound)
             lambda_old = lambda1
 
             self.iteration, eps = 0, 1
@@ -1073,7 +1083,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 # 2b. GM 2nd iteration --> \hat{\rho}
                 moments = moments_hom(w.sparse, wA1, wA2, self.u)
                 psi = get_vc_hom(w.sparse, wA1, wA2, self, lambda_old, tsls_s.z)[0]
-                lambda2 = optim_moments(moments, psi)
+                lambda2 = optim_moments(moments, psi, hard_bound=hard_bound)
                 eps = abs(lambda2 - lambda_old)
                 lambda_old = lambda2
                 self.iteration += 1
@@ -1129,6 +1139,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         name_q,
         add_lag,
         latex,
+        hard_bound,
     ):
 
         regi_ids = dict(
@@ -1177,6 +1188,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                         self.name_regimes,
                         add_lag,
                         slx_lags,
+                        hard_bound,
                     ),
                 )
             else:
@@ -1201,6 +1213,7 @@ class GM_Endog_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                         self.name_regimes,
                         add_lag,
                         slx_lags,
+                        hard_bound,
                     )
                 )
 
@@ -1381,7 +1394,9 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -1689,6 +1704,7 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
         name_ds=None,
         name_regimes=None,
         latex=False,
+        hard_bound=False,
     ):
 
         if regime_lag_sep and not regime_err_sep:
@@ -1771,6 +1787,7 @@ class GM_Combo_Hom_Regimes(GM_Endog_Error_Hom_Regimes):
             summ=False,
             add_lag=add_lag,
             latex=latex,
+            hard_bound=hard_bound,
         )
 
         if regime_err_sep != True:
@@ -1805,12 +1822,13 @@ def _work_error(
     name_w,
     name_regimes,
     slx_lags,
+    hard_bound,
 ):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
     model = BaseGM_Error_Hom(
-        y_r, x_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1
+        y_r, x_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1, hard_bound=hard_bound,
     )
     set_warn(model, warn)
     model.w = w_r
@@ -1846,6 +1864,7 @@ def _work_endog_error(
     name_regimes,
     add_lag,
     slx_lags,
+    hard_bound,
 ):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
@@ -1861,7 +1880,7 @@ def _work_endog_error(
         )
     x_constant = USER.check_constant(x_r)
     model = BaseGM_Endog_Error_Hom(
-        y_r, x_r, yend_r, q_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1
+        y_r, x_r, yend_r, q_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, A1=A1, hard_bound=hard_bound,
     )
     set_warn(model, warn)
     if add_lag != False:

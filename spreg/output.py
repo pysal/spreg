@@ -5,6 +5,7 @@ __author__ = "Luc Anselin, Pedro V. Amaral"
 import textwrap as TW
 import numpy as np
 import pandas as pd
+import math
 from . import diagnostics as diagnostics
 from . import diagnostics_tsls as diagnostics_tsls
 from . import diagnostics_sp as diagnostics_sp
@@ -16,8 +17,6 @@ __all__ = []
 ###############################################################################
 
 def output(reg, vm, other_end=False, robust=False, latex=False):
-    if latex:
-        print("Warning: Latex output not implemented yet. Using standard output instead.")
     strSummary = output_start(reg)
     for eq in reg.output['equation'].unique():
         try:
@@ -26,7 +25,7 @@ def output(reg, vm, other_end=False, robust=False, latex=False):
         except:
             eq = None
             strSummary, reg = out_part_top(strSummary, reg, eq)
-        strSummary, reg = out_part_middle(strSummary, reg, robust, m=eq)
+        strSummary, reg = out_part_middle(strSummary, reg, robust, m=eq, latex=latex)
     strSummary, reg = out_part_end(strSummary, reg, vm, other_end, m=eq)
     reg.summary = strSummary
     reg.output.sort_values(by=['equation', 'regime'], inplace=True)
@@ -102,7 +101,7 @@ def out_part_top(strSummary, reg, m):
 
     return (strSummary, _reg)
 
-def out_part_middle(strSummary, reg, robust, m=None):
+def out_part_middle(strSummary, reg, robust, m=None, latex=False):
     # Middle part of summary output.
     # m = None for single models, m = 1,2,3... for multiple equation models
     if m==None:
@@ -127,27 +126,40 @@ def out_part_middle(strSummary, reg, robust, m=None):
         elif robust == "ogmm":
             strSummary += "Optimal GMM used to estimate the coefficients and the variance-covariance matrix\n"            
     strSummary += "------------------------------------------------------------------------------------\n"
-    strSummary += (
-            "            Variable     Coefficient       Std.Error     %1s-Statistic     Probability\n"
-            % (_reg.__summary["summary_zt"])
-    )
-    strSummary += "------------------------------------------------------------------------------------\n"
+    
     m_output = reg.output[reg.output['equation'] == m]
-    for row in m_output.iloc[np.lexsort((m_output.index, m_output['regime']))].itertuples():
-        try:
-            strSummary += "%20s    %12.5f    %12.5f    %12.5f    %12.5f\n" % (
-                row.var_names,
-                row.coefficients,
-                row.std_err,
-                row.zt_stat,
-                row.prob
-            )
-        except TypeError:  # special case for models that do not have inference on the lambda term
-            strSummary += "%20s    %12.5f    \n" % (
-                row.var_names,
-                row.coefficients
-            )
-    strSummary += "------------------------------------------------------------------------------------\n"
+    if latex:
+        df_1 = m_output.iloc[np.lexsort((m_output.index, m_output['regime']))]
+        df_2 = df_1.loc[:, ['var_names', 'coefficients', 'std_err', 'zt_stat', 'prob']]
+        df_2 = df_2.set_axis(['Variable', 'Coefficient', 'Std.Error', _reg.__summary['summary_zt']+'-Statistic', 'Prob.'], axis='columns', copy=False)
+        cols = df_2.columns.difference(['Variable'])
+        df_2[cols] = df_2[cols].astype(float).map(lambda x: "%12.5f" % x)
+        df_2['Variable'] = df_2['Variable'].str.replace("_", "\_").str.replace("%", "\%")
+        df_inlatex = df_2.style.hide(axis='index').to_latex(hrules=True)
+        strSummary += df_inlatex
+        strSummary += "------------------------------------------------------------------------------------\n"
+    else: 
+        strSummary += (
+                "            Variable     Coefficient       Std.Error     %1s-Statistic     Probability\n"
+                % (_reg.__summary["summary_zt"])
+        )
+        strSummary += "------------------------------------------------------------------------------------\n"
+
+        for row in m_output.iloc[np.lexsort((m_output.index, m_output['regime']))].itertuples():
+            try:
+                strSummary += "%20s    %12.5f    %12.5f    %12.5f    %12.5f\n" % (
+                    row.var_names,
+                    row.coefficients,
+                    row.std_err,
+                    row.zt_stat,
+                    row.prob
+                )
+            except TypeError:  # special case for models that do not have inference on the lambda term
+                strSummary += "%20s    %12.5f    \n" % (
+                    row.var_names,
+                    row.coefficients
+                )
+        strSummary += "------------------------------------------------------------------------------------\n"
 
     try:  # Adding info on instruments if they are present
         name_q = _reg.name_q
@@ -212,7 +224,7 @@ def _summary_chow(reg):
     name_x_r = reg.name_x_r
     joint, regi = reg.chow.joint, reg.chow.regi
     sum_text += "\n                 VARIABLE        DF        VALUE           PROB\n"
-    if reg.cols2regi == "all":
+    if reg.cols2regi == "all" or set(reg.cols2regi) == {True}:
         names_chow = name_x_r[1:]
     else:
         names_chow = [name_x_r[1:][i] for i in np.where(reg.cols2regi)[0]]
@@ -231,7 +243,7 @@ def _summary_chow(reg):
                                               'df':  reg.kr * (reg.nr - 1),
                                               'value': joint[0], 'prob': joint[1]}])], ignore_index=True)
     for row in reg.output_chow.itertuples():
-        sum_text += "%25s        %2d    %12.3f        %9.4f\n" % (
+        sum_text += "%20s             %2d   %12.3f        %9.4f\n" % (
             row.var_names,
             row.df,
             row.value,
@@ -241,73 +253,152 @@ def _summary_chow(reg):
     return sum_text
 
 
-def _spat_diag_out(reg, w, type, moran=False):
+def _spat_diag_out(reg, w, type, moran=False, ml=False):
     strSummary = "\nDIAGNOSTICS FOR SPATIAL DEPENDENCE\n"
-    if not moran:
-        strSummary += (
-            "TEST                              DF       VALUE           PROB\n"
-        )
-    else:
-        strSummary += (
-            "TEST                           MI/DF       VALUE           PROB\n"
-        )
-
     cache = diagnostics_sp.spDcache(reg, w)
     if type == "yend":
-        mi, ak, ak_p = diagnostics_sp.akTest(reg, w, cache)
-        reg.ak_test = ak, ak_p
-        strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
-            "Anselin-Kelejian Test",
-            1,
-            reg.ak_test[0],
-            reg.ak_test[1],
-        )
+        strSummary += (
+            "TEST                              DF         VALUE           PROB\n")
+        if not ml:
+            mi, ak, ak_p = diagnostics_sp.akTest(reg, w, cache)
+            reg.ak_test = ak, ak_p
+            strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "Anselin-Kelejian Test",
+                1,
+                reg.ak_test[0],
+                reg.ak_test[1],
+            )
+        if any(reg.output['var_type'] == 'rho'):
+            if reg.slx_lags == 1 and not any(reg.output['var_type'] == 'yend'):
+                wx_indices = reg.output[(reg.output['var_type'] == 'wx') & (reg.output['regime'] != '_Global')].index
+                x_indices = []
+                for m in reg.output['regime'].unique():
+                    x_indices.extend(reg.output[(reg.output['regime'] == m) & (reg.output['var_type'] == 'x')].index[1:])
+                vm_indices = x_indices + wx_indices.tolist() + reg.output[reg.output['var_type'] == 'rho'].index.tolist()
+                cft, cft_p = diagnostics_sp.comfac_test(reg.rho,
+                                                        reg.betas[x_indices],
+                                                        reg.betas[wx_indices],
+                                                        reg.vm[vm_indices, :][:, vm_indices])
+                reg.cfh_test = cft, cft_p
+                strSummary += "%-27s    %2d   %12.3f        %9.4f\n" % (
+                    "Common Factor Hypothesis Test",
+                    len(wx_indices),
+                    reg.cfh_test[0],
+                    reg.cfh_test[1],
+                )
+
     elif type == "ols":
-        lm_tests = diagnostics_sp.LMtests(reg, w)
+        strSummary += "- SARMA -\n"
+        if not moran:
+            strSummary += (
+                "TEST                              DF       VALUE           PROB\n"
+            )
+        else:
+            strSummary += (
+                "TEST                           MI/DF       VALUE           PROB\n"
+            )
+        lm_tests = diagnostics_sp.LMtests(reg, w, tests=["lme", "lml", "rlme", "rlml", "sarma"])
+        if reg.slx_lags == 0:
+            try:
+                lm_tests2 = diagnostics_sp.LMtests(reg, w, tests=["lmwx", "lmspdurbin", "rlmdurlag", "rlmwx","lmslxerr"])
+                reg.lm_wx = lm_tests2.lmwx
+                reg.lm_spdurbin = lm_tests2.lmspdurbin
+                reg.rlm_wx = lm_tests2.rlmwx
+                reg.rlm_durlag = lm_tests2.rlmdurlag
+                reg.lm_slxerr = lm_tests2.lmslxerr #currently removed. - LA reinstated
+                koley_bera = True
+            except:
+                koley_bera = False
         reg.lm_error = lm_tests.lme
         reg.lm_lag = lm_tests.lml
         reg.rlm_error = lm_tests.rlme
         reg.rlm_lag = lm_tests.rlml
         reg.lm_sarma = lm_tests.sarma
+    
+
         if moran:
             moran_res = diagnostics_sp.MoranRes(reg, w, z=True)
             reg.moran_res = moran_res.I, moran_res.zI, moran_res.p_norm
-            strSummary += "%-27s  %8.4f     %9.3f        %9.4f\n" % (
+            strSummary += "%-27s  %8.4f    %9.3f        %9.4f\n" % (
                 "Moran's I (error)",
                 reg.moran_res[0],
                 reg.moran_res[1],
                 reg.moran_res[2],
             )
-        strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+        strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
             "Lagrange Multiplier (lag)",
             1,
             reg.lm_lag[0],
             reg.lm_lag[1],
         )
-        strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+        strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
             "Robust LM (lag)",
             1,
             reg.rlm_lag[0],
             reg.rlm_lag[1],
         )
-        strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+        strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
             "Lagrange Multiplier (error)",
             1,
             reg.lm_error[0],
             reg.lm_error[1],
         )
-        strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+        strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
             "Robust LM (error)",
             1,
             reg.rlm_error[0],
             reg.rlm_error[1],
         )
-        strSummary += "%-27s      %2d    %12.3f        %9.4f\n\n" % (
+        strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
             "Lagrange Multiplier (SARMA)",
             2,
             reg.lm_sarma[0],
             reg.lm_sarma[1],
         )
+        if reg.slx_lags == 0 and koley_bera:
+            strSummary += (
+                "\n- Spatial Durbin -\nTEST                              DF       VALUE           PROB\n"
+            )
+            strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "LM test for WX",
+                reg.k-1,
+                reg.lm_wx[0],
+                reg.lm_wx[1],
+            )
+            strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "Robust LM WX test",
+                reg.k-1,
+                reg.rlm_wx[0],
+                reg.rlm_wx[1],
+            )
+            strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "Lagrange Multiplier (lag)",
+                1,
+                reg.lm_lag[0],
+                reg.lm_lag[1],
+            )
+            strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "Robust LM Lag - SDM",
+                1,
+                reg.rlm_durlag[0],
+                reg.rlm_durlag[1],
+            )
+            strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "Joint test for SDM",
+                reg.k,
+                reg.lm_spdurbin[0],
+                reg.lm_spdurbin[1],
+            )
+            #strSummary += (
+            #    "\n- Spatial Error and WX -\nTEST                              DF       VALUE           PROB\n"
+            #)
+            #strSummary += "%-27s      %2d    %12.3f        %9.4f\n\n" % (
+            #    "Joint test for Error and WX",
+            #    reg.k,
+            #    reg.lm_slxerr[0],
+            #    reg.lm_slxerr[1],
+            #)
+
     return strSummary
 
 def _nonspat_top(reg, ml=False):
@@ -376,10 +467,10 @@ def _nonspat_mid(reg, white_test=False):
 
     strSummary = "\nREGRESSION DIAGNOSTICS\n"
     if reg.mulColli:
-        strSummary += "MULTICOLLINEARITY CONDITION NUMBER %16.3f\n\n" % (reg.mulColli)
+        strSummary += "MULTICOLLINEARITY CONDITION NUMBER %15.3f\n\n" % (reg.mulColli)
     strSummary += "TEST ON NORMALITY OF ERRORS\n"
     strSummary += "TEST                             DF        VALUE           PROB\n"
-    strSummary += "%-27s      %2d  %14.3f        %9.4f\n\n" % (
+    strSummary += "%-27s      %2d %14.3f        %9.4f\n\n" % (
         "Jarque-Bera",
         reg.jarque_bera["df"],
         reg.jarque_bera["jb"],
@@ -388,13 +479,13 @@ def _nonspat_mid(reg, white_test=False):
     strSummary += "DIAGNOSTICS FOR HETEROSKEDASTICITY\n"
     strSummary += "RANDOM COEFFICIENTS\n"
     strSummary += "TEST                             DF        VALUE           PROB\n"
-    strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+    strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
         "Breusch-Pagan test",
         reg.breusch_pagan["df"],
         reg.breusch_pagan["bp"],
         reg.breusch_pagan["pvalue"],
     )
-    strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+    strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
         "Koenker-Bassett test",
         reg.koenker_bassett["df"],
         reg.koenker_bassett["kb"],
@@ -409,7 +500,7 @@ def _nonspat_mid(reg, white_test=False):
                 strSummary += (
                     "TEST                             DF        VALUE           PROB\n"
                 )
-                strSummary += "%-27s      %2d    %12.3f        %9.4f\n" % (
+                strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
                     "White",
                     reg.white["df"],
                     reg.white["wh"],
@@ -476,3 +567,33 @@ def _summary_iteration(reg):
         pass
 
     return txt
+
+def _summary_impacts(reg, spmult):
+    """
+    Spatial direct, indirect and total effects in spatial lag model.
+    Uses multipliers computed by sputils._spmultipliers.
+
+    Attributes
+    ----------
+    reg:     spreg regression object
+    spmult:    spatial multipliers as a dictionary
+
+    Returns
+    -------
+    strings with direct, indirect and total effects
+
+    """
+    variables = reg.output[reg.output['var_type'].isin(['x', 'wx', 'yend']) & (reg.output.index != 0)]
+    variables_index = variables.index
+    m1 = spmult['ati']
+    btot = m1 * reg.betas[variables_index]
+    m2 = spmult['adi']
+    bdir = m2 * reg.betas[variables_index]
+    m3 = spmult['aii']
+    bind = m3 * reg.betas[variables_index]
+    strSummary = "\nSPATIAL LAG MODEL IMPACTS\n"
+    strSummary += "            Variable         Direct        Indirect          Total\n"
+    for i in range(len(variables)):
+        strSummary += "%20s   %12.4f    %12.4f    %12.4f\n" % (
+        variables['var_names'][variables_index[i]], bdir[i][0], bind[i][0], btot[i][0])
+    return strSummary

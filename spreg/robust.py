@@ -1,5 +1,5 @@
-__author__ = "Luc Anselin luc.anselin@asu.edu, \
-        Pedro V. Amaral pedro.amaral@asu.edu, \
+__author__ = "Luc Anselin lanselin@gmail.com, \
+        Pedro V. Amaral pedrovma@gmail.com, \
         David C. Folch david.folch@asu.edu"
 
 import numpy as np

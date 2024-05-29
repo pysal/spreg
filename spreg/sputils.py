@@ -272,6 +272,64 @@ def spisfinite(a):
     return np.isfinite(a.sum())
 
 
+def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
+    """"
+    Spatial Lag Multiplier Calculation
+    Follows Kim, Phipps and Anselin (2003) (simple), and LeSage and Pace (2009) (full, power)
+
+    Attributes
+    ----------
+    w          : PySAL format spatial weights matrix
+    rho        : spatial autoregressive coefficient
+    method     : one of "simple" (default), full" or "power"
+    mtol       : tolerance for power iteration (default=0.00000001)
+
+    Returns
+    -------
+    multipliers : dictionary with
+                  ati = average total impact multiplier
+                  adi = average direct impact multiplier
+                  aii = average indirect impact multiplier
+                  pow = powers used in power approximation (otherwise 0)
+
+    """
+    multipliers = {"ati": 1.0, "adi": 1.0, "aii": 1.0}
+    multipliers["pow"] = 0
+    multipliers["ati"] = 1.0 / (1.0 - rho)
+    n = w.n
+    if method == "simple":
+        pass
+    elif method == "full":
+        wf = w.full()[0]
+        id0 = np.identity(n)
+        irw0 = (id0 - rho * wf)
+        invirw0 = np.linalg.inv(irw0)
+        adii0 = np.sum(np.diag(invirw0))
+        multipliers["adi"] = adii0 / n
+    elif method == "power":
+        wf = w.full()[0]
+        ws3 = SP.csr_array(wf)
+        rhop = rho
+        ww = ws3
+        pow = 1
+        adi = 1.0
+        adidiff = 100.00
+
+        while adidiff > mtol:
+            pow = pow + 1
+            ww = SP.csr_matrix.dot(ww, ws3)
+            trw = ww.diagonal().sum()
+            rhop = rhop * rho
+            adidiff = rhop * trw / n
+            adi = adi + adidiff
+        multipliers["adi"] = adi
+        multipliers["pow"] = pow
+    else:
+        print("Method not supported")
+    multipliers["aii"] = multipliers["ati"] - multipliers["adi"]
+    return (multipliers)
+
+
 def _test():
     import doctest
 

@@ -8,14 +8,14 @@ import numpy as np
 from . import twosls as TSLS
 from . import user_output as USER
 from .utils import set_endog, sp_att, set_warn
+from .sputils import _spmultiplier
 import pandas as pd
-from .output import output, _spat_diag_out, _spat_pseudo_r2
+from .output import output, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 
 __all__ = ["GM_Lag"]
 
 
 class BaseGM_Lag(TSLS.BaseTSLS):
-
     """
     Spatial two stage least squares (S2SLS) (note: no consistency checks,
     diagnostics or constant added); Anselin (1988) [Anselin1988]_
@@ -169,18 +169,18 @@ class BaseGM_Lag(TSLS.BaseTSLS):
     """
 
     def __init__(
-        self,
-        y,
-        x,
-        yend=None,
-        q=None,
-        w=None,
-        w_lags=1,
-        slx_lags=0,
-        lag_q=True,
-        robust=None,
-        gwk=None,
-        sig2n_k=False,
+            self,
+            y,
+            x,
+            yend=None,
+            q=None,
+            w=None,
+            w_lags=1,
+            slx_lags=0,
+            lag_q=True,
+            robust=None,
+            gwk=None,
+            sig2n_k=False,
     ):
 
         if slx_lags > 0:
@@ -195,7 +195,6 @@ class BaseGM_Lag(TSLS.BaseTSLS):
 
 
 class GM_Lag(BaseGM_Lag):
-
     """
     Spatial two stage least squares (S2SLS) with results and diagnostics;
     Anselin (1988) :cite:`Anselin1988`
@@ -238,7 +237,10 @@ class GM_Lag(BaseGM_Lag):
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     spat_diag    : boolean
-                   If True, then compute Anselin-Kelejian test
+                   If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)
+    spat_impacts : boolean
+                   If True, include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -258,7 +260,9 @@ class GM_Lag(BaseGM_Lag):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the bounds of -1 and 1.
     Attributes
     ----------
     output       : dataframe
@@ -323,6 +327,9 @@ class GM_Lag(BaseGM_Lag):
     ak_test      : tuple
                    Anselin-Kelejian test; tuple contains the pair (statistic,
                    p-value)
+    cfh_test     : tuple
+                   Common Factor Hypothesis test; tuple contains the pair (statistic,
+                   p-value). Only when it applies (see specific documentation).
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -485,28 +492,30 @@ class GM_Lag(BaseGM_Lag):
     """
 
     def __init__(
-        self,
-        y,
-        x,
-        yend=None,
-        q=None,
-        w=None,
-        w_lags=1,
-        lag_q=True,
-        slx_lags=0,
-        robust=None,
-        gwk=None,
-        sig2n_k=False,
-        spat_diag=False,
-        vm=False,
-        name_y=None,
-        name_x=None,
-        name_yend=None,
-        name_q=None,
-        name_w=None,
-        name_gwk=None,
-        name_ds=None,
-        latex=False,
+            self,
+            y,
+            x,
+            yend=None,
+            q=None,
+            w=None,
+            w_lags=1,
+            lag_q=True,
+            slx_lags=0,
+            robust=None,
+            gwk=None,
+            sig2n_k=False,
+            spat_diag=True,
+            spat_impacts=True,
+            vm=False,
+            name_y=None,
+            name_x=None,
+            name_yend=None,
+            name_q=None,
+            name_w=None,
+            name_gwk=None,
+            name_ds=None,
+            latex=False,
+            hard_bound=False,
     ):
 
         n = USER.check_arrays(x, yend, q)
@@ -514,15 +523,16 @@ class GM_Lag(BaseGM_Lag):
         USER.check_weights(w, y, w_required=True)
         USER.check_robust(robust, gwk)
         if robust == "hac" and spat_diag:
-                set_warn(
-                    self,
-                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
-                )
-                spat_diag = False
+            set_warn(
+                self,
+                "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+            )
+            spat_diag = False
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # need to check for None and set defaults
 
         if slx_lags > 0:
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
 
         set_warn(self, warn)
         BaseGM_Lag.__init__(
@@ -541,7 +551,7 @@ class GM_Lag(BaseGM_Lag):
         )
         self.rho = self.betas[-1]
         self.predy_e, self.e_pred, warn = sp_att(
-            w, self.y, self.predy, self.yend[:, -1].reshape(self.n, 1), self.rho
+            w, self.y, self.predy, self.yend[:, -1].reshape(self.n, 1), self.rho, hard_bound=hard_bound
         )
         set_warn(self, warn)
         self.title = "SPATIAL TWO STAGE LEAST SQUARES"
@@ -549,34 +559,42 @@ class GM_Lag(BaseGM_Lag):
             self.title += " WITH SLX (SPATIAL DURBIN MODEL)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)   # name_x contains SLX terms for slx_lags > 0
+        #        self.name_x = USER.set_name_x(name_x, x_constant)   # name_x contains SLX terms for slx_lags > 0
+        self.name_x = name_x  # already contains constant in new setup
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend
         self.name_q = USER.set_name_q(name_q, q)
         if slx_lags > 0:  # need to remove all but last SLX variables from name_x
             self.name_x0 = []
-            self.name_x0.append(self.name_x[0])   # constant
-#            print(f"x0 first {self.name_x0}")
-            kx = int((self.k -self.kstar -1)/(slx_lags +1) )   # number of original exogenous vars
+            self.name_x0.append(self.name_x[0])  # constant
+            kx = int((self.k - self.kstar - 1) / (slx_lags + 1))  # number of original exogenous vars
             self.name_x0.extend(self.name_x[-kx:])
-#            print(f"in here {self.name_x0}")
             self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
+            var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
         else:
             self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+            var_types = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho']
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
+        self.slx_lags = slx_lags
         self.output = pd.DataFrame(self.name_x + self.name_yend, columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend)-1) + ['rho']
+        self.output['var_type'] = var_types
         self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _spat_pseudo_r2(self)
+        diag_out = None
         if spat_diag:
             diag_out = _spat_diag_out(self, w, 'yend')
-        else:
-            diag_out = None
+        if spat_impacts and slx_lags == 0:
+            impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+            try:
+                diag_out += impacts
+            except TypeError:
+                diag_out = impacts
         output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
+
 
 def _test():
     import doctest

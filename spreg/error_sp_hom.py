@@ -4,7 +4,7 @@ Following: :cite:`Anselin2011`
 
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, Daniel Arribas-Bel darribas@asu.edu"
+__author__ = "Luc Anselin lanselin@gmail.com, Daniel Arribas-Bel darribas@asu.edu"
 
 from scipy import sparse as SP
 import numpy as np
@@ -50,7 +50,9 @@ class BaseGM_Error_Hom(RegressionPropsY):
                    If A1='hom', then as in :cite:`Anselin2011` (default).  If
                    A1='hom_sc' (default), then as in :cite:`Drukker2013`
                    and :cite:`Drukker:2013aa`.
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     betas        : array
@@ -117,7 +119,7 @@ class BaseGM_Error_Hom(RegressionPropsY):
      [ -2.40000000e-03   3.00000000e-04  -1.00000000e-04   3.37000000e-02]]
     """
 
-    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, A1="hom_sc"):
+    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, A1="hom_sc", hard_bound=False):
         if A1 == "hom":
             wA1 = get_A1_hom(w)
         elif A1 == "hom_sc":
@@ -133,7 +135,7 @@ class BaseGM_Error_Hom(RegressionPropsY):
 
         # 1b. GM --> \tilde{\rho}
         moments = moments_hom(w, wA1, wA2, ols.u)
-        lambda1 = optim_moments(moments)
+        lambda1 = optim_moments(moments, hard_bound=hard_bound)
         lambda_old = lambda1
 
         self.iteration, eps = 0, 1
@@ -148,7 +150,7 @@ class BaseGM_Error_Hom(RegressionPropsY):
             # 2b. GM 2nd iteration --> \hat{\rho}
             moments = moments_hom(w, wA1, wA2, self.u)
             psi = get_vc_hom(w, wA1, wA2, self, lambda_old)[0]
-            lambda2 = optim_moments(moments, psi)
+            lambda2 = optim_moments(moments, psi, hard_bound=hard_bound)
             eps = abs(lambda2 - lambda_old)
             lambda_old = lambda2
             self.iteration += 1
@@ -206,7 +208,9 @@ class GM_Error_Hom(BaseGM_Error_Hom):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -357,18 +361,21 @@ class GM_Error_Hom(BaseGM_Error_Hom):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES (HOM)"
         if slx_lags >0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
             self.title += " WITH SLX (SDEM)"        
         BaseGM_Error_Hom.__init__(
             self,
@@ -378,10 +385,12 @@ class GM_Error_Hom(BaseGM_Error_Hom):
             A1=A1,
             max_iter=max_iter,
             epsilon=epsilon,
+            hard_bound=hard_bound
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # constant already included
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.A1 = A1
@@ -429,7 +438,9 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
                    al. If A1='hom', then as in :cite:`Anselin2011`.  If
                    A1='hom_sc' (default), then as in :cite:`Drukker2013`
                    and :cite:`Drukker:2013aa`.
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     betas        : array
@@ -505,7 +516,7 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
 
     """
 
-    def __init__(self, y, x, yend, q, w, max_iter=1, epsilon=0.00001, A1="hom_sc"):
+    def __init__(self, y, x, yend, q, w, max_iter=1, epsilon=0.00001, A1="hom_sc", hard_bound=False):
 
         if A1 == "hom":
             wA1 = get_A1_hom(w)
@@ -529,7 +540,7 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
 
         # 1b. GM --> \tilde{\rho}
         moments = moments_hom(w, wA1, wA2, tsls.u)
-        lambda1 = optim_moments(moments)
+        lambda1 = optim_moments(moments, hard_bound=hard_bound)
         lambda_old = lambda1
 
         self.iteration, eps = 0, 1
@@ -545,7 +556,7 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
             # 2b. GM 2nd iteration --> \hat{\rho}
             moments = moments_hom(w, wA1, wA2, self.u)
             psi = get_vc_hom(w, wA1, wA2, self, lambda_old, tsls_s.z)[0]
-            lambda2 = optim_moments(moments, psi)
+            lambda2 = optim_moments(moments, psi, hard_bound=hard_bound)
             eps = abs(lambda2 - lambda_old)
             lambda_old = lambda2
             self.iteration += 1
@@ -614,7 +625,9 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -806,18 +819,21 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HOM)"
         if slx_lags > 0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
             self.title += " WITH SLX (SDEM)"
         BaseGM_Endog_Error_Hom.__init__(
             self,
@@ -829,10 +845,12 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
             A1=A1,
             max_iter=max_iter,
             epsilon=epsilon,
+            hard_bound=hard_bound,
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # already includes constant
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_z.append("lambda")  # listing lambda last
@@ -891,7 +909,9 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
                    al. If A1='hom', then as in :cite:`Anselin2011`.  If
                    A1='hom_sc' (default), then as in :cite:`Drukker2013`
                    and :cite:`Drukker:2013aa`.
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
 
     Attributes
     ----------
@@ -1003,6 +1023,7 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
         max_iter=1,
         epsilon=0.00001,
         A1="hom_sc",
+        hard_bound=False,
     ):
 
         BaseGM_Endog_Error_Hom.__init__(
@@ -1015,6 +1036,7 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
             A1=A1,
             max_iter=max_iter,
             epsilon=epsilon,
+            hard_bound=hard_bound,
         )
 
 
@@ -1082,7 +1104,9 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -1291,12 +1315,14 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         if slx_lags == 0:
             yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
@@ -1315,6 +1341,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
             lag_q=lag_q,
             max_iter=max_iter,
             epsilon=epsilon,
+            hard_bound=hard_bound,
         )
         self.rho = self.betas[-2]
         self.predy_e, self.e_pred, warn = sp_att(
@@ -1323,11 +1350,13 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         set_warn(self, warn)
         self.title = "SPATIALLY WEIGHTED 2SLS- GM-COMBO MODEL (HOM)"
         if slx_lags > 0:
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
             self.title += " WITH SLX (GNSM)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # constant already included
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend

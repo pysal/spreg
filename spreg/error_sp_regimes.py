@@ -80,7 +80,9 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -562,7 +564,9 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -1200,7 +1204,9 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -1654,6 +1660,9 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     **kwargs     : keywords
                    Additional arguments to pass on to the estimators. 
                    See the specific functions for details on what can be used.

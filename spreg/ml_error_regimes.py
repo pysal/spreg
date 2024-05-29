@@ -83,7 +83,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
     name_regimes : string
                    Name of regimes variable for use in output
     latex        : boolean
-                   Specifies if summary is to be printed in latex format
+                   Specifies if the table with the coefficients' results and their inference is to be printed in LaTeX format
 
     Attributes
     ----------

@@ -159,7 +159,6 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
         hthi = la.inv(hth)
         zth = spdot(z.T, h)
         hty = spdot(h.T, y)
-
         factor_1 = np.dot(zth, hthi)
         factor_2 = np.dot(factor_1, zth.T)
         # this one needs to be in cache to be used in AK

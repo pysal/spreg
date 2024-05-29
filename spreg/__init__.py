@@ -2,6 +2,7 @@
 import contextlib
 from importlib.metadata import PackageNotFoundError, version
 
+from .dgp import *
 from .diagnostics import *
 from .diagnostics_panel import *
 from .diagnostics_sp import *
