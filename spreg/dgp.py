@@ -11,8 +11,9 @@ import numpy as np
 import math
 import libpysal
 from scipy.linalg import expm
-import spreg
-    
+from .utils import inverse_prod
+
+
 __all__ = [
     "make_error",
     "make_x",
@@ -327,7 +328,7 @@ def dgp_errproc(u,w,lam=0.5,model='sar',imethod='power_exp'):
         print("Error: incompatible weights dimensions")
         return None
     if model == 'sar':
-        y = spreg.utils.inverse_prod(w,u,lam,inv_method=imethod)
+        y = inverse_prod(w,u,lam,inv_method=imethod)
     elif model == 'ma':
         y = u + lam * libpysal.weights.lag_spatial(w,u)
     else:
@@ -468,7 +469,7 @@ def dgp_sperror(u,xb,w,lam=0.5,model='sar',imethod='power_exp'):
         print("Error: incompatible weights dimensions")
         return None
     if model == 'sar':
-        u1 = spreg.utils.inverse_prod(w,u,lam,inv_method=imethod)
+        u1 = inverse_prod(w,u,lam,inv_method=imethod)
     elif model == 'ma':
         u1 = u + lam * libpysal.weights.lag_spatial(w,u)
     else:
@@ -532,7 +533,7 @@ def dgp_slxerror(u,xb,wxg,w,lam=0.5,model='sar',imethod='power_exp'):
         print("Error: incompatible weights dimensions")
         return None
     if model == 'sar':
-        u1 = spreg.utils.inverse_prod(w,u,lam,inv_method=imethod)
+        u1 = inverse_prod(w,u,lam,inv_method=imethod)
     elif model == 'ma':
         u1 = u + lam * libpysal.weights.lag_spatial(w,u)
     else:
@@ -587,7 +588,7 @@ def dgp_lag(u,xb,w,rho=0.5,imethod='power_exp'):
         print("Error: incompatible weights dimensions")
         return None
     y1 = xb + u
-    y = spreg.utils.inverse_prod(w,y1,rho,inv_method=imethod)
+    y = inverse_prod(w,y1,rho,inv_method=imethod)
     return y
     
 def dgp_spdurbin(u,xb,wxg,w,rho=0.5,imethod='power_exp'):
@@ -642,7 +643,7 @@ def dgp_spdurbin(u,xb,wxg,w,rho=0.5,imethod='power_exp'):
     if w.n != n1:
         print("Error: incompatible weights dimensions")
     y1 = xb + wxg + u
-    y = spreg.utils.inverse_prod(w,y1,rho,inv_method=imethod)
+    y = inverse_prod(w,y1,rho,inv_method=imethod)
     return y
     
 def dgp_lagerr(u,xb,w,rho=0.5,lam=0.2,model='sar',imethod='power_exp'):
@@ -695,14 +696,14 @@ def dgp_lagerr(u,xb,w,rho=0.5,lam=0.2,model='sar',imethod='power_exp'):
         print("Error: incompatible weights dimensions")
         return None
     if model == 'sar':
-        u1 = spreg.utils.inverse_prod(w,u,lam,inv_method=imethod)
+        u1 = inverse_prod(w,u,lam,inv_method=imethod)
     elif model == 'ma':
         u1 = u + lam * libpysal.weights.lag_spatial(w,u)
     else:
         print("Error: unsupported model type")
         return None
     y1 = xb + u1
-    y = spreg.utils.inverse_prod(w,y1,rho,inv_method=imethod)
+    y = inverse_prod(w,y1,rho,inv_method=imethod)
     return y
     
 def dgp_gns(u,xb,wxg,w,rho=0.5,lam=0.2,model='sar',imethod='power_exp'):
@@ -761,14 +762,14 @@ def dgp_gns(u,xb,wxg,w,rho=0.5,lam=0.2,model='sar',imethod='power_exp'):
     if w.n != n1:
         print("Error: incompatible weights dimensions")
     if model == 'sar':
-        u1 = spreg.utils.inverse_prod(w,u,lam,inv_method=imethod)
+        u1 = inverse_prod(w,u,lam,inv_method=imethod)
     elif model == 'ma':
         u1 = u + lam * libpysal.weights.lag_spatial(w,u)
     else:
         print("Error: unsupported model type")
         return None
     y1 = xb + wxg + u1
-    y = spreg.utils.inverse_prod(w,y1,rho,inv_method=imethod)
+    y = inverse_prod(w,y1,rho,inv_method=imethod)
     return y
     
 def dgp_mess(u,xb,w,rho=0.5):
