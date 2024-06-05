@@ -135,7 +135,7 @@ class GM_Error(BaseGM_Error):
                    Spatial weights object (always needed)
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -307,7 +307,7 @@ class GM_Error(BaseGM_Error):
             x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
-            self.title += " WITH SLX (SDEM)"
+            self.title += " WITH SLX (SLX-Error)"
         
         BaseGM_Error.__init__(self, y=y, x=x_constant, w=w.sparse, hard_bound=hard_bound)
         self.name_ds = USER.set_name_ds(name_ds)
@@ -459,7 +459,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
                    Spatial weights object (always needed)
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -671,7 +671,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
             x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-            self.title += " WITH SLX (SDEM)"        
+            self.title += " WITH SLX (SLX-Error)"        
         BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q, hard_bound=hard_bound)
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
@@ -1029,7 +1029,7 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
                    If True, then a spatial lag of the dependent variable is included.           
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM or GNSM type.             
+                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type.             
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results

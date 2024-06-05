@@ -188,7 +188,7 @@ class GM_Error_Het(BaseGM_Error_Het):
                    Spatial weights object
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Note: epsilon provides an additional
@@ -386,7 +386,7 @@ class GM_Error_Het(BaseGM_Error_Het):
             x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # no constant
-            self.title += " WITH SLX (SDEM)"
+            self.title += " WITH SLX (SLX-Error)"
         BaseGM_Error_Het.__init__(
             self,
             y,
@@ -673,7 +673,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                    Spatial weights object
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional
@@ -913,7 +913,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)    # no constant
-            self.title += " WITH SLX (SDEM)"
+            self.title += " WITH SLX (SLX-Error)"
         BaseGM_Endog_Error_Het.__init__(
             self,
             y=y,

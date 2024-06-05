@@ -313,7 +313,7 @@ class ML_Error(BaseML_Error):
                    Spatial weights sparse matrix
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.                   
+                   If slx_lags>0, the specification becomes of the SLX-Error type.                   
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -493,7 +493,7 @@ class ML_Error(BaseML_Error):
             x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
-            self.title += " WITH SLX (SDEM)"
+            self.title += " WITH SLX (SLX-Error)"
         self.title += " (METHOD = " + method + ")"
 
         method = method.upper()

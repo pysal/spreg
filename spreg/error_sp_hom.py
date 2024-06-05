@@ -182,7 +182,7 @@ class GM_Error_Hom(BaseGM_Error_Hom):
                    Spatial weights object
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from :cite:`Arraiz2010`.
                    Note: epsilon provides an additional stop condition.
@@ -376,7 +376,7 @@ class GM_Error_Hom(BaseGM_Error_Hom):
             x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-            self.title += " WITH SLX (SDEM)"        
+            self.title += " WITH SLX (SLX-Error)"        
         BaseGM_Error_Hom.__init__(
             self,
             y=y,
@@ -595,7 +595,7 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
                    Spatial weights object
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.                   
+                   If slx_lags>0, the specification becomes of the SLX-Error type.                   
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
@@ -834,7 +834,7 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
             x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-            self.title += " WITH SLX (SDEM)"
+            self.title += " WITH SLX (SLX-Error)"
         BaseGM_Endog_Error_Hom.__init__(
             self,
             y=y,

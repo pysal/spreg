@@ -67,7 +67,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     Always False, kept for consistency, ignored.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from Arraiz
                    et al. Note: epsilon provides an additional stop condition.
@@ -438,7 +438,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             if slx_lags == 0:
                 self.title = "GM SPATIALLY WEIGHTED MODEL (HET) - REGIMES"
             else:
-                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (SDEM-HET) - REGIMES"            
+                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (Error-HET) - REGIMES"            
             
             self.name_x.append("lambda")
             self.kf += 1
@@ -626,7 +626,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                      Always False, kept for consistency, ignored.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
@@ -1121,7 +1121,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 if slx_lags == 0:
                     self.title = ("GM SPATIALLY WEIGHTED 2SLS (HET) - REGIMES")
                 else:
-                    self.title = ("GM SPATIALLY WEIGHTED 2SLS + SLX (SDEM-HET) - REGIMES")
+                    self.title = ("GM SPATIALLY WEIGHTED 2SLS + SLX (Error-HET) - REGIMES")
                 output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _endog_error_het_regimes_multi(
@@ -1837,7 +1837,7 @@ def _work_error(
     if slx_lags == 0:
         model.title = "GM SPATIALLY WEIGHTED LS (HET) - REGIME %s" % r
     else:
-        model.title = "GM SPATIALLY WEIGHTED LS + SLX (SDEM-HET) - REGIME %s" % r
+        model.title = "GM SPATIALLY WEIGHTED LS + SLX (Error-HET) - REGIME %s" % r
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
@@ -1910,7 +1910,7 @@ def _work_endog_error(
         if add_lag != False:
             model.title = "GM SPATIAL COMBO MODEL + SLX (GNSM-HET) - REGIME %s" % r   
         else:
-            model.title = "GM SPATIALLY WEIGHTED 2SLS + SLX (SDEM-HET) - REGIME %s" % r
+            model.title = "GM SPATIALLY WEIGHTED 2SLS + SLX (Error-HET) - REGIME %s" % r
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
