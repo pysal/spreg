@@ -596,7 +596,7 @@ class ML_Lag(BaseML_Lag):
         epsilon=0.0000001,
         spat_impacts=True,
         vm=False,
-        spat_diag=False,
+        spat_diag=True,
         name_y=None,
         name_x=None,
         name_w=None,
