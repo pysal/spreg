@@ -322,7 +322,7 @@ def _moments2eqs(A1, s, u):
     return [G, g]
 
 
-def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
+def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None, hard_bound=False):
     """
     Optimization of moments
     ...
@@ -341,7 +341,10 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
                   solution or just the 1st. Default is 1st only.
     start       : list
                   List with initial values for the optimization
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
+                   
     Returns
     -------
     x, f, d     : tuple
@@ -385,6 +388,10 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None):
             start = [0.0, 1.0, 1.0]
         bounds = [(-0.99, 0.99), (0.0, None), (0.0, None)]
     lambdaX = op.fmin_l_bfgs_b(optim_par, start, approx_grad=True, bounds=bounds)
+
+    if hard_bound:
+        if abs(lambdaX[0][0]) >= 0.99:
+            raise Exception("Spatial parameter was outside the bounds of -0.99 and 0.99")
 
     if all_par:
         return lambdaX[0]

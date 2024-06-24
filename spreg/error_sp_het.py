@@ -129,12 +129,6 @@ class BaseGM_Error_Het(RegressionPropsY):
         else:
             lambda2 = lambda1
 
-        # Forcing the 1st step lambda to be in the range [-0.9, 0.9] to avoid perfect collinearity in step 2 in case of SLX-Error or GNS models
-        #if lambda2 > 0.9:
-        #    lambda_old = 0.9
-        #elif lambda2 < -0.9:
-        #    lambda_old = -0.9
-        #else:
         lambda_old = lambda2
 
         self.iteration, eps = 0, 1

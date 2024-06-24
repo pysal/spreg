@@ -643,6 +643,8 @@ def _work(
     model.aic = DIAG.akaike(reg=model)
     model.schwarz = DIAG.schwarz(reg=model)
     model.slx_lags = slx_lags
+    model.w = w_r
+    model.rho = model.betas[-1]    
     return model
 
 
