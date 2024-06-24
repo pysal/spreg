@@ -132,7 +132,7 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
 DGP
 -----------
 
-Tools for simulating synthetic data according to different spatial data generating processes 
+Tools for simulating synthetic data according to data-generating processes implied by different spatial model specifications
 
 .. autosummary:: 
     :toctree: generated/
