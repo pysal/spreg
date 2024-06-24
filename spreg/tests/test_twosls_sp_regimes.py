@@ -22,7 +22,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("HOVAL"))
         self.X = np.array(X).T
-        reg = GM_Lag_Regimes(self.y, self.X, self.regimes, w=self.w, sig2n_k=True, regime_lag_sep=False, regime_err_sep=False) 
+        reg = GM_Lag_Regimes(self.y, self.X, self.regimes, w=self.w, sig2n_k=True, regime_lag_sep=False, regime_err_sep=False, robust=None)
         betas = np.array([[ 45.14892906],
        [ -1.42593383],
        [ -0.11501037],
@@ -121,7 +121,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, lag_q=False, w=self.w, sig2n_k=True, regime_lag_sep=False, regime_err_sep=False) 
+        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, lag_q=False, w=self.w, sig2n_k=True, regime_lag_sep=False, regime_err_sep=False, robust=None)
         tbetas = np.array([[ 42.7266306 ],
        [ -0.15552345],
        [ 37.70545276],
@@ -162,7 +162,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w, sig2n_k=True, regime_lag_sep=False, regime_err_sep=False) 
+        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w, sig2n_k=True, regime_lag_sep=False, regime_err_sep=False, robust=None)
         tbetas = np.array([[ 37.87698329],
        [ -0.89426982],
        [ 31.4714777 ],
@@ -187,7 +187,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w, regime_lag_sep=False, regime_err_sep=False) 
+        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w, regime_lag_sep=False, regime_err_sep=False, robust=None)
         tbetas = np.array([[ 37.87698329,  -0.89426982,  31.4714777 ,  -0.71640525,
          -0.28494432,  -0.2294271 ,   0.62996544]])
         np.testing.assert_allclose(tbetas, reg.betas.T,RTOL)
@@ -228,7 +228,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         w = libpysal.weights.util.lat2W(latt,latt)
         w.transform='r'
         regi = [0]*(n//2) + [1]*(n//2)
-        model = GM_Lag_Regimes(y, x1, regi, q=q, yend=x2, w=w, regime_lag_sep=True, regime_err_sep=True)
+        model = GM_Lag_Regimes(y, x1, regi, q=q, yend=x2, w=w, regime_lag_sep=True, regime_err_sep=True, robust=None)
         w1 = libpysal.weights.util.lat2W(latt//2,latt)
         w1.transform='r'
         model1 = GM_Lag(y[0:(n//2)].reshape((n//2),1), x1[0:(n//2)],yend=x2[0:(n//2)], q=q[0:(n//2)], w=w1)
@@ -244,7 +244,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w,regime_lag_sep=True, regime_err_sep = True) 
+        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w,regime_lag_sep=True, regime_err_sep = True, robust=None)
         tbetas = np.array([[ 42.35827477],
        [ -0.09472413],
        [ -0.68794223],
@@ -287,7 +287,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         yd = np.reshape(yd, (49,1))
         q = np.array(self.db.by_col("DISCBD"))
         q = np.reshape(q, (49,1))
-        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w, constant_regi='one', regime_lag_sep=False, regime_err_sep=False) 
+        reg = GM_Lag_Regimes(self.y, X, self.regimes, yend=yd, q=q, w=self.w, constant_regi='one', regime_lag_sep=False, regime_err_sep=False, robust=None)
         tbetas = np.array([[ -0.37658823],
        [ -0.9666079 ],
        [ 35.5445944 ],
@@ -328,7 +328,9 @@ class TestGMLag_Regimes(unittest.TestCase):
         q_var = ['DISCBD']
         q = np.array([self.db.by_col(name) for name in q_var]).T
         r_var = 'NSA'
-        reg = GM_Lag_Regimes(self.y, x, self.regimes, yend=yd, q=q, w=self.w, name_y=y_var, name_x=x_var, name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='columbus', name_w='columbus.gal', regime_lag_sep=False, regime_err_sep=False)
+        reg = GM_Lag_Regimes(self.y, x, self.regimes, yend=yd, q=q, w=self.w, name_y=y_var, name_x=x_var,
+                             name_yend=yd_var, name_q=q_var, name_regimes=r_var, name_ds='columbus',
+                             name_w='columbus.gal', regime_lag_sep=False, regime_err_sep=False, robust=None)
         betas = np.array([[ 37.87698329],
        [ -0.89426982],
        [ 31.4714777 ],
@@ -349,6 +351,64 @@ class TestGMLag_Regimes(unittest.TestCase):
         self.assertListEqual(reg.name_yend, ['0_HOVAL', '1_HOVAL', '_Global_W_CRIME'])
         self.assertListEqual(reg.name_q, ['0_DISCBD', '0_W_INC', '0_W_DISCBD', '1_DISCBD', '1_W_INC', '1_W_DISCBD'])
         self.assertEqual(reg.name_y, y_var)
+
+    def test_slx(self):
+        X = []
+        X.append(self.db.by_col("INC"))
+        X.append(self.db.by_col("HOVAL"))
+        self.X = np.array(X).T
+        reg = GM_Lag_Regimes(self.y, self.X, self.regimes, w=self.w, slx_lags=1, regime_lag_sep=False,
+                             regime_err_sep=False, spat_diag=True)
+        betas = np.array([[ 8.18931398e+01],
+                         [-1.53395435e+00],
+                         [-1.69757478e-01],
+                         [-2.27789212e+00],
+                         [ 5.39079719e-01],
+                         [ 7.51699174e+01],
+                         [-1.08739064e+00],
+                         [-2.83520279e-01],
+                         [-1.68207712e+00],
+                         [ 2.74687447e-01],
+                         [-3.46101374e-02]])
+        np.testing.assert_allclose(reg.betas, betas,RTOL)
+        vm = np.array( [[ 1.73599745e+03, -9.34710692e+00, -1.24643977e+00, -6.47037384e+01,
+                           7.12544407e+00,  1.67217894e+03, -3.05066669e+00, -2.35566285e+00,
+                          -3.66089456e+01, -4.16736383e+00, -2.36649704e+01],
+                         [-9.34710692e+00,  2.76627235e-01, -4.82833143e-02,  8.93797856e-02,
+                           3.01134955e-02, -9.78627573e+00,  2.41397355e-02,  1.18016819e-02,
+                           2.19536352e-01,  2.40036703e-02,  1.36868186e-01],
+                         [-1.24643977e+00, -4.82833143e-02,  2.49271317e-02,  1.08816895e-01,
+                          -3.05204771e-02, -8.06738318e-01,  6.26670530e-04,  1.40330458e-03,
+                           1.69512409e-02,  2.06235513e-03,  1.16361002e-02],
+                         [-6.47037384e+01,  8.93797856e-02,  1.08816895e-01,  3.37057241e+00,
+                          -6.18148061e-01, -6.02788288e+01,  1.07776025e-01,  8.56099990e-02,
+                           1.31783651e+00,  1.50360008e-01,  8.53645284e-01],
+                         [ 7.12544407e+00,  3.01134955e-02, -3.05204771e-02, -6.18148061e-01,
+                           1.79091963e-01,  6.63593281e+00, -1.64138641e-02, -7.98832541e-03,
+                          -1.48902330e-01, -1.62737808e-02, -9.27966724e-02],
+                         [ 1.67217894e+03, -9.78627573e+00, -8.06738318e-01, -6.02788288e+01,
+                           6.63593281e+00,  1.77071537e+03, -7.45841412e+00, -1.64359023e+00,
+                          -3.92564157e+01, -4.79661230e+00, -2.37950208e+01],
+                         [-3.05066669e+00,  2.41397355e-02,  6.26670530e-04,  1.07776025e-01,
+                          -1.64138641e-02, -7.45841412e+00,  4.80396971e-01, -9.88376849e-02,
+                           8.60302399e-02,  4.92161147e-02,  4.74983701e-02],
+                         [-2.35566285e+00,  1.18016819e-02,  1.40330458e-03,  8.56099990e-02,
+                          -7.98832541e-03, -1.64359023e+00, -9.88376849e-02,  4.80027099e-02,
+                          -2.23775047e-02,  6.77837002e-03,  3.22304374e-02],
+                         [-3.66089456e+01,  2.19536352e-01,  1.69512409e-02,  1.31783651e+00,
+                          -1.48902330e-01, -3.92564157e+01,  8.60302399e-02, -2.23775047e-02,
+                           1.50194231e+00, -1.84011183e-02,  5.24380589e-01],
+                         [-4.16736383e+00,  2.40036703e-02,  2.06235513e-03,  1.50360008e-01,
+                          -1.62737808e-02, -4.79661230e+00,  4.92161147e-02,  6.77837002e-03,
+                          -1.84011183e-02,  4.72613924e-02,  5.90507313e-02],
+                         [-2.36649704e+01,  1.36868186e-01,  1.16361002e-02,  8.53645284e-01,
+                          -9.27966724e-02, -2.37950208e+01,  4.74983701e-02,  3.22304374e-02,
+                           5.24380589e-01,  5.90507313e-02,  3.35692100e-01]])
+        np.testing.assert_allclose(reg.vm, vm,RTOL)
+        ak_test = np.array([0.528338, 0.467306])
+        np.testing.assert_allclose(reg.ak_test, ak_test,RTOL)
+        cfh_test = np.array([8.094023, 0.088194])
+        np.testing.assert_allclose(reg.cfh_test, cfh_test,RTOL)
 
 if __name__ == '__main__':
     unittest.main()
