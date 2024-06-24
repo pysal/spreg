@@ -2,13 +2,15 @@ import unittest
 import numpy as np
 import libpysal
 from libpysal.examples import load_example
-from ..sur_utils import sur_dictxy
-from ..sur_error import SURerrorML, SURerrorGM
-from .test_sur import dict_compare
+from spreg.sur_utils import sur_dictxy
+from spreg.sur_error import SURerrorML, SURerrorGM
 from libpysal.common import RTOL
 
 ATOL = 0.0001
 
+def dict_compare(actual, desired, rtol, atol=1e-7):
+    for i in actual.keys():
+        np.testing.assert_allclose(actual[i], desired[i], rtol, atol=atol)
 
 class Test_SUR_error(unittest.TestCase):
     def setUp(self):
@@ -316,9 +318,7 @@ class Test_SUR_error_gm(unittest.TestCase):
     def setUp(self):
         nat = load_example("Natregimes")
         self.db = libpysal.io.open(nat.get_path("natregimes.dbf"), "r")
-        self.w = libpysal.weights.Queen.from_shapefile(
-            libpysal.examples.get_path("natregimes.shp")
-        )
+        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
         self.w.transform = "r"
 
     def test_error_gm(self):  # 2 equations
