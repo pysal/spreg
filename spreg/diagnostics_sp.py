@@ -1,7 +1,7 @@
 """
 Spatial diagnostics module
 """
-__author__ = "Luc Anselin luc.anselin@asu.edu, Daniel Arribas-Bel darribas@asu.edu"
+__author__ = "Luc Anselin lanselin@gmail.com, Daniel Arribas-Bel darribas@asu.edu, Pedro Amaral pedrovma@gmail.com"
 
 from .utils import spdot
 
@@ -19,7 +19,7 @@ __all__ = ["LMtests", "MoranRes", "AKtest"]
 
 class LMtests:
     """
-    Lagrange Multiplier tests. Implemented as presented in :cite:`Anselin1996a`
+    Lagrange Multiplier tests. Implemented as presented in :cite:`Anselin1996a` and :cite:`KoleyBera2024`
 
     Attributes
     ----------
@@ -37,6 +37,11 @@ class LMtests:
                   * 'rlme': Robust LM error test
                   * 'lml' : LM lag test
                   * 'rlml': Robust LM lag test
+                  * 'sarma': LM SARMA test
+                  * 'lmwx': LM test for WX
+                  * 'rlmwx': Robust LM WX test
+                  * 'lmspdurbin': Joint test for SDM
+                  * 'rlmdurlag': Robust LM Lag - SDM
 
     Parameters
     ----------
@@ -54,9 +59,20 @@ class LMtests:
                   (Only if 'rlml' or 'all' was in tests). Pair of statistic
                   and p-value for the Robust LM lag test.
     sarma       : tuple
-                  (Only if 'rlml' or 'all' was in tests). Pair of statistic
+                  (Only if 'sarma' or 'all' was in tests). Pair of statistic
                   and p-value for the SARMA test.
-
+    lmwx       : tuple
+                  (Only if 'lmwx' or 'all' was in tests). Pair of statistic
+                  and p-value for the LM test for WX.
+    rlmwx       : tuple
+                  (Only if 'rlmwx' or 'all' was in tests). Pair of statistic
+                  and p-value for the Robust LM WX test.
+    rlmdurlag   : tuple
+                  (Only if 'rlmdurlag' or 'all' was in tests). Pair of statistic
+                  and p-value for the Robust LM Lag - SDM test.
+    lmspdurbin  : tuple
+                  (Only if 'lmspdurbin' or 'all' was in tests). Pair of statistic
+                  and p-value for the Joint test for SDM.
     Examples
     --------
 
@@ -122,15 +138,36 @@ class LMtests:
 
     >>> print(round(lms.sarma[0],4), round(lms.sarma[1],4))
     4.1907 0.123
+
+    LM test for WX:
+
+    >>> print(round(lms.lmwx[0],4), round(lms.lmwx[1],4))
+    1.3377 0.5123
+
+    Robust LM WX test:
+
+    >>> print(round(lms.rlmwx[0],4), round(lms.rlmwx[1],4))
+    3.4532 0.1779
+
+    Robust LM Lag - SDM:
+    >>> print(round(lms.rlmdurlag[0],4), round(lms.rlmdurlag[1],4))
+    3.0971 0.0784
+
+    Joint test for SDM:
+
+    >>> print(round(lms.lmspdurbin[0],4), round(lms.lmspdurbin[1],4))
+    4.4348 0.2182
     """
 
     def __init__(self, ols, w, tests=["all"]):
         cache = spDcache(ols, w)
         if tests == ["all"]:
-            tests = ["lme", "lml", "rlme", "rlml", "sarma"]
-        if "lme" in tests:
+            tests = ["lme", "lml", "rlme", "rlml", "sarma", "lmwx", "lmspdurbin", "rlmwx",
+                "rlmdurlag", "lmslxerr"]    # added back in for access
+        if any(test in ["lme", "lmslxerr"] for test in tests):
+        #if "lme" in tests:
             self.lme = lmErr(ols, w, cache)
-        if "lml" in tests:
+        if any(test in ["lml", "rlmwx"] for test in tests):
             self.lml = lmLag(ols, w, cache)
         if "rlme" in tests:
             self.rlme = rlmErr(ols, w, cache)
@@ -138,7 +175,17 @@ class LMtests:
             self.rlml = rlmLag(ols, w, cache)
         if "sarma" in tests:
             self.sarma = lmSarma(ols, w, cache)
-
+        #if any(test in ["lmwx", "rlmdurlag", "lmslxerr"] for test in tests):
+        if any(test in ["lmwx", "rlmdurlag","lmslxerr"] for test in tests):
+            self.lmwx = lm_wx(ols, w)
+        if any(test in ["lmspdurbin", "rlmdurlag", "rlmwx"] for test in tests):
+            self.lmspdurbin = lm_spdurbin(ols, w)
+        if "rlmwx" in tests:
+            self.rlmwx = rlm_wx(ols, self.lmspdurbin, self.lml)
+        if "rlmdurlag" in tests:
+            self.rlmdurlag = rlm_durlag(self.lmspdurbin, self.lmwx)
+        if "lmslxerr" in tests: #currently removed - LA added back in for access
+            self.lmslxerr = lm_slxerr(ols, self.lme, self.lmwx)
 
 class MoranRes:
     """
@@ -630,6 +677,186 @@ def lmSarma(ols, w, spDcache):
     pval = chisqprob(lm, 2)
     return (lm[0][0], pval[0][0])
 
+def lm_wx(reg, w):
+    """
+    LM test for WX. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
+
+    Attributes
+    ----------
+    reg         : OLS
+                  Instance from an OLS regression
+    w           : W
+                  Spatial weights instance
+
+    Returns
+    -------
+    lmwx        : tuple
+                  Pair of statistic and p-value for the LM test for WX.
+
+    """
+
+    # preliminaries
+    # set up X1 (constant) and X (no constant) as x1 and xx
+    x1 = reg.x
+    xx = x1[:,1:]
+    # WX
+    wx = w.sparse * xx
+    # end of preliminaries
+    # X'W'u
+    xtwtu = wx.T @ reg.u
+    # X'W'X1(X1'X1)-1X1WX
+    mx1 = wx.T @ x1
+    mx = (mx1 @ reg.xtxi) @ mx1.T
+    xwwx = wx.T @ wx
+    xqx = xwwx - mx
+    xqxi = la.inv(xqx)
+    # RSgamma: (X'W'u)'(X'Q1X)-1(X'W'u) / sig2n
+    xpwpu = wx.T @ reg.u
+    rsg1 = (xpwpu.T @ xqxi) @ xpwpu
+    rsgam = rsg1[0][0] / reg.sig2n
+    pval = chisqprob(rsgam, (reg.k - 1))
+    rsgamma = (rsgam,pval)
+    return(rsgamma)
+
+def lm_spdurbin(reg,w):
+    """
+    Joint test for SDM. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
+
+    Attributes
+    ----------
+    reg         : OLS
+                  Instance from an OLS regression
+    w           : W
+                  Spatial weights instance
+
+    Returns
+    -------
+    lmspdurbin  : tuple
+                  Pair of statistic and p-value for the Joint test for SDM.
+
+    """
+
+    # preliminaries
+    # set up X1 (constant) and X (no constant) as x1 and xx
+    x1 = reg.x
+    xx = x1[:,1:]
+    k = x1.shape[1]
+    # WX
+    wx = w.sparse * xx
+    # X1b
+    xb = reg.predy
+    # WX1b
+    wxb = w.sparse * xb
+    # Wy
+    wy = w.sparse * reg.y
+    # y'W'e / sig2n
+    drho = (wy.T @ reg.u) / reg.sig2n
+    # X'W'e / sign2n
+    dgam = (wx.T @ reg.u) / reg.sig2n
+    # P = T = tr(W2 + W'W)
+    pp = w.trcWtW_WW
+    # end of preliminaries
+    # J_11: block matrix with X1'X1 and n/2sig2n
+    jj1a = np.hstack((reg.xtx,np.zeros((k,1))))
+    jj1b = np.hstack((np.zeros((1,k)),np.array([reg.n/(2.0*reg.sig2n)]).reshape(1,1)))
+    jj11 = np.vstack((jj1a,jj1b))
+    # J_12: matrix with k-1 rows X1'WX1b and X1'WX, and 1 row of zeros
+    jj12a = np.hstack((x1.T @ wxb, x1.T @ wx))
+    jj12 = np.vstack((jj12a,np.zeros((1,k))))
+    # J_22 matrix with diagonal elements b'X1'W'WX1b + T.sig2n and X'W'WX
+    # and off-diagonal element b'X1'W'WX
+    jj22a = wxb.T @ wxb + pp * reg.sig2n
+    jj22a = jj22a.reshape(1,1)
+    wxbtwx = (wxb.T @ wx).reshape(1,k-1)
+    jj22b = np.hstack((jj22a,wxbtwx))
+    wxtwx = wx.T @ wx
+    jj22c = np.hstack((wxbtwx.T,wxtwx))
+    jj22 = np.vstack((jj22b,jj22c))
+    # J^22 (the inverse) from J^22 = (J_22 - J_21.J_11^-1.J_12)^-1
+    jj11i = la.inv(jj11)
+    j121121 = (jj12.T @ jj11i) @ jj12
+    jj22i1 = jj22 - j121121
+    jj22i = la.inv(jj22i1)
+    # rescale by sig2n
+    jj22i = jj22i * reg.sig2n
+    # statistic
+    dd = np.vstack((drho,dgam))
+    rsjoint = (dd.T @ jj22i) @ dd
+    rsjoint = rsjoint[0][0]
+    pval = chisqprob(rsjoint, k)
+    rsrhogam = (rsjoint, pval)
+    return(rsrhogam)
+
+def rlm_wx(reg,lmspdurbin,lmlag):
+    """
+    Robust LM WX test. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
+
+    Attributes
+    ----------
+    reg         : OLS
+                  Instance from an OLS regression
+    lmspdurbin  : tuple
+                  Joint test for SDM as in lm_spdurbin function
+    lmlag       : tuple
+                  LM Lag test as in lmLag function
+
+    Returns
+    -------
+    rlmwx       : tuple
+                  Pair of statistic and p-value for the Robust LM WX test.
+
+    """
+    # robust gamma = rsjoint - rsrho
+    rsgams = lmspdurbin[0] - lmlag[0]
+    pval = chisqprob(rsgams,(reg.k - 1))
+    rsgamstar = (rsgams, pval)
+    return(rsgamstar)
+
+def rlm_durlag(lmspdurbin,lmwx):
+    """
+    Robust LM Lag - SDM. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
+
+    Attributes
+    ----------
+    lmspdurbin  : tuple
+                  Joint test for SDM as in lm_spdurbin function
+    lmwx        : tuple
+                  LM test for WX as in lm_wx function
+
+    Returns
+    -------
+    rlmwx       : tuple
+                  Pair of statistic and p-value for the Robust LM Lag - SDM test.
+    """
+
+    # robust rho = rsjoint - rsgam
+    rsrhos = lmspdurbin[0] - lmwx[0]
+    pval = chisqprob(rsrhos,1)
+    rsrhostar = (rsrhos, pval)
+    return(rsrhostar)
+
+def lm_slxerr(reg,lmerr,lmwx):
+    """
+    Joint test for Error and WX. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
+
+    Attributes
+    ----------
+    reg         : OLS
+                  Instance from an OLS regression
+    lmerr         : tuple
+                  LM Error test as in lmErr function
+    lmwx        : tuple
+                  LM test for WX as in lm_wx function
+
+    Returns
+    -------
+    rlmwx       : tuple
+                  Pair of statistic and p-value for the Joint test for Error and WX.
+    """
+    rslamgam = lmerr[0] + lmwx[0]
+    pval = chisqprob(rslamgam,reg.k)
+    rslamgamma = (rslamgam,pval)
+    return(rslamgamma)
 
 def get_mI(reg, w, spDcache):
     """
@@ -725,15 +952,20 @@ def akTest(iv, w, spDcache):
     return (mi, ak[0][0], pval[0][0])
 
 
-def comfac_test(lambd, beta, gamma, vm):
+def comfac_test(rho, beta, gamma, vm):
     """
-    Computes the Spatial Common Factor Hypothesis test as shown in Anselin (1988, p. 226-229)
+    Computes the Spatial Common Factor Hypothesis test as shown in Anselin (1988, p. 226-229).
+    Note that for the Common Factor Hypothesis test to be valid, gamma has to equal
+    *negative* rho times beta for all beta parameters.
+    That is, when rho is positive, a positive beta means gamma must be negative and vice versa.
+    For a negative rho, beta, and gamma must have the same sign.
+    If those signs are not compatible, the test will not be meaningful.
 
     Parameters
     ----------
 
-    lambd       : float
-                  Spatial autoregressive coefficient (as in lambd*Wy)
+    rho         : float
+                  Spatial autoregressive coefficient (as in rho*Wy)
     beta        : array
                   Coefficients of the exogenous (not spatially lagged) variables, without the constant (as in X*beta)
     gamma       : array
@@ -751,8 +983,8 @@ def comfac_test(lambd, beta, gamma, vm):
               with k-1 degrees of freedom
 
     """
-    g = lambd * beta + gamma
-    G = np.vstack((lambd * np.eye(beta.shape[0]), np.eye(beta.shape[0]), beta.T))
+    g = rho * beta + gamma
+    G = np.vstack((rho * np.eye(beta.shape[0]), np.eye(beta.shape[0]), beta.T))
 
     GVGi = la.inv(np.dot(G.T, np.dot(vm, G)))
     W = np.dot(g.T, np.dot(GVGi, g))[0][0]

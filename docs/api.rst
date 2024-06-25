@@ -128,3 +128,27 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.panel_rLMlag
     spreg.panel_rLMerror
     spreg.panel_Hausman
+
+DGP
+-----------
+
+Tools for simulating synthetic data according to data-generating processes implied by different spatial model specifications
+
+.. autosummary:: 
+    :toctree: generated/
+
+    spreg.dgp.make_error
+    spreg.dgp.make_x
+    spreg.dgp.make_wx
+    spreg.dgp.make_xb
+    spreg.dgp.make_wxg
+    spreg.dgp.dgp_errproc
+    spreg.dgp.dgp_ols
+    spreg.dgp.dgp_slx
+    spreg.dgp.dgp_sperror
+    spreg.dgp.dgp_slxerror
+    spreg.dgp.dgp_lag
+    spreg.dgp.dgp_spdurbin
+    spreg.dgp.dgp_lagerr
+    spreg.dgp.dgp_gns
+    spreg.dgp.dgp_mes

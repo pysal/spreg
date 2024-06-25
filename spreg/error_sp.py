@@ -2,7 +2,7 @@
 Spatial Error Models module
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, \
+__author__ = "Luc Anselin lanselin@gmail.com, \
         Daniel Arribas-Bel darribas@asu.edu, \
         Pedro V. Amaral pedro.amaral@asu.edu"
 
@@ -37,7 +37,9 @@ class BaseGM_Error(RegressionPropsY):
                    independent (exogenous) variable, excluding the constant
     w            : Sparse matrix
                    Spatial weights sparse matrix
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     betas        : array
@@ -87,7 +89,7 @@ class BaseGM_Error(RegressionPropsY):
            [ 0.3257]])
     """
 
-    def __init__(self, y, x, w):
+    def __init__(self, y, x, w, hard_bound=False):
 
         # 1a. OLS --> \tilde{betas}
         ols = OLS.BaseOLS(y=y, x=x)
@@ -97,7 +99,7 @@ class BaseGM_Error(RegressionPropsY):
 
         # 1b. GMM --> \tilde{\lambda1}
         moments = _momentsGM_Error(w, ols.u)
-        lambda1 = optim_moments(moments)
+        lambda1 = optim_moments(moments, hard_bound=hard_bound)
 
         # 2a. OLS -->\hat{betas}
         xs = get_spFilter(w, lambda1, self.x)
@@ -133,7 +135,7 @@ class GM_Error(BaseGM_Error):
                    Spatial weights object (always needed)
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -147,7 +149,9 @@ class GM_Error(BaseGM_Error):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -287,26 +291,29 @@ class GM_Error(BaseGM_Error):
     """
 
     def __init__(
-        self, y, x, w, slx_lags=0, vm=False, name_y=None, name_x=None, name_w=None, name_ds=None, latex=False
-    ):
+        self, y, x, w, slx_lags=0, vm=False, name_y=None, name_x=None, name_w=None, name_ds=None, latex=False,
+            hard_bound=False):
 
         n = USER.check_arrays(y, x)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)  # intialize in case of None, contains constant
         set_warn(self, warn)
         
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES"
         if slx_lags >0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            self.title += " WITH SLX (SDEM)"
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
+            self.title += " WITH SLX (SLX-Error)"
         
-        BaseGM_Error.__init__(self, y=y, x=x_constant, w=w.sparse)
+        BaseGM_Error.__init__(self, y=y, x=x_constant, w=w.sparse, hard_bound=hard_bound)
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # already includes constant
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.output = pd.DataFrame(self.name_x, columns=['var_names'])
@@ -338,7 +345,9 @@ class BaseGM_Endog_Error(RegressionPropsY):
                    this should not contain any variables from x)
     w            : Sparse matrix
                    Spatial weights sparse matrix
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     betas        : array
@@ -396,7 +405,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
 
     """
 
-    def __init__(self, y, x, yend, q, w):
+    def __init__(self, y, x, yend, q, w, hard_bound=False):
 
         # 1a. TSLS --> \tilde{betas}
         tsls = TSLS.BaseTSLS(y=y, x=x, yend=yend, q=q)
@@ -407,7 +416,7 @@ class BaseGM_Endog_Error(RegressionPropsY):
 
         # 1b. GMM --> \tilde{\lambda1}
         moments = _momentsGM_Error(w, tsls.u)
-        lambda1 = optim_moments(moments)
+        lambda1 = optim_moments(moments, hard_bound=hard_bound)
 
         # 2a. 2SLS -->\hat{betas}
         xs = get_spFilter(w, lambda1, self.x)
@@ -450,7 +459,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
                    Spatial weights object (always needed)
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -468,7 +477,9 @@ class GM_Endog_Error(BaseGM_Endog_Error):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -645,23 +656,27 @@ class GM_Endog_Error(BaseGM_Endog_Error):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant) # initialize for None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES"
         if slx_lags >0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            self.title += " WITH SLX (SDEM)"        
-        BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+            self.title += " WITH SLX (SLX-Error)"        
+        BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q, hard_bound=hard_bound)
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # already includes constant
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
         self.name_z.append("lambda")
@@ -726,7 +741,9 @@ class GM_Combo(BaseGM_Endog_Error):
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -934,12 +951,14 @@ class GM_Combo(BaseGM_Endog_Error):
         name_w=None,
         name_ds=None,
         latex=False,
+        hard_bound=False,
     ):
 
         n = USER.check_arrays(y, x, yend, q)
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant)
         set_warn(self, warn)
         if slx_lags == 0:
             yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
@@ -947,7 +966,7 @@ class GM_Combo(BaseGM_Endog_Error):
             yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
             x_constant = np.hstack((x_constant, wx))
 
-        BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend2, q=q2)
+        BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend2, q=q2, hard_bound=hard_bound)
 
         self.rho = self.betas[-2]
         self.predy_e, self.e_pred, warn = sp_att(
@@ -956,11 +975,13 @@ class GM_Combo(BaseGM_Endog_Error):
         set_warn(self, warn)
         self.title = "SPATIALLY WEIGHTED 2SLS - GM-COMBO MODEL"
         if slx_lags > 0:
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)   # exclude constant
             self.title += " WITH SLX (GNSM)"
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x  # constant already in list
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend
@@ -1008,7 +1029,7 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
                    If True, then a spatial lag of the dependent variable is included.           
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM or GNSM type.             
+                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type.             
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -1026,6 +1047,9 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     **kwargs     : keywords
                    Additional arguments to pass on to the estimators. 
                    See the specific functions for details on what can be used.
@@ -1209,54 +1233,54 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
 
     def __init__(
         self, y, x, w, yend=None, q=None, estimator='het', add_wy=False, slx_lags=0, vm=False, name_y=None, name_x=None, name_w=None, name_yend=None,
-        name_q=None, name_ds=None, latex=False, **kwargs):
+        name_q=None, name_ds=None, latex=False, hard_bound=False, **kwargs):
 
         if estimator == 'het':
             if yend is None and not add_wy:
                 GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                      name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                      name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif yend is not None and not add_wy:
                 GM_Endog_Error_Het.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif add_wy:
                 GM_Combo_Het.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             else:
                 set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
                 GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                      name_w=name_w, name_ds=name_ds, latex=latex)
+                                      name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
         elif estimator == 'hom':
             if yend is None and not add_wy:
                 GM_Error_Hom.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                      name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                      name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif yend is not None and not add_wy:
                 GM_Endog_Error_Hom.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif add_wy:
                 GM_Combo_Hom.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             else:
                 set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
                 GM_Error_Hom.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                      name_w=name_w, name_ds=name_ds, latex=latex)
+                                      name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
         elif estimator == 'kp98':
             if yend is None and not add_wy:
                 GM_Error.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                      name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                      name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif yend is not None and not add_wy:
                 GM_Endog_Error.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif add_wy:
                 GM_Combo.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, **kwargs)
+                                            name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             else:
                 set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
                 GM_Error.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                      name_w=name_w, name_ds=name_ds, latex=latex)
+                                      name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
         else:
             set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
             GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
-                                    name_w=name_w, name_ds=name_ds, latex=latex)
+                                    name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
 
 
 def _momentsGM_Error(w, u):

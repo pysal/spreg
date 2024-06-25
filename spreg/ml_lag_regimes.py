@@ -11,9 +11,9 @@ from . import diagnostics as DIAG
 import multiprocessing as mp
 from .ml_lag import BaseML_Lag
 from .utils import set_warn, get_lags
-from platform import system
+from .sputils import _spmultiplier
 import pandas as pd
-from .output import output, _nonspat_top, _spat_pseudo_r2
+from .output import output, _nonspat_top, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 
 
 __all__ = ["ML_Lag_Regimes"]
@@ -64,6 +64,11 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                     If True, the spatial parameter for spatial lag is also
                     computed according to different regimes. If False (default),
                     the spatial parameter is fixed accross regimes.
+    spat_diag    : boolean
+                   If True, then compute Common Factor Hypothesis test when applicable
+    spat_impacts : boolean
+                   If True, include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results
     cores        : boolean
                    Specifies if multiprocessing is to be used
                    Default: no multiprocessing, cores = False
@@ -120,6 +125,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                    if 'full': brute force (full matrix computations)
                    if 'ord', Ord eigenvalue method
                    if 'LU', LU sparse matrix decomposition
+    cfh_test     : tuple
+                   Common Factor Hypothesis test; tuple contains the pair (statistic,
+                   p-value). Only when it applies (see specific documentation).
     epsilon      : float
                    tolerance criterion used in minimize_scalar function and inverse_product
     mean_y       : float
@@ -309,6 +317,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         slx_lags=0,
         regime_lag_sep=False,
         cores=False,
+        spat_diag=True,
+        spat_impacts=True,
         vm=False,
         name_y=None,
         name_x=None,
@@ -328,10 +338,11 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
-        if slx_lags >0:
+        if slx_lags > 0:
             lag_x = get_lags(w, x_constant, slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            kwx = lag_x.shape[1]
 
         self.name_x_r = USER.set_name_x(name_x, x_constant) + [USER.set_name_yend_sp(name_y)]
         self.method = method
@@ -384,6 +395,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 cols2regi=cols2regi,
                 method=method,
                 epsilon=epsilon,
+                spat_diag=spat_diag,
+                spat_impacts=spat_impacts,
                 vm=vm,
                 name_y=name_y,
                 name_x=name_x,
@@ -407,23 +420,43 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.name_x.append("_Global_" + USER.set_name_yend_sp(name_y))
             BaseML_Lag.__init__(self, y=y, x=x, w=w, method=method, epsilon=epsilon)
             self.kf += 1  # Adding a fixed k to account for spatial lag in Chow
-            # adding a fixed k to account for spatial lag in aic, sc
+            # adding a k to account for spatial lag in aic, sc
             self.k += 1
             self.chow = REGI.Chow(self)
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
             self.regime_lag_sep = regime_lag_sep
             self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+            self.output['regime'] = x_rlist + ['_Global']
             self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['rho']
-            self.output['regime'] = x_rlist+['_Global']
             self.output['equation'] = 0
+            self.slx_lags = slx_lags
+            diag_out = None
+            if slx_lags > 0:
+                self.title = ("MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIMES"+ " (METHOD = "+ method+ ")")
+                fixed_wx = cols2regi[-(kwx+1):-1].count(False)
+                kwx = kwx - fixed_wx
+                if kwx > 0:
+                    for m in self.regimes_set:
+                        r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
+                        wx_index = r_output.index[-kwx:]
+                        self.output.loc[wx_index, 'var_type'] = 'wx'
+                if fixed_wx > 0:
+                    f_wx_index = self.output.index[-(fixed_wx+1):-1]
+                    self.output.loc[f_wx_index, 'var_type'] = 'wx'
+                if spat_diag and slx_lags == 1:
+                    diag_out = _spat_diag_out(self, w, 'yend', ml=True)
+            else:
+                self.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"+ " (METHOD = "+ method+ ")")
+            if spat_impacts and slx_lags == 0:
+                impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+                try:
+                    diag_out += impacts
+                except TypeError:
+                    diag_out = impacts
             self.other_top = _spat_pseudo_r2(self)
             self.other_top += _nonspat_top(self, ml=True)
-            if slx_lags == 0:
-                self.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"+ " (METHOD = "+ method+ ")")
-            else:
-                self.title = ("MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIMES"+ " (METHOD = "+ method+ ")")
-            output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
+            output(reg=self, vm=vm, robust=False, other_end=diag_out, latex=latex)
 
     def ML_Lag_Regimes_Multi(
         self,
@@ -437,6 +470,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         cols2regi,
         method,
         epsilon,
+        spat_diag,
+        spat_impacts,
         vm,
         name_y,
         name_x,
@@ -558,9 +593,19 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             results[r].other_top = _spat_pseudo_r2(results[r])
             results[r].other_top += _nonspat_top(results[r], ml=True)
             results[r].other_mid = ""
-            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
-                                                                'var_type': ['x'] * (len(results[r].name_x) - 1) + ['rho'],
-                                                                'regime': r, 'equation': r})], ignore_index=True)
+            if slx_lags > 0:
+                kx = (len(results[r].name_x) - 1) // (slx_lags + 1)
+                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['rho']
+            else:
+                var_types = ['x'] * (len(results[r].name_x) - 1) + ['rho']
+            results[r].output = pd.DataFrame({'var_names': results[r].name_x,
+                                              'var_type': var_types,
+                                              'regime': r, 'equation': r})
+            self.output = pd.concat([self.output, results[r].output], ignore_index=True)
+            if spat_diag and slx_lags == 1:
+                results[r].other_mid += _spat_diag_out(results[r], None, 'yend', ml=True)
+            if spat_impacts and slx_lags == 0:
+                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho))
             counter += 1
         self.multi = results
         self.chow = REGI.Chow(self)
@@ -597,6 +642,9 @@ def _work(
     model.k += 1  # add 1 for proper df and aic, sc
     model.aic = DIAG.akaike(reg=model)
     model.schwarz = DIAG.schwarz(reg=model)
+    model.slx_lags = slx_lags
+    model.w = w_r
+    model.rho = model.betas[-1]    
     return model
 
 

@@ -60,7 +60,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     Always False, kept for consistency, ignored.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -80,7 +80,9 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -364,7 +366,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             if slx_lags == 0:
                 self.title = "GM SPATIALLY WEIGHTED MODEL - REGIMES"
             else:
-                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (SDEM) - REGIMES"       
+                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (SLX-Error) - REGIMES"       
             self.name_x.append("lambda")
             self.kf += 1
             self.chow = REGI.Chow(self)
@@ -538,7 +540,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     Always False, kept for consistency, ignored.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -562,7 +564,9 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -945,7 +949,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 if slx_lags == 0:
                     self.title = ("GM SPATIALLY WEIGHTED 2SLS - REGIMES")
                 else:
-                    self.title = ("GM SPATIALLY WEIGHTED 2SLS WITH SLX (SDEM) - REGIMES")
+                    self.title = ("GM SPATIALLY WEIGHTED 2SLS WITH SLX (SLX-Error) - REGIMES")
                 output(reg=self, vm=vm, robust=False,
                        other_end=False, latex=latex)
 
@@ -1200,7 +1204,9 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                    Name of regime variable for use in the output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
-
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     Attributes
     ----------
     output       : dataframe
@@ -1634,7 +1640,7 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
                    If True, then a spatial lag of the dependent variable is included.           
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM or GNSM type.             
+                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type.             
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -1654,6 +1660,9 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
                    Name of dataset for use in output
     latex        : boolean
                    Specifies if summary is to be printed in latex format
+    hard_bound   : boolean
+                   If true, raises an exception if the estimated spatial
+                   autoregressive parameter is outside the maximum/minimum bounds.
     **kwargs     : keywords
                    Additional arguments to pass on to the estimators. 
                    See the specific functions for details on what can be used.
@@ -2020,7 +2029,7 @@ def _work_endog_error(
         if add_lag != False:
             model.title = "GM SPATIAL COMBO MODEL + SLX (GNSM) - REGIME %s" % r            
         else:
-            model.title = "GM SPATIALLY WEIGHTED 2SLS + SLX (SDEM) - REGIME %s" % r
+            model.title = "GM SPATIALLY WEIGHTED 2SLS + SLX (SLX-Error) - REGIME %s" % r
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]

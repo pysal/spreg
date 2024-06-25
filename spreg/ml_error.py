@@ -313,7 +313,7 @@ class ML_Error(BaseML_Error):
                    Spatial weights sparse matrix
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.                   
+                   If slx_lags>0, the specification becomes of the SLX-Error type.                   
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -485,14 +485,15 @@ class ML_Error(BaseML_Error):
         y = USER.check_y(y, n)
         USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
+        name_x = USER.set_name_x(name_x, x_constant) # initialize in case None includes constant
         set_warn(self, warn)
-
         self.title = "ML SPATIAL ERROR"
         if slx_lags >0:
             lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            self.title += " WITH SLX (SDEM)"
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
+            self.title += " WITH SLX (SLX-Error)"
         self.title += " (METHOD = " + method + ")"
 
         method = method.upper()
@@ -501,7 +502,7 @@ class ML_Error(BaseML_Error):
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)

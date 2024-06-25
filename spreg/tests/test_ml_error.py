@@ -1,7 +1,5 @@
 import unittest
 import libpysal
-from libpysal.examples import load_example
-from libpysal.weights import Queen
 import numpy as np
 from scipy import sparse
 from spreg.ml_error import ML_Error
@@ -14,14 +12,17 @@ filterwarnings("ignore", message="^Method 'bounded' does not support")
 
 class TestMLError(unittest.TestCase):
     def setUp(self):
-        south = load_example("South")
-        db = libpysal.io.open(south.get_path("south.dbf"), "r")
-        self.y_name = "HR90"
-        self.y = np.array(db.by_col(self.y_name))
+        db = libpysal.io.open(libpysal.examples.get_path("baltim.dbf"), "r")
+        self.ds_name = "baltim.dbf"
+        self.y_name = "PRICE"
+        self.y = np.array(db.by_col(self.y_name)).T
         self.y.shape = (len(self.y), 1)
-        self.x_names = ["RD90", "PS90", "UE90", "DV90"]
+        self.x_names = ["NROOM", "AGE", "SQFT"]
         self.x = np.array([db.by_col(var) for var in self.x_names]).T
-        self.w = Queen.from_shapefile(south.get_path("south.shp"))
+        ww = libpysal.io.open(libpysal.examples.get_path("baltim_q.gal"))
+        self.w = ww.read()
+        ww.close()
+        self.w_name = "baltim_q.gal"
         self.w.transform = "r"
 
     def _estimate_and_compare(self, method="FULL", RTOL=RTOL):
@@ -31,57 +32,58 @@ class TestMLError(unittest.TestCase):
             w=self.w,
             name_y=self.y_name,
             name_x=self.x_names,
-            name_w="south_q.gal",
+            name_w=self.w_name,
             method=method,
         )
-        betas = np.array([[6.1492], [4.4024], [1.7784], [-0.3781], [0.4858], [0.2991]])
+        betas = np.array([[19.45930348],
+       [ 3.98928064],
+       [-0.16714232],
+       [ 0.57336871],
+       [ 0.71757002]])
         np.testing.assert_allclose(reg.betas, betas, RTOL + 0.0001)
-        u = np.array([-5.97649777])
+        u = np.array([29.870239])
         np.testing.assert_allclose(reg.u[0], u, RTOL)
-        predy = np.array([6.92258051])
+        predy = np.array([17.129761])
         np.testing.assert_allclose(reg.predy[0], predy, RTOL)
-        n = 1412
+        n = 211
         np.testing.assert_allclose(reg.n, n, RTOL)
-        k = 5
+        k = 4
         np.testing.assert_allclose(reg.k, k, RTOL)
-        y = np.array([0.94608274])
+        y = np.array([47.])
         np.testing.assert_allclose(reg.y[0], y, RTOL)
-        x = np.array([1.0, -0.39902838, 0.89645344, 6.85780705, 7.2636377])
+        x = np.array([  1.  ,   4.  , 148.  ,  11.25])
         np.testing.assert_allclose(reg.x[0], x, RTOL)
-        e = np.array([-4.92843327])
+        e = np.array([44.392043])
         np.testing.assert_allclose(reg.e_filtered[0], e, RTOL)
-        my = 9.5492931620846928
+        my = 44.30718
         np.testing.assert_allclose(reg.mean_y, my)
-        sy = 7.0388508798387219
+        sy = 23.606077
         np.testing.assert_allclose(reg.std_y, sy)
         vm = np.array(
-            [1.06476526, 0.05548248, 0.04544514, 0.00614425, 0.01481356, 0.00143001]
+            [3.775969e+01, 1.337534e+00, 4.440495e-03, 2.890193e-02,
+            3.496050e-03]
         )
         np.testing.assert_allclose(reg.vm.diagonal(), vm, RTOL)
-        sig2 = np.array([[32.40685441]])
+        sig2 = np.array([[219.239799]])
         np.testing.assert_allclose(reg.sig2, sig2, RTOL)
-        pr2 = 0.3057664820364818
-        np.testing.assert_allclose(reg.pr2, pr2)
+        pr2 = 0.341471
+        np.testing.assert_allclose(reg.pr2, pr2, RTOL)
         std_err = np.array(
-            [1.03187463, 0.23554719, 0.21317867, 0.07838525, 0.12171098, 0.03781546]
+            [6.144892, 1.156518, 0.066637, 0.170006, 0.059127]
         )
         np.testing.assert_allclose(reg.std_err, std_err, RTOL)
-        z_stat = [
-            (5.9592751097983534, 2.5335926307459251e-09),
-            (18.690182928021841, 5.9508619446611137e-78),
-            (8.3421632936950338, 7.2943630281051907e-17),
-            (-4.8232686291115678, 1.4122456582517099e-06),
-            (3.9913060809142995, 6.5710406838016854e-05),
-            (7.9088780724028922, 2.5971882547279339e-15),
-        ]
+        z_stat = [(3.166744811610107, 0.0015415552994677963),
+                (3.4493895324306485, 0.0005618555635414317),
+                (-2.5082495410045618, 0.012133094835810014),
+                (3.3726442232925864, 0.0007445008419860677),
+                (12.13599679437352, 6.807593113579489e-34)]
         np.testing.assert_allclose(reg.z_stat, z_stat, RTOL, atol=ATOL)
-        logll = -4471.407066887894
+        logll = -881.269405
         np.testing.assert_allclose(reg.logll, logll, RTOL)
-        aic = 8952.8141337757879
+        aic = 1770.538809
         np.testing.assert_allclose(reg.aic, aic, RTOL)
-        schwarz = 8979.0779458660545
+        schwarz = 1783.946242
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
-
     def test_dense(self):
         self._estimate_and_compare(method="FULL")
 
@@ -95,55 +97,57 @@ class TestMLError(unittest.TestCase):
             w=self.w,
             name_y=self.y_name,
             name_x=self.x_names,
-            name_w="south_q.gal",
+            name_w=self.w_name,
             method="ORD",
         )
-        betas = np.array([[6.1492], [4.4024], [1.7784], [-0.3781], [0.4858], [0.2991]])
-        np.testing.assert_allclose(reg.betas, betas, RTOL + 0.0001)
-        u = np.array([-5.97649777])
+        betas = np.array([[19.45930348],
+       [ 3.98928064],
+       [-0.16714232],
+       [ 0.57336871],
+       [ 0.71757002]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([29.870239])
         np.testing.assert_allclose(reg.u[0], u, RTOL)
-        predy = np.array([6.92258051])
+        predy = np.array([17.129761])
         np.testing.assert_allclose(reg.predy[0], predy, RTOL)
-        n = 1412
+        n = 211
         np.testing.assert_allclose(reg.n, n, RTOL)
-        k = 5
+        k = 4
         np.testing.assert_allclose(reg.k, k, RTOL)
-        y = np.array([0.94608274])
+        y = np.array([47.])
         np.testing.assert_allclose(reg.y[0], y, RTOL)
-        x = np.array([1.0, -0.39902838, 0.89645344, 6.85780705, 7.2636377])
+        x = np.array([  1.  ,   4.  , 148.  ,  11.25])
         np.testing.assert_allclose(reg.x[0], x, RTOL)
-        e = np.array([-4.92843327])
+        e = np.array([44.392043])
         np.testing.assert_allclose(reg.e_filtered[0], e, RTOL)
-        my = 9.5492931620846928
+        my = 44.30718
         np.testing.assert_allclose(reg.mean_y, my)
-        sy = 7.0388508798387219
+        sy = 23.606077
         np.testing.assert_allclose(reg.std_y, sy)
         vm = np.array(
-            [1.06476526, 0.05548248, 0.04544514, 0.00614425, 0.01481356, 0.001501]
+            [3.775969e+01, 1.337534e+00, 4.440495e-03, 2.890193e-02,
+       3.586781e-03]
         )
         np.testing.assert_allclose(reg.vm.diagonal(), vm, RTOL * 10)
-        sig2 = np.array([[32.40685441]])
+        sig2 = np.array([[219.239799]])
         np.testing.assert_allclose(reg.sig2, sig2, RTOL)
-        pr2 = 0.3057664820364818
+        pr2 = 0.34147059826596426
         np.testing.assert_allclose(reg.pr2, pr2)
         std_err = np.array(
-            [1.03187463, 0.23554719, 0.21317867, 0.07838525, 0.12171098, 0.038744]
+            [6.144892, 1.156518, 0.066637, 0.170006, 0.05989 ]
         )
         np.testing.assert_allclose(reg.std_err, std_err, RTOL * 10)
-        z_stat = [
-            (5.95927510, 2.5335927e-09),
-            (18.6901829, 5.9508630e-78),
-            (8.34216329, 7.2943634e-17),
-            (-4.8232686, 1.4122457e-06),
-            (3.99130608, 6.5710407e-05),
-            (7.71923784, 1.1702739e-14),
-        ]
+        z_stat = [(3.166744811610107, 0.0015415552994677963),
+         (3.4493895324306485, 0.0005618555635414317),
+         (-2.5082495410045618, 0.012133094835810014),
+         (3.3726442232925864, 0.0007445008419860677),
+         (11.981517603949666, 4.441183328428627e-33)]
         np.testing.assert_allclose(reg.z_stat, z_stat, rtol=RTOL, atol=ATOL)
-        logll = -4471.407066887894
+        logll = -881.269405
         np.testing.assert_allclose(reg.logll, logll, RTOL)
-        aic = 8952.8141337757879
+        aic = 1770.538809
         np.testing.assert_allclose(reg.aic, aic, RTOL)
-        schwarz = 8979.0779458660545
+        schwarz = 1783.946242
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
 

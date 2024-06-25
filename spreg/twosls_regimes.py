@@ -353,7 +353,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         vm=False,
         constant_regi="many",
         cols2regi="all",
-        regime_err_sep=True,
+        regime_err_sep=False,
         name_y=None,
         name_x=None,
         cores=False,

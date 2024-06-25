@@ -54,7 +54,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                    Spatial weights sparse matrix 
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SDEM type.                          
+                   If slx_lags>0, the specification becomes of the SLX-Error type.                          
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue computation
@@ -83,7 +83,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
     name_regimes : string
                    Name of regimes variable for use in output
     latex        : boolean
-                   Specifies if summary is to be printed in latex format
+                   Specifies if the table with the coefficients' results and their inference is to be printed in LaTeX format
 
     Attributes
     ----------
@@ -378,7 +378,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
             self.title = "ML SPATIAL ERROR"
             if slx_lags >0:
-                self.title += " WITH SLX (SDEM)"
+                self.title += " WITH SLX (SLX-Error)"
             self.title += " - REGIMES (METHOD = " + method + ")"
 
             self.name_x = USER.set_name_x(name_x, x, constant=True)
@@ -527,7 +527,7 @@ def _work_error(
     model.w = w_r
     model.title = "ML SPATIAL ERROR"
     if slx_lags >0:
-        model.title += " WITH SLX (SDEM)"
+        model.title += " WITH SLX (SLX-Error)"
     model.title += " - REGIME " + str(r) + " (METHOD = " + method + ")"
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
