@@ -291,7 +291,7 @@ def make_wxg(wx,gamma):
 
 def dgp_errproc(u,w,lam=0.5,model='sar',imethod='power_exp'):
     """
-    dgp_sar: generates pure spatial error process
+    dgp_errproc: generates pure spatial error process
 
     Arguments:
     ----------
@@ -303,7 +303,7 @@ def dgp_errproc(u,w,lam=0.5,model='sar',imethod='power_exp'):
 
     Returns:
     --------
-    y : vector of observations following a pure SAR process
+    y : vector of observations following a spatial AR or MA process
 
     Examples
     --------

@@ -5,10 +5,10 @@ __author__ = "Luc Anselin, Pedro V. Amaral"
 import textwrap as TW
 import numpy as np
 import pandas as pd
-import math
 from . import diagnostics as diagnostics
 from . import diagnostics_tsls as diagnostics_tsls
 from . import diagnostics_sp as diagnostics_sp
+from .sputils import _sp_effects
 
 __all__ = []
 
@@ -568,7 +568,7 @@ def _summary_iteration(reg):
 
     return txt
 
-def _summary_impacts(reg, spmult):
+def _summary_impacts(reg, spmult, spat_impacts, slx_lags=0, regimes=False):
     """
     Spatial direct, indirect and total effects in spatial lag model.
     Uses multipliers computed by sputils._spmultipliers.
@@ -577,21 +577,24 @@ def _summary_impacts(reg, spmult):
     ----------
     reg:     spreg regression object
     spmult:    spatial multipliers as a dictionary
+    spat_impacts:  spatial impacts method as string
+    slx_lags: int, number of spatial lags of X in the model
+    regimes: boolean, True if regimes model
 
     Returns
     -------
     strings with direct, indirect and total effects
 
     """
-    variables = reg.output[reg.output['var_type'].isin(['x', 'wx', 'yend']) & (reg.output.index != 0)]
+    variables = reg.output.query("var_type in ['x', 'yend'] and index != 0")
+    if regimes:
+        variables = variables[~variables['var_names'].str.endswith('_CONSTANT')]
     variables_index = variables.index
-    m1 = spmult['ati']
-    btot = m1 * reg.betas[variables_index]
-    m2 = spmult['adi']
-    bdir = m2 * reg.betas[variables_index]
-    m3 = spmult['aii']
-    bind = m3 * reg.betas[variables_index]
+
+    btot, bdir, bind = _sp_effects(reg, variables, spmult, slx_lags)
+ 
     strSummary = "\nSPATIAL LAG MODEL IMPACTS\n"
+    strSummary += "Impacts computed using the '" + spat_impacts + "' method.\n"
     strSummary += "            Variable         Direct        Indirect          Total\n"
     for i in range(len(variables)):
         strSummary += "%20s   %12.4f    %12.4f    %12.4f\n" % (

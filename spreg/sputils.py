@@ -307,8 +307,7 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
         adii0 = np.sum(np.diag(invirw0))
         multipliers["adi"] = adii0 / n
     elif method == "power":
-        wf = w.full()[0]
-        ws3 = SP.csr_array(wf)
+        ws3 = w.to_sparse(fmt='csr')        
         rhop = rho
         ww = ws3
         pow = 1
@@ -329,6 +328,45 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
     multipliers["aii"] = multipliers["ati"] - multipliers["adi"]
     return (multipliers)
 
+def _sp_effects(reg, variables, spmult, slx_lags=0):
+    """
+    Calculate spatial lag, direct and indirect effects
+    
+    Attributes
+    ----------
+    reg        : regression object
+    variables  : chunk of self.output with variables to calculate effects
+    spmult     : dictionary with spatial multipliers
+    slx_lags   : number of SLX lags
+
+    Returns
+    -------
+    btot       : total effects
+    bdir       : direct effects
+    bind       : indirect effects
+    """
+    variables_index = variables.index
+    m1 = spmult['ati']
+    btot = m1 * reg.betas[variables_index]
+    m2 = spmult['adi']
+    bdir = m2 * reg.betas[variables_index]
+
+    # Assumes all SLX effects are indirect effects. Needs revision by LA. 
+    if slx_lags > 0:
+        variables_wx = reg.output.query("var_type == 'wx'")
+        variables_wx_index = variables_wx.index
+        
+        chunk_size = len(variables)
+        for i in range(slx_lags):
+            start_idx = i * chunk_size
+            end_idx = start_idx + chunk_size
+            chunk_indices = variables_wx_index[start_idx:end_idx]
+            btot += m1 * reg.betas[chunk_indices]
+        bind = btot - bdir
+    else:
+        m3 = spmult['aii']
+        bind = m3 * reg.betas[variables_index]
+    return btot, bdir, bind
 
 def _test():
     import doctest

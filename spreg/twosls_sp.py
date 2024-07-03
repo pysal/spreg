@@ -238,9 +238,11 @@ class GM_Lag(BaseGM_Lag):
                    If True, then use n-k to estimate sigma^2. If False, use n.
     spat_diag    : boolean
                    If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)
-    spat_impacts : boolean
-                   If True, include average direct impact (ADI), average indirect impact (AII),
-                    and average total impact (ATI) in summary results
+    spat_impacts : string
+                   Include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results.
+                    Options are 'simple', 'full', 'power', or None.
+                    See sputils.spmultiplier for more information.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -505,7 +507,7 @@ class GM_Lag(BaseGM_Lag):
             gwk=None,
             sig2n_k=False,
             spat_diag=True,
-            spat_impacts=True,
+            spat_impacts="simple",
             vm=False,
             name_y=None,
             name_x=None,
@@ -585,10 +587,11 @@ class GM_Lag(BaseGM_Lag):
         self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _spat_pseudo_r2(self)
         diag_out = None
+
         if spat_diag:
             diag_out = _spat_diag_out(self, w, 'yend')
         if spat_impacts and slx_lags == 0:
-            impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+            impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts, slx_lags)
             try:
                 diag_out += impacts
             except TypeError:
