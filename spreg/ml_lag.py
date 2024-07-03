@@ -340,9 +340,11 @@ class ML_Lag(BaseML_Lag):
                    tolerance criterion in mimimize_scalar function and inverse_product
     spat_diag    : boolean
                    If True, then compute Common Factor Hypothesis test when applicable
-    spat_impacts : boolean
-                   If True, include average direct impact (ADI), average indirect impact (AII),
-                    and average total impact (ATI) in summary results
+    spat_impacts : string
+                   Include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results.
+                    Options are 'simple', 'full', 'power', or None.
+                    See sputils.spmultiplier for more information.
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -594,7 +596,7 @@ class ML_Lag(BaseML_Lag):
         slx_lags=0,
         method="full",
         epsilon=0.0000001,
-        spat_impacts=True,
+        spat_impacts="simple",
         vm=False,
         spat_diag=True,
         name_y=None,
@@ -642,7 +644,7 @@ class ML_Lag(BaseML_Lag):
         if spat_diag and slx_lags==1:
             diag_out = _spat_diag_out(self, w, 'yend', ml=True)
         if spat_impacts and slx_lags == 0:
-            impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+            impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts)
             try:
                 diag_out += impacts
             except TypeError:

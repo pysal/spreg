@@ -88,9 +88,11 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    matrix must have ones along the main diagonal.
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
-    spat_impacts : boolean
-                   If True, include average direct impact (ADI), average indirect impact (AII),
-                    and average total impact (ATI) in summary results
+    spat_impacts : string
+                   Include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results.
+                    Options are 'simple', 'full', 'power', or None.
+                    See sputils.spmultiplier for more information.
     spat_diag    : boolean
                    If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)
     vm           : boolean
@@ -455,7 +457,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         gwk=None,
         sig2n_k=False,
         spat_diag=True,
-        spat_impacts=True,
+        spat_impacts="simple",
         constant_regi="many",
         cols2regi="all",
         regime_lag_sep=False,
@@ -643,7 +645,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             if spat_diag:
                 diag_out = _spat_diag_out(self, w, 'yend')
             if spat_impacts and slx_lags == 0:
-                impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+                impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts, regimes=True)
                 try:
                     diag_out += impacts
                 except TypeError:
@@ -847,7 +849,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             if spat_diag:
                 results[r].other_mid += _spat_diag_out(results[r], results[r].w, 'yend')
             if spat_impacts and slx_lags == 0:
-                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho))
+                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho, method=spat_impacts), spat_impacts)
             counter += 1
         self.multi = results
         if robust == "hac":

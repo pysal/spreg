@@ -66,9 +66,11 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                     the spatial parameter is fixed accross regimes.
     spat_diag    : boolean
                    If True, then compute Common Factor Hypothesis test when applicable
-    spat_impacts : boolean
-                   If True, include average direct impact (ADI), average indirect impact (AII),
-                    and average total impact (ATI) in summary results
+    spat_impacts : string
+                   Include average direct impact (ADI), average indirect impact (AII),
+                    and average total impact (ATI) in summary results.
+                    Options are 'simple', 'full', 'power', or None.
+                    See sputils.spmultiplier for more information.
     cores        : boolean
                    Specifies if multiprocessing is to be used
                    Default: no multiprocessing, cores = False
@@ -318,7 +320,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         regime_lag_sep=False,
         cores=False,
         spat_diag=True,
-        spat_impacts=True,
+        spat_impacts="simple",
         vm=False,
         name_y=None,
         name_x=None,
@@ -448,8 +450,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                     diag_out = _spat_diag_out(self, w, 'yend', ml=True)
             else:
                 self.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"+ " (METHOD = "+ method+ ")")
+               
             if spat_impacts and slx_lags == 0:
-                impacts = _summary_impacts(self, _spmultiplier(w, self.rho))
+                impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts, regimes=True)
                 try:
                     diag_out += impacts
                 except TypeError:
@@ -605,7 +608,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             if spat_diag and slx_lags == 1:
                 results[r].other_mid += _spat_diag_out(results[r], None, 'yend', ml=True)
             if spat_impacts and slx_lags == 0:
-                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho))
+                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho, method=spat_impacts), spat_impacts)
             counter += 1
         self.multi = results
         self.chow = REGI.Chow(self)
@@ -644,7 +647,7 @@ def _work(
     model.schwarz = DIAG.schwarz(reg=model)
     model.slx_lags = slx_lags
     model.w = w_r
-    model.rho = model.betas[-1]    
+    model.rho = model.betas[-1]
     return model
 
 
