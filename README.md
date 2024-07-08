@@ -1,6 +1,6 @@
 # spreg
 
-[![unittests](https://github.com/pysal/spreg/workflows/.github/workflows/unittests.yml/badge.svg)](https://github.com/pysal/spreg/actions?query=workflow%3A.github%2Fworkflows%2Funittests.yml)
+[![unittests](https://github.com/pysal/spreg/actions/workflows/unittests.yml/badge.svg)](https://github.com/pysal/spreg/actions/workflows/unittests.yml)
 [![codecov](https://codecov.io/gh/pysal/spreg/branch/master/graph/badge.svg?token=9VrJpIYIl3)](https://codecov.io/gh/pysal/spreg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/spreg)
 ![PyPI](https://img.shields.io/pypi/v/spreg)
