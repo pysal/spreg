@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import libpysal
+import geopandas as gpd
 from libpysal.examples import load_example
 from spreg.sur_utils import sur_dictxy
 from spreg.sur_error import SURerrorML, SURerrorGM
@@ -14,15 +15,16 @@ def dict_compare(actual, desired, rtol, atol=1e-7):
 
 class Test_SUR_error(unittest.TestCase):
     def setUp(self):
-        nat = load_example("Natregimes")
-        self.db = libpysal.io.open(nat.get_path("natregimes.dbf"), "r")
-        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
-        self.w.transform = "r"
+        nat = libpysal.examples.load_example('NCOVR')
+        self.db = gpd.read_file(nat.get_path("NAT.shp"))
+        self.dbs = self.db[self.db['SOUTH'] == 1]
+        self.w = libpysal.weights.Queen.from_dataframe(self.dbs)
+        self.w.transform = 'r'
 
     def test_error(self):  # 2 equations
         y_var0 = ["HR80", "HR90"]
         x_var0 = [["PS80", "UE80"], ["PS90", "UE90"]]
-        bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(self.db, y_var0, x_var0)
+        bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(self.dbs, y_var0, x_var0)
         reg = SURerrorML(
             bigy0,
             bigX0,
@@ -30,24 +32,33 @@ class Test_SUR_error(unittest.TestCase):
             name_bigy=bigyvars0,
             name_bigX=bigXvars0,
             spat_diag=True,
+            vm=True,
             name_w="natqueen",
-            name_ds="natregimes",
-            nonspat_diag=False,
+            name_ds="nat",
+            nonspat_diag=True,
         )
 
         dict_compare(
             reg.bSUR0,
             {
-                0: np.array([[5.18423225], [0.67757925], [0.25706498]]),
-                1: np.array([[3.79731807], [1.02411196], [0.35895674]]),
+                0: np.array([[8.460653],
+            [1.139978],
+            [0.250482]]),
+                1: np.array([[6.82362 ],
+            [1.115422],
+            [0.36281 ]]),
             },
             RTOL,
         )
         dict_compare(
             reg.bSUR,
             {
-                0: np.array([[4.0222855], [0.88489646], [0.42402853]]),
-                1: np.array([[3.04923009], [1.10972634], [0.47075682]]),
+                0: np.array([[7.686057],
+            [1.277312],
+            [0.358611]]),
+                1: np.array([[6.061804],
+            [1.176992],
+            [0.466222]]),
             },
             RTOL,
         )
@@ -55,208 +66,131 @@ class Test_SUR_error(unittest.TestCase):
             reg.sur_inf,
             {
                 0: np.array(
-                    [
-                        [3.669218e-01, 1.096224e01, 5.804195e-28],
-                        [1.412908e-01, 6.262946e00, 3.777726e-10],
-                        [4.267954e-02, 9.935169e00, 2.926783e-23],
-                    ]
+                    [[5.231980e-01, 1.469053e+01, 7.412822e-49],
+            [2.210486e-01, 5.778424e+00, 7.540380e-09],
+            [6.830534e-02, 5.250110e+00, 1.520084e-07]]
                 ),
                 1: np.array(
-                    [
-                        [3.31399691e-01, 9.20106497e00, 3.54419478e-20],
-                        [1.33525912e-01, 8.31094371e00, 9.49439563e-17],
-                        [4.00409716e-02, 1.17568780e01, 6.50970965e-32],
-                    ]
+                    [[5.615405e-01, 1.079495e+01, 3.636453e-27],
+            [2.374752e-01, 4.956272e+00, 7.185859e-07],
+            [6.682544e-02, 6.976722e+00, 3.021471e-12]]
                 ),
             },
             rtol=RTOL,
             atol=ATOL,
         )
         np.testing.assert_allclose(
-            reg.lamols, np.array([[0.60205035], [0.56056348]]), RTOL
+            reg.lamols, np.array([[0.452342],
+            [0.456641]]), RTOL
         )
         np.testing.assert_allclose(
-            reg.lamsur, np.array([[0.54361986], [0.50445451]]), RTOL
+            reg.lamsur, np.array([[0.406481],
+            [0.404923]]), RTOL
         )
         np.testing.assert_allclose(
-            reg.corr, np.array([[1.0, 0.31763719], [0.31763719, 1.0]]), RTOL
+            reg.corr, np.array([[1.      , 0.317296],
+            [0.317296, 1.      ]]), RTOL
         )
         np.testing.assert_allclose(
             reg.surchow,
-            [
-                (5.1073696860799931, 1, 0.023824413482255974),
-                (1.9524745281321374, 1, 0.16232044613203933),
-                (0.79663667463065702, 1, 0.37210085476281407),
-            ],
+        [[5.754872, 1.      , 0.016443],
+            [0.139452, 1.      , 0.708826],
+            [1.565087, 1.      , 0.210922]],
             rtol=RTOL,
             atol=ATOL,
         )
-        np.testing.assert_allclose(reg.llik, -19860.067987395596)
-        np.testing.assert_allclose(reg.errllik, -19497.031128906794)
-        np.testing.assert_allclose(reg.surerrllik, -19353.052023136348)
+        np.testing.assert_allclose(reg.llik, -9210.502749)
+        np.testing.assert_allclose(reg.errllik, -9154.633582)
+        np.testing.assert_allclose(reg.surerrllik, -9084.265703)
         np.testing.assert_allclose(
-            reg.likrlambda, (1014.0319285186415, 2, 6.3938800607190098e-221)
-        )
-
-    def test_error_vm(self):  # Asymptotic variance matrix
-        y_var0 = ["HR80", "HR90"]
-        x_var0 = [["PS80", "UE80"], ["PS90", "UE90"]]
-        bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(self.db, y_var0, x_var0)
-        reg = SURerrorML(
-            bigy0,
-            bigX0,
-            self.w,
-            spat_diag=True,
-            vm=True,
-            name_bigy=bigyvars0,
-            name_bigX=bigXvars0,
-            name_w="natqueen",
-            name_ds="natregimes",
-        )
-
-        dict_compare(
-            reg.bSUR,
-            {
-                0: np.array([[4.0222855], [0.88489646], [0.42402853]]),
-                1: np.array([[3.04923009], [1.10972634], [0.47075682]]),
-            },
-            RTOL,
-        )
-        dict_compare(
-            reg.sur_inf,
-            {
-                0: np.array(
-                    [
-                        [3.669218e-01, 1.096224e01, 5.804195e-28],
-                        [1.412908e-01, 6.262946e00, 3.777726e-10],
-                        [4.267954e-02, 9.935169e00, 2.926783e-23],
-                    ]
-                ),
-                1: np.array(
-                    [
-                        [3.31399691e-01, 9.20106497e00, 3.54419478e-20],
-                        [1.33525912e-01, 8.31094371e00, 9.49439563e-17],
-                        [4.00409716e-02, 1.17568780e01, 6.50970965e-32],
-                    ]
-                ),
-            },
-            rtol=RTOL,
-            atol=ATOL,
+            reg.likrlambda, ([2.524741e+02, 2.000000e+00, 1.499504e-55])
         )
         np.testing.assert_allclose(
             reg.vm,
             np.array(
-                [
-                    [
-                        4.14625293e-04,
-                        2.38494923e-05,
-                        -3.48748935e-03,
-                        -5.55994101e-04,
-                        -1.63239040e-04,
-                    ],
-                    [
-                        2.38494923e-05,
-                        4.53642714e-04,
-                        -2.00602452e-04,
-                        -5.46893937e-04,
-                        -3.10498019e-03,
-                    ],
-                    [
-                        -3.48748935e-03,
-                        -2.00602452e-04,
-                        7.09989591e-01,
-                        2.11105214e-01,
-                        6.39785285e-02,
-                    ],
-                    [
-                        -5.55994101e-04,
-                        -5.46893937e-04,
-                        2.11105214e-01,
-                        3.42890248e-01,
-                        1.91931389e-01,
-                    ],
-                    [
-                        -1.63239040e-04,
-                        -3.10498019e-03,
-                        6.39785285e-02,
-                        1.91931389e-01,
-                        5.86933821e-01,
-                    ],
-                ]
+        [[ 1.15080293e-03,  6.37266403e-05, -7.11447519e-03,
+                -1.26916425e-03, -4.45217262e-04],
+            [ 6.37266403e-05,  1.15389186e-03, -3.93969800e-04,
+                -1.26666791e-03, -8.06150412e-03],
+            [-7.11447519e-03, -3.93969800e-04,  1.76804521e+00,
+                5.90841784e-01,  1.99893702e-01],
+            [-1.26916425e-03, -1.26666791e-03,  5.90841784e-01,
+                1.08029750e+00,  6.71007645e-01],
+            [-4.45217262e-04, -8.06150412e-03,  1.99893702e-01,
+                6.71007645e-01,  2.28037800e+00]]
             ),
             RTOL,
         )
         np.testing.assert_allclose(
             reg.lamsetp,
-            (
-                np.array([[0.02036235], [0.02129889]]),
-                np.array([[26.69730489], [23.68454458]]),
-                np.array([[5.059048e-157], [5.202838e-124]]),
-            ),
+        (np.array([[0.03392349],
+                [0.03396898]]),
+        np.array([[11.98229414],
+                [11.92037038]]),
+        np.array([[4.39977145e-33],
+                [9.26955308e-33]])),
             rtol=RTOL,
             atol=ATOL,
         )
         np.testing.assert_allclose(
-            reg.joinlam, (1207.81269, 2, 5.330924e-263), rtol=RTOL, atol=ATOL
-        )
-        np.testing.assert_allclose(
-            reg.surchow,
-            [
-                (5.1073696860799931, 1, 0.023824413482255974),
-                (1.9524745281321374, 1, 0.16232044613203933),
-                (0.79663667463065702, 1, 0.37210085476281407),
-            ],
-            rtol=RTOL,
-            atol=ATOL,
+            reg.joinlam, [2.707006e+02, 2.000000e+00, 1.652354e-59], rtol=RTOL, atol=ATOL
         )
         np.testing.assert_allclose(
             reg.likrlambda,
-            (1014.0319285186415, 2, 6.3938800607190098e-221),
+            [2.524741e+02, 2.000000e+00, 1.499504e-55],
             rtol=RTOL,
             atol=ATOL,
         )
         np.testing.assert_allclose(
             reg.lrtest,
-            (287.95821154104488, 1, 1.3849971230596533e-64),
+            [1.407358e+02, 1.000000e+00, 1.837906e-32],
             rtol=RTOL,
             atol=ATOL,
         )
         np.testing.assert_allclose(
             reg.lamtest,
-            (1.8693306894921564, 1, 0.17155175615429052),
+            [0.001115, 1.      , 0.973358],
             rtol=RTOL,
             atol=ATOL,
         )
 
     def test_error_3eq(self):  # Three equation example, unequal K
-        y_var1 = ["HR60", "HR70", "HR80"]
-        x_var1 = [["RD60", "PS60"], ["RD70", "PS70", "UE70"], ["RD80", "PS80"]]
-        bigy1, bigX1, bigyvars1, bigXvars1 = sur_dictxy(self.db, y_var1, x_var1)
+        bigy1b, bigX1b, bigyvars1, bigXvars1 = sur_dictxy(self.dbs, ["HR60", "HR70", "HR80"], [["RD60", "PS60"], ["RD70", "PS70", "UE70"], ["RD80", "PS80"]])
         reg = SURerrorML(
-            bigy1,
-            bigX1,
-            self.w,
-            name_bigy=bigyvars1,
-            name_bigX=bigXvars1,
-            name_w="natqueen",
-            name_ds="natregimes",
+            bigy1b,
+            bigX1b,
+            self.w
         )
 
         dict_compare(
             reg.bSUR0,
             {
-                0: np.array([[4.50407527], [2.39199682], [0.52723694]]),
-                1: np.array([[7.44509818], [3.74968571], [1.28811685], [-0.23526451]]),
-                2: np.array([[6.92761614], [3.65423052], [1.38247611]]),
+                0: np.array([[6.176503],
+        [1.57968 ],
+        [0.487517]]),
+                1: np.array([[10.393457],
+        [ 2.847285],
+        [ 1.175123],
+        [-0.448833]]),
+                2: np.array([[8.352587],
+        [2.911434],
+        [1.9949  ]]),
             },
             RTOL,
         )
         dict_compare(
             reg.bSUR,
             {
-                0: np.array([[4.474891], [2.19004379], [0.59110509]]),
-                1: np.array([[7.15676612], [3.49581077], [1.12846288], [-0.17133968]]),
-                2: np.array([[6.91550936], [3.69351192], [1.40395543]]),
+                0: np.array([[6.178485],
+        [1.550605],
+        [0.400335]]),
+                1: np.array([[ 9.961855],
+        [ 2.704641],
+        [ 0.917635],
+        [-0.328154]]),
+                2: np.array([[8.245629],
+        [3.045425],
+        [1.975781]]),
             },
             RTOL,
         )
@@ -264,62 +198,58 @@ class Test_SUR_error(unittest.TestCase):
             reg.sur_inf,
             {
                 0: np.array(
-                    [
-                        [1.345557e-001, 3.325679e001, 1.628656e-242],
-                        [1.205317e-001, 1.816985e001, 8.943986e-074],
-                        [1.092657e-001, 5.409796e000, 6.309653e-008],
-                    ]
+                    [[2.745844e-001, 2.250122e+001, 4.037644e-112],
+            [2.196472e-001, 7.059523e+000, 1.670748e-012],
+            [2.277493e-001, 1.757788e+000, 7.878356e-002]]
                 ),
                 1: np.array(
-                    [
-                        [2.957692e-001, 2.419713e001, 2.384951e-129],
-                        [1.482144e-001, 2.358618e001, 5.343318e-123],
-                        [1.344687e-001, 8.392014e000, 4.778835e-017],
-                        [5.378335e-002, -3.185738e000, 1.443854e-003],
-                    ]
+                    [[ 5.209554e-01,  1.912228e+01,  1.647484e-81],
+            [ 2.664617e-01,  1.015021e+01,  3.306623e-24],
+            [ 2.731269e-01,  3.359740e+00,  7.801591e-04],
+            [ 1.073297e-01, -3.057441e+00,  2.232355e-03]]
                 ),
                 2: np.array(
-                    [
-                        [1.500528e-001, 4.608718e001, 0.000000e000],
-                        [1.236340e-001, 2.987457e001, 4.210941e-196],
-                        [1.194989e-001, 1.174869e001, 7.172248e-032],
-                    ]
+                    [[2.316232e-001, 3.559933e+001, 1.435022e-277],
+            [1.720466e-001, 1.770116e+001, 4.107648e-070],
+            [2.001817e-001, 9.869938e+000, 5.619913e-023]]
                 ),
             },
             rtol=RTOL,
             atol=ATOL,
         )
         np.testing.assert_allclose(
-            reg.lamols, np.array([[0.4248829], [0.46428101], [0.42823999]]), RTOL
+            reg.lamols, np.array([[0.345118],
+            [0.369596],
+            [0.336918]]), RTOL
         )
         np.testing.assert_allclose(
-            reg.lamsur, np.array([[0.36137603], [0.38321666], [0.37183716]]), RTOL
+            reg.lamsur, np.array([[0.296331],
+            [0.309441],
+            [0.300587]]), RTOL
         )
         np.testing.assert_allclose(
             reg.corr,
             np.array(
-                [
-                    [1.0, 0.24563253, 0.14986527],
-                    [0.24563253, 1.0, 0.25945021],
-                    [0.14986527, 0.25945021, 1.0],
-                ]
+            [[1.      , 0.250537, 0.083957],
+            [0.250537, 1.      , 0.251616],
+            [0.083957, 0.251616, 1.      ]]
             ),
             RTOL,
         )
-        np.testing.assert_allclose(reg.llik, -28695.767676078722)
-        np.testing.assert_allclose(reg.errllik, -28593.569427945633)
-        np.testing.assert_allclose(reg.surerrllik, -28393.703607018397)
+        np.testing.assert_allclose(reg.llik, -13737.409249)
+        np.testing.assert_allclose(reg.errllik, -13735.053285)
+        np.testing.assert_allclose(reg.surerrllik, -13647.929184)
         np.testing.assert_allclose(
-            reg.lrtest, (399.7316418544724, 3, 2.5309501580053097e-86)
+            reg.lrtest, [174.24820135795017, 3, 1.5398532324238953e-37]
         )
 
 
 class Test_SUR_error_gm(unittest.TestCase):
     def setUp(self):
-        nat = load_example("Natregimes")
-        self.db = libpysal.io.open(nat.get_path("natregimes.dbf"), "r")
-        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
-        self.w.transform = "r"
+        nat = libpysal.examples.load_example('NCOVR')
+        self.db = gpd.read_file(nat.get_path("NAT.shp"))
+        self.w = libpysal.weights.Queen.from_dataframe(self.db)
+        self.w.transform = 'r'
 
     def test_error_gm(self):  # 2 equations
         y_var0 = ["HR80", "HR90"]
@@ -333,7 +263,7 @@ class Test_SUR_error_gm(unittest.TestCase):
             name_bigX=bigXvars0,
             spat_diag=False,
             name_w="natqueen",
-            name_ds="natregimes",
+            name_ds="nat",
             nonspat_diag=True,
         )
 
