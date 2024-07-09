@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 import libpysal
 import geopandas as gpd
-from libpysal.examples import load_example
 from spreg.sur_utils import sur_dictxy
 from spreg.sur_error import SURerrorML, SURerrorGM
 from libpysal.common import RTOL

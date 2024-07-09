@@ -1,19 +1,21 @@
 import unittest
 import numpy as np
-from ..sur_utils import sur_dictxy, sur_dictZ
-from ..sur_lag import SURlagIV
-from .test_sur import dict_compare
+from spreg.sur_utils import sur_dictxy, sur_dictZ
+from spreg.sur_lag import SURlagIV
 import libpysal
+import geopandas as gpd
 from libpysal.common import RTOL
-from libpysal.examples import load_example
 
+def dict_compare(actual, desired, rtol, atol=1e-7):
+    for i in actual.keys():
+        np.testing.assert_allclose(actual[i], desired[i], rtol, atol=atol)
 
 class Test_SURlagIV(unittest.TestCase):
     def setUp(self):
-        nat = load_example("Natregimes")
-        self.db = libpysal.io.open(nat.get_path("natregimes.dbf"), "r")
-        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
-        self.w.transform = "r"
+        nat = libpysal.examples.load_example('NCOVR')
+        self.db = gpd.read_file(nat.get_path("NAT.shp"))
+        self.w = libpysal.weights.Queen.from_dataframe(self.db)
+        self.w.transform = 'r'
 
     def test_3SLS(self):  # 2 equations, same K in each
         y_var0 = ["HR80", "HR90"]
