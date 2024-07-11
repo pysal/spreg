@@ -1,9 +1,9 @@
 import unittest
 import numpy as np
-from ..sur_utils import sur_dictxy, sur_dictZ
-from ..sur import SUR, ThreeSLS
+from spreg.sur_utils import sur_dictxy, sur_dictZ
+from spreg.sur import SUR, ThreeSLS
 import libpysal
-from libpysal.examples import load_example
+import geopandas as gpd
 from libpysal.common import RTOL
 
 
@@ -14,10 +14,10 @@ def dict_compare(actual, desired, rtol, atol=1e-7):
 
 class Test_SUR(unittest.TestCase):
     def setUp(self):
-        nat = load_example("Natregimes")
-        self.db = libpysal.io.open(nat.get_path("natregimes.dbf"), "r")
-        self.w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
-        self.w.transform = "r"
+        nat = libpysal.examples.load_example('NCOVR')
+        self.db = gpd.read_file(nat.get_path("NAT.shp"))
+        self.w = libpysal.weights.Queen.from_dataframe(self.db)
+        self.w.transform = 'r'
 
     def test_SUR(self):  # 2 equations, same K in each, two-step estimation
         y_var0 = ["HR80", "HR90"]
