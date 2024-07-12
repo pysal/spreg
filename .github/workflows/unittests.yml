@@ -19,9 +19,9 @@
  jobs:
    unittests:
      env:
-       RUN_TEST: pytest -v spreg -n auto --cov=spreg --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
+       RUN_TEST: pytest -v spreg -n auto --cov=spreg --cov-report=xml --color yes --cov-append --cov-report term-missing
        ############################################## replace above with this chunk when docstring testing gets worked out
-       #RUN_TEST: pytest -v spreg -n auto --cov=spreg --doctest-modules --cov-config=.coveragerc --cov-report=xml --color yes --cov-append --cov-report term-missing
+       #RUN_TEST: pytest -v spreg -n auto --cov=spreg --doctest-modules --cov-report=xml --color yes --cov-append --cov-report term-missing
        ##############################################
      name: ${{ matrix.os }}, ${{ matrix.environment-file }}
      runs-on: ${{ matrix.os }}
@@ -30,20 +30,29 @@
        matrix:
          os: [ubuntu-latest]
          environment-file:
-           - ci/39.yaml
-           - ci/310.yaml
-           - ci/310-BASE.yaml
-           - ci/310-DEV.yaml
-           - ci/311.yaml
+           - ci/39-latest.yaml
+           - ci/310-min.yaml
+           - ci/310-latest.yaml
+           - ci/311-latest.yaml
+           - ci/312-latest.yaml
+           - ci/312-dev.yaml
          include:
-           - environment-file: ci/310.yaml
-             os: macos-latest
-           - environment-file: ci/310.yaml
+           - environment-file: ci/312-latest.yaml
+             os: macos-13 # Intel
+           - environment-file: ci/312-latest.yaml
+             os: macos-14 # Apple Silicon
+           - environment-file: ci/312-latest.yaml
              os: windows-latest
-     
+       fail-fast: false
+    defaults:
+       run:
+         shell: bash -l {0}
      steps:
+     
        - name: checkout repo
          uses: actions/checkout@v4
+         with:
+           fetch-depth: 0 # Fetch all history for all branches and tags.
        
        - name: setup micromamba
          uses: mamba-org/provision-with-micromamba@main
@@ -51,20 +60,8 @@
            environment-file: ${{ matrix.environment-file }}
            micromamba-version: 'latest'
        
-       - name: install bleeding edge libpysal (only Ubuntu / Python 3.9)
-         shell: bash -l {0}
-         run: pip install git+https://github.com/pysal/libpysal.git@main
-         if: matrix.os == 'ubuntu-latest' && contains(matrix.environment-file, 'DEV')
-       
-       - name: run tests - bash
-         shell: bash -l {0}
+       - name: run tests
          run: ${{ env.RUN_TEST }}
-         if: matrix.os != 'windows-latest'
-       
-       - name: run tests - powershell
-         shell: powershell
-         run: ${{ env.RUN_TEST }}
-         if: matrix.os == 'windows-latest'
        
        - name: codecov
          uses: codecov/codecov-action@v4
