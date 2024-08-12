@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>API reference &#8212; spreg v0.1.dev1+g326100f Manual</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pysal-styles.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="shortcut icon" href="_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="spreg.OLS" href="generated/spreg.OLS.html" />
+    <link rel="prev" title="Skater Regression" href="notebooks/skater_reg.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.dev1+g326100f</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="installation.html">Installation</a></li>
+                <li><a href="tutorials.html">Tutorials</a></li>
+                <li><a href="#">API</a></li>
+                <li><a href="references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/GM_Lag_example.html">Spatial 2SLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">API reference</a><ul>
+<li><a class="reference internal" href="#spatial-regression-models">Spatial Regression Models</a></li>
+<li><a class="reference internal" href="#discrete-choice-models">Discrete Choice Models</a></li>
+<li><a class="reference internal" href="#regimes-models">Regimes Models</a></li>
+<li><a class="reference internal" href="#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li><a class="reference internal" href="#spatial-panel-models">Spatial Panel Models</a></li>
+<li><a class="reference internal" href="#diagnostics">Diagnostics</a></li>
+<li><a class="reference internal" href="#dgp">DGP</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <section id="api-reference">
+<span id="api-ref"></span><h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">¶</a></h1>
+<section id="spatial-regression-models">
+<span id="models-api"></span><h2>Spatial Regression Models<a class="headerlink" href="#spatial-regression-models" title="Permalink to this heading">¶</a></h2>
+<p>These are the standard spatial regression models supported by the <cite>spreg</cite> package. Each of them contains a significant amount of detail in their docstring discussing how they’re used, how they’re fit, and how to interpret the results.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.OLS.html#spreg.OLS" title="spreg.OLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.OLS</span></code></a>(y, x[, w, robust, gwk, slx_lags, ...])</p></td>
+<td><p>Ordinary least squares with results and diagnostics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.ML_Lag.html#spreg.ML_Lag" title="spreg.ML_Lag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ML_Lag</span></code></a>(y, x, w[, slx_lags, method, ...])</p></td>
+<td><p>ML estimation of the spatial lag model with all results and diagnostics; <a class="bibtex reference internal" href="references.html#anselin1988" id="id1">[Ans88]</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.ML_Error.html#spreg.ML_Error" title="spreg.ML_Error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ML_Error</span></code></a>(y, x, w[, slx_lags, method, ...])</p></td>
+<td><p>ML estimation of the spatial error model with all results and diagnostics; <a class="bibtex reference internal" href="references.html#anselin1988" id="id2">[Ans88]</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Lag.html#spreg.GM_Lag" title="spreg.GM_Lag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Lag</span></code></a>(y, x[, yend, q, w, w_lags, ...])</p></td>
+<td><p>Spatial two stage least squares (S2SLS) with results and diagnostics; Anselin (1988) <a class="bibtex reference internal" href="references.html#anselin1988" id="id3">[Ans88]</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Error.html#spreg.GM_Error" title="spreg.GM_Error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Error</span></code></a>(y, x, w[, slx_lags, vm, ...])</p></td>
+<td><p>GMM method for a spatial error model, with results and diagnostics; based on Kelejian and Prucha (1998, 1999) <a class="bibtex reference internal" href="references.html#kelejian1998" id="id4">[KP98]</a> <a class="bibtex reference internal" href="references.html#kelejian1999" id="id5">[KP99]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het" title="spreg.GM_Error_Het"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Error_Het</span></code></a>(y, x, w[, slx_lags, ...])</p></td>
+<td><p>GMM method for a spatial error model with heteroskedasticity, with results and diagnostics; based on <a class="bibtex reference internal" href="references.html#arraiz2010" id="id6">[ADKP10]</a>, following <a class="bibtex reference internal" href="references.html#anselin2011" id="id7">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom" title="spreg.GM_Error_Hom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Error_Hom</span></code></a>(y, x, w[, slx_lags, ...])</p></td>
+<td><p>GMM method for a spatial error model with homoskedasticity, with results and diagnostics; based on Drukker et al. (2013) <a class="bibtex reference internal" href="references.html#drukker2013" id="id8">[DEP13]</a>, following Anselin (2011) <a class="bibtex reference internal" href="references.html#anselin2011" id="id9">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Combo.html#spreg.GM_Combo" title="spreg.GM_Combo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Combo</span></code></a>(y, x[, yend, q, w, w_lags, ...])</p></td>
+<td><p>GMM method for a spatial lag and error model with endogenous variables, with results and diagnostics; based on Kelejian and Prucha (1998, 1999) <a class="bibtex reference internal" href="references.html#kelejian1998" id="id10">[KP98]</a> <a class="bibtex reference internal" href="references.html#kelejian1999" id="id11">[KP99]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het" title="spreg.GM_Combo_Het"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Combo_Het</span></code></a>(y, x[, yend, q, w, ...])</p></td>
+<td><p>GMM method for a spatial lag and error model with heteroskedasticity and endogenous variables, with results and diagnostics; based on <a class="bibtex reference internal" href="references.html#arraiz2010" id="id12">[ADKP10]</a>, following <a class="bibtex reference internal" href="references.html#anselin2011" id="id13">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom" title="spreg.GM_Combo_Hom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Combo_Hom</span></code></a>(y, x[, yend, q, w, ...])</p></td>
+<td><p>GMM method for a spatial lag and error model with homoskedasticity and endogenous variables, with results and diagnostics; based on Drukker et al. (2013) <a class="bibtex reference internal" href="references.html#drukker2013" id="id14">[DEP13]</a>, following Anselin (2011) <a class="bibtex reference internal" href="references.html#anselin2011" id="id15">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error" title="spreg.GM_Endog_Error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Endog_Error</span></code></a>(y, x, yend, q, w[, ...])</p></td>
+<td><p>GMM method for a spatial error model with endogenous variables, with results and diagnostics; based on Kelejian and Prucha (1998, 1999) <a class="bibtex reference internal" href="references.html#kelejian1998" id="id16">[KP98]</a> <a class="bibtex reference internal" href="references.html#kelejian1999" id="id17">[KP99]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het" title="spreg.GM_Endog_Error_Het"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Endog_Error_Het</span></code></a>(y, x, yend, q, w[, ...])</p></td>
+<td><p>GMM method for a spatial error model with heteroskedasticity and endogenous variables, with results and diagnostics; based on <a class="bibtex reference internal" href="references.html#arraiz2010" id="id18">[ADKP10]</a>, following <a class="bibtex reference internal" href="references.html#anselin2011" id="id19">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom" title="spreg.GM_Endog_Error_Hom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Endog_Error_Hom</span></code></a>(y, x, yend, q, w[, ...])</p></td>
+<td><p>GMM method for a spatial error model with homoskedasticity and endogenous variables, with results and diagnostics; based on Drukker et al. (2013) <a class="bibtex reference internal" href="references.html#drukker2013" id="id20">[DEP13]</a>, following Anselin (2011) <a class="bibtex reference internal" href="references.html#anselin2011" id="id21">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.TSLS.html#spreg.TSLS" title="spreg.TSLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.TSLS</span></code></a>(y, x, yend, q[, w, robust, gwk, ...])</p></td>
+<td><p>Two stage least squares with results and diagnostics.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.ThreeSLS.html#spreg.ThreeSLS" title="spreg.ThreeSLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ThreeSLS</span></code></a>(bigy, bigX, bigyend, bigq[, ...])</p></td>
+<td><p>User class for 3SLS estimation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="discrete-choice-models">
+<h2>Discrete Choice Models<a class="headerlink" href="#discrete-choice-models" title="Permalink to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.Probit.html#spreg.Probit" title="spreg.Probit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.Probit</span></code></a>(y, x[, w, optim, scalem, ...])</p></td>
+<td><p>Classic non-spatial Probit and spatial diagnostics.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="regimes-models">
+<h2>Regimes Models<a class="headerlink" href="#regimes-models" title="Permalink to this heading">¶</a></h2>
+<p>Regimes models are variants of spatial regression models which allow for structural instability in parameters. That means that these models allow different coefficient values in distinct subsets of the data.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes" title="spreg.OLS_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.OLS_Regimes</span></code></a>(y, x, regimes[, w, ...])</p></td>
+<td><p>Ordinary least squares with results and diagnostics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes" title="spreg.TSLS_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.TSLS_Regimes</span></code></a>(y, x, yend, q, regimes[, ...])</p></td>
+<td><p>Two stage least squares (2SLS) with regimes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes" title="spreg.ML_Lag_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ML_Lag_Regimes</span></code></a>(y, x, regimes[, w, ...])</p></td>
+<td><p>ML estimation of the spatial lag model with regimes (note no consistency  checks, diagnostics or constants added) <a class="bibtex reference internal" href="references.html#anselin1988" id="id22">[Ans88]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes" title="spreg.ML_Error_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ML_Error_Regimes</span></code></a>(y, x, regimes[, w, ...])</p></td>
+<td><p>ML estimation of the spatial error model with regimes (note no consistency  checks, diagnostics or constants added); <a class="bibtex reference internal" href="references.html#anselin1988" id="id23">[Ans88]</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes" title="spreg.GM_Lag_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Lag_Regimes</span></code></a>(y, x, regimes[, yend, ...])</p></td>
+<td><p>Spatial two stage least squares (S2SLS) with regimes; <a class="bibtex reference internal" href="references.html#anselin1988" id="id24">[Ans88]</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes" title="spreg.GM_Error_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Error_Regimes</span></code></a>(y, x, regimes, w[, ...])</p></td>
+<td><p>GMM method for a spatial error model with regimes, with results and diagnostics; based on Kelejian and Prucha (1998, 1999) <a class="bibtex reference internal" href="references.html#kelejian1998" id="id25">[KP98]</a> <a class="bibtex reference internal" href="references.html#kelejian1999" id="id26">[KP99]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes" title="spreg.GM_Error_Het_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Error_Het_Regimes</span></code></a>(y, x, regimes, w)</p></td>
+<td><p>GMM method for a spatial error model with heteroskedasticity and regimes; based on Arraiz et al <a class="bibtex reference internal" href="references.html#arraiz2010" id="id27">[ADKP10]</a>, following Anselin <a class="bibtex reference internal" href="references.html#anselin2011" id="id28">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes" title="spreg.GM_Error_Hom_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Error_Hom_Regimes</span></code></a>(y, x, regimes, w)</p></td>
+<td><p>GMM method for a spatial error model with homoskedasticity, with regimes, results and diagnostics; based on Drukker et al. (2013) <a class="bibtex reference internal" href="references.html#drukker2013" id="id29">[DEP13]</a>, following Anselin (2011) <a class="bibtex reference internal" href="references.html#anselin2011" id="id30">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes" title="spreg.GM_Combo_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Combo_Regimes</span></code></a>(y, x, regimes[, ...])</p></td>
+<td><p>GMM method for a spatial lag and error model with regimes and endogenous variables, with results and diagnostics; based on Kelejian and Prucha (1998, 1999) <a class="bibtex reference internal" href="references.html#kelejian1998" id="id31">[KP98]</a> <a class="bibtex reference internal" href="references.html#kelejian1999" id="id32">[KP99]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes" title="spreg.GM_Combo_Hom_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Combo_Hom_Regimes</span></code></a>(y, x, regimes[, ...])</p></td>
+<td><p>GMM method for a spatial lag and error model with homoskedasticity, regimes and endogenous variables, with results and diagnostics; based on Drukker et al. (2013) <a class="bibtex reference internal" href="references.html#drukker2013" id="id33">[DEP13]</a>, following Anselin (2011) <a class="bibtex reference internal" href="references.html#anselin2011" id="id34">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes" title="spreg.GM_Combo_Het_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Combo_Het_Regimes</span></code></a>(y, x, regimes[, ...])</p></td>
+<td><p>GMM method for a spatial lag and error model with heteroskedasticity, regimes and endogenous variables, with results and diagnostics; based on Arraiz et al <a class="bibtex reference internal" href="references.html#arraiz2010" id="id35">[ADKP10]</a>, following Anselin <a class="bibtex reference internal" href="references.html#anselin2011" id="id36">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes" title="spreg.GM_Endog_Error_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Endog_Error_Regimes</span></code></a>(y, x, yend, q, ...)</p></td>
+<td><p>GMM method for a spatial error model with regimes and endogenous variables, with results and diagnostics; based on Kelejian and Prucha (1998, 1999) <a class="bibtex reference internal" href="references.html#kelejian1998" id="id37">[KP98]</a> <a class="bibtex reference internal" href="references.html#kelejian1999" id="id38">[KP99]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes" title="spreg.GM_Endog_Error_Hom_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Endog_Error_Hom_Regimes</span></code></a>(y, x, yend, ...)</p></td>
+<td><p>GMM method for a spatial error model with homoskedasticity, regimes and endogenous variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes" title="spreg.GM_Endog_Error_Het_Regimes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_Endog_Error_Het_Regimes</span></code></a>(y, x, yend, ...)</p></td>
+<td><p>GMM method for a spatial error model with heteroskedasticity, regimes and endogenous variables, with results and diagnostics; based on Arraiz et al <a class="bibtex reference internal" href="references.html#arraiz2010" id="id39">[ADKP10]</a>, following Anselin <a class="bibtex reference internal" href="references.html#anselin2011" id="id40">[Ans11]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.Skater_reg.html#spreg.Skater_reg" title="spreg.Skater_reg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.Skater_reg</span></code></a>([dissimilarity, affinity, ...])</p></td>
+<td><p>Initialize the Skater_reg algorithm based on <a class="bibtex reference internal" href="references.html#anselin2021" id="id41">[AA21]</a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="seemingly-unrelated-regressions">
+<h2>Seemingly-Unrelated Regressions<a class="headerlink" href="#seemingly-unrelated-regressions" title="Permalink to this heading">¶</a></h2>
+<p>Seemingly-unrelated regression models are a generalization of linear regression. These models (and their spatial generalizations) allow for correlation in the residual terms between groups that use the same model. In spatial Seeimingly-Unrelated Regressions, the error terms across groups are allowed to exhibit a structured type of correlation: spatial correlation.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.SUR.html#spreg.SUR" title="spreg.SUR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.SUR</span></code></a>(bigy, bigX[, w, regimes, ...])</p></td>
+<td><p>User class for SUR estimation, both two step as well as iterated</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.SURerrorGM.html#spreg.SURerrorGM" title="spreg.SURerrorGM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.SURerrorGM</span></code></a>(bigy, bigX, w[, regimes, ...])</p></td>
+<td><p>User class for SUR Error estimation by Generalized Moments</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.SURerrorML.html#spreg.SURerrorML" title="spreg.SURerrorML"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.SURerrorML</span></code></a>(bigy, bigX, w[, regimes, ...])</p></td>
+<td><p>User class for SUR Error estimation by Maximum Likelihood</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.SURlagIV.html#spreg.SURlagIV" title="spreg.SURlagIV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.SURlagIV</span></code></a>(bigy, bigX[, bigyend, bigq, ...])</p></td>
+<td><p>User class for spatial lag estimation using IV</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.ThreeSLS.html#spreg.ThreeSLS" title="spreg.ThreeSLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ThreeSLS</span></code></a>(bigy, bigX, bigyend, bigq[, ...])</p></td>
+<td><p>User class for 3SLS estimation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="spatial-panel-models">
+<h2>Spatial Panel Models<a class="headerlink" href="#spatial-panel-models" title="Permalink to this heading">¶</a></h2>
+<p>Spatial panel models allow for evaluating correlation in both spatial and time dimensions.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag" title="spreg.Panel_FE_Lag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.Panel_FE_Lag</span></code></a>(y, x, w[, epsilon, vm, ...])</p></td>
+<td><p>ML estimation of the fixed effects spatial lag model with all results and diagnostics <a class="bibtex reference internal" href="references.html#elhorst2003" id="id42">[Elh03]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error" title="spreg.Panel_FE_Error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.Panel_FE_Error</span></code></a>(y, x, w[, epsilon, vm, ...])</p></td>
+<td><p>ML estimation of the fixed effects spatial error model with all results and diagnostics <a class="bibtex reference internal" href="references.html#elhorst2003" id="id43">[Elh03]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag" title="spreg.Panel_RE_Lag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.Panel_RE_Lag</span></code></a>(y, x, w[, epsilon, vm, ...])</p></td>
+<td><p>ML estimation of the random effects spatial lag model with all results and diagnostics <a class="bibtex reference internal" href="references.html#elhorst2003" id="id44">[Elh03]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error" title="spreg.Panel_RE_Error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.Panel_RE_Error</span></code></a>(y, x, w[, epsilon, vm, ...])</p></td>
+<td><p>ML estimation of the random effects spatial error model with all results and diagnostics <a class="bibtex reference internal" href="references.html#elhorst2003" id="id45">[Elh03]</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.GM_KKP.html#spreg.GM_KKP" title="spreg.GM_KKP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.GM_KKP</span></code></a>(y, x, w[, full_weights, ...])</p></td>
+<td><p>GMM method for a spatial random effects panel model based on Kapoor, Kelejian and Prucha (2007) <a class="bibtex reference internal" href="references.html#kkp2007" id="id46">[KKP07]</a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="diagnostics">
+<h2>Diagnostics<a class="headerlink" href="#diagnostics" title="Permalink to this heading">¶</a></h2>
+<p>Diagnostic tests are useful for identifying model fit, sufficiency, and specification correctness.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.f_stat.html#spreg.f_stat" title="spreg.f_stat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.f_stat</span></code></a>(reg)</p></td>
+<td><p>Calculates the f-statistic and associated p-value of the regression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.t_stat.html#spreg.t_stat" title="spreg.t_stat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.t_stat</span></code></a>(reg[, z_stat])</p></td>
+<td><p>Calculates the t-statistics (or z-statistics) and associated p-values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.r2.html#spreg.r2" title="spreg.r2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.r2</span></code></a>(reg)</p></td>
+<td><p>Calculates the R^2 value for the regression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.ar2.html#spreg.ar2" title="spreg.ar2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.ar2</span></code></a>(reg)</p></td>
+<td><p>Calculates the adjusted R^2 value for the regression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.se_betas.html#spreg.se_betas" title="spreg.se_betas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.se_betas</span></code></a>(reg)</p></td>
+<td><p>Calculates the standard error of the regression coefficients.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.log_likelihood.html#spreg.log_likelihood" title="spreg.log_likelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.log_likelihood</span></code></a>(reg)</p></td>
+<td><p>Calculates the log-likelihood value for the regression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.akaike.html#spreg.akaike" title="spreg.akaike"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.akaike</span></code></a>(reg)</p></td>
+<td><p>Calculates the Akaike Information Criterion.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.schwarz.html#spreg.schwarz" title="spreg.schwarz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.schwarz</span></code></a>(reg)</p></td>
+<td><p>Calculates the Schwarz Information Criterion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.condition_index.html#spreg.condition_index" title="spreg.condition_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.condition_index</span></code></a>(reg)</p></td>
+<td><p>Calculates the multicollinearity condition index according to Belsey, Kuh and Welsh (1980) <a class="bibtex reference internal" href="references.html#belsley1980" id="id47">[BKW05]</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.jarque_bera.html#spreg.jarque_bera" title="spreg.jarque_bera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.jarque_bera</span></code></a>(reg)</p></td>
+<td><p>Jarque-Bera test for normality in the residuals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.breusch_pagan.html#spreg.breusch_pagan" title="spreg.breusch_pagan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.breusch_pagan</span></code></a>(reg[, z])</p></td>
+<td><p>Calculates the Breusch-Pagan test statistic to check for heteroscedasticity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.white.html#spreg.white" title="spreg.white"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.white</span></code></a>(reg)</p></td>
+<td><p>Calculates the White test to check for heteroscedasticity.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.koenker_bassett.html#spreg.koenker_bassett" title="spreg.koenker_bassett"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.koenker_bassett</span></code></a>(reg[, z])</p></td>
+<td><p>Calculates the Koenker-Bassett test statistic to check for heteroscedasticity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.vif.html#spreg.vif" title="spreg.vif"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.vif</span></code></a>(reg)</p></td>
+<td><p>Calculates the variance inflation factor for each independent variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.likratiotest.html#spreg.likratiotest" title="spreg.likratiotest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.likratiotest</span></code></a>(reg0, reg1)</p></td>
+<td><p>Likelihood ratio test statistic <a class="bibtex reference internal" href="references.html#greene2003" id="id48">[Gre03]</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.LMtests.html#spreg.LMtests" title="spreg.LMtests"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.LMtests</span></code></a>(ols, w[, tests])</p></td>
+<td><p>Lagrange Multiplier tests.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.MoranRes.html#spreg.MoranRes" title="spreg.MoranRes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.MoranRes</span></code></a>(ols, w[, z])</p></td>
+<td><p>Moran's I for spatial autocorrelation in residuals from OLS regression</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.AKtest.html#spreg.AKtest" title="spreg.AKtest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.AKtest</span></code></a>(iv, w[, case])</p></td>
+<td><p>Moran's I test of spatial autocorrelation for IV estimation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.sur_setp.html#spreg.sur_setp" title="spreg.sur_setp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.sur_setp</span></code></a>(bigB, varb)</p></td>
+<td><p>Utility to compute standard error, t and p-value</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.sur_lrtest.html#spreg.sur_lrtest" title="spreg.sur_lrtest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.sur_lrtest</span></code></a>(n, n_eq, ldetS0, ldetS1)</p></td>
+<td><p>Likelihood Ratio test on off-diagonal elements of Sigma</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.sur_lmtest.html#spreg.sur_lmtest" title="spreg.sur_lmtest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.sur_lmtest</span></code></a>(n, n_eq, sig)</p></td>
+<td><p>Lagrange Multiplier test on off-diagonal elements of Sigma</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.lam_setp.html#spreg.lam_setp" title="spreg.lam_setp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.lam_setp</span></code></a>(lam, vm)</p></td>
+<td><p>Standard errors, t-test and p-value for lambda in SUR Error ML</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.surLMe.html#spreg.surLMe" title="spreg.surLMe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.surLMe</span></code></a>(n_eq, WS, bigE, sig)</p></td>
+<td><p>Lagrange Multiplier test on error spatial autocorrelation in SUR</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.surLMlag.html#spreg.surLMlag" title="spreg.surLMlag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.surLMlag</span></code></a>(n_eq, WS, bigy, bigX, bigE, ...)</p></td>
+<td><p>Lagrange Multiplier test on lag spatial autocorrelation in SUR</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.constant_check.html#spreg.constant_check" title="spreg.constant_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.constant_check</span></code></a>(array)</p></td>
+<td><p>Checks to see numpy array includes a constant.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.panel_LMlag.html#spreg.panel_LMlag" title="spreg.panel_LMlag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.panel_LMlag</span></code></a>(y, x, w)</p></td>
+<td><p>Lagrange Multiplier test on lag spatial autocorrelation in panel data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.panel_LMerror.html#spreg.panel_LMerror" title="spreg.panel_LMerror"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.panel_LMerror</span></code></a>(y, x, w)</p></td>
+<td><p>Lagrange Multiplier test on error spatial autocorrelation in panel data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.panel_rLMlag.html#spreg.panel_rLMlag" title="spreg.panel_rLMlag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.panel_rLMlag</span></code></a>(y, x, w)</p></td>
+<td><p>Robust Lagrange Multiplier test on lag spatial autocorrelation in panel data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.panel_rLMerror.html#spreg.panel_rLMerror" title="spreg.panel_rLMerror"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.panel_rLMerror</span></code></a>(y, x, w)</p></td>
+<td><p>Robust Lagrange Multiplier test on error spatial autocorrelation in panel data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.panel_Hausman.html#spreg.panel_Hausman" title="spreg.panel_Hausman"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.panel_Hausman</span></code></a>(panel_fe, panel_re[, sp_lag])</p></td>
+<td><p>Hausman test on panel data with spatial interactions.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dgp">
+<h2>DGP<a class="headerlink" href="#dgp" title="Permalink to this heading">¶</a></h2>
+<p>Tools for simulating synthetic data according to data-generating processes implied by different spatial model specifications</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.make_error.html#spreg.dgp.make_error" title="spreg.dgp.make_error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.make_error</span></code></a>(rng, n[, mu, varu, method])</p></td>
+<td><p>make_error: generate error term for a given distribution</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.make_x.html#spreg.dgp.make_x" title="spreg.dgp.make_x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.make_x</span></code></a>(rng, n[, mu, varu, cor, method])</p></td>
+<td><p>make_x: generate a matrix of k columns of x for a given distribution</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.make_wx.html#spreg.dgp.make_wx" title="spreg.dgp.make_wx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.make_wx</span></code></a>(x, w[, o])</p></td>
+<td><p>make_wx: generate a matrix spatially lagged x given matrix x</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.make_xb.html#spreg.dgp.make_xb" title="spreg.dgp.make_xb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.make_xb</span></code></a>(x, beta)</p></td>
+<td><p>make_xb: generate a column xb as matrix x (constant added)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.make_wxg.html#spreg.dgp.make_wxg" title="spreg.dgp.make_wxg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.make_wxg</span></code></a>(wx, gamma)</p></td>
+<td><p>make_wxg: generate a column wxg as matrix wx (no constant)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_errproc.html#spreg.dgp.dgp_errproc" title="spreg.dgp.dgp_errproc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_errproc</span></code></a>(u, w[, lam, model, ...])</p></td>
+<td><p>dgp_errproc: generates pure spatial error process</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_ols.html#spreg.dgp.dgp_ols" title="spreg.dgp.dgp_ols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_ols</span></code></a>(u, xb)</p></td>
+<td><p>dgp_ols: generates y for non-spatial process with given xb and error term u</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_slx.html#spreg.dgp.dgp_slx" title="spreg.dgp.dgp_slx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_slx</span></code></a>(u, xb, wxg)</p></td>
+<td><p>dgp_slx: generates y for SLX with given xb, wxg, and error term u</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_sperror.html#spreg.dgp.dgp_sperror" title="spreg.dgp.dgp_sperror"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_sperror</span></code></a>(u, xb, w[, lam, ...])</p></td>
+<td><p>dgp_sperror: generates y for spatial error model with given xb, weights,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_slxerror.html#spreg.dgp.dgp_slxerror" title="spreg.dgp.dgp_slxerror"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_slxerror</span></code></a>(u, xb, wxg, w[, lam, ...])</p></td>
+<td><p>dgp_sperror: generates y for SLX spatial error model with xb, wxg, weights,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_lag.html#spreg.dgp.dgp_lag" title="spreg.dgp.dgp_lag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_lag</span></code></a>(u, xb, w[, rho, imethod])</p></td>
+<td><p>dgp_lag:      generates y for spatial lag model with xb, weights,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_spdurbin.html#spreg.dgp.dgp_spdurbin" title="spreg.dgp.dgp_spdurbin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_spdurbin</span></code></a>(u, xb, wxg, w[, rho, ...])</p></td>
+<td><p>dgp_spdurbin: generates y for spatial Durbin model with xb, wxg, weights,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_lagerr.html#spreg.dgp.dgp_lagerr" title="spreg.dgp.dgp_lagerr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_lagerr</span></code></a>(u, xb, w[, rho, lam, ...])</p></td>
+<td><p>dgp_lagerr:   generates y for spatial lag model with sar or ma errors</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/spreg.dgp.dgp_gns.html#spreg.dgp.dgp_gns" title="spreg.dgp.dgp_gns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spreg.dgp.dgp_gns</span></code></a>(u, xb, wxg, w[, rho, lam, ...])</p></td>
+<td><p>dgp_gns:      generates y for general nested model with sar or ma errors</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="_sources/api.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

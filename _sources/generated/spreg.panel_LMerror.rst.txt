@@ -1,0 +1,6 @@
+﻿spreg.panel\_LMerror
+====================
+
+.. currentmodule:: spreg
+
+.. autofunction:: panel_LMerror

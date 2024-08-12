@@ -1,0 +1,6 @@
+﻿spreg.likratiotest
+==================
+
+.. currentmodule:: spreg
+
+.. autofunction:: likratiotest
