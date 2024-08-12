@@ -12,7 +12,7 @@ import numpy.linalg as la
 from scipy import sparse as sp
 from scipy.sparse.linalg import splu as SuperLU
 from .utils import RegressionPropsY, RegressionPropsVM, inverse_prod, set_warn, get_lags
-from .sputils import spdot, spfill_diagonal, spinv, _spmultiplier
+from .sputils import spdot, spfill_diagonal, spinv
 from . import diagnostics as DIAG
 from . import user_output as USER
 import pandas as pd
@@ -195,8 +195,9 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         ylag = weights.lag_spatial(w, y)
         # b0, b1, e0 and e1
 
-        if slx_lags>0:
-            self.x = np.hstack((self.x, get_lags(w, self.x[:, 1:], slx_lags)))
+# now set in ML_Lag
+#        if slx_lags>0:
+#            self.x = np.hstack((self.x, get_lags(w, self.x[:, 1:], slx_lags)))
 
         self.n, self.k = self.x.shape
         xtx = spdot(self.x.T, self.x)
@@ -323,9 +324,9 @@ class ML_Lag(BaseML_Lag):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
@@ -333,6 +334,8 @@ class ML_Lag(BaseML_Lag):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the Spatial Durbin type.
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -340,11 +343,11 @@ class ML_Lag(BaseML_Lag):
                    tolerance criterion in mimimize_scalar function and inverse_product
     spat_diag    : boolean
                    If True, then compute Common Factor Hypothesis test when applicable
-    spat_impacts : string
+    spat_impacts : string or list
                    Include average direct impact (ADI), average indirect impact (AII),
                     and average total impact (ATI) in summary results.
-                    Options are 'simple', 'full', 'power', or None.
-                    See sputils.spmultiplier for more information.
+                    Options are 'simple', 'full', 'power', 'all' or None.
+                    See sputils._spmultiplier for more information.
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -421,6 +424,8 @@ class ML_Lag(BaseML_Lag):
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
+    sp_multipliers: dict
+                   Dictionary of spatial multipliers (if spat_impacts is not None)             
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -594,6 +599,7 @@ class ML_Lag(BaseML_Lag):
         x,
         w,
         slx_lags=0,
+        slx_vars="All",
         method="full",
         epsilon=0.0000001,
         spat_impacts="simple",
@@ -606,12 +612,25 @@ class ML_Lag(BaseML_Lag):
         latex=False,
     ):
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         name_x = USER.set_name_x(name_x, x_constant) # needs to be initialized for none, now with constant
         set_warn(self, warn)
         method = method.upper()
+        # using flex_wx
+        kx = len(name_x)
+        if slx_lags > 0:
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+            if isinstance(slx_vars,list):
+                kw = slx_vars.count(True)
+                if kw < kx - 1:
+                    spat_diag = False   # no common factor test
+            else:
+                kw = kx-1
+    
+
         BaseML_Lag.__init__(
             self, y=y, x=x_constant, w=w, slx_lags=slx_lags, method=method, epsilon=epsilon
         )
@@ -619,14 +638,17 @@ class ML_Lag(BaseML_Lag):
         self.k += 1
 
         if slx_lags>0:
-            kx = len(name_x)
-            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+    #        kx = len(name_x)
+    #        name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+
             self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG WITH SLX - SPATIAL DURBIN MODEL" + " (METHOD = " + method + ")"
-            var_types = ['x'] * kx + ['wx'] * (kx-1) * slx_lags + ['rho']
+#            var_types = ['x'] * kx + ['wx'] * (kx-1) * slx_lags + ['rho']
+            var_types = ['x'] * kx + ['wx'] * (kw) * slx_lags + ['rho']
         else:
             self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
             var_types = ['x'] * len(name_x) + ['rho']
         self.slx_lags = slx_lags
+        self.slx_vars = slx_vars
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_x = name_x  # already has constant
@@ -643,12 +665,12 @@ class ML_Lag(BaseML_Lag):
         diag_out = None
         if spat_diag and slx_lags==1:
             diag_out = _spat_diag_out(self, w, 'yend', ml=True)
-        if spat_impacts and slx_lags == 0:
-            impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts)
+        if spat_impacts:
+            self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags,slx_vars)
             try:
-                diag_out += impacts
+                diag_out += impacts_str
             except TypeError:
-                diag_out = impacts
+                diag_out = impacts_str
         output(reg=self, vm=vm, robust=False, other_end=diag_out, latex=latex)
 
 def lag_c_loglik(rho, n, e0, e1, W):

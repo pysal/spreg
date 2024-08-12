@@ -13,7 +13,6 @@ from .twosls_regimes import TSLS_Regimes, _optimal_weight
 from .twosls import BaseTSLS
 from .utils import set_endog, set_endog_sparse, sp_att, set_warn, sphstack, spdot, optim_k
 from .robust import hac_multi
-from .sputils import _spmultiplier
 from .output import output, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 from .skater_reg import Skater_reg
 from .twosls_sp import BaseGM_Lag
@@ -26,18 +25,18 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x); cannot be
@@ -88,11 +87,11 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    matrix must have ones along the main diagonal.
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
-    spat_impacts : string
+    spat_impacts : string or list
                    Include average direct impact (ADI), average indirect impact (AII),
                     and average total impact (ATI) in summary results.
-                    Options are 'simple', 'full', 'power', or None.
-                    See sputils.spmultiplier for more information.
+                    Options are 'simple', 'full', 'power', 'all' or None.
+                    See sputils._spmultiplier for more information.
     spat_diag    : boolean
                    If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)
     vm           : boolean
@@ -263,6 +262,10 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    (see 'multi' below for details)
     pfora1a2     : array
                    n(zthhthi)'varb
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    sp_multipliers: dict
+                   Dictionary of spatial multipliers (if spat_impacts is not None)
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     regimes      : list
@@ -477,8 +480,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         USER.check_robust(robust, gwk)
         if regime_lag_sep and not regime_err_sep:
             set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")                
@@ -506,6 +510,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
+
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.constant_regi = constant_regi
         if slx_lags > 0:
@@ -644,12 +650,12 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             diag_out = None
             if spat_diag:
                 diag_out = _spat_diag_out(self, w, 'yend')
-            if spat_impacts and slx_lags == 0:
-                impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts, regimes=True)
+            if spat_impacts:
+                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags, regimes=True)
                 try:
-                    diag_out += impacts
+                    diag_out += impacts_str
                 except TypeError:
-                    diag_out = impacts
+                    diag_out = impacts_str
             output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
     def GM_Lag_Regimes_Multi(
@@ -848,8 +854,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.output = pd.concat([self.output, results[r].output], ignore_index=True)
             if spat_diag:
                 results[r].other_mid += _spat_diag_out(results[r], results[r].w, 'yend')
-            if spat_impacts and slx_lags == 0:
-                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho, method=spat_impacts), spat_impacts)
+            if spat_impacts:
+                results[r].sp_multipliers, impacts_str = _summary_impacts(results[r], results[r].w, spat_impacts, slx_lags)
+                results[r].other_mid += impacts_str
             counter += 1
         self.multi = results
         if robust == "hac":
@@ -974,8 +981,8 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
         self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True)
 
         # Standardize the variables
         x_std = (x - np.mean(x, axis=0)) / np.std(x, axis=0)

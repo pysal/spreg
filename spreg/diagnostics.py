@@ -13,7 +13,7 @@ import numpy as np
 import numpy.linalg as la
 import scipy.sparse as SP
 from scipy import stats
-
+from .ols import BaseOLS
 from .utils import spmultiply, sphstack, spmin, spmax
 
 
@@ -34,19 +34,23 @@ __all__ = [
     "vif",
     "likratiotest",
     "constant_check",
+    "dwh",
 ]
 
 
-def f_stat(reg):
+def f_stat(reg,df=0):
     """
-    Calculates the f-statistic and associated p-value of the
-    regression. :cite:`Greene2003`.
+    Calculates the f-statistic and associated p-value for multiple
+    coefficient constraints :cite:`Greene2003`.
     (For two stage least squares see f_stat_tsls)
+    (default is F statistic for regression)
 
     Parameters
     ----------
     reg             : regression object
                       output instance from a regression model
+    df              : number of coefficient constraints 
+                      (zero constraint for last df coefficients in betas)
 
     Returns
     ----------
@@ -94,12 +98,21 @@ def f_stat(reg):
     k = reg.k  # (scalar) number of ind. vars (includes constant)
     n = reg.n  # (scalar) number of observations
     utu = reg.utu  # (scalar) residual sum of squares
-    predy = reg.predy  # (array) vector of predicted values (n x 1)
-    mean_y = reg.mean_y  # (scalar) mean of dependent observations
-    Q = utu
-    U = np.sum((predy - mean_y) ** 2)
-    fStat = (U / (k - 1)) / (Q / (n - k))
-    pValue = stats.f.sf(fStat, k - 1, n - k)
+    # default case, all coefficients
+    if df == 0:
+        r = k-1
+        predy = reg.predy  # (array) vector of predicted values (n x 1)
+        mean_y = reg.mean_y  # (scalar) mean of dependent observations
+        U = np.sum((predy - mean_y) ** 2)
+    else:     # F test on last df coefficients
+        y = reg.y
+        r = df
+        x0 = reg.x[:,:-r]
+        olsr = BaseOLS(y,x0)  # constrained regression
+        rtr = olsr.utu
+        U = rtr - utu
+    fStat = (U / r) / (utu / (n - k))
+    pValue = stats.f.sf(fStat, r, n - k)
     fs_result = (fStat, pValue)
     return fs_result
 
@@ -1376,6 +1389,40 @@ def likratiotest(reg0, reg1):
     likratio = {"likr": likr, "df": 1, "p-value": pvalue}
     return likratio
 
+def dwh(reg):
+    """
+    Durbin-Wu-Hausman test on endogeneity of variables
+
+    A significant test statistic points to endogeneity
+
+    Parameters
+    ----------
+    reg             : regression object
+                      output instance from a regression model
+
+    Returns
+    -------
+    dwh       : tuple with value of F-statistic in augmented regression
+                and associated p-value
+
+    """
+    n = reg.n  
+    ny = reg.yend.shape[1]   # number of endogenous variables
+    qq = reg.h  # all exogenous and instruments
+    xx = reg.z  # all exogenous and endogenous
+    # get predicted values for endogenous variables on all instruments
+    py = np.zeros((n,ny))
+    for i in range(ny):
+        yy = reg.yend[:, i].reshape(n,1)
+        ols1 = BaseOLS(y=yy,x=qq)
+        yp = ols1.predy
+        py[0:n,i] = yp.flatten()
+    nxq = sphstack(xx, py)
+    # F-test in augmented regression
+    ols2 = BaseOLS(y=reg.y, x=nxq)
+    dwh = f_stat(ols2, df=ny)
+    return dwh 
+    
 
 def _test():
     import doctest

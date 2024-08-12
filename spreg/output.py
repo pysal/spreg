@@ -8,7 +8,7 @@ import pandas as pd
 from . import diagnostics as diagnostics
 from . import diagnostics_tsls as diagnostics_tsls
 from . import diagnostics_sp as diagnostics_sp
-from .sputils import _sp_effects
+from .sputils import _sp_effects, _spmultiplier
 
 __all__ = []
 
@@ -269,26 +269,28 @@ def _spat_diag_out(reg, w, type, moran=False, ml=False):
                 reg.ak_test[1],
             )
         if any(reg.output['var_type'] == 'rho'):
+            # no common factor test if slx_vars is not "All"
             if reg.slx_lags == 1 and not any(reg.output['var_type'] == 'yend'):
-                wx_indices = reg.output[(reg.output['var_type'] == 'wx') & (reg.output['regime'] != '_Global')].index
-                x_indices = []
-                for m in reg.output['regime'].unique():
-                    x_indices.extend(reg.output[(reg.output['regime'] == m) & (reg.output['var_type'] == 'x')].index[1:])
-                vm_indices = x_indices + wx_indices.tolist() + reg.output[reg.output['var_type'] == 'rho'].index.tolist()
-                cft, cft_p = diagnostics_sp.comfac_test(reg.rho,
+                if not hasattr(reg, 'slx_vars') or not isinstance(reg.slx_vars, list):
+                    wx_indices = reg.output[(reg.output['var_type'] == 'wx') & (reg.output['regime'] != '_Global')].index
+                    x_indices = []
+                    for m in reg.output['regime'].unique():
+                        x_indices.extend(reg.output[(reg.output['regime'] == m) & (reg.output['var_type'] == 'x')].index[1:])
+                    vm_indices = x_indices + wx_indices.tolist() + reg.output[reg.output['var_type'] == 'rho'].index.tolist()
+                    cft, cft_p = diagnostics_sp.comfac_test(reg.rho,
                                                         reg.betas[x_indices],
                                                         reg.betas[wx_indices],
                                                         reg.vm[vm_indices, :][:, vm_indices])
-                reg.cfh_test = cft, cft_p
-                strSummary += "%-27s    %2d   %12.3f        %9.4f\n" % (
-                    "Common Factor Hypothesis Test",
-                    len(wx_indices),
-                    reg.cfh_test[0],
-                    reg.cfh_test[1],
-                )
+                    reg.cfh_test = cft, cft_p
+                    strSummary += "%-27s    %2d   %12.3f        %9.4f\n" % (
+                        "Common Factor Hypothesis Test",
+                        len(wx_indices),
+                        reg.cfh_test[0],
+                        reg.cfh_test[1],
+                    )
 
     elif type == "ols":
-        strSummary += "- SARMA -\n"
+        strSummary += "- SARERR -\n"
         if not moran:
             strSummary += (
                 "TEST                              DF       VALUE           PROB\n"
@@ -568,7 +570,7 @@ def _summary_iteration(reg):
 
     return txt
 
-def _summary_impacts(reg, spmult, spat_impacts, slx_lags=0, regimes=False):
+def _summary_impacts(reg, w, spat_impacts, slx_lags=0, slx_vars="All",regimes=False):
     """
     Spatial direct, indirect and total effects in spatial lag model.
     Uses multipliers computed by sputils._spmultipliers.
@@ -576,27 +578,97 @@ def _summary_impacts(reg, spmult, spat_impacts, slx_lags=0, regimes=False):
     Attributes
     ----------
     reg:     spreg regression object
-    spmult:    spatial multipliers as a dictionary
-    spat_impacts:  spatial impacts method as string
+    w:      spatial weights object
+    spat_impacts:  spatial impacts method as string or list with strings
     slx_lags: int, number of spatial lags of X in the model
+    slx_vars : either "All" (default) for all variables lagged, or a list
+               of booleans matching the columns of x that will be lagged or not
     regimes: boolean, True if regimes model
 
     Returns
     -------
-    strings with direct, indirect and total effects
+    sp_multipliers: dict with direct, indirect and total multipliers
+    strSummary: strings with direct, indirect and total effects
 
     """
-    variables = reg.output.query("var_type in ['x', 'yend'] and index != 0")
+    try:
+        spat_impacts = [spat_impacts.lower()]
+    except AttributeError:
+        spat_impacts = [x.lower() for x in spat_impacts]
+
+    #variables = reg.output.query("var_type in ['x', 'yend'] and index != 0") # excludes constant
+    variables = reg.output.query("var_type == 'x' and index != 0") # excludes constant and endogenous variables
+
     if regimes:
         variables = variables[~variables['var_names'].str.endswith('_CONSTANT')]
     variables_index = variables.index
 
-    btot, bdir, bind = _sp_effects(reg, variables, spmult, slx_lags)
- 
-    strSummary = "\nSPATIAL LAG MODEL IMPACTS\n"
-    strSummary += "Impacts computed using the '" + spat_impacts + "' method.\n"
-    strSummary += "            Variable         Direct        Indirect          Total\n"
-    for i in range(len(variables)):
-        strSummary += "%20s   %12.4f    %12.4f    %12.4f\n" % (
-        variables['var_names'][variables_index[i]], bdir[i][0], bind[i][0], btot[i][0])
+    if slx_lags==0:
+        strSummary = "\nSPATIAL LAG MODEL IMPACTS\n"
+    else:
+        strSummary = "\nSPATIAL DURBIN MODEL IMPACTS\n"
+
+    if abs(reg.rho) >= 1:
+        strSummary += "Omitted since spatial autoregressive parameter is outside the boundary (-1, 1).\n"
+        return None, strSummary
+
+    if "all" in spat_impacts:
+        spat_impacts = ["simple", "full", "power"]
+
+    sp_multipliers = {}
+    for i in spat_impacts:
+        spmult = _spmultiplier(w, reg.rho, method=i)   # computes the multipliers, slx_lags not needed
+        
+        strSummary += spmult["warn"]
+        btot, bdir, bind = _sp_effects(reg, variables, spmult, slx_lags,slx_vars)  # computes the impacts, needs slx_lags
+        sp_multipliers[spmult["method"]] = spmult['adi'], spmult['aii'].item(), spmult['ati'].item()
+
+        strSummary += "Impacts computed using the '" + spmult["method"] + "' method.\n"
+        strSummary += "            Variable         Direct        Indirect          Total\n"
+        for i in range(len(variables)):
+            strSummary += "%20s   %12.4f    %12.4f    %12.4f\n" % (
+            variables['var_names'][variables_index[i]], bdir[i][0], bind[i][0], btot[i][0])
+
+    return sp_multipliers, strSummary
+
+def _summary_vif(reg):
+    """
+    Summary of variance inflation factors for the model.
+
+    Parameters
+    ----------
+    reg:     spreg regression object
+
+    Returns
+    -------
+    strSummary: string with variance inflation factors
+
+    """
+    vif = diagnostics.vif(reg)
+    strSummary = "\nVARIANCE INFLATION FACTOR\n"
+    strSummary += "            Variable             VIF      Tolerance\n"
+    for i in range(len(reg.name_x)-1):
+        i += 1
+        strSummary += "%20s    %12.4f   %12.4f\n" % (
+        reg.name_x[i], vif[i][0], vif[i][1])
+    return strSummary
+
+def _summary_dwh(reg):
+    """
+    Summary of Durbin-Wu-Hausman test on endogeneity of variables.
+
+    Parameters
+    ----------
+    reg:     spreg regression object
+
+    Returns
+    -------
+    strSummary: string with Durbin-Wu-Hausman test results
+
+    """
+    strSummary = "\nREGRESSION DIAGNOSTICS\n"
+    strSummary += (
+            "TEST                              DF         VALUE           PROB\n")
+    strSummary += "%-27s      %2d   %12.3f        %9.4f\n" % (
+                "Durbin-Wu-Hausman test",reg.yend.shape[1],reg.dwh[0],reg.dwh[1])
     return strSummary

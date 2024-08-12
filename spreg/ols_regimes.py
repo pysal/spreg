@@ -21,12 +21,12 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
@@ -415,7 +415,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
+        y, name_y = USER.check_y(y, n, name_y)
         USER.check_robust(robust, gwk)
         if robust == "hac":
             if regime_err_sep:
@@ -439,13 +439,12 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
+        w = USER.check_weights(w, y, slx_lags=slx_lags)
         if slx_lags > 0:
-            USER.check_weights(w, y, w_required=True)
             lag_x = get_lags(w, x_constant, slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-        else:
-            USER.check_weights(w, y, w_required=False)
+
         set_warn(self, warn)
         self.slx_lags = slx_lags
         self.name_x_r = USER.set_name_x(name_x, x_constant)
@@ -455,6 +454,8 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
+
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.n = n
         cols2regi = REGI.check_cols2regi(
@@ -712,8 +713,8 @@ class OLS_Endog_Regimes(OLS_Regimes):
         self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True)
 
         # Standardize the variables
         x_std = (x - np.mean(x, axis=0)) / np.std(x, axis=0)
@@ -757,7 +758,7 @@ if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
-    import pysal
+    from spreg import OLS_Regimes
 
     db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"), "r")
     y_var = "HR90"
@@ -768,7 +769,6 @@ if __name__ == "__main__":
     regimes = db.by_col(r_var)
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     w.transform = "r"
-    #olsr = pysal.model.spreg.OLS_Regimes(
     olsr = OLS_Regimes(
             y,
         x,

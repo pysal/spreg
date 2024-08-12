@@ -304,16 +304,18 @@ class ML_Error(BaseML_Error):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : Sparse matrix
                    Spatial weights sparse matrix
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SLX-Error type.                   
+                   If slx_lags>0, the specification becomes of the SLX-Error type. 
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged                  
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -472,6 +474,7 @@ class ML_Error(BaseML_Error):
         x,
         w,
         slx_lags=0,
+        slx_vars="All",
         method="full",
         epsilon=0.0000001,
         vm=False,
@@ -482,17 +485,19 @@ class ML_Error(BaseML_Error):
         latex=False,
     ):
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         name_x = USER.set_name_x(name_x, x_constant) # initialize in case None includes constant
         set_warn(self, warn)
         self.title = "ML SPATIAL ERROR"
         if slx_lags >0:
-            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
+        #    lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+        #    x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
+        #    name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
             self.title += " WITH SLX (SLX-Error)"
         self.title += " (METHOD = " + method + ")"
 

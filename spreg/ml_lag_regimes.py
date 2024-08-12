@@ -11,7 +11,6 @@ from . import diagnostics as DIAG
 import multiprocessing as mp
 from .ml_lag import BaseML_Lag
 from .utils import set_warn, get_lags
-from .sputils import _spmultiplier
 import pandas as pd
 from .output import output, _nonspat_top, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 
@@ -27,12 +26,12 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     constant_regi: string
@@ -66,11 +65,11 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                     the spatial parameter is fixed accross regimes.
     spat_diag    : boolean
                    If True, then compute Common Factor Hypothesis test when applicable
-    spat_impacts : string
+    spat_impacts : string or list
                    Include average direct impact (ADI), average indirect impact (AII),
                     and average total impact (ATI) in summary results.
-                    Options are 'simple', 'full', 'power', or None.
-                    See sputils.spmultiplier for more information.
+                    Options are 'simple', 'full', 'power', 'all' or None.
+                    See sputils._spmultiplier for more information.
     cores        : boolean
                    Specifies if multiprocessing is to be used
                    Default: no multiprocessing, cores = False
@@ -178,6 +177,10 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     z_stat       : list of tuples
                    z statistic; each tuple contains the pair (statistic,
                    p-value), where each is a float
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    sp_multipliers: dict
+                   Dictionary of spatial multipliers (if spat_impacts is not None)
                    Only available in dictionary 'multi' when multiple regressions
                    (see 'multi' below for details)
     name_y       : string
@@ -331,8 +334,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         name_y = USER.set_name_y(name_y)
         self.name_y = name_y
 
@@ -349,6 +352,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         self.name_x_r = USER.set_name_x(name_x, x_constant) + [USER.set_name_yend_sp(name_y)]
         self.method = method
         self.epsilon = epsilon
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.constant_regi = constant_regi
         self.n = n
@@ -451,12 +455,12 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             else:
                 self.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"+ " (METHOD = "+ method+ ")")
                
-            if spat_impacts and slx_lags == 0:
-                impacts = _summary_impacts(self, _spmultiplier(w, self.rho, method=spat_impacts), spat_impacts, regimes=True)
+            if spat_impacts:
+                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags, regimes=True)
                 try:
-                    diag_out += impacts
+                    diag_out += impacts_str
                 except TypeError:
-                    diag_out = impacts
+                    diag_out = impacts_str
             self.other_top = _spat_pseudo_r2(self)
             self.other_top += _nonspat_top(self, ml=True)
             output(reg=self, vm=vm, robust=False, other_end=diag_out, latex=latex)
@@ -607,8 +611,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.output = pd.concat([self.output, results[r].output], ignore_index=True)
             if spat_diag and slx_lags == 1:
                 results[r].other_mid += _spat_diag_out(results[r], None, 'yend', ml=True)
-            if spat_impacts and slx_lags == 0:
-                results[r].other_mid += _summary_impacts(results[r], _spmultiplier(results[r].w, results[r].rho, method=spat_impacts), spat_impacts)
+            if spat_impacts:
+                results[r].sp_multipliers, impacts_str = _summary_impacts(results[r], results[r].w, spat_impacts, slx_lags)
+                results[r].other_mid += impacts_str
             counter += 1
         self.multi = results
         self.chow = REGI.Chow(self)

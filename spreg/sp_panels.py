@@ -308,7 +308,7 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
     ):
         n_rows = USER.check_arrays(y, x)
         bigy, bigx, name_y, name_x = _get_panel_data(y, x, w, name_y, name_x)
-        USER.check_weights(w, bigy, w_required=True, time=True)
+        w = USER.check_weights(w, bigy, w_required=True, time=True)
         x_constant, name_x, warn = USER.check_constant(bigx, name_x)
         set_warn(self, warn)
         self.title = "GM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP)"

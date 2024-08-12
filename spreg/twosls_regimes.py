@@ -22,19 +22,19 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     constant_regi: string
@@ -368,8 +368,9 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
+        y, name_y = USER.check_y(y, n, name_y)
         USER.check_robust(robust, gwk)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         if robust == "hac":
             if regime_err_sep:
                 set_warn(
@@ -387,16 +388,16 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
+        w = USER.check_weights(w, y, slx_lags=slx_lags)
         if slx_lags > 0:
-            USER.check_weights(w, y, w_required=True)
             lag_x = get_lags(w, x_constant, slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-        else:
-            USER.check_weights(w, y, w_required=False)
+
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
         self.name_ds = USER.set_name_ds(name_ds)
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)

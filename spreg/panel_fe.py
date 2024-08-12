@@ -201,9 +201,9 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas object
                    nxt or (nxt)x1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    nx(txk) or (nxt)xk array for independent (exogenous)
                    variables, no constant
     w            : pysal W object
@@ -328,7 +328,7 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
         set_warn(self, warn)
         bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w, name_y, name_x)
         set_warn(self, warn)
-        USER.check_weights(w, bigy, w_required=True, time=True)
+        w = USER.check_weights(w, bigy, w_required=True, time=True)
 
         BasePanel_FE_Lag.__init__(self, bigy, bigx, w, epsilon=epsilon)
         # increase by 1 to have correct aic and sc, include rho in count
@@ -495,9 +495,9 @@ class Panel_FE_Error(BasePanel_FE_Error):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas object
                    nxt or (nxt)x1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    nx(txk) or (nxt)xk array for independent (exogenous)
                    variables, no constant
     w            : pysal W object
@@ -617,7 +617,7 @@ class Panel_FE_Error(BasePanel_FE_Error):
         set_warn(self, warn)
         bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w, name_y, name_x)
         set_warn(self, warn)
-        USER.check_weights(w, bigy, w_required=True, time=True)
+        w = USER.check_weights(w, bigy, w_required=True, time=True)
 
         BasePanel_FE_Error.__init__(self, bigy, bigx, w, epsilon=epsilon)
         self.title = "MAXIMUM LIKELIHOOD SPATIAL ERROR PANEL" + " - FIXED EFFECTS"
