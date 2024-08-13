@@ -4,10 +4,11 @@ __author__ = "Luc Anselin lanselin@gmail.com, Pedro Amaral pedrovma@gmail.com, D
 import numpy as np
 import numpy.linalg as la
 from . import user_output as USER
-from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top
+from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top, _summary_vif
 from . import robust as ROBUST
 from .utils import spdot, RegressionPropsY, RegressionPropsVM, set_warn, get_lags
 import pandas as pd
+from libpysal import weights    # needed for check on kernel weights in slx
 
 __all__ = ["OLS"]
 
@@ -128,9 +129,9 @@ class OLS(BaseOLS):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
@@ -147,6 +148,8 @@ class OLS(BaseOLS):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX type.
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     nonspat_diag : boolean
@@ -161,6 +164,8 @@ class OLS(BaseOLS):
     white_test   : boolean
                    If True, compute White's specification robust test.
                    (requires nonspat_diag=True)
+    vif          : boolean
+                   If True, compute variance inflation factor.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -434,11 +439,13 @@ class OLS(BaseOLS):
         robust=None,
         gwk=None,
         slx_lags = 0,
+        slx_vars = "All",
         sig2n_k=True,
         nonspat_diag=True,
         spat_diag=False,
         moran=False,
         white_test=False,
+        vif=False,
         vm=False,
         name_y=None,
         name_x=None,
@@ -449,7 +456,7 @@ class OLS(BaseOLS):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
+        y, name_y = USER.check_y(y, n, name_y)
         USER.check_robust(robust, gwk)
         if robust == "hac" and spat_diag:
                 set_warn(
@@ -465,15 +472,17 @@ class OLS(BaseOLS):
                 white_test = False
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        self.name_x = USER.set_name_x(name_x, x_constant)
-        if slx_lags >0:
-            USER.check_weights(w, y, w_required=True)
-            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
-            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
-        else:
-            USER.check_weights(w, y, w_required=False)
         set_warn(self, warn)
+        self.name_x = USER.set_name_x(name_x, x_constant)
+        
+        w = USER.check_weights(w, y, slx_lags=slx_lags)
+        if slx_lags >0:
+#            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+#            x_constant = np.hstack((x_constant, lag_x))
+#           self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+            x_constant,self.name_x = USER.flex_wx(w,x=x_constant,name_x=self.name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+
         BaseOLS.__init__(
             self, y=y, x=x_constant, robust=robust, gwk=gwk, sig2n_k=sig2n_k
         )
@@ -493,6 +502,8 @@ class OLS(BaseOLS):
         if nonspat_diag:
             self.other_mid += _nonspat_mid(self, white_test=white_test)
             self.other_top += _nonspat_top(self)
+        if vif:
+            self.other_mid += _summary_vif(self)
         if spat_diag:
             other_end += _spat_diag_out(self, w, 'ols', moran=moran)
         output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)

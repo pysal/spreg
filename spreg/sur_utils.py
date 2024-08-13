@@ -7,6 +7,7 @@ __author__ = "Luc Anselin lanselin@gmail.com,    \
 
 import numpy as np
 import numpy.linalg as la
+import pandas as pd
 from .utils import spdot
 
 __all__ = [
@@ -30,11 +31,11 @@ def sur_dictxy(db, y_vars, x_vars, space_id=None, time_id=None):
     Parameters
     ----------
     db          : data object
-                  created by libpysal.io.open
-    y_vars      : array
+                  created by libpysal.io.open or pandas.DataFrame
+    y_vars      : list
                   list of lists with variable name(s) for dependent var
                   (Note must be a list of lists, even in splm case)
-    x_vars      : array
+    x_vars      : list
                   list of lists with variable names for explanatory vars
     space_id    : variable with space ID
                   used for splm format
@@ -62,8 +63,8 @@ def sur_dictxy(db, y_vars, x_vars, space_id=None, time_id=None):
         bigy = {}
         bigy_vars = dict((r, y_vars[r]) for r in range(n_eq))
         bigy = dict((r, np.resize(y[:, r], (n, 1))) for r in range(n_eq))
-        if not (len(x_vars) == n_eq):  # CHANGE into exception
-            print("Error: mismatch variable lists")
+        if not (len(x_vars) == n_eq):  
+            raise Exception("Error: mismatch variable lists")
         bigX = {}
         bigX_vars = {}
         for r in range(n_eq):
@@ -79,8 +80,8 @@ def sur_dictxy(db, y_vars, x_vars, space_id=None, time_id=None):
             k = litxc.shape[1]
         return (bigy, bigX, bigy_vars, bigX_vars)
     elif len(y_vars) == 1:  # splm format
-        if not (time_id):  # CHANGE into exception
-            print("Error: time id must be specified")
+        if not (time_id):  
+            raise Exception("Error: time id must be specified")
         try:
             y = np.array([db[name] for name in y_vars]).T
         except:
@@ -137,7 +138,7 @@ def sur_dictxy(db, y_vars, x_vars, space_id=None, time_id=None):
             bigX_vars[r] = [i + "_" + tt3[r] for i in xvars]
         return (bigy, bigX, bigy_vars, bigX_vars)
     else:
-        print("error message, but should never be here")
+        raise Exception("error message, but should never be here")
 
 
 def sur_dictZ(db, z_vars, form="spreg", const=False, space_id=None, time_id=None):
@@ -147,7 +148,7 @@ def sur_dictZ(db, z_vars, form="spreg", const=False, space_id=None, time_id=None
     Parameters
     ----------
     db          : data object
-                  created by libpysal.io.open
+                  created by libpysal.io.open or pandas.DataFrame
     varnames    : array
                   list of lists with variable name(s)
                   (Note must be a list of lists, even in splm case)

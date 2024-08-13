@@ -2,9 +2,10 @@ import unittest
 import libpysal
 from libpysal import weights
 import numpy as np
+import spreg
 from spreg import error_sp as SP
-from spreg import utils
 from libpysal.common import RTOL
+import pandas as pd
 
 class TestBaseGMError(unittest.TestCase):
     def setUp(self):
@@ -263,6 +264,160 @@ class TestGMCombo(unittest.TestCase):
         np.testing.assert_allclose(reg.std_err,std_err,RTOL)
         z_stat = np.array([[  2.52051597e+00,   1.17182922e-02], [  1.50535954e+00,   1.32231664e-01], [ -3.31909311e+00,   9.03103123e-04], [ -4.68530506e-01,   6.39405261e-01]])
         np.testing.assert_allclose(reg.z_stat,z_stat,RTOL)
+
+class TestGMMError(unittest.TestCase):
+    def setUp(self):
+        try:
+            self.db = pd.read_csv(libpysal.examples.get_path('columbus.csv'))
+        except ValueError:
+            import geopandas as gpd
+            self.db = gpd.read_file(libpysal.examples.get_path('columbus.dbf'))
+        self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
+        self.w.transform = 'r'
+
+    def test_model(self):
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, estimator='kp98') #GM_Error
+        betas = np.array([[ 47.94371455], [  0.70598088], [ -0.55571746], [  0.37230161]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  1.51884943e+02,  -5.37622793e+00,  -1.86970286e+00], [ -5.37622793e+00,   2.48972661e-01,   5.26564244e-02], [ -1.86970286e+00,   5.26564244e-02, 3.18930650e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC"]], yend=self.db[["CRIME"]], q=self.db[["DISCBD"]], w=self.w, estimator='kp98') #GM_Endog_Error
+        betas = np.array([[ 55.36095292], [  0.46411479], [ -0.66883535], [  0.38989939]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  5.29158422e+02,  -1.57833675e+01,  -8.38021080e+00],
+       [ -1.57833675e+01,   5.40235041e-01,   2.31120327e-01],
+       [ -8.38021080e+00,   2.31120327e-01,   1.44977385e-01]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, estimator='kp98', add_wy=True) #GM_Combo
+        betas = np.array([[ 57.61123515],[  0.73441313], [ -0.59459416], [ -0.21762921], [  0.54732051]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([  5.22438333e+02,   2.38012875e-01,   3.20924173e-02,
+         2.15753579e-01])
+        np.testing.assert_allclose(np.diag(reg.vm),vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, estimator='kp98', slx_lags=1) #SLX_error
+        betas = np.array([[29.46053861],
+       [ 0.82091985],
+       [-0.57543046],
+       [ 0.47808558],
+       [ 0.30069346],
+       [ 0.35833037]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[ 1.01097138e+03, -9.41982352e+00, -2.05551111e+00,
+        -2.90663546e+01, -1.04492128e+01],
+       [-9.41982352e+00,  2.70128986e-01,  4.98208129e-02,
+         1.18829756e-01,  5.97170349e-02],
+       [-2.05551111e+00,  4.98208129e-02,  3.45149007e-02,
+         2.31378455e-02, -6.15257324e-03],
+       [-2.90663546e+01,  1.18829756e-01,  2.31378455e-02,
+         1.06830398e+00,  3.06585506e-01],
+       [-1.04492128e+01,  5.97170349e-02, -6.15257324e-03,
+         3.06585506e-01,  1.51494962e-01]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, estimator='hom', A1='hom_sc') #GM_Error_Hom
+        betas = np.array([[ 47.9478524 ], [  0.70633223], [ -0.55595633], [  0.41288558]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  1.51340717e+02,  -5.29057506e+00,  -1.85654540e+00, -2.39139054e-03], [ -5.29057506e+00,   2.46669610e-01, 5.14259101e-02, 3.19241302e-04], [ -1.85654540e+00,   5.14259101e-02, 3.20510550e-02,  -5.95640240e-05], [ -2.39139054e-03,   3.19241302e-04, -5.95640240e-05,  3.36690159e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC"]], yend=self.db[["CRIME"]], q=self.db[["DISCBD"]], w=self.w, estimator='hom', A1='hom_sc') #GM_Endog_Error_Hom
+        betas = np.array([[ 55.36575166], [  0.46432416], [ -0.66904404], [  0.43205526]])
+        vm = np.array([[  5.52064057e+02,  -1.61264555e+01,  -8.86360735e+00, 1.04251912e+00], [ -1.61264555e+01,   5.44898242e-01, 2.39518645e-01, -1.88092950e-02], [ -8.86360735e+00,   2.39518645e-01, 1.55501840e-01, -2.18638648e-02], [  1.04251912e+00, -1.88092950e-02, -2.18638648e-02, 3.71222222e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC"]], w=self.w, estimator='hom', add_wy=True, A1='hom_sc') #GM_Combo_Hom
+        betas = np.array([[ 10.12541428], [  1.56832263], [  0.15132076], [  0.21033397]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  2.33694742e+02,  -6.66856869e-01,  -5.58304254e+00, 4.85488380e+00], [ -6.66856869e-01,   1.94241504e-01, -5.42327138e-02, 5.37225570e-02], [ -5.58304254e+00,  -5.42327138e-02, 1.63860721e-01, -1.44425498e-01], [  4.85488380e+00, 5.37225570e-02, -1.44425498e-01, 1.78622255e-01]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, estimator='hom', slx_lags=1) #SLX_error_Hom
+        betas = np.array([[29.45631607],
+       [ 0.82147165],
+       [-0.57539916],
+       [ 0.47867457],
+       [ 0.30033727],
+       [ 0.40129812]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[ 1.06448125e+03, -1.00662342e+01, -2.27271870e+00,
+        -3.04900044e+01, -1.08579426e+01, -1.04655994e-02],
+       [-1.00662342e+01,  2.72517164e-01,  5.08167383e-02,
+         1.44806006e-01,  6.54774010e-02, -2.75387247e-04],
+       [-2.27271870e+00,  5.08167383e-02,  3.44272896e-02,
+         2.96786313e-02, -3.01082586e-03,  5.42396309e-05],
+       [-3.04900044e+01,  1.44806006e-01,  2.96786313e-02,
+         1.10589204e+00,  3.13859279e-01,  3.30913956e-04],
+       [-1.08579426e+01,  6.54774010e-02, -3.01082586e-03,
+         3.13859279e-01,  1.54648513e-01,  2.16465817e-04],
+       [-1.04655994e-02, -2.75387247e-04,  5.42396309e-05,
+         3.30913956e-04,  2.16465817e-04,  3.91478879e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, step1c=True) #GM_Error_Het
+        betas = np.array([[ 47.99626638], [  0.71048989], [ -0.55876126], [  0.41178776]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  1.31767529e+02,  -3.58368748e+00,  -1.65090647e+00,
+              0.00000000e+00],
+           [ -3.58368748e+00,   1.35513711e-01,   3.77539055e-02,
+              0.00000000e+00],
+           [ -1.65090647e+00,   3.77539055e-02,   2.61042702e-02,
+              0.00000000e+00],
+           [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+              2.82398517e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC"]], yend=self.db[["CRIME"]], q=self.db[["DISCBD"]], w=self.w, step1c=True) #GM_Endog_Error_Het
+        betas = np.array([[ 55.39707924], [  0.46563046], [ -0.67038326], [  0.41135023]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  8.34637805e+02,  -2.16932259e+01,  -1.33327894e+01,
+                  1.65840848e+00],
+               [ -2.16932259e+01,   5.97683070e-01,   3.39503523e-01,
+                 -3.90111107e-02],
+               [ -1.33327894e+01,   3.39503523e-01,   2.19008080e-01,
+                 -2.81929695e-02],
+               [  1.65840848e+00,  -3.90111107e-02,  -2.81929695e-02,
+                  3.15686105e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, add_wy=True, step1c=True) #GM_Combo_Het
+        betas = np.array([[ 57.7778574 ], [  0.73034922], [ -0.59257362], [ -0.2230231 ], [  0.56636724]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[  4.86218274e+02,  -2.77268729e+00,  -1.59987770e+00,
+             -1.01969471e+01,   2.74302006e+00],
+           [ -2.77268729e+00,   1.04680972e-01,   2.51172238e-02,
+              1.95136385e-03,   3.70052723e-03],
+           [ -1.59987770e+00,   2.51172238e-02,   2.15655720e-02,
+              7.65868344e-03,  -7.30173070e-03],
+           [ -1.01969471e+01,   1.95136385e-03,   7.65868344e-03,
+              2.78273684e-01,  -6.89402590e-02],
+           [  2.74302006e+00,   3.70052723e-03,  -7.30173070e-03,
+             -6.89402590e-02,   7.12034037e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL*10)
+
+        reg = SP.GMM_Error(self.db[["HOVAL"]], self.db[["INC", "CRIME"]], w=self.w, slx_lags=1) #SLX_error_Het
+        betas = np.array([[29.38238574],
+       [ 0.82921502],
+       [-0.57499819],
+       [ 0.48748671],
+       [ 0.29556428],
+       [ 0.39636619]])
+        np.testing.assert_allclose(reg.betas,betas,RTOL)
+        vm = np.array([[ 5.97495766e+02, -5.55463269e+00, -6.81492201e-01,
+        -1.53802421e+01, -7.21116007e+00,  0.00000000e+00],
+       [-5.55463269e+00,  1.34368489e-01,  2.10846256e-02,
+         3.83654841e-02,  5.54102390e-02,  0.00000000e+00],
+       [-6.81492201e-01,  2.10846256e-02,  2.56742519e-02,
+         2.40939941e-03, -1.84082192e-02,  0.00000000e+00],
+       [-1.53802421e+01,  3.83654841e-02,  2.40939941e-03,
+         6.69703341e-01,  1.58284990e-01,  0.00000000e+00],
+       [-7.21116007e+00,  5.54102390e-02, -1.84082192e-02,
+         1.58284990e-01,  1.30057684e-01,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  2.67800026e-02]])
+        np.testing.assert_allclose(reg.vm,vm,RTOL)
 
 if __name__ == '__main__':
     unittest.main()

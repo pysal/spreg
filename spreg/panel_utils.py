@@ -7,6 +7,7 @@ __author__ = "Wei Kang weikang9009@gmail.com, \
               Pablo Estrada pabloestradace@gmail.com"
 
 import numpy as np
+import pandas as pd
 from scipy import sparse as sp
 from .sputils import spdot
 
@@ -30,6 +31,22 @@ def check_panel(y, x, w, name_y, name_x):
     name_x     : list of strings
                  Names of independent variables for use in output
     """
+
+    if isinstance(y, (pd.Series, pd.DataFrame)):
+        if name_y is None:
+            try:
+                name_y = y.columns.to_list()
+            except AttributeError:
+                name_y = y.name
+        y = y.to_numpy()
+        
+    if isinstance(x, (pd.Series, pd.DataFrame)):
+        if name_x is None:
+            try:
+                name_x = x.columns.to_list()
+            except AttributeError:
+                name_x = x.name
+        x = x.to_numpy()
 
     # Check if 'y' is a balanced panel with respect to 'W'
     if y.shape[0] / w.n != y.shape[0] // w.n:

@@ -17,6 +17,7 @@ from .sputils import *
 import copy
 
 
+
 class RegressionPropsY(object):
 
     """
@@ -511,7 +512,7 @@ def get_lags_split(w, x, max_lags, split_at):
     max_lags  : integer
               Maximum order of spatial lag
     split_at: integer
-              Separates the resulting lags into two groups: up to split_at and above
+              Separates the resulting lags into two cc: up to split_at and above
 
     Returns
     --------
@@ -670,7 +671,7 @@ def power_expansion(
     return running_total
 
 
-def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0):
+def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
     # Create spatial lag of y
     yl = lag_spatial(w, y)
     # spatial and non-spatial instruments
@@ -697,15 +698,17 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0):
         raise Exception("invalid value passed to yend")
     if slx_lags == 0:
         return yend, q
-    else:
-        return yend, q, lag_x
+    else:  # ajdust returned lag_x here using slx_vars
+        if (isinstance(slx_vars,list)):     # slx_vars has True,False
+            if len(slx_vars) != x.shape[1] :
+                raise Exception("slx_vars incompatible with x column dimensions")
+            else:  # use slx_vars to extract proper columns
+                vv = slx_vars * slx_lags
+                lag_x = lag_x[:,vv]
+            return yend, q, lag_x
+        else:  # slx_vars is "All"
+            return yend, q, lag_x
 
-    lag = lag_spatial(w, x)
-    spat_lags = lag
-    for i in range(w_lags - 1):
-        lag = lag_spatial(w, lag)
-        spat_lags = sphstack(spat_lags, lag)
-    return spat_lags
 
 
 def set_endog_sparse(y, x, w, yend, q, w_lags, lag_q):

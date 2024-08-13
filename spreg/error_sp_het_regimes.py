@@ -37,12 +37,12 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
@@ -327,14 +327,15 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
         self.regime_err_sep = regime_err_sep
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_w = USER.set_name_w(name_w, w)
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.n, self.step1c = n, step1c
         self.y = y
@@ -589,19 +590,19 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
@@ -939,11 +940,13 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     ):
 
         n = USER.check_arrays(y, x, yend, q)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
         self.name_ds = USER.set_name_ds(name_ds)
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.name_w = USER.set_name_w(name_w, w)
         self.n, self.step1c = n, step1c
@@ -1318,19 +1321,19 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     w            : pysal W object
@@ -1716,8 +1719,9 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
             regime_err_sep = False
         n = USER.check_arrays(y, x)
         self.step1c = step1c
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
@@ -1725,6 +1729,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
         self.name_y = USER.set_name_y(name_y)
         name_yend = USER.set_name_yend(name_yend, yend)
         name_q = USER.set_name_q(name_q, q)
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
 
         if regime_err_sep and any(col != True for col in cols2regi):
             set_warn(self, "All coefficients must vary across regimes if regime_err_sep = True, so setting cols2regi = 'all'.")

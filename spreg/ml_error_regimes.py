@@ -28,12 +28,12 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    regimes      : list
+    regimes      : list or pandas.Series
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
     constant_regi: string
@@ -302,12 +302,13 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         self.constant_regi = constant_regi
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
         self.name_w = USER.set_name_w(name_w, w)
+        regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.n = n
         self.y = y

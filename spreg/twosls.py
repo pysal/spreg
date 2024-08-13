@@ -2,9 +2,10 @@ import numpy as np
 import numpy.linalg as la
 from . import robust as ROBUST
 from . import user_output as USER
+from . import diagnostics as DIAG
+from .output import output, _spat_diag_out, _summary_dwh
 from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn, get_lags
 import pandas as pd
-from .output import output, _spat_diag_out
 
 __author__ = "Luc Anselin lanselin@gmail.com, Pedro Amaral pedrovma@gmail.com, David C. Folch david.folch@asu.edu, Jing Yao jingyao@asu.edu"
 __all__ = ["TSLS"]
@@ -223,15 +224,15 @@ class TSLS(BaseTSLS):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
@@ -249,10 +250,14 @@ class TSLS(BaseTSLS):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX type.
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     spat_diag    : boolean
                    If True, then compute Anselin-Kelejian test (requires w)
+    nonspat_diag : boolean 
+                   If True, then compute non-spatial diagnostics
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -330,6 +335,9 @@ class TSLS(BaseTSLS):
     ak_test      : tuple
                    Anselin-Kelejian test; tuple contains the pair (statistic,
                    p-value)
+    dwh          : tuple
+                   Durbin-Wu-Hausman test; tuple contains the pair (statistic,
+                   p-value). Only returned if dwh=True.
     name_y       : string
                    Name of dependent variable for use in output
     name_x       : list of strings
@@ -441,8 +449,10 @@ class TSLS(BaseTSLS):
         robust=None,
         gwk=None,
         slx_lags=0,
+        slx_vars="All",
         sig2n_k=False,
         spat_diag=False,
+        nonspat_diag=True,
         vm=False,
         name_y=None,
         name_x=None,
@@ -455,7 +465,8 @@ class TSLS(BaseTSLS):
     ):
 
         n = USER.check_arrays(y, x, yend, q)
-        y = USER.check_y(y, n)
+        y, name_y = USER.check_y(y, n, name_y)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         USER.check_robust(robust, gwk)
         if robust == "hac" and spat_diag:
                 set_warn(
@@ -466,13 +477,14 @@ class TSLS(BaseTSLS):
         USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         self.name_x = USER.set_name_x(name_x, x_constant)
+        w = USER.check_weights(w, y, slx_lags=slx_lags)        
         if slx_lags>0:
-            USER.check_weights(w, y, w_required=True)
-            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
-            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
-        else:
-            USER.check_weights(w, y, w_required=False)
+#            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+#            x_constant = np.hstack((x_constant, lag_x))
+#            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+            x_constant,self.name_x = USER.flex_wx(w,x=x_constant,name_x=self.name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+
         set_warn(self, warn)
         BaseTSLS.__init__(
             self,
@@ -500,10 +512,15 @@ class TSLS(BaseTSLS):
                                    columns=['var_names'])
         self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend)
         self.output['regime'], self.output['equation'] = (0, 0)
+        diag_out = ""
+        if nonspat_diag:
+            self.dwh = DIAG.dwh(self)
+            sum_dwh = _summary_dwh(self)
+            diag_out += sum_dwh
         if spat_diag:
-            diag_out = _spat_diag_out(self, w, 'yend')
-        else:
-            diag_out = None
+            diag_out += _spat_diag_out(self, w, 'yend')
+
+
         output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
 def _test():

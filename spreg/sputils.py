@@ -1,8 +1,9 @@
 import numpy as np
 import numpy.linalg as la
 import scipy.sparse as SP
-import scipy
+import pandas as pd
 from scipy.sparse import linalg as SPla
+from itertools import compress
 
 
 def spdot(a, b, array_out=True):
@@ -281,7 +282,7 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
     ----------
     w          : PySAL format spatial weights matrix
     rho        : spatial autoregressive coefficient
-    method     : one of "simple" (default), full" or "power"
+    method     : one of "simple" (default), "full" or "power"
     mtol       : tolerance for power iteration (default=0.00000001)
 
     Returns
@@ -293,7 +294,7 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
                   pow = powers used in power approximation (otherwise 0)
 
     """
-    multipliers = {"ati": 1.0, "adi": 1.0, "aii": 1.0}
+    multipliers = {"ati": 1.0, "adi": 1.0, "aii": 1.0, "method": method, "warn": ''}
     multipliers["pow"] = 0
     multipliers["ati"] = 1.0 / (1.0 - rho)
     n = w.n
@@ -321,14 +322,15 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
             rhop = rhop * rho
             adidiff = rhop * trw / n
             adi = adi + adidiff
-        multipliers["adi"] = adi
+        multipliers["adi"] = adi.item()
         multipliers["pow"] = pow
     else:
-        print("Method not supported")
+        multipliers["warn"] = "Method '"+method+"' not supported for spatial impacts.\n"
+        multipliers["method"] ='simple'
     multipliers["aii"] = multipliers["ati"] - multipliers["adi"]
     return (multipliers)
 
-def _sp_effects(reg, variables, spmult, slx_lags=0):
+def _sp_effects(reg, variables, spmult, slx_lags=0,slx_vars="All"):
     """
     Calculate spatial lag, direct and indirect effects
     
@@ -338,6 +340,8 @@ def _sp_effects(reg, variables, spmult, slx_lags=0):
     variables  : chunk of self.output with variables to calculate effects
     spmult     : dictionary with spatial multipliers
     slx_lags   : number of SLX lags
+    slx_vars   : either "All" (default) for all variables lagged, or a list
+                 of booleans matching the columns of x that will be lagged or not
 
     Returns
     -------
@@ -345,27 +349,46 @@ def _sp_effects(reg, variables, spmult, slx_lags=0):
     bdir       : direct effects
     bind       : indirect effects
     """
-    variables_index = variables.index
-    m1 = spmult['ati']
-    btot = m1 * reg.betas[variables_index]
-    m2 = spmult['adi']
-    bdir = m2 * reg.betas[variables_index]
+    
+    variables_x_index = variables.index
 
-    # Assumes all SLX effects are indirect effects. Needs revision by LA. 
+    m1 = spmult['ati']
+    btot = m1 * reg.betas[variables_x_index]
+    m2 = spmult['adi']
+    bdir = m2 * reg.betas[variables_x_index]
+
+    # Assumes all SLX effects are indirect effects. 
     if slx_lags > 0:
-        variables_wx = reg.output.query("var_type == 'wx'")
-        variables_wx_index = variables_wx.index
-        
-        chunk_size = len(variables)
-        for i in range(slx_lags):
-            start_idx = i * chunk_size
-            end_idx = start_idx + chunk_size
-            chunk_indices = variables_wx_index[start_idx:end_idx]
-            btot += m1 * reg.betas[chunk_indices]
+        if reg.output.regime.nunique() > 1:
+            btot_idx = pd.Series(btot.flatten(), index=variables_x_index)   
+            wchunk_size = len(variables.query("regime == @reg.output.regime.iloc[0]")) #Number of exogenous variables in each regime
+            for i in range(slx_lags):
+                chunk_indices = variables_x_index + (i+1) * wchunk_size
+                bmult = m1 * reg.betas[chunk_indices]
+                btot_idx[variables_x_index] += bmult.flatten()
+                btot = btot_idx.to_numpy().reshape(btot.shape)
+
+        else:
+            variables_wx = reg.output.query("var_type == 'wx'")
+            variables_wx_index = variables_wx.index
+            if hasattr(reg, 'slx_vars') and isinstance(slx_vars,list):
+                flexwx_indices = list(compress(variables_x_index,slx_vars))   # indices of x variables in wx
+            else:
+                flexwx_indices = variables_x_index    # all x variables
+            xind = [h - 1 for h in flexwx_indices]
+            wchunk_size = len(variables_wx_index)//slx_lags
+            for i in range(slx_lags):
+                start_idx = i * wchunk_size
+                end_idx = start_idx + wchunk_size
+                chunk_indices = variables_wx_index[start_idx:end_idx]
+                bmult = m1 * reg.betas[chunk_indices]
+                btot[xind] = btot[xind] + bmult
+
         bind = btot - bdir
     else:
         m3 = spmult['aii']
-        bind = m3 * reg.betas[variables_index]
+        bind = m3 * reg.betas[variables_x_index]
+
     return btot, bdir, bind
 
 def _test():

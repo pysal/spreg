@@ -16,6 +16,7 @@ import pandas as pd
 from .output import output, _spat_pseudo_r2
 from .error_sp_het import GM_Error_Het, GM_Endog_Error_Het, GM_Combo_Het
 from .error_sp_hom import GM_Error_Hom, GM_Endog_Error_Hom, GM_Combo_Hom
+from itertools import compress
 
 
 __all__ = ["GMM_Error", "GM_Error", "GM_Endog_Error", "GM_Combo"]
@@ -126,9 +127,9 @@ class GM_Error(BaseGM_Error):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
@@ -136,6 +137,8 @@ class GM_Error(BaseGM_Error):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX-Error type.
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -291,22 +294,26 @@ class GM_Error(BaseGM_Error):
     """
 
     def __init__(
-        self, y, x, w, slx_lags=0, vm=False, name_y=None, name_x=None, name_w=None, name_ds=None, latex=False,
+        self, y, x, w, slx_lags=0, slx_vars="All",vm=False, name_y=None, name_x=None, name_w=None, name_ds=None, latex=False,
             hard_bound=False):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         name_x = USER.set_name_x(name_x, x_constant)  # intialize in case of None, contains constant
         set_warn(self, warn)
         
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES"
         if slx_lags >0:
-            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
+            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
+
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+
             self.title += " WITH SLX (SLX-Error)"
         
         BaseGM_Error.__init__(self, y=y, x=x_constant, w=w.sparse, hard_bound=hard_bound)
@@ -443,15 +450,15 @@ class GM_Endog_Error(BaseGM_Endog_Error):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
@@ -460,6 +467,8 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX-Error type.
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged    
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -648,6 +657,7 @@ class GM_Endog_Error(BaseGM_Endog_Error):
         q,
         w,
         slx_lags=0,
+        slx_vars="All",
         vm=False,
         name_y=None,
         name_x=None,
@@ -660,17 +670,22 @@ class GM_Endog_Error(BaseGM_Endog_Error):
     ):
 
         n = USER.check_arrays(y, x, yend, q)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         name_x = USER.set_name_x(name_x, x_constant) # initialize for None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES"
         if slx_lags >0:
-            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
+            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #x_constant = np.hstack((x_constant, lag_x))
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+
             self.title += " WITH SLX (SLX-Error)"        
         BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend, q=q, hard_bound=hard_bound)
         self.name_ds = USER.set_name_ds(name_ds)
@@ -699,15 +714,15 @@ class GM_Combo(BaseGM_Endog_Error):
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (note:
                    this should not contain any variables from x)
@@ -721,6 +736,8 @@ class GM_Combo(BaseGM_Endog_Error):
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the General Nesting
                    Spatial Model (GNSM) type.
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged
     lag_q        : boolean
                    If True, then include spatial lags of the additional
                    instruments (q)
@@ -942,6 +959,7 @@ class GM_Combo(BaseGM_Endog_Error):
         w=None,
         w_lags=1,
         slx_lags=0,
+        slx_vars="All",
         lag_q=True,
         vm=False,
         name_y=None,
@@ -955,16 +973,27 @@ class GM_Combo(BaseGM_Endog_Error):
     ):
 
         n = USER.check_arrays(y, x, yend, q)
-        y = USER.check_y(y, n)
-        USER.check_weights(w, y, w_required=True)
+        y, name_y = USER.check_y(y, n, name_y)
+        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         name_x = USER.set_name_x(name_x, x_constant)
-        set_warn(self, warn)
-        if slx_lags == 0:
-            yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
-        else:
-            yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
+
+        if slx_lags > 0:
+            yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags,slx_vars)
             x_constant = np.hstack((x_constant, wx))
+        else:
+            yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+
+
+
+        set_warn(self, warn)
+        # OLD
+        #if slx_lags == 0:
+            #yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+        #else:
+            #yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
+            #x_constant = np.hstack((x_constant, wx))
 
         BaseGM_Endog_Error.__init__(self, y=y, x=x_constant, w=w.sparse, yend=yend2, q=q2, hard_bound=hard_bound)
 
@@ -974,25 +1003,75 @@ class GM_Combo(BaseGM_Endog_Error):
         )
         set_warn(self, warn)
         self.title = "SPATIALLY WEIGHTED 2SLS - GM-COMBO MODEL"
-        if slx_lags > 0:
+        # OLD
+        #if slx_lags > 0:
 #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)   # exclude constant
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)   # exclude constant
+            #self.title += " WITH SLX (GNSM)"
+
+        # kx and wkx are used to replace complex calculation for output
+        if slx_lags > 0:  # adjust for flexwx
+            if (isinstance(slx_vars,list)):     # slx_vars has True,False
+                if len(slx_vars) != x.shape[1] :
+                    raise Exception("slx_vars incompatible with x column dimensions")
+                else:  # use slx_vars to extract proper columns
+                    workname = name_x[1:]
+                    kx = len(workname)
+                    vv = list(compress(workname,slx_vars))
+                    name_x += USER.set_name_spatial_lags(vv, slx_lags)
+                    wkx = slx_vars.count(True)
+            else:
+                kx = len(name_x) - 1
+                wkx = kx
+                name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
             self.title += " WITH SLX (GNSM)"
+
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
 #        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x = name_x  # constant already in list
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
+
+
         self.name_z = self.name_x + self.name_yend
         self.name_z.append("lambda")
         self.name_q = USER.set_name_q(name_q, q)
-        self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+
+        if slx_lags > 0:  # need to remove all but last SLX variables from name_x
+            self.name_x0 = []
+            self.name_x0.append(self.name_x[0])  # constant
+            if (isinstance(slx_vars,list)):   # boolean list passed
+                # x variables that were not lagged
+                self.name_x0.extend(list(compress(self.name_x[1:],[not i for i in slx_vars])))
+                # last wkx variables
+                self.name_x0.extend(self.name_x[-wkx:])
+
+
+            else:
+                okx = int((self.k - self.yend.shape[1] - 1) / (slx_lags + 1))  # number of original exogenous vars
+
+                self.name_x0.extend(self.name_x[-okx:])
+
+            self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
+
+            #var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
+            var_types = ['x'] * (kx + 1) + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
+        else:
+            self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+            var_types = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
+
+
+        #self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
         self.output = pd.DataFrame(self.name_z,
                                    columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho', 'lambda']
+        
+
+        #self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho', 'lambda']
+        self.output['var_type'] = var_types
+
         self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _spat_pseudo_r2(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
@@ -1006,17 +1085,17 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
 
     Parameters
     ----------
-    y            : array
+    y            : numpy.ndarray or pandas.Series
                    nx1 array for dependent variable
-    x            : array
+    x            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    independent (exogenous) variable, excluding the constant
     w            : pysal W object
                    Spatial weights object (always needed)
-    yend         : array
+    yend         : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    endogenous variable (if any)
-    q            : array
+    q            : numpy.ndarray or pandas object
                    Two dimensional array with n rows and one column for each
                    external exogenous variable to use as instruments (if any)
                    (note: this should not contain any variables from x)
@@ -1029,7 +1108,9 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
                    If True, then a spatial lag of the dependent variable is included.           
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type.             
+                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type. 
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged            
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -1050,6 +1131,7 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
     hard_bound   : boolean
                    If true, raises an exception if the estimated spatial
                    autoregressive parameter is outside the maximum/minimum bounds.
+    spat_diag    : boolean, ignored, included for compatibility with other models
     **kwargs     : keywords
                    Additional arguments to pass on to the estimators. 
                    See the specific functions for details on what can be used.
@@ -1232,50 +1314,50 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
     """
 
     def __init__(
-        self, y, x, w, yend=None, q=None, estimator='het', add_wy=False, slx_lags=0, vm=False, name_y=None, name_x=None, name_w=None, name_yend=None,
-        name_q=None, name_ds=None, latex=False, hard_bound=False, **kwargs):
+        self, y, x, w, yend=None, q=None, estimator='het', add_wy=False, slx_lags=0, slx_vars="All",vm=False, name_y=None, name_x=None, name_w=None, name_yend=None,
+        name_q=None, name_ds=None, latex=False, hard_bound=False,spat_diag=False, **kwargs):
 
         if estimator == 'het':
             if yend is None and not add_wy:
-                GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
+                GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x, 
                                       name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif yend is not None and not add_wy:
-                GM_Endog_Error_Het.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
+                GM_Endog_Error_Het.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x,
                                             name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif add_wy:
-                GM_Combo_Het.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
+                GM_Combo_Het.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x,
                                             name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             else:
                 set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
-                GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
+                GM_Error_Het.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x, 
                                       name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
         elif estimator == 'hom':
             if yend is None and not add_wy:
-                GM_Error_Hom.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
+                GM_Error_Hom.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, slx_vars=slx_vars,vm=vm, name_y=name_y, name_x=name_x, 
                                       name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif yend is not None and not add_wy:
-                GM_Endog_Error_Hom.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
+                GM_Endog_Error_Hom.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x,
                                             name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif add_wy:
-                GM_Combo_Hom.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
+                GM_Combo_Hom.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x,
                                             name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             else:
                 set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
-                GM_Error_Hom.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
+                GM_Error_Hom.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, slx_vars=slx_vars,vm=vm, name_y=name_y, name_x=name_x, 
                                       name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
         elif estimator == 'kp98':
             if yend is None and not add_wy:
-                GM_Error.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
+                GM_Error.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x, 
                                       name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif yend is not None and not add_wy:
-                GM_Endog_Error.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
+                GM_Endog_Error.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x,
                                             name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             elif add_wy:
-                GM_Combo.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
+                GM_Combo.__init__(self, y=y, x=x, yend=yend, q=q, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x,
                                             name_yend=name_yend, name_q=name_q, name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound, **kwargs)
             else:
                 set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')
-                GM_Error.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x, 
+                GM_Error.__init__(self, y=y, x=x, w=w, slx_lags=slx_lags, slx_vars=slx_vars, vm=vm, name_y=name_y, name_x=name_x, 
                                       name_w=name_w, name_ds=name_ds, latex=latex, hard_bound=hard_bound)
         else:
             set_warn(self, 'Combination of arguments passed to GMM_Error not allowed. Using default arguments instead.')

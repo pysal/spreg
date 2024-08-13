@@ -8,11 +8,15 @@ __author__ = (
     "Jing Yao jingyao@asu.edu"
 )
 import numpy as np
+import pandas as pd
 import copy as COPY
 from . import diagnostics
 from . import sputils as spu
 from libpysal import weights
+from libpysal import graph
 from scipy.sparse.csr import csr_matrix
+from .utils import get_lags        # new for flex_wx
+from itertools import compress     # new for lfex_wx
 
 
 def set_name_ds(name_ds):
@@ -339,7 +343,7 @@ def set_name_multi(
 def check_arrays(*arrays):
     """Check if the objects passed by a user to a regression class are
     correctly structured. If the user's data is correctly formed this function
-    returns nothing, if not then an exception is raised. Note, this does not
+    returns the number of observations, if not then an exception is raised. Note, this does not
     check for model setup, simply the shape and types of the objects.
 
     Parameters
@@ -376,6 +380,8 @@ def check_arrays(*arrays):
     for i in arrays:
         if i is None:
             continue
+        if isinstance(i, (pd.Series, pd.DataFrame)):
+            i = i.to_numpy()
         if not isinstance(i, (np.ndarray, csr_matrix)):
             raise Exception(
                 "all input data must be either numpy arrays or sparse csr matrices"
@@ -395,7 +401,7 @@ def check_arrays(*arrays):
     return rows[0]
 
 
-def check_y(y, n):
+def check_y(y, n, name_y=None):
     """Check if the y object passed by a user to a regression class is
     correctly structured. If the user's data is correctly formed this function
     returns nothing, if not then an exception is raised. Note, this does not
@@ -409,11 +415,17 @@ def check_y(y, n):
 
     n       : int
               number of observations
+    
+    name_y  : string
+              Name of the y variable
 
     Returns
     -------
     y       : anything
               Object passed by the user to a regression class
+    
+    name_y  : string
+              Name of the y variable
 
     Examples
     --------
@@ -432,9 +444,19 @@ def check_y(y, n):
     # should not raise an exception
 
     """
+    if isinstance(y, (pd.Series, pd.DataFrame)):
+        if not name_y:
+            try:
+                name_y = y.name
+            except AttributeError:
+                name_y = y.columns.to_list()
+                if len(name_y) == 1:
+                    name_y = name_y[0]
+                    
+        y = y.to_numpy()
     if not isinstance(y, np.ndarray):
         print(y.__class__.__name__)
-        raise Exception("y must be a numpy array")
+        raise Exception("y must be a numpy array or a pandas Series")
     shape = y.shape
     if len(shape) > 2:
         raise Exception("all input arrays must have two dimensions")
@@ -449,10 +471,35 @@ def check_y(y, n):
         raise Exception(
             "y must be a single column array matching the length of other arrays"
         )
-    return y
+    return y, name_y
 
+def check_endog(arrays, names):
+    """Check if each of the endogenous arrays passed by a user to a regression class are
+    pandas objects. In this case, the function converts them to numpy arrays and collects their names.
 
-def check_weights(w, y, w_required=False, time=False):
+    Parameters
+    ----------
+    arrays : list
+              List of endogenous variables passed by the user to a regression class
+    names  : list
+              List of names of the endogenous variables, assumed in the same order as the arrays
+    """
+    for i in range(len(arrays)):
+        if isinstance(arrays[i], (pd.Series, pd.DataFrame)):
+            if not names[i]:
+                try:
+                    names[i] = [arrays[i].name]
+                except AttributeError:
+                    names[i] = arrays[i].columns.to_list()
+            arrays[i] = arrays[i].to_numpy()
+
+        if arrays[i] is None:
+            pass
+        elif len(arrays[i].shape) == 1:
+            arrays[i].shape = (arrays[i].shape[0], 1)
+    return (*arrays, *names)
+
+def check_weights(w, y, w_required=False, time=False, slx_lags=0):
     """Check if the w parameter passed by the user is a libpysal.W object and
     check that its dimensionality matches the y parameter.  Note that this
     check is not performed if w set to None.
@@ -470,11 +517,13 @@ def check_weights(w, y, w_required=False, time=False):
     time    : boolean
               True if data contains a time dimension.
               False (default) if not.
+    slx_lags : int
+                Number of lags of X in the spatial lag model.
 
     Returns
     -------
-    Returns : nothing
-              Nothing is returned
+    Returns : w
+              weights object passed by the user to a regression class
 
     Examples
     --------
@@ -490,26 +539,34 @@ def check_weights(w, y, w_required=False, time=False):
     >>> X.append(db.by_col("HOVAL"))
     >>> X = np.array(X).T
     >>> w = libpysal.io.open(libpysal.examples.get_path("columbus.gal"), 'r').read()
-    >>> check_weights(w, y)
+    >>> w = check_weights(w, y)
 
     # should not raise an exception
 
     """
-    if w_required == True or w != None:
+    if w_required == True or w != None or slx_lags > 0:
+        if isinstance(w, graph.Graph):
+            w = w.to_W()
+            
         if w == None:
             raise Exception("A weights matrix w must be provided to run this method.")
+        
         if not isinstance(w, weights.W):
             from warnings import warn
-
             warn("w must be API-compatible pysal weights object")
+
+        # check for kernel weights, if so insert zeros on diagonal
+        if slx_lags == 1 and isinstance(w, weights.Kernel):
+            w = weights.fill_diagonal(w,val=0.0)
+
         if w.n != y.shape[0] and time == False:
             raise Exception("y must have n rows, and w must be an nxn PySAL W object")
         diag = w.sparse.diagonal()
         # check to make sure all entries equal 0
-        if diag.min() != 0:
+        if diag.min() != 0 or diag.max() != 0:
             raise Exception("All entries on diagonal must equal 0.")
-        if diag.max() != 0:
-            raise Exception("All entries on diagonal must equal 0.")
+        
+    return w
 
 
 def check_robust(robust, wk):
@@ -629,6 +686,49 @@ def check_spat_diag(spat_diag, w):
             raise Exception("w must be a libpysal.W object to run spatial diagnostics")
 
 
+def check_reg_list(regimes, name_regimes, n):
+    """Check if the regimes parameter passed by the user is a valid list of
+    regimes. Note: this does not check if the regimes are valid for the
+    regression model.
+
+    Parameters
+    ----------
+    regimes     : list or np.array or pd.Series
+                    Object passed by the user to a regression class
+    name_regimes : string
+                    Name of the regimes variable    
+    n           : int
+                    number of observations
+
+    Returns
+    -------
+    regimes     : list
+                    regimes object passed by the user to a regression class as a list
+    name_regimes : string
+
+    """
+    if isinstance(regimes, list):
+        pass
+    elif isinstance(regimes, pd.Series):
+        if not name_regimes:
+            name_regimes = regimes.name
+        regimes = regimes.tolist()
+    elif isinstance(regimes, np.ndarray):
+        regimes = regimes.tolist()
+    else:
+        raise Exception("regimes must be a list, numpy array, or pandas Series")
+    if len(regimes) != n:
+        raise Exception(
+            "regimes must have the same number of observations as the dependent variable"
+        )
+    return regimes, name_regimes
+
+
+
+
+
+
+
 def check_regimes(reg_set, N=None, K=None):
     """Check if there are at least two regimes
 
@@ -686,6 +786,13 @@ def check_constant(x, name_x=None, just_rem=False):
     (49, 3)
 
     """
+    if isinstance(x, (pd.Series, pd.DataFrame)):
+        if name_x is None:
+            try:
+                name_x = x.columns.to_list()
+            except AttributeError:
+                name_x = x.name
+        x = x.to_numpy()
     x_constant = COPY.copy(x)
     keep_x = COPY.copy(name_x)
     warn = None
@@ -715,6 +822,51 @@ def check_constant(x, name_x=None, just_rem=False):
         return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant), keep_x, warn
     else:
         return x_constant, keep_x, warn
+
+
+def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
+    """
+    Adds spatially lagged variables to an existing x matrix with or without a constant term
+    Adds variable names prefaced by W_ for the lagged variables
+    Allows flexible selection of x-variables to be lagged through list of booleans
+
+    Arguments
+    ---------
+    w        : PySAL supported spatial weights
+    x        : input matrix of x variables
+    name_x   : input list of variable names for x
+    constant : flag for whether constant is included in x, default = True
+               no spatial lags are computed for constant term
+    slx_lags : order of spatial lags, default = 1
+    slx_vars : either "All" (default) for all variables lagged, or a list
+               of booleans matching the columns of x that will be lagged or not
+
+    Returns
+    -------
+    a tuple with
+    bigx     : concatenation of original x matrix and spatial lags
+    bignamex : list of variable names including spatial lags
+
+    """
+    if constant == True:
+        xwork = x[:,1:]
+        xnamework = name_x[1:]        
+    else:
+        xwork = x
+        xnamework = name_x
+    
+    if isinstance(slx_vars,list):
+        if len(slx_vars) == len(xnamework):
+            xwork = xwork[:,slx_vars]
+            xnamework = list(compress(xnamework,slx_vars))
+        else:
+            raise Exception("Mismatch number of columns and length slx_vars")
+    
+    lagx = get_lags(w,xwork,slx_lags)
+    xlagname = set_name_spatial_lags(xnamework,slx_lags)
+    bigx = np.hstack((x,lagx))
+    bignamex = name_x + xlagname
+    return(bigx,bignamex)
 
 
 def _test():

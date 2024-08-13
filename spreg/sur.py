@@ -996,14 +996,13 @@ if __name__ == "__main__":
     _test()
     import numpy as np
     import libpysal
-    from .sur_utils import sur_dictxy, sur_dictZ
+    from .sur_utils import sur_dictxy
     from libpysal.examples import load_example
 
     nat = load_example("Natregimes")
     db = libpysal.io.open(nat.get_path("NAT.dbf"), "r")
     y_var = ["HR80", "HR90"]
     x_var = [["PS80", "UE80"], ["PS90", "UE90"]]
-    regimes = db.by_col("SOUTH")
 
     # Example SUR
     # """

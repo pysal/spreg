@@ -6,12 +6,12 @@ import numpy as np
 import numpy.linalg as la
 import scipy.optimize as op
 from scipy.stats import norm, chi2
-
+from libpysal import weights
 chisqprob = chi2.sf
 import scipy.sparse as SP
 from . import user_output as USER
 from . import summary_output as SUMMARY
-from .utils import spdot, spbroadcast, set_warn
+from .utils import spdot, spbroadcast, set_warn, get_lags
 
 __all__ = ["Probit"]
 
@@ -651,12 +651,15 @@ class Probit(BaseProbit):
     Parameters
     ----------
 
-    x           : array
+    x           : numpy.ndarray or pandas object
                   nxk array of independent variables (assumed to be aligned with y)
-    y           : array
+    y           : numpy.ndarray or pandas.Series
                   nx1 array of dependent binary variable
     w           : W
                   PySAL weights instance aligned with y
+    slx_lags     : integer
+                   Number of spatial lags of X to include in the model specification.
+                   If slx_lags>0, the specification becomes of the SLX type.
     optim       : string
                   Optimization method.
                   Default: 'newton' (Newton-Raphson).
@@ -837,6 +840,7 @@ class Probit(BaseProbit):
         y,
         x,
         w=None,
+        slx_lags=0,
         optim="newton",
         scalem="phimean",
         maxiter=100,
@@ -849,23 +853,31 @@ class Probit(BaseProbit):
     ):
 
         n = USER.check_arrays(y, x)
-        y = USER.check_y(y, n)
-        if w != None:
-            USER.check_weights(w, y)
-            spat_diag = True
-            ws = w.sparse
-        else:
-            ws = None
+        y, name_y = USER.check_y(y, n, name_y)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
+        self.name_x = USER.set_name_x(name_x, x_constant)
+
+        if w != None or slx_lags > 0:
+            w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+            spat_diag = True
+            ws = w.sparse
+            if slx_lags > 0:
+                lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+                x_constant = np.hstack((x_constant, lag_x))
+                self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)            
+        else:
+            ws = None
 
         BaseProbit.__init__(
             self, y=y, x=x_constant, w=ws, optim=optim, scalem=scalem, maxiter=maxiter
         )
         self.title = "CLASSIC PROBIT ESTIMATOR"
+        if slx_lags > 0:
+            self.title += " WITH SPATIALLY LAGGED X (SLX)"        
+        self.slx_lags = slx_lags
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        self.name_x = USER.set_name_x(name_x, x)
         self.name_w = USER.set_name_w(name_w, w)
         SUMMARY.Probit(reg=self, w=w, vm=vm, spat_diag=spat_diag)
 
