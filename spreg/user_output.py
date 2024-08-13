@@ -13,6 +13,7 @@ import copy as COPY
 from . import diagnostics
 from . import sputils as spu
 from libpysal import weights
+from libpysal import graph
 from scipy.sparse.csr import csr_matrix
 from .utils import get_lags        # new for flex_wx
 from itertools import compress     # new for lfex_wx
@@ -544,8 +545,12 @@ def check_weights(w, y, w_required=False, time=False, slx_lags=0):
 
     """
     if w_required == True or w != None or slx_lags > 0:
+        if isinstance(w, graph.Graph):
+            w = w.to_W()
+            
         if w == None:
             raise Exception("A weights matrix w must be provided to run this method.")
+        
         if not isinstance(w, weights.W):
             from warnings import warn
             warn("w must be API-compatible pysal weights object")
