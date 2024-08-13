@@ -267,7 +267,11 @@ class TestGMCombo(unittest.TestCase):
 
 class TestGMMError(unittest.TestCase):
     def setUp(self):
-        self.db = pd.read_csv(libpysal.examples.get_path('columbus.csv'))
+        try:
+            self.db = pd.read_csv(libpysal.examples.get_path('columbus.csv'))
+        except ValueError:
+            import geopandas as gpd
+            self.db = gpd.read_file(libpysal.examples.get_path('columbus.dbf'))
         self.w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
         self.w.transform = 'r'
 
