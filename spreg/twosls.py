@@ -474,10 +474,10 @@ class TSLS(BaseTSLS):
                     "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
                 )
                 spat_diag = False
-        USER.check_spat_diag(spat_diag, w)
+
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         self.name_x = USER.set_name_x(name_x, x_constant)
-        w = USER.check_weights(w, y, slx_lags=slx_lags)        
+        w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=spat_diag)        
         if slx_lags>0:
 #            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
 #            x_constant = np.hstack((x_constant, lag_x))

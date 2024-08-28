@@ -470,12 +470,15 @@ class OLS(BaseOLS):
                     "White test not available when standard errors are estimated by HAC or White correction.",
                 )
                 white_test = False
-        USER.check_spat_diag(spat_diag, w)
+
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
         self.name_x = USER.set_name_x(name_x, x_constant)
         
-        w = USER.check_weights(w, y, slx_lags=slx_lags)
+        if spat_diag or moran:
+            w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=True)
+        else:
+            w = USER.check_weights(w, y, slx_lags=slx_lags)
         if slx_lags >0:
 #            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
 #            x_constant = np.hstack((x_constant, lag_x))
