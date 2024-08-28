@@ -544,7 +544,7 @@ def check_weights(w, y, w_required=False, time=False, slx_lags=0):
     # should not raise an exception
 
     """
-    if w_required == True or w != None or slx_lags > 0:
+    if w_required == True or (w is not None) or slx_lags > 0:
         if isinstance(w, graph.Graph):
             w = w.to_W()
             
@@ -644,7 +644,7 @@ def check_robust(robust, wk):
                 "invalid value passed to robust, see docs for valid options"
             )
 
-
+''' Deprecated in 1.6.1
 def check_spat_diag(spat_diag, w):
     """Check if there is a w parameter passed by the user if the user also
     requests spatial diagnostics.
@@ -684,7 +684,7 @@ def check_spat_diag(spat_diag, w):
     if spat_diag:
         if not isinstance(w, weights.W):
             raise Exception("w must be a libpysal.W object to run spatial diagnostics")
-
+'''
 
 def check_reg_list(regimes, name_regimes, n):
     """Check if the regimes parameter passed by the user is a valid list of

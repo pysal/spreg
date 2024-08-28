@@ -503,7 +503,6 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                     "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
                 )
                 spat_diag = False
-        USER.check_spat_diag(spat_diag, w)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
