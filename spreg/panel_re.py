@@ -36,7 +36,6 @@ __all__ = ["Panel_RE_Lag", "Panel_RE_Error"]
 
 
 class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
-
     """
     Base ML method for a random effects spatial lag model (note no consistency
     checks, diagnostics or constants added) :cite:`Elhorst2003`.
@@ -215,7 +214,7 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
             (
                 np.zeros((self.k, 1)),
                 -tr1 / self.sig2,
-                self.n * (1 + 1 / self.phi ** 2),
+                self.n * (1 + 1 / self.phi**2),
                 -self.n / self.sig2,
             )
         )
@@ -223,8 +222,8 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
             (
                 np.zeros((self.k, 1)),
                 self.t * tr1 / self.sig2,
-                -self.n / self.sig2 ** 2,
-                self.n * self.t / (2.0 * self.sig2 ** 2),
+                -self.n / self.sig2**2,
+                self.n * self.t / (2.0 * self.sig2**2),
             )
         )
 
@@ -237,7 +236,6 @@ class BasePanel_RE_Lag(RegressionPropsY, RegressionPropsVM):
 
 
 class Panel_RE_Lag(BasePanel_RE_Lag):
-
     """
     ML estimation of the random effects spatial lag model with all results and
     diagnostics :cite:`Elhorst2003`.
@@ -401,7 +399,6 @@ class Panel_RE_Lag(BasePanel_RE_Lag):
 
 
 class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
-
     """
     Base ML method for a random effects spatial error model (note no
     consistency checks, diagnostics or constants added) :cite:`Elhorst2003`.
@@ -518,7 +515,7 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
         )
 
         # b, residuals and predicted values
-        cvals = self.t * self.phi ** 2 + 1 / (1 - self.lam * evals) ** 2
+        cvals = self.t * self.phi**2 + 1 / (1 - self.lam * evals) ** 2
         P = spdot(np.diag(cvals ** (-0.5)), evecs.T)
         pr = P - (I - self.lam * W)
         pr_nt = sp.kron(sp.identity(self.t), pr, format="csr")
@@ -541,7 +538,7 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
         # variance-covariance matrix betas
         varb = self.sig2 * xsxsi
         # variance of random effects
-        self.sig2_u = self.phi ** 2 * self.sig2
+        self.sig2_u = self.phi**2 * self.sig2
 
         self.betas = np.vstack((b, self.lam, self.sig2_u))
 
@@ -572,7 +569,7 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
 
         v1 = np.vstack(
             (
-                (self.t - 1) / 2 * tr1 ** 2 + 1 / 2 * tr4 ** 2,
+                (self.t - 1) / 2 * tr1**2 + 1 / 2 * tr4**2,
                 self.t / (2 * self.sig2) * tr6,
                 (self.t - 1) / (2 * self.sig2) * tr1 + 1 / (2 * self.sig2) * tr7,
             )
@@ -580,15 +577,15 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
         v2 = np.vstack(
             (
                 self.t / (2 * self.sig2) * tr6,
-                self.t ** 2 / (2.0 * self.sig2 ** 2) * tr2 ** 2,
-                self.t / (2.0 * self.sig2 ** 2) * tr5,
+                self.t**2 / (2.0 * self.sig2**2) * tr2**2,
+                self.t / (2.0 * self.sig2**2) * tr5,
             )
         )
         v3 = np.vstack(
             (
                 (self.t - 1) / (2 * self.sig2) * tr1 + 1 / (2 * self.sig2) * tr7,
-                self.t / (2.0 * self.sig2 ** 2) * tr5,
-                1 / (2.0 * self.sig2 ** 2) * ((self.t - 1) * self.n + tr3 ** 2),
+                self.t / (2.0 * self.sig2**2) * tr5,
+                1 / (2.0 * self.sig2**2) * ((self.t - 1) * self.n + tr3**2),
             )
         )
 
@@ -606,7 +603,6 @@ class BasePanel_RE_Error(RegressionPropsY, RegressionPropsVM):
 
 
 class Panel_RE_Error(BasePanel_RE_Error):
-
     """
     ML estimation of the random effects spatial error model with all results and
     diagnostics :cite:`Elhorst2003`.
@@ -788,7 +784,7 @@ def phi_c_loglik(phi, rho, beta, bigy, bigx, n, t, W_nt):
     er = y - rho * ylag - spdot(x, beta)
     sig2 = spdot(er.T, er)
     nlsig2 = (n * t / 2.0) * np.log(sig2)
-    nphi2 = (n / 2.0) * np.log(phi ** 2)
+    nphi2 = (n / 2.0) * np.log(phi**2)
     clike = nlsig2 - nphi2
     return clike
 
@@ -798,7 +794,7 @@ def err_c_loglik_ord(
 ):
     # concentrated log-lik for error model, no constants, eigenvalues
     lam, phi = lam_phi
-    cvals = t * phi ** 2 + 1 / (1 - lam * evals) ** 2
+    cvals = t * phi**2 + 1 / (1 - lam * evals) ** 2
     P = spdot(np.diag(cvals ** (-0.5)), evecs.T)
     pr = P - (I - lam * Wsp)
     pr_nt = sp.kron(sp.identity(t), pr, format="csr")
@@ -817,7 +813,7 @@ def err_c_loglik_ord(
     sig2 = ee[0][0]
     nlsig2 = (n * t / 2.0) * np.log(sig2)
     # Term 2
-    revals = t * phi ** 2 * (1 - lam * evals) ** 2
+    revals = t * phi**2 * (1 - lam * evals) ** 2
     phi_jacob = 1 / 2 * np.log(1 + revals).sum()
     # Term 3
     jacob = t * np.log(1 - lam * evals).sum()

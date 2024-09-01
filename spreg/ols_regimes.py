@@ -9,11 +9,19 @@ import multiprocessing as mp
 import pandas as pd
 from . import regimes as REGI
 from . import user_output as USER
-from .utils import set_warn, RegressionProps_basic, spdot, RegressionPropsY, get_lags, optim_k
+from .utils import (
+    set_warn,
+    RegressionProps_basic,
+    spdot,
+    RegressionPropsY,
+    get_lags,
+    optim_k,
+)
 from .ols import BaseOLS
 from .robust import hac_multi
 from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top
 from .skater_reg import Skater_reg
+
 
 class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     """
@@ -387,33 +395,32 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     """
 
     def __init__(
-            self,
-            y,
-            x,
-            regimes,
-            w=None,
-            robust=None,
-            gwk=None,
-            slx_lags=0,
-            sig2n_k=True,
-            nonspat_diag=True,
-            spat_diag=False,
-            moran=False,
-            white_test=False,
-            vm=False,
-            constant_regi="many",
-            cols2regi="all",
-            regime_err_sep=True,
-            cores=False,
-            name_y=None,
-            name_x=None,
-            name_regimes=None,
-            name_w=None,
-            name_gwk=None,
-            name_ds=None,
-            latex=False
+        self,
+        y,
+        x,
+        regimes,
+        w=None,
+        robust=None,
+        gwk=None,
+        slx_lags=0,
+        sig2n_k=True,
+        nonspat_diag=True,
+        spat_diag=False,
+        moran=False,
+        white_test=False,
+        vm=False,
+        constant_regi="many",
+        cols2regi="all",
+        regime_err_sep=True,
+        cores=False,
+        name_y=None,
+        name_x=None,
+        name_regimes=None,
+        name_w=None,
+        name_gwk=None,
+        name_ds=None,
+        latex=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         USER.check_robust(robust, gwk)
@@ -469,9 +476,9 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         USER.check_regimes(self.regimes_set, self.n, x_constant.shape[1])
         self.regime_err_sep = regime_err_sep
         if (
-                regime_err_sep == True
-                and set(cols2regi) == set([True])
-                and constant_regi == "many"
+            regime_err_sep == True
+            and set(cols2regi) == set([True])
+            and constant_regi == "many"
         ):
             self.y = y
             regi_ids = dict(
@@ -492,18 +499,17 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 name_x,
                 moran,
                 white_test,
-                latex
+                latex,
             )
         else:
             x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
                 self, x_constant, regimes, constant_regi, cols2regi, name_x, rlist=True
             )
 
-            self.output = pd.DataFrame(self.name_x,
-                                       columns=['var_names'])
-            self.output['var_type'] = ['x'] * len(self.name_x)
-            self.output['regime'] = x_rlist
-            self.output['equation'] = 0
+            self.output = pd.DataFrame(self.name_x, columns=["var_names"])
+            self.output["var_type"] = ["x"] * len(self.name_x)
+            self.output["regime"] = x_rlist
+            self.output["equation"] = 0
 
             BaseOLS.__init__(self, y=y, x=x, robust=robust, gwk=gwk, sig2n_k=sig2n_k)
             if regime_err_sep == True and robust == None:
@@ -529,31 +535,37 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                     self.title = "ORDINARY LEAST SQUARES WITH SLX - REGIMES"
             self.robust = USER.set_robust(robust)
             self.chow = REGI.Chow(self)
-            self.other_top, self.other_mid, other_end = ("", "", "")  # strings where function-specific diag. are stored
+            self.other_top, self.other_mid, other_end = (
+                "",
+                "",
+                "",
+            )  # strings where function-specific diag. are stored
             if nonspat_diag:
                 self.other_mid += _nonspat_mid(self, white_test=white_test)
                 self.other_top += _nonspat_top(self)
             if spat_diag:
-                other_end += _spat_diag_out(self, w, 'ols', moran=moran) #Must decide what to do with W.
+                other_end += _spat_diag_out(
+                    self, w, "ols", moran=moran
+                )  # Must decide what to do with W.
             output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _ols_regimes_multi(
-            self,
-            x,
-            w,
-            regi_ids,
-            cores,
-            gwk,
-            slx_lags,
-            sig2n_k,
-            robust,
-            nonspat_diag,
-            spat_diag,
-            vm,
-            name_x,
-            moran,
-            white_test,
-            latex
+        self,
+        x,
+        w,
+        regi_ids,
+        cores,
+        gwk,
+        slx_lags,
+        sig2n_k,
+        robust,
+        nonspat_diag,
+        spat_diag,
+        vm,
+        name_x,
+        moran,
+        white_test,
+        latex,
     ):
         results_p = {}
         """
@@ -586,7 +598,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                         name_x,
                         self.name_w,
                         self.name_regimes,
-                        slx_lags
+                        slx_lags,
                     ),
                 )
             else:
@@ -604,7 +616,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                         name_x,
                         self.name_w,
                         self.name_regimes,
-                        slx_lags
+                        slx_lags,
                     )
                 )
         self.kryd = 0
@@ -627,7 +639,9 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         results = {}
         self.name_y, self.name_x = [], []
         counter = 0
-        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
+        self.output = pd.DataFrame(
+            columns=["var_names", "var_type", "regime", "equation"]
+        )
         for r in self.regimes_set:
             """
             if is_win:
@@ -641,23 +655,30 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 results[r] = results_p[r].get()
 
             self.vm[
-            (counter * self.kr): ((counter + 1) * self.kr),
-            (counter * self.kr): ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[
-            (counter * self.kr): ((counter + 1) * self.kr),
-            ] = results[r].betas
-            self.u[
-                regi_ids[r],
-            ] = results[r].u
-            self.predy[
-                regi_ids[r],
-            ] = results[r].predy
+            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
+                r
+            ].betas
+            self.u[regi_ids[r],] = results[r].u
+            self.predy[regi_ids[r],] = results[r].predy
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
-            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
-                                                       'var_type': ['x']*len(results[r].name_x),
-                                                       'regime': r, 'equation': r})], ignore_index=True)
+            self.output = pd.concat(
+                [
+                    self.output,
+                    pd.DataFrame(
+                        {
+                            "var_names": results[r].name_x,
+                            "var_type": ["x"] * len(results[r].name_x),
+                            "regime": r,
+                            "equation": r,
+                        }
+                    ),
+                ],
+                ignore_index=True,
+            )
             results[r].other_top, results[r].other_mid = ("", "")
             if nonspat_diag:
                 results[r].other_mid += _nonspat_mid(results[r], white_test=white_test)
@@ -671,7 +692,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         other_end = ""
         if spat_diag:
             self._get_spat_diag_props(x_constant, sig2n_k)
-            #other_end += _spat_diag_out(self, w, 'ols', moran=moran) Need to consider W before implementing
+            # other_end += _spat_diag_out(self, w, 'ols', moran=moran) Need to consider W before implementing
         output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _get_spat_diag_props(self, x, sig2n_k):
@@ -685,7 +706,19 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
 
 
 def _work(
-        y, x, w, regi_ids, r, robust, sig2n_k, name_ds, name_y, name_x, name_w, name_regimes, slx_lags
+    y,
+    x,
+    w,
+    regi_ids,
+    r,
+    robust,
+    sig2n_k,
+    name_ds,
+    name_y,
+    name_x,
+    name_w,
+    name_regimes,
+    slx_lags,
 ):
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
@@ -712,9 +745,7 @@ def _work(
 
 
 class OLS_Endog_Regimes(OLS_Regimes):
-    def __init__(
-        self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
-
+    def __init__(self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True)
@@ -724,29 +755,54 @@ class OLS_Endog_Regimes(OLS_Regimes):
 
         if not n_clusters:
             if quorum < 0:
-                quorum = np.max([(x.shape[1]+1)*10, 30])
-            n_clusters_opt = x.shape[0]*0.70//quorum
+                quorum = np.max([(x.shape[1] + 1) * 10, 30])
+            n_clusters_opt = x.shape[0] * 0.70 // quorum
             if n_clusters_opt < 2:
                 raise ValueError(
-                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation.")
-            sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseOLS,'y':y,'x':x}, quorum=quorum, trace=True)
-            n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
-            self.clusters = sk_reg_results._trace[n_clusters-1][0]
+                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation."
+                )
+            sk_reg_results = Skater_reg().fit(
+                n_clusters_opt,
+                w,
+                x_std,
+                {"reg": BaseOLS, "y": y, "x": x},
+                quorum=quorum,
+                trace=True,
+            )
+            n_clusters = optim_k(
+                [
+                    sk_reg_results._trace[i][1][2]
+                    for i in range(1, len(sk_reg_results._trace))
+                ]
+            )
+            self.clusters = sk_reg_results._trace[n_clusters - 1][0]
         else:
             try:
                 # Call the Skater_reg method based on OLS
-                sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseOLS,'y':y,'x':x}, quorum=quorum, trace=trace)
+                sk_reg_results = Skater_reg().fit(
+                    n_clusters,
+                    w,
+                    x_std,
+                    {"reg": BaseOLS, "y": y, "x": x},
+                    quorum=quorum,
+                    trace=trace,
+                )
                 self.clusters = sk_reg_results.current_labels_
             except Exception as e:
                 if str(e) == "one or more input arrays have more columns than rows":
-                    raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
+                    raise ValueError(
+                        "One or more input ended up with more variables than observations. Please check your setting for `quorum`."
+                    )
                 else:
                     print("An error occurred:", e)
 
         self._trace = sk_reg_results._trace
         self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
 
-        OLS_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_regimes='Skater_reg', **kwargs)
+        OLS_Regimes.__init__(
+            self, y, x, regimes=self.clusters, w=w, name_regimes="Skater_reg", **kwargs
+        )
+
 
 def _test():
     import doctest
@@ -765,15 +821,15 @@ if __name__ == "__main__":
 
     db = libpysal.io.open(libpysal.examples.get_path("NAT.dbf"), "r")
     y_var = "HR90"
-    y = np.array(db.by_col(y_var)).reshape(-1,1)
-    x_var = ['PS90','UE90']
+    y = np.array(db.by_col(y_var)).reshape(-1, 1)
+    x_var = ["PS90", "UE90"]
     x = np.array([db.by_col(name) for name in x_var]).T
     r_var = "SOUTH"
     regimes = db.by_col(r_var)
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("NAT.shp"))
     w.transform = "r"
     olsr = OLS_Regimes(
-            y,
+        y,
         x,
         regimes,
         w=w,
@@ -788,7 +844,7 @@ if __name__ == "__main__":
         cols2regi=[True, True],
         sig2n_k=False,
         white_test=True,
-        #robust="white"
+        # robust="white"
     )
     print(olsr.output)
     print(olsr.summary)

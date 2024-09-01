@@ -425,7 +425,6 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
-
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_w = USER.set_name_w(name_w, w)
         self.n_eq = len(bigy.keys())
@@ -817,7 +816,6 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
         name_ds=None,
         name_regimes=None,
     ):
-
         self.name_ds = USER.set_name_ds(name_ds)
         self.n_eq = len(bigy.keys())
 

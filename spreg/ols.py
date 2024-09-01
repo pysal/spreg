@@ -8,13 +8,12 @@ from .output import output, _spat_diag_out, _nonspat_mid, _nonspat_top, _summary
 from . import robust as ROBUST
 from .utils import spdot, RegressionPropsY, RegressionPropsVM, set_warn, get_lags
 import pandas as pd
-from libpysal import weights    # needed for check on kernel weights in slx
+from libpysal import weights  # needed for check on kernel weights in slx
 
 __all__ = ["OLS"]
 
 
 class BaseOLS(RegressionPropsY, RegressionPropsVM):
-
     """
     Ordinary least squares (OLS) (note: no consistency checks, diagnostics or
     constant added)
@@ -438,8 +437,8 @@ class OLS(BaseOLS):
         w=None,
         robust=None,
         gwk=None,
-        slx_lags = 0,
-        slx_vars = "All",
+        slx_lags=0,
+        slx_vars="All",
         sig2n_k=True,
         nonspat_diag=True,
         spat_diag=False,
@@ -454,37 +453,42 @@ class OLS(BaseOLS):
         name_ds=None,
         latex=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         USER.check_robust(robust, gwk)
         if robust == "hac" and spat_diag:
-                set_warn(
-                    self,
-                    "Spatial diagnostics are not available for HAC estimation. Hence, spatial diagnostics have been disabled for this model.",
-                )
-                spat_diag = False
+            set_warn(
+                self,
+                "Spatial diagnostics are not available for HAC estimation. Hence, spatial diagnostics have been disabled for this model.",
+            )
+            spat_diag = False
         if robust in ["hac", "white"] and white_test:
-                set_warn(
-                    self,
-                    "White test not available when standard errors are estimated by HAC or White correction.",
-                )
-                white_test = False
+            set_warn(
+                self,
+                "White test not available when standard errors are estimated by HAC or White correction.",
+            )
+            white_test = False
 
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         set_warn(self, warn)
         self.name_x = USER.set_name_x(name_x, x_constant)
-        
+
         if spat_diag or moran:
             w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=True)
         else:
             w = USER.check_weights(w, y, slx_lags=slx_lags)
-        if slx_lags >0:
-#            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-#            x_constant = np.hstack((x_constant, lag_x))
-#           self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
-            x_constant,self.name_x = USER.flex_wx(w,x=x_constant,name_x=self.name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
+        if slx_lags > 0:
+            #            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #            x_constant = np.hstack((x_constant, lag_x))
+            #           self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+            x_constant, self.name_x = USER.flex_wx(
+                w,
+                x=x_constant,
+                name_x=self.name_x,
+                constant=True,
+                slx_lags=slx_lags,
+                slx_vars=slx_vars,
+            )
 
         BaseOLS.__init__(
             self, y=y, x=x_constant, robust=robust, gwk=gwk, sig2n_k=sig2n_k
@@ -498,19 +502,22 @@ class OLS(BaseOLS):
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x)
-        self.output['regime'], self.output['equation'] = (0, 0)
-        self.other_top, self.other_mid, other_end = ("", "", "")  # strings where function-specific diag. are stored
+        self.output = pd.DataFrame(self.name_x, columns=["var_names"])
+        self.output["var_type"] = ["x"] * len(self.name_x)
+        self.output["regime"], self.output["equation"] = (0, 0)
+        self.other_top, self.other_mid, other_end = (
+            "",
+            "",
+            "",
+        )  # strings where function-specific diag. are stored
         if nonspat_diag:
             self.other_mid += _nonspat_mid(self, white_test=white_test)
             self.other_top += _nonspat_top(self)
         if vif:
             self.other_mid += _summary_vif(self)
         if spat_diag:
-            other_end += _spat_diag_out(self, w, 'ols', moran=moran)
+            other_end += _spat_diag_out(self, w, "ols", moran=moran)
         output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
-
 
 
 def _test():

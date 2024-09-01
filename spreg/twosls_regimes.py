@@ -16,7 +16,6 @@ __author__ = "Luc Anselin, Pedro V. Amaral, David C. Folch"
 
 
 class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
-
     """
     Two stage least squares (2SLS) with regimes.
 
@@ -366,7 +365,6 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         summ=True,
         latex=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         USER.check_robust(robust, gwk)
@@ -438,7 +436,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 name_yend,
                 name_q,
                 summ,
-                latex
+                latex,
             )
         else:
             q, self.name_q = REGI.Regimes_Frame.__init__(
@@ -451,7 +449,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 constant_regi,
                 cols2regi=cols2regi,
                 names=name_x,
-                rlist=True
+                rlist=True,
             )
             yend, self.name_yend, yend_rlist = REGI.Regimes_Frame.__init__(
                 self,
@@ -461,13 +459,16 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 cols2regi=cols2regi,
                 yend=True,
                 names=name_yend,
-                rlist=True
+                rlist=True,
             )
-            self.output = pd.DataFrame(self.name_x+self.name_yend,
-                                       columns=['var_names'])
-            self.output['var_type'] = ['x']*len(self.name_x)+['yend']*len(self.name_yend)
-            self.output['regime'] = x_rlist+yend_rlist
-            self.output['equation'] = 0
+            self.output = pd.DataFrame(
+                self.name_x + self.name_yend, columns=["var_names"]
+            )
+            self.output["var_type"] = ["x"] * len(self.name_x) + ["yend"] * len(
+                self.name_yend
+            )
+            self.output["regime"] = x_rlist + yend_rlist
+            self.output["equation"] = 0
 
             BaseTSLS.__init__(
                 self, y=y, x=x, yend=yend, q=q, robust=robust, gwk=gwk, sig2n_k=sig2n_k
@@ -486,11 +487,10 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
             self.robust = USER.set_robust(robust)
             if summ:
                 if spat_diag:
-                    diag_out = _spat_diag_out(self, w, 'yend')
+                    diag_out = _spat_diag_out(self, w, "yend")
                 else:
                     diag_out = None
                 output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
-
 
     def _tsls_regimes_multi(
         self,
@@ -510,7 +510,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         name_yend,
         name_q,
         summ,
-        latex
+        latex,
     ):
         results_p = {}
         """
@@ -547,7 +547,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                         name_q,
                         self.name_w,
                         self.name_regimes,
-                        slx_lags
+                        slx_lags,
                     ),
                 )
             else:
@@ -569,7 +569,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                         name_q,
                         self.name_w,
                         self.name_regimes,
-                        slx_lags
+                        slx_lags,
                     )
                 )
 
@@ -600,7 +600,9 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
             self.name_h,
         ) = ([], [], [], [], [], [])
         counter = 0
-        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
+        self.output = pd.DataFrame(
+            columns=["var_names", "var_type", "regime", "equation"]
+        )
         for r in self.regimes_set:
             """
             if is_win:
@@ -617,24 +619,32 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[
-                (counter * self.kr) : ((counter + 1) * self.kr),
-            ] = results[r].betas
-            self.u[
-                regi_ids[r],
-            ] = results[r].u
-            self.predy[
-                regi_ids[r],
-            ] = results[r].predy
+            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
+                r
+            ].betas
+            self.u[regi_ids[r],] = results[r].u
+            self.predy[regi_ids[r],] = results[r].predy
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.name_yend += results[r].name_yend
             self.name_q += results[r].name_q
             self.name_z += results[r].name_z
             self.name_h += results[r].name_h
-            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x+results[r].name_yend,
-                                                       'var_type': ['x']*len(results[r].name_x)+['yend']*len(results[r].name_yend),
-                                                       'regime': r, 'equation': r})], ignore_index=True)
+            self.output = pd.concat(
+                [
+                    self.output,
+                    pd.DataFrame(
+                        {
+                            "var_names": results[r].name_x + results[r].name_yend,
+                            "var_type": ["x"] * len(results[r].name_x)
+                            + ["yend"] * len(results[r].name_yend),
+                            "regime": r,
+                            "equation": r,
+                        }
+                    ),
+                ],
+                ignore_index=True,
+            )
 
             counter += 1
         self.multi = results
@@ -650,11 +660,11 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         self.chow = REGI.Chow(self)
         if spat_diag:
             self._get_spat_diag_props(results, regi_ids, x_constant, yend, q)
-            diag_out = _spat_diag_out(self, w, 'yend')
+            diag_out = _spat_diag_out(self, w, "yend")
         else:
             diag_out = None
         if summ:
-            self.output.sort_values(by='regime', inplace=True)
+            self.output.sort_values(by="regime", inplace=True)
             output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
     def _get_spat_diag_props(self, results, regi_ids, x, yend, q):
@@ -728,9 +738,9 @@ def _work(
 
 def _optimal_weight(reg, sig2n_k, warn=True):
     try:
-        Hu = reg.h.toarray() * reg.u ** 2
+        Hu = reg.h.toarray() * reg.u**2
     except:
-        Hu = reg.h * reg.u ** 2
+        Hu = reg.h * reg.u**2
     if sig2n_k:
         S = spdot(reg.h.T, Hu, array_out=True) / (reg.n - reg.k)
     else:
@@ -746,7 +756,7 @@ def _optimal_weight(reg, sig2n_k, warn=True):
     else:
         vm = fac2 * reg.n
     RegressionProps_basic(reg, betas=betas, vm=vm, sig2=False)
-    #reg.title += " (Optimal-Weighted GMM)"
+    # reg.title += " (Optimal-Weighted GMM)"
     if warn:
         set_warn(
             reg, "Residuals treated as homoskedastic for the purpose of diagnostics."
@@ -789,7 +799,7 @@ if __name__ == "__main__":
         yd,
         q,
         regimes,
-        w = w,
+        w=w,
         constant_regi="many",
         spat_diag=True,
         name_y=y_var,
@@ -797,15 +807,11 @@ if __name__ == "__main__":
         name_yend=yd_var,
         name_q=q_var,
         name_regimes=r_var,
-        #cols2regi=[False, True, True, False],
+        # cols2regi=[False, True, True, False],
         sig2n_k=False,
-        regime_err_sep = True,
-        #robust = 'hac',
-        vm = False
+        regime_err_sep=True,
+        # robust = 'hac',
+        vm=False,
     )
     print(tslsr.output)
     print(tslsr.summary)
-
-
-
-

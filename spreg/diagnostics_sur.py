@@ -249,16 +249,9 @@ def surLMlag(n_eq, WS, bigy, bigX, bigE, bigYP, sig, varb):
     # I(b,b) inverse is varb
 
     # I(b,rho)
-    bp = sigi[0,] * spdot(
-        bigX[0].T, WbigYP
-    )  # initialize
+    bp = sigi[0,] * spdot(bigX[0].T, WbigYP)  # initialize
     for r in range(1, n_eq):
-        bpwork = (
-            sigi[
-                r,
-            ]
-            * spdot(bigX[r].T, WbigYP)
-        )
+        bpwork = sigi[r,] * spdot(bigX[r].T, WbigYP)
         bp = np.vstack((bp, bpwork))
     # partitioned part
     i_inner = Ipp - np.dot(np.dot(bp.T, varb), bp)

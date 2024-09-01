@@ -18,12 +18,19 @@ from .utils import spdot, RegressionPropsY
 from .sputils import sphstack
 import pandas as pd
 from .output import output, _spat_pseudo_r2
-from .error_sp_het_regimes import GM_Error_Het_Regimes, GM_Endog_Error_Het_Regimes, GM_Combo_Het_Regimes
-from .error_sp_hom_regimes import GM_Error_Hom_Regimes, GM_Endog_Error_Hom_Regimes, GM_Combo_Hom_Regimes
+from .error_sp_het_regimes import (
+    GM_Error_Het_Regimes,
+    GM_Endog_Error_Het_Regimes,
+    GM_Combo_Het_Regimes,
+)
+from .error_sp_hom_regimes import (
+    GM_Error_Hom_Regimes,
+    GM_Endog_Error_Hom_Regimes,
+    GM_Combo_Hom_Regimes,
+)
 
 
 class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
-
     """
     GMM method for a spatial error model with regimes, with results and diagnostics;
     based on Kelejian and Prucha (1998, 1999) :cite:`Kelejian1998` :cite:`Kelejian1999`.
@@ -293,16 +300,14 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         name_regimes=None,
         latex=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
-        x_constant, name_x, warn = USER.check_constant(
-            x, name_x, just_rem=True)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
-        if slx_lags >0:
+        if slx_lags > 0:
             lag_x = get_lags(w, x_constant, slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
@@ -327,15 +332,23 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         if regime_err_sep == True:
             if set(cols2regi) == set([True]):
                 self._error_regimes_multi(
-                    y, x_constant, regimes, w, slx_lags, cores, cols2regi, vm, name_x, latex
+                    y,
+                    x_constant,
+                    regimes,
+                    w,
+                    slx_lags,
+                    cores,
+                    cols2regi,
+                    vm,
+                    name_x,
+                    latex,
                 )
             else:
                 raise Exception(
                     "All coefficients must vary across regimes if regime_err_sep = True."
                 )
         else:
-            x_constant = sphstack(
-                np.ones((x_constant.shape[0], 1)), x_constant)
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
             name_x = USER.set_name_x(name_x, x_constant)
             self.x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
@@ -367,19 +380,20 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             if slx_lags == 0:
                 self.title = "GM SPATIALLY WEIGHTED MODEL - REGIMES"
             else:
-                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (SLX-Error) - REGIMES"       
+                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (SLX-Error) - REGIMES"
             self.name_x.append("lambda")
             self.kf += 1
             self.chow = REGI.Chow(self)
             self._cache = {}
-            self.output = pd.DataFrame(self.name_x,
-                                       columns=['var_names'])
-            self.output['var_type'] = ['x']*(len(self.name_x)-1)+['lambda']
-            self.output['regime'] = x_rlist + ['_Global']
-            self.output['equation'] = 0
+            self.output = pd.DataFrame(self.name_x, columns=["var_names"])
+            self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
+            self.output["regime"] = x_rlist + ["_Global"]
+            self.output["equation"] = 0
             output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
-    def _error_regimes_multi(self, y, x, regimes, w, slx_lags, cores, cols2regi, vm, name_x, latex):
+    def _error_regimes_multi(
+        self, y, x, regimes, w, slx_lags, cores, cols2regi, vm, name_x, latex
+    ):
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
         )
@@ -453,7 +467,8 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         results = {}
         self.name_y, self.name_x = [], []
         self.output = pd.DataFrame(
-            columns=['var_names', 'var_type', 'regime', 'equation'])
+            columns=["var_names", "var_type", "regime", "equation"]
+        )
         counter = 0
         for r in self.regimes_set:
             """
@@ -468,27 +483,32 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 results[r] = results_p[r].get()
 
             self.vm[
-                (counter * self.kr): ((counter + 1) * self.kr),
-                (counter * self.kr): ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[
-                (counter * (self.kr + 1)): ((counter + 1) * (self.kr + 1)),
-            ] = results[r].betas
-            self.u[
-                regi_ids[r],
-            ] = results[r].u
-            self.predy[
-                regi_ids[r],
-            ] = results[r].predy
-            self.e_filtered[
-                regi_ids[r],
-            ] = results[r].e_filtered
+            self.betas[(counter * (self.kr + 1)) : ((counter + 1) * (self.kr + 1)),] = (
+                results[r].betas
+            )
+            self.u[regi_ids[r],] = results[r].u
+            self.predy[regi_ids[r],] = results[r].predy
+            self.e_filtered[regi_ids[r],] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
-            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
-                                                                'var_type': ['x'] * (len(results[r].name_x) - 1) +
-                                                                            ['lambda'],
-                                                                'regime': r, 'equation': r})], ignore_index=True)
+            self.output = pd.concat(
+                [
+                    self.output,
+                    pd.DataFrame(
+                        {
+                            "var_names": results[r].name_x,
+                            "var_type": ["x"] * (len(results[r].name_x) - 1)
+                            + ["lambda"],
+                            "regime": r,
+                            "equation": r,
+                        }
+                    ),
+                ],
+                ignore_index=True,
+            )
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
@@ -496,7 +516,6 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
 
 class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
-
     """
     GMM method for a spatial error model with regimes and endogenous variables, with
     results and diagnostics; based on Kelejian and Prucha (1998,
@@ -816,13 +835,11 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         add_lag=False,
         latex=False,
     ):
-
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
-        x_constant, name_x, warn = USER.check_constant(
-            x, name_x, just_rem=True)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
@@ -878,8 +895,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     "All coefficients must vary across regimes if regime_err_sep = True."
                 )
         else:
-            x_constant = sphstack(
-                np.ones((x_constant.shape[0], 1)), x_constant)
+            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
             name_x = USER.set_name_x(name_x, x_constant)
             q, name_q = REGI.Regimes_Frame.__init__(
                 self, q, regimes, constant_regi=None, cols2regi="all", names=name_q
@@ -942,19 +958,20 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.kf += 1
             self.chow = REGI.Chow(self)
             self._cache = {}
-            self.output = pd.DataFrame(self.name_z,
-                                       columns=['var_names'])
-            self.output['var_type'] = [
-                'x'] * len(self.name_x) + ['yend'] * len(self.name_yend) + ['lambda']
-            self.output['regime'] = x_rlist + yend_rlist + ['_Global']
-            self.output['equation'] = 0
+            self.output = pd.DataFrame(self.name_z, columns=["var_names"])
+            self.output["var_type"] = (
+                ["x"] * len(self.name_x) + ["yend"] * len(self.name_yend) + ["lambda"]
+            )
+            self.output["regime"] = x_rlist + yend_rlist + ["_Global"]
+            self.output["equation"] = 0
             if summ:
                 if slx_lags == 0:
-                    self.title = ("GM SPATIALLY WEIGHTED 2SLS - REGIMES")
+                    self.title = "GM SPATIALLY WEIGHTED 2SLS - REGIMES"
                 else:
-                    self.title = ("GM SPATIALLY WEIGHTED 2SLS WITH SLX (SLX-Error) - REGIMES")
-                output(reg=self, vm=vm, robust=False,
-                       other_end=False, latex=latex)
+                    self.title = (
+                        "GM SPATIALLY WEIGHTED 2SLS WITH SLX (SLX-Error) - REGIMES"
+                    )
+                output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _endog_error_regimes_multi(
         self,
@@ -974,7 +991,6 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         add_lag,
         latex,
     ):
-
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
         )
@@ -1070,7 +1086,8 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         ) = ([], [], [], [], [], [])
         counter = 0
         self.output = pd.DataFrame(
-            columns=['var_names', 'var_type', 'regime', 'equation'])
+            columns=["var_names", "var_type", "regime", "equation"]
+        )
         for r in self.regimes_set:
             """
             if is_win:
@@ -1084,21 +1101,15 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 results[r] = results_p[r].get()
 
             self.vm[
-                (counter * self.kr): ((counter + 1) * self.kr),
-                (counter * self.kr): ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
+                (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[
-                (counter * (self.kr + 1)): ((counter + 1) * (self.kr + 1)),
-            ] = results[r].betas
-            self.u[
-                regi_ids[r],
-            ] = results[r].u
-            self.predy[
-                regi_ids[r],
-            ] = results[r].predy
-            self.e_filtered[
-                regi_ids[r],
-            ] = results[r].e_filtered
+            self.betas[(counter * (self.kr + 1)) : ((counter + 1) * (self.kr + 1)),] = (
+                results[r].betas
+            )
+            self.u[regi_ids[r],] = results[r].u
+            self.predy[regi_ids[r],] = results[r].predy
+            self.e_filtered[regi_ids[r],] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.name_yend += results[r].name_yend
@@ -1106,22 +1117,35 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.name_z += results[r].name_z
             self.name_h += results[r].name_h
             if add_lag != False:
-                self.predy_e[
-                    regi_ids[r],
-                ] = results[r].predy_e
-                self.e_pred[
-                    regi_ids[r],
-                ] = results[r].e_pred
+                self.predy_e[regi_ids[r],] = results[r].predy_e
+                self.e_pred[regi_ids[r],] = results[r].e_pred
                 results[r].other_top = _spat_pseudo_r2(results[r])
-                v_type = ['x'] * len(results[r].name_x) + ['yend'] * \
-                    (len(results[r].name_yend) - 1) + ['rho', 'lambda']
+                v_type = (
+                    ["x"] * len(results[r].name_x)
+                    + ["yend"] * (len(results[r].name_yend) - 1)
+                    + ["rho", "lambda"]
+                )
             else:
                 results[r].other_top = ""
-                v_type = ['x'] * len(results[r].name_x) + ['yend'] * \
-                    len(results[r].name_yend) + ['lambda']
-            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_z,
-                                                                'var_type': v_type,
-                                                                'regime': r, 'equation': r})], ignore_index=True)
+                v_type = (
+                    ["x"] * len(results[r].name_x)
+                    + ["yend"] * len(results[r].name_yend)
+                    + ["lambda"]
+                )
+            self.output = pd.concat(
+                [
+                    self.output,
+                    pd.DataFrame(
+                        {
+                            "var_names": results[r].name_z,
+                            "var_type": v_type,
+                            "regime": r,
+                            "equation": r,
+                        }
+                    ),
+                ],
+                ignore_index=True,
+            )
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
@@ -1129,7 +1153,6 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
 
 class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
-
     """
     GMM method for a spatial lag and error model with regimes and endogenous
     variables, with results and diagnostics; based on Kelejian and Prucha (1998,
@@ -1176,7 +1199,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
                     the spatial parameter is fixed accross regimes.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the GNSM type.       
+                   If slx_lags>0, the specification becomes of the GNSM type.
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
@@ -1494,17 +1517,16 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
         latex=False,
     ):
         if regime_lag_sep and not regime_err_sep:
-            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")                
+            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")
             regime_err_sep = True
         if regime_err_sep and not regime_lag_sep:
-            set_warn(self, "regime_err_sep set to False when regime_lag_sep=False.")                
+            set_warn(self, "regime_err_sep set to False when regime_lag_sep=False.")
             regime_err_sep = False
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
-        x_constant, name_x, warn = USER.check_constant(
-            x, name_x, just_rem=True)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         self.name_y = USER.set_name_y(name_y)
@@ -1513,20 +1535,35 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
         regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
 
         if regime_err_sep and any(col != True for col in cols2regi):
-            set_warn(self, "All coefficients must vary across regimes if regime_err_sep = True, so setting cols2regi = 'all'.")
+            set_warn(
+                self,
+                "All coefficients must vary across regimes if regime_err_sep = True, so setting cols2regi = 'all'.",
+            )
             cols2regi = "all"
-            
+
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags)
+            yend2, q2, wx = set_endog(
+                y, x_constant, w, yend, q, w_lags, lag_q, slx_lags
+            )
             x_constant = np.hstack((x_constant, wx))
             name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
-            name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
-            name_x += name_slx   
-            cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant[:, :-1], yend=yend2, add_cons=False)
+            name_q.extend(
+                USER.set_name_q_sp(
+                    name_slx[-len(name_x) :], w_lags, name_q, lag_q, force_all=True
+                )
+            )
+            name_x += name_slx
+            cols2regi = REGI.check_cols2regi(
+                constant_regi, cols2regi, x_constant[:, :-1], yend=yend2, add_cons=False
+            )
         else:
-            name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
+            name_q.extend(
+                USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True)
+            )
             yend2, q2 = yend, q
-            cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
+            cols2regi = REGI.check_cols2regi(
+                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
+            )
 
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
@@ -1546,7 +1583,7 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
             cols2regi += [False]
             if slx_lags == 0:
                 yend2, q2 = set_endog(y, x_constant, w, yend2, q2, w_lags, lag_q)
-            
+
         name_yend.append(USER.set_name_yend_sp(self.name_y))
 
         print(cols2regi, x_constant.shape[1], yend2.shape[1], name_x, name_yend, name_q)
@@ -1584,18 +1621,25 @@ class GM_Combo_Regimes(GM_Endog_Error_Regimes, REGI.Regimes_Frame):
             if slx_lags == 0:
                 self.title = "SPATIALLY WEIGHTED 2SLS - GM-COMBO MODEL - REGIMES"
             else:
-                self.title = "SPATIALLY WEIGHTED 2SLS - GM-COMBO WITH SLX (GNSM) - REGIMES"
-            self.output.iat[-2,
-                            self.output.columns.get_loc('var_type')] = 'rho'
+                self.title = (
+                    "SPATIALLY WEIGHTED 2SLS - GM-COMBO WITH SLX (GNSM) - REGIMES"
+                )
+            self.output.iat[-2, self.output.columns.get_loc("var_type")] = "rho"
             self.other_top = _spat_pseudo_r2(self)
             output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
-class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regimes,
-                        GM_Error_Het_Regimes, GM_Combo_Het_Regimes, GM_Endog_Error_Het_Regimes, 
-                        GM_Error_Hom_Regimes, GM_Combo_Hom_Regimes, GM_Endog_Error_Hom_Regimes
-                        ):
-
+class GMM_Error_Regimes(
+    GM_Error_Regimes,
+    GM_Combo_Regimes,
+    GM_Endog_Error_Regimes,
+    GM_Error_Het_Regimes,
+    GM_Combo_Het_Regimes,
+    GM_Endog_Error_Het_Regimes,
+    GM_Error_Hom_Regimes,
+    GM_Combo_Hom_Regimes,
+    GM_Endog_Error_Hom_Regimes,
+):
     """
     Wrapper function to call any of the GM methods for a spatial error regimes model available in spreg
 
@@ -1640,12 +1684,12 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
     regime_err_sep: boolean
                     If True, a separate regression is run for each regime.
     regime_lag_sep: boolean
-                    Always False, kept for consistency, ignored.                   
+                    Always False, kept for consistency, ignored.
     add_wy       : boolean
-                   If True, then a spatial lag of the dependent variable is included.           
+                   If True, then a spatial lag of the dependent variable is included.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type.             
+                   If slx_lags>0, the specification becomes of the SLX-Error or GNSM type.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -1660,7 +1704,7 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
     name_yend    : list of strings
                    Names of endogenous variables for use in output
     name_q       : list of strings
-                   Names of instruments for use in output                   
+                   Names of instruments for use in output
     name_ds      : string
                    Name of dataset for use in output
     latex        : boolean
@@ -1669,7 +1713,7 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
                    If true, raises an exception if the estimated spatial
                    autoregressive parameter is outside the maximum/minimum bounds.
     **kwargs     : keywords
-                   Additional arguments to pass on to the estimators. 
+                   Additional arguments to pass on to the estimators.
                    See the specific functions for details on what can be used.
 
     Attributes
@@ -1765,12 +1809,12 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
     name_q       : list of strings (optional)
                     Names of external instruments
     name_h       : list of strings (optional)
-                    Names of all instruments used in ouput                   
+                    Names of all instruments used in ouput
     multi        : dictionary
                    Only available when multiple regressions are estimated,
                    i.e. when regime_err_sep=True and no variable is fixed
                    across regimes.
-                   Contains all attributes of each individual regression    
+                   Contains all attributes of each individual regression
 
     Examples
     --------
@@ -1900,74 +1944,339 @@ class GMM_Error_Regimes(GM_Error_Regimes, GM_Combo_Regimes, GM_Endog_Error_Regim
     9         1_W_UE90    -0.708492  0.167057  -4.24102  0.000022
     10  _Global_W_HR90     1.033956  0.269252  3.840111  0.000123
     11          lambda    -0.384968  0.192256 -2.002366  0.045245
-    
+
 
     """
 
     def __init__(
-            self, y, x, regimes, w, yend=None, q=None, estimator='het', constant_regi="many", cols2regi="all", regime_err_sep=False,
-            regime_lag_sep=False, add_wy=False, slx_lags=0, vm=False, name_y=None, name_x=None, name_w=None, name_regimes=None, name_yend=None,
-            name_q=None, name_ds=None, latex=False, **kwargs):
-
-        if estimator == 'het':
+        self,
+        y,
+        x,
+        regimes,
+        w,
+        yend=None,
+        q=None,
+        estimator="het",
+        constant_regi="many",
+        cols2regi="all",
+        regime_err_sep=False,
+        regime_lag_sep=False,
+        add_wy=False,
+        slx_lags=0,
+        vm=False,
+        name_y=None,
+        name_x=None,
+        name_w=None,
+        name_regimes=None,
+        name_yend=None,
+        name_q=None,
+        name_ds=None,
+        latex=False,
+        **kwargs,
+    ):
+        if estimator == "het":
             if yend is None and not add_wy:
-                GM_Error_Het_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                              constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                              name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Error_Het_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             elif yend is not None and not add_wy:
-                GM_Endog_Error_Het_Regimes.__init__(self, y=y, x=x, regimes=regimes, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                                    constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                                    name_yend=name_yend, name_q=name_q, name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Endog_Error_Het_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    yend=yend,
+                    q=q,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_yend=name_yend,
+                    name_q=name_q,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             elif add_wy:
-                GM_Combo_Het_Regimes.__init__(self, y=y, x=x, regimes=regimes, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                              constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep, regime_lag_sep=regime_lag_sep,
-                                              name_yend=name_yend, name_q=name_q, name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Combo_Het_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    yend=yend,
+                    q=q,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    regime_lag_sep=regime_lag_sep,
+                    name_yend=name_yend,
+                    name_q=name_q,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             else:
-                set_warn(self, 'Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.')
-                GM_Error_Het_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                              constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                              name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex)
-        elif estimator == 'hom':
+                set_warn(
+                    self,
+                    "Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.",
+                )
+                GM_Error_Het_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                )
+        elif estimator == "hom":
             if yend is None and not add_wy:
-                GM_Error_Hom_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                              constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                              name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Error_Hom_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             elif yend is not None and not add_wy:
-                GM_Endog_Error_Hom_Regimes.__init__(self, y=y, x=x, regimes=regimes, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                                    constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                                    name_yend=name_yend, name_q=name_q, name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Endog_Error_Hom_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    yend=yend,
+                    q=q,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_yend=name_yend,
+                    name_q=name_q,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             elif add_wy:
-                GM_Combo_Hom_Regimes.__init__(self, y=y, x=x, regimes=regimes, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                              constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep, regime_lag_sep=regime_lag_sep,
-                                              name_yend=name_yend, name_q=name_q, name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Combo_Hom_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    yend=yend,
+                    q=q,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    regime_lag_sep=regime_lag_sep,
+                    name_yend=name_yend,
+                    name_q=name_q,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             else:
-                set_warn(self, 'Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.')
-                GM_Error_Hom_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                              constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                              name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex)        
-        elif estimator == 'kp98':
+                set_warn(
+                    self,
+                    "Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.",
+                )
+                GM_Error_Hom_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                )
+        elif estimator == "kp98":
             if yend is None and not add_wy:
-                GM_Error_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                          constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                          name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Error_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             elif yend is not None and not add_wy:
-                GM_Endog_Error_Regimes.__init__(self, y=y, x=x, regimes=regimes, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                                constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                                name_yend=name_yend, name_q=name_q, name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Endog_Error_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    yend=yend,
+                    q=q,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_yend=name_yend,
+                    name_q=name_q,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             elif add_wy:
-                GM_Combo_Regimes.__init__(self, y=y, x=x, regimes=regimes, yend=yend, q=q, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                          constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep, regime_lag_sep=regime_lag_sep,
-                                          name_yend=name_yend, name_q=name_q, name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex, **kwargs)
+                GM_Combo_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    yend=yend,
+                    q=q,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    regime_lag_sep=regime_lag_sep,
+                    name_yend=name_yend,
+                    name_q=name_q,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                    **kwargs,
+                )
             else:
-                set_warn(self, 'Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.')
-                GM_Error_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                          constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                          name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex)     
+                set_warn(
+                    self,
+                    "Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.",
+                )
+                GM_Error_Regimes.__init__(
+                    self,
+                    y=y,
+                    x=x,
+                    regimes=regimes,
+                    w=w,
+                    slx_lags=slx_lags,
+                    vm=vm,
+                    name_y=name_y,
+                    name_x=name_x,
+                    constant_regi=constant_regi,
+                    cols2regi=cols2regi,
+                    regime_err_sep=regime_err_sep,
+                    name_w=name_w,
+                    name_regimes=name_regimes,
+                    name_ds=name_ds,
+                    latex=latex,
+                )
         else:
-            set_warn(self, 'Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.')
-            GM_Error_Het_Regimes.__init__(self, y=y, x=x, regimes=regimes, w=w, slx_lags=slx_lags, vm=vm, name_y=name_y, name_x=name_x,
-                                            constant_regi=constant_regi, cols2regi=cols2regi, regime_err_sep=regime_err_sep,
-                                            name_w=name_w, name_regimes=name_regimes, name_ds=name_ds, latex=latex)
+            set_warn(
+                self,
+                "Combination of arguments passed to GMM_Error_Regimes not allowed. Using default arguments instead.",
+            )
+            GM_Error_Het_Regimes.__init__(
+                self,
+                y=y,
+                x=x,
+                regimes=regimes,
+                w=w,
+                slx_lags=slx_lags,
+                vm=vm,
+                name_y=name_y,
+                name_x=name_x,
+                constant_regi=constant_regi,
+                cols2regi=cols2regi,
+                regime_err_sep=regime_err_sep,
+                name_w=name_w,
+                name_regimes=name_regimes,
+                name_ds=name_ds,
+                latex=latex,
+            )
+
 
 def _work_error(y, x, regi_ids, r, w, name_ds, name_y, name_x, name_w, name_regimes):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
@@ -2020,26 +2329,25 @@ def _work_endog_error(
     if add_lag != False:
         model.rho = model.betas[-2]
         model.predy_e, model.e_pred, warn = sp_att(
-            w_r, model.y, model.predy, model.yend[:, -
-                                                  1].reshape(model.n, 1), model.rho
+            w_r, model.y, model.predy, model.yend[:, -1].reshape(model.n, 1), model.rho
         )
         set_warn(model, warn)
     model.w = w_r
     if slx_lags == 0:
         if add_lag != False:
-            model.title = "SPATIALLY WEIGHTED 2SLS - GM-COMBO MODEL - REGIME %s" % r            
+            model.title = "SPATIALLY WEIGHTED 2SLS - GM-COMBO MODEL - REGIME %s" % r
         else:
             model.title = "SPATIALLY WEIGHTED 2SLS (GM) - REGIME %s" % r
     else:
         if add_lag != False:
-            model.title = "GM SPATIAL COMBO MODEL + SLX (GNSM) - REGIME %s" % r            
+            model.title = "GM SPATIAL COMBO MODEL + SLX (GNSM) - REGIME %s" % r
         else:
             model.title = "GM SPATIALLY WEIGHTED 2SLS + SLX (SLX-Error) - REGIME %s" % r
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
     model.name_yend = ["%s_%s" % (str(r), i) for i in name_yend]
-    model.name_z = model.name_x + model.name_yend + [str(r)+"_lambda"]
+    model.name_z = model.name_x + model.name_yend + [str(r) + "_lambda"]
     model.name_q = ["%s_%s" % (str(r), i) for i in name_q]
     model.name_h = model.name_x + model.name_q
     model.name_w = name_w
@@ -2061,7 +2369,7 @@ if __name__ == "__main__":
     import numpy as np
     import libpysal
 
-    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'), 'r')
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
     y = np.array(db.by_col("HOVAL"))
     y = np.reshape(y, (49, 1))
     X = []
@@ -2074,17 +2382,29 @@ if __name__ == "__main__":
     q.append(db.by_col("DISCBD"))
     q = np.array(q).T
 
-    r_var = 'NSA'
+    r_var = "NSA"
     regimes = db.by_col(r_var)
 
-    w = libpysal.weights.Rook.from_shapefile(
-        libpysal.examples.get_path("columbus.shp"))
-    w.transform = 'r'
+    w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
+    w.transform = "r"
     # reg = GM_Error_Regimes(y, X, regimes, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus',
     #                       regime_err_sep=True)
     # reg = GM_Endog_Error_Regimes(y, X, yd, q, regimes, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
     #                         name_q=['discbd'], name_ds='columbus', regime_err_sep=True)
-    reg = GM_Combo_Regimes(y, X, regimes, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
-                           name_q=['discbd'], name_ds='columbus', regime_err_sep=True, regime_lag_sep=True)
+    reg = GM_Combo_Regimes(
+        y,
+        X,
+        regimes,
+        yd,
+        q,
+        w=w,
+        name_x=["inc"],
+        name_y="hoval",
+        name_yend=["crime"],
+        name_q=["discbd"],
+        name_ds="columbus",
+        regime_err_sep=True,
+        regime_lag_sep=True,
+    )
     print(reg.output)
     print(reg.summary)

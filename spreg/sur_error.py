@@ -328,7 +328,6 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
-
         # check on variable names for listing results
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_w = USER.set_name_w(name_w, w)
@@ -777,7 +776,6 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
-
         # need checks on match between bigy, bigX dimensions
         # check on variable names for listing results
         self.name_ds = USER.set_name_ds(name_ds)
@@ -1119,7 +1117,7 @@ if __name__ == "__main__":
         bigy0,
         bigX0,
         w,
-        #regimes=regimes,
+        # regimes=regimes,
         name_bigy=bigyvars0,
         name_bigX=bigXvars0,
         name_w="natqueen",

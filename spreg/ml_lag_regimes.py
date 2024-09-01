@@ -12,14 +12,19 @@ import multiprocessing as mp
 from .ml_lag import BaseML_Lag
 from .utils import set_warn, get_lags
 import pandas as pd
-from .output import output, _nonspat_top, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
+from .output import (
+    output,
+    _nonspat_top,
+    _spat_diag_out,
+    _spat_pseudo_r2,
+    _summary_impacts,
+)
 
 
 __all__ = ["ML_Lag_Regimes"]
 
 
 class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
-
     """
     ML estimation of the spatial lag model with regimes (note no consistency 
     checks, diagnostics or constants added) :cite:`Anselin1988`.
@@ -332,7 +337,6 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         name_regimes=None,
         latex=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
@@ -349,7 +353,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             kwx = lag_x.shape[1]
 
-        self.name_x_r = USER.set_name_x(name_x, x_constant) + [USER.set_name_yend_sp(name_y)]
+        self.name_x_r = USER.set_name_x(name_x, x_constant) + [
+            USER.set_name_yend_sp(name_y)
+        ]
         self.method = method
         self.epsilon = epsilon
         regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
@@ -421,7 +427,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 constant_regi,
                 cols2regi=cols2regi[:-1],
                 names=name_x,
-                rlist=True
+                rlist=True,
             )
             self.name_x.append("_Global_" + USER.set_name_yend_sp(name_y))
             BaseML_Lag.__init__(self, y=y, x=x, w=w, method=method, epsilon=epsilon)
@@ -432,31 +438,46 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
             self.regime_lag_sep = regime_lag_sep
-            self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-            self.output['regime'] = x_rlist + ['_Global']
-            self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['rho']
-            self.output['equation'] = 0
+            self.output = pd.DataFrame(self.name_x, columns=["var_names"])
+            self.output["regime"] = x_rlist + ["_Global"]
+            self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["rho"]
+            self.output["equation"] = 0
             self.slx_lags = slx_lags
             diag_out = None
             if slx_lags > 0:
-                self.title = ("MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIMES"+ " (METHOD = "+ method+ ")")
-                fixed_wx = cols2regi[-(kwx+1):-1].count(False)
+                self.title = (
+                    "MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIMES"
+                    + " (METHOD = "
+                    + method
+                    + ")"
+                )
+                fixed_wx = cols2regi[-(kwx + 1) : -1].count(False)
                 kwx = kwx - fixed_wx
                 if kwx > 0:
                     for m in self.regimes_set:
-                        r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
+                        r_output = self.output[
+                            (self.output["regime"] == str(m))
+                            & (self.output["var_type"] == "x")
+                        ]
                         wx_index = r_output.index[-kwx:]
-                        self.output.loc[wx_index, 'var_type'] = 'wx'
+                        self.output.loc[wx_index, "var_type"] = "wx"
                 if fixed_wx > 0:
-                    f_wx_index = self.output.index[-(fixed_wx+1):-1]
-                    self.output.loc[f_wx_index, 'var_type'] = 'wx'
+                    f_wx_index = self.output.index[-(fixed_wx + 1) : -1]
+                    self.output.loc[f_wx_index, "var_type"] = "wx"
                 if spat_diag and slx_lags == 1:
-                    diag_out = _spat_diag_out(self, w, 'yend', ml=True)
+                    diag_out = _spat_diag_out(self, w, "yend", ml=True)
             else:
-                self.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"+ " (METHOD = "+ method+ ")")
-               
+                self.title = (
+                    "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES"
+                    + " (METHOD = "
+                    + method
+                    + ")"
+                )
+
             if spat_impacts:
-                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags, regimes=True)
+                self.sp_multipliers, impacts_str = _summary_impacts(
+                    self, w, spat_impacts, slx_lags, regimes=True
+                )
                 try:
                     diag_out += impacts_str
                 except TypeError:
@@ -487,7 +508,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         name_ds,
         latex,
     ):
-        #pool = mp.Pool(cores)
+        # pool = mp.Pool(cores)
         results_p = {}
         """
         for r in self.regimes_set:
@@ -564,7 +585,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         results = {}
         self.name_y, self.name_x = [], []
         counter = 0
-        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
+        self.output = pd.DataFrame(
+            columns=["var_names", "var_type", "regime", "equation"]
+        )
         for r in self.regimes_set:
             """
             if is_win:
@@ -580,21 +603,13 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[
-                (counter * self.kr) : ((counter + 1) * self.kr),
-            ] = results[r].betas
-            self.u[
-                regi_ids[r],
-            ] = results[r].u
-            self.predy[
-                regi_ids[r],
-            ] = results[r].predy
-            self.predy_e[
-                regi_ids[r],
-            ] = results[r].predy_e
-            self.e_pred[
-                regi_ids[r],
-            ] = results[r].e_pred
+            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
+                r
+            ].betas
+            self.u[regi_ids[r],] = results[r].u
+            self.predy[regi_ids[r],] = results[r].predy
+            self.predy_e[regi_ids[r],] = results[r].predy_e
+            self.e_pred[regi_ids[r],] = results[r].e_pred
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             results[r].other_top = _spat_pseudo_r2(results[r])
@@ -602,17 +617,26 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             results[r].other_mid = ""
             if slx_lags > 0:
                 kx = (len(results[r].name_x) - 1) // (slx_lags + 1)
-                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['rho']
+                var_types = ["x"] * (kx + 1) + ["wx"] * kx * slx_lags + ["rho"]
             else:
-                var_types = ['x'] * (len(results[r].name_x) - 1) + ['rho']
-            results[r].output = pd.DataFrame({'var_names': results[r].name_x,
-                                              'var_type': var_types,
-                                              'regime': r, 'equation': r})
+                var_types = ["x"] * (len(results[r].name_x) - 1) + ["rho"]
+            results[r].output = pd.DataFrame(
+                {
+                    "var_names": results[r].name_x,
+                    "var_type": var_types,
+                    "regime": r,
+                    "equation": r,
+                }
+            )
             self.output = pd.concat([self.output, results[r].output], ignore_index=True)
             if spat_diag and slx_lags == 1:
-                results[r].other_mid += _spat_diag_out(results[r], None, 'yend', ml=True)
+                results[r].other_mid += _spat_diag_out(
+                    results[r], None, "yend", ml=True
+                )
             if spat_impacts:
-                results[r].sp_multipliers, impacts_str = _summary_impacts(results[r], results[r].w, spat_impacts, slx_lags)
+                results[r].sp_multipliers, impacts_str = _summary_impacts(
+                    results[r], results[r].w, spat_impacts, slx_lags
+                )
                 results[r].other_mid += impacts_str
             counter += 1
         self.multi = results
@@ -639,9 +663,21 @@ def _work(
     x_r = x[regi_ids[r]]
     model = BaseML_Lag(y_r, x_r, w_r, method=method, epsilon=epsilon)
     if slx_lags == 0:
-        model.title = ("MAXIMUM LIKELIHOOD SPATIAL LAG - REGIME "+ str(r)+ " (METHOD = "+ method+ ")")
+        model.title = (
+            "MAXIMUM LIKELIHOOD SPATIAL LAG - REGIME "
+            + str(r)
+            + " (METHOD = "
+            + method
+            + ")"
+        )
     else:
-        model.title = ("MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIME "+ str(r)+ " (METHOD = "+ method+ ")")
+        model.title = (
+            "MAXIMUM LIKELIHOOD SPATIAL DURBIN - REGIME "
+            + str(r)
+            + " (METHOD = "
+            + method
+            + ")"
+        )
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]

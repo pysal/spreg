@@ -1,4 +1,3 @@
-
 import contextlib
 from importlib.metadata import PackageNotFoundError, version
 

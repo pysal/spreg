@@ -4,7 +4,14 @@ from . import robust as ROBUST
 from . import user_output as USER
 from . import diagnostics as DIAG
 from .output import output, _spat_diag_out, _summary_dwh
-from .utils import spdot, sphstack, RegressionPropsY, RegressionPropsVM, set_warn, get_lags
+from .utils import (
+    spdot,
+    sphstack,
+    RegressionPropsY,
+    RegressionPropsVM,
+    set_warn,
+    get_lags,
+)
 import pandas as pd
 
 __author__ = "Luc Anselin lanselin@gmail.com, Pedro Amaral pedrovma@gmail.com, David C. Folch david.folch@asu.edu, Jing Yao jingyao@asu.edu"
@@ -12,7 +19,6 @@ __all__ = ["TSLS"]
 
 
 class BaseTSLS(RegressionPropsY, RegressionPropsVM):
-
     """
     Two stage least squares (2SLS) (note: no consistency checks,
     diagnostics or constant added)
@@ -134,7 +140,6 @@ class BaseTSLS(RegressionPropsY, RegressionPropsVM):
     def __init__(
         self, y, x, yend, q=None, h=None, robust=None, gwk=None, sig2n_k=False
     ):
-
         if issubclass(type(q), np.ndarray) and issubclass(type(h), np.ndarray):
             raise Exception("Please do not provide 'q' and 'h' together")
         if q is None and h is None:
@@ -256,7 +261,7 @@ class TSLS(BaseTSLS):
                    If True, then use n-k to estimate sigma^2. If False, use n.
     spat_diag    : boolean
                    If True, then compute Anselin-Kelejian test (requires w)
-    nonspat_diag : boolean 
+    nonspat_diag : boolean
                    If True, then compute non-spatial diagnostics
     vm           : boolean
                    If True, include variance-covariance matrix in summary
@@ -463,27 +468,32 @@ class TSLS(BaseTSLS):
         name_ds=None,
         latex=False,
     ):
-
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         USER.check_robust(robust, gwk)
         if robust == "hac" and spat_diag:
-                set_warn(
-                    self,
-                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
-                )
-                spat_diag = False
+            set_warn(
+                self,
+                "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
+            )
+            spat_diag = False
 
         x_constant, name_x, warn = USER.check_constant(x, name_x)
         self.name_x = USER.set_name_x(name_x, x_constant)
-        w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=spat_diag)        
-        if slx_lags>0:
-#            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-#            x_constant = np.hstack((x_constant, lag_x))
-#            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
-            x_constant,self.name_x = USER.flex_wx(w,x=x_constant,name_x=self.name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
+        w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=spat_diag)
+        if slx_lags > 0:
+            #            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #            x_constant = np.hstack((x_constant, lag_x))
+            #            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+            x_constant, self.name_x = USER.flex_wx(
+                w,
+                x=x_constant,
+                name_x=self.name_x,
+                constant=True,
+                slx_lags=slx_lags,
+                slx_vars=slx_vars,
+            )
 
         set_warn(self, warn)
         BaseTSLS.__init__(
@@ -508,20 +518,21 @@ class TSLS(BaseTSLS):
         self.robust = USER.set_robust(robust)
         self.name_w = USER.set_name_w(name_w, w)
         self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        self.output = pd.DataFrame(self.name_x + self.name_yend,
-                                   columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend)
-        self.output['regime'], self.output['equation'] = (0, 0)
+        self.output = pd.DataFrame(self.name_x + self.name_yend, columns=["var_names"])
+        self.output["var_type"] = ["x"] * len(self.name_x) + ["yend"] * len(
+            self.name_yend
+        )
+        self.output["regime"], self.output["equation"] = (0, 0)
         diag_out = ""
         if nonspat_diag:
             self.dwh = DIAG.dwh(self)
             sum_dwh = _summary_dwh(self)
             diag_out += sum_dwh
         if spat_diag:
-            diag_out += _spat_diag_out(self, w, 'yend')
-
+            diag_out += _spat_diag_out(self, w, "yend")
 
         output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
+
 
 def _test():
     import doctest

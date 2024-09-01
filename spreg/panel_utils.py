@@ -39,7 +39,7 @@ def check_panel(y, x, w, name_y, name_x):
             except AttributeError:
                 name_y = y.name
         y = y.to_numpy()
-        
+
     if isinstance(x, (pd.Series, pd.DataFrame)):
         if name_x is None:
             try:
