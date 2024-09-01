@@ -21,4 +21,4 @@ dependencies:
   - watermark
   - pip
   - pip:
-    - git+https://github.com/pysal/spreg.git@master
+    - git+https://github.com/pysal/spreg.git@main
