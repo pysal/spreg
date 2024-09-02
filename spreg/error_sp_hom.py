@@ -1,5 +1,5 @@
 """
-Hom family of models based on: :cite:`Drukker2013` 
+Hom family of models based on: :cite:`Drukker2013`
 Following: :cite:`Anselin2011`
 
 """
@@ -24,7 +24,6 @@ __all__ = ["GM_Error_Hom", "GM_Endog_Error_Hom", "GM_Combo_Hom"]
 
 
 class BaseGM_Error_Hom(RegressionPropsY):
-
     """
     GMM method for a spatial error model with homoskedasticity (note: no
     consistency checks, diagnostics or constant added); based on
@@ -120,7 +119,9 @@ class BaseGM_Error_Hom(RegressionPropsY):
      [ -2.40000000e-03   3.00000000e-04  -1.00000000e-04   3.37000000e-02]]
     """
 
-    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, A1="hom_sc", hard_bound=False):
+    def __init__(
+        self, y, x, w, max_iter=1, epsilon=0.00001, A1="hom_sc", hard_bound=False
+    ):
         if A1 == "hom":
             wA1 = get_A1_hom(w)
         elif A1 == "hom_sc":
@@ -166,7 +167,6 @@ class BaseGM_Error_Hom(RegressionPropsY):
 
 
 class GM_Error_Hom(BaseGM_Error_Hom):
-
     """
     GMM method for a spatial error model with homoskedasticity, with results
     and diagnostics; based on Drukker et al. (2013) :cite:`Drukker2013`, following Anselin
@@ -367,30 +367,34 @@ class GM_Error_Hom(BaseGM_Error_Hom):
         latex=False,
         hard_bound=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
+        name_x = USER.set_name_x(
+            name_x, x_constant
+        )  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES (HOM)"
 
-        if slx_lags >0:
-
-            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
+        if slx_lags > 0:
+            x_constant, name_x = USER.flex_wx(
+                w,
+                x=x_constant,
+                name_x=name_x,
+                constant=True,
+                slx_lags=slx_lags,
+                slx_vars=slx_vars,
+            )
             self.title += " WITH SLX (SLX-Error)"
 
         # OLD
-        #if slx_lags >0:
-            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            #x_constant = np.hstack((x_constant, lag_x))
-#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-            #self.title += " WITH SLX (SLX-Error)" 
-
-
+        # if slx_lags >0:
+        # lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+        # x_constant = np.hstack((x_constant, lag_x))
+        #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+        # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+        # self.title += " WITH SLX (SLX-Error)"
 
         BaseGM_Error_Hom.__init__(
             self,
@@ -400,24 +404,23 @@ class GM_Error_Hom(BaseGM_Error_Hom):
             A1=A1,
             max_iter=max_iter,
             epsilon=epsilon,
-            hard_bound=hard_bound
+            hard_bound=hard_bound,
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-#        self.name_x = USER.set_name_x(name_x, x_constant)
+        #        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x = name_x  # constant already included
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.A1 = A1
-        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-        self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['lambda']
-        self.output['regime'], self.output['equation'] = (0, 0)
+        self.output = pd.DataFrame(self.name_x, columns=["var_names"])
+        self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
+        self.output["regime"], self.output["equation"] = (0, 0)
         self.other_top = _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 class BaseGM_Endog_Error_Hom(RegressionPropsY):
-
     """
     GMM method for a spatial error model with homoskedasticity and
     endogenous variables (note: no consistency checks, diagnostics or constant
@@ -531,8 +534,18 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
 
     """
 
-    def __init__(self, y, x, yend, q, w, max_iter=1, epsilon=0.00001, A1="hom_sc", hard_bound=False):
-
+    def __init__(
+        self,
+        y,
+        x,
+        yend,
+        q,
+        w,
+        max_iter=1,
+        epsilon=0.00001,
+        A1="hom_sc",
+        hard_bound=False,
+    ):
         if A1 == "hom":
             wA1 = get_A1_hom(w)
         elif A1 == "hom_sc":
@@ -586,7 +599,6 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
 
 
 class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
-
     """
     GMM method for a spatial error model with homoskedasticity and endogenous
     variables, with results and diagnostics; based on Drukker et al. (2013)
@@ -610,9 +622,9 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
                    Spatial weights object
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the SLX-Error type. 
+                   If slx_lags>0, the specification becomes of the SLX-Error type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
-                   to be lagged                     
+                   to be lagged
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional stop condition.
@@ -839,31 +851,36 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         latex=False,
         hard_bound=False,
     ):
-
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
+        name_x = USER.set_name_x(
+            name_x, x_constant
+        )  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HOM)"
 
-        if slx_lags >0:
+        if slx_lags > 0:
+            x_constant, name_x = USER.flex_wx(
+                w,
+                x=x_constant,
+                name_x=name_x,
+                constant=True,
+                slx_lags=slx_lags,
+                slx_vars=slx_vars,
+            )
 
-            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
-
-            self.title += " WITH SLX (SLX-Error)"   
+            self.title += " WITH SLX (SLX-Error)"
 
         # OLD
-        #if slx_lags > 0:
-            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            #x_constant = np.hstack((x_constant, lag_x))
-#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-            #self.title += " WITH SLX (SLX-Error)"
-
+        # if slx_lags > 0:
+        # lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+        # x_constant = np.hstack((x_constant, lag_x))
+        #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+        # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+        # self.title += " WITH SLX (SLX-Error)"
 
         BaseGM_Endog_Error_Hom.__init__(
             self,
@@ -879,7 +896,7 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-#        self.name_x = USER.set_name_x(name_x, x_constant)
+        #        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x = name_x  # already includes constant
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
@@ -888,16 +905,16 @@ class GM_Endog_Error_Hom(BaseGM_Endog_Error_Hom):
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
         self.A1 = A1
-        self.output = pd.DataFrame(self.name_z,
-                                   columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend) + ['lambda']
-        self.output['regime'], self.output['equation'] = (0, 0)
+        self.output = pd.DataFrame(self.name_z, columns=["var_names"])
+        self.output["var_type"] = (
+            ["x"] * len(self.name_x) + ["yend"] * len(self.name_yend) + ["lambda"]
+        )
+        self.output["regime"], self.output["equation"] = (0, 0)
         self.other_top = _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
-
     """
     GMM method for a spatial lag and error model with homoskedasticity and
     endogenous variables (note: no consistency checks, diagnostics or constant
@@ -1055,7 +1072,6 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
         A1="hom_sc",
         hard_bound=False,
     ):
-
         BaseGM_Endog_Error_Hom.__init__(
             self,
             y=y,
@@ -1071,7 +1087,6 @@ class BaseGM_Combo_Hom(BaseGM_Endog_Error_Hom):
 
 
 class GM_Combo_Hom(BaseGM_Combo_Hom):
-
     """
     GMM method for a spatial lag and error model with homoskedasticity and
     endogenous variables, with results and diagnostics; based on Drukker et
@@ -1350,28 +1365,30 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         latex=False,
         hard_bound=False,
     ):
-
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
+        name_x = USER.set_name_x(
+            name_x, x_constant
+        )  # initialize in case None, includes constant
         set_warn(self, warn)
 
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags,slx_vars)
+            yend2, q2, wx = set_endog(
+                y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags, slx_vars
+            )
             x_constant = np.hstack((x_constant, wx))
         else:
             yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
 
-
         # OLD
-        #if slx_lags == 0:
-            #yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
-        #else:
-            #yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
-            #x_constant = np.hstack((x_constant, wx))
+        # if slx_lags == 0:
+        # yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+        # else:
+        # yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
+        # x_constant = np.hstack((x_constant, wx))
 
         BaseGM_Combo_Hom.__init__(
             self,
@@ -1395,32 +1412,32 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         self.title = "SPATIALLY WEIGHTED 2SLS- GM-COMBO MODEL (HOM)"
 
         if slx_lags > 0:  # adjust for flexwx
-            if (isinstance(slx_vars,list)):     # slx_vars has True,False
-                if len(slx_vars) != x.shape[1] :
+            if isinstance(slx_vars, list):  # slx_vars has True,False
+                if len(slx_vars) != x.shape[1]:
                     raise Exception("slx_vars incompatible with x column dimensions")
                 else:  # use slx_vars to extract proper columns
                     workname = name_x[1:]
                     kx = len(workname)
-                    vv = list(compress(workname,slx_vars))
+                    vv = list(compress(workname, slx_vars))
                     name_x += USER.set_name_spatial_lags(vv, slx_lags)
                     wkx = slx_vars.count(True)
             else:
                 kx = len(name_x) - 1
                 wkx = kx
-                name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+                name_x += USER.set_name_spatial_lags(
+                    name_x[1:], slx_lags
+                )  # exclude constant
             self.title += " WITH SLX (GNSM)"
 
-
         # OLD
-        #if slx_lags > 0:
-#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-            #self.title += " WITH SLX (GNSM)"
-
+        # if slx_lags > 0:
+        #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+        # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+        # self.title += " WITH SLX (GNSM)"
 
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-#        self.name_x = USER.set_name_x(name_x, x_constant)
+        #        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x = name_x  # constant already included
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
@@ -1431,41 +1448,56 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
         if slx_lags > 0:  # need to remove all but last SLX variables from name_x
             self.name_x0 = []
             self.name_x0.append(self.name_x[0])  # constant
-            if (isinstance(slx_vars,list)):   # boolean list passed
+            if isinstance(slx_vars, list):  # boolean list passed
                 # x variables that were not lagged
-                self.name_x0.extend(list(compress(self.name_x[1:],[not i for i in slx_vars])))
+                self.name_x0.extend(
+                    list(compress(self.name_x[1:], [not i for i in slx_vars]))
+                )
                 # last wkx variables
                 self.name_x0.extend(self.name_x[-wkx:])
 
-
             else:
-                okx = int((self.k - self.yend.shape[1] - 1) / (slx_lags + 1))  # number of original exogenous vars
+                okx = int(
+                    (self.k - self.yend.shape[1] - 1) / (slx_lags + 1)
+                )  # number of original exogenous vars
 
                 self.name_x0.extend(self.name_x[-okx:])
 
-            self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
+            self.name_q.extend(
+                USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q)
+            )
 
-            #var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
-            var_types = ['x'] * (kx + 1) + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
+            # var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
+            var_types = (
+                ["x"] * (kx + 1)
+                + ["wx"] * wkx * slx_lags
+                + ["yend"] * (len(self.name_yend) - 1)
+                + ["rho", "lambda"]
+            )
         else:
-            self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
-            var_types = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
+            self.name_q.extend(
+                USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q)
+            )
+            var_types = (
+                ["x"] * len(self.name_x)
+                + ["yend"] * (len(self.name_yend) - 1)
+                + ["rho", "lambda"]
+            )
 
-
-        #self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+        # self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
         self.A1 = A1
-        self.output = pd.DataFrame(self.name_z,
-                                   columns=['var_names'])
-        
-        self.output['var_type'] = var_types
+        self.output = pd.DataFrame(self.name_z, columns=["var_names"])
 
-        #self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho', 'lambda']
-        self.output['regime'], self.output['equation'] = (0, 0)
+        self.output["var_type"] = var_types
+
+        # self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho', 'lambda']
+        self.output["regime"], self.output["equation"] = (0, 0)
         self.other_top = _spat_pseudo_r2(self)
         self.other_top += _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
+
 
 # Functions
 
@@ -1547,8 +1579,8 @@ def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
     u_s = get_spFilter(w, lambdapar, reg.u)
     n = float(w.shape[0])
     sig2 = np.dot(u_s.T, u_s) / n
-    mu3 = np.sum(u_s ** 3) / n
-    mu4 = np.sum(u_s ** 4) / n
+    mu3 = np.sum(u_s**3) / n
+    mu4 = np.sum(u_s**4) / n
 
     tr11 = wA1 * wA1
     tr11 = np.sum(tr11.diagonal())
@@ -1558,9 +1590,9 @@ def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
     tr22 = np.sum(tr22.diagonal())
     vecd1 = np.array([wA1.diagonal()]).T
 
-    psi11 = 2 * sig2 ** 2 * tr11 + (mu4 - 3 * sig2 ** 2) * np.dot(vecd1.T, vecd1)
-    psi12 = sig2 ** 2 * tr12
-    psi22 = sig2 ** 2 * tr22
+    psi11 = 2 * sig2**2 * tr11 + (mu4 - 3 * sig2**2) * np.dot(vecd1.T, vecd1)
+    psi12 = sig2**2 * tr12
+    psi22 = sig2**2 * tr22
 
     a1, a2, p = 0.0, 0.0, 0.0
 
@@ -1621,7 +1653,7 @@ def get_omega_hom(w, wA1, wA2, reg, lamb, G):
     z_s = get_spFilter(w, lamb, reg.z)
     u_s = get_spFilter(w, lamb, reg.u)
     sig2 = np.dot(u_s.T, u_s) / n
-    mu3 = np.sum(u_s ** 3) / n
+    mu3 = np.sum(u_s**3) / n
     vecdA1 = np.array([wA1.diagonal()]).T
     psi, a1, a2, p = get_vc_hom(w, wA1, wA2, reg, lamb, z_s)
     j = np.dot(G, np.array([[1.0], [2 * lamb]]))
@@ -1678,7 +1710,7 @@ def get_omega_hom_ols(w, wA1, wA2, reg, lamb, G):
     oDD = sig2 * la.inv(spdot(x_s.T, x_s))
     oLL = la.inv(spdot(j.T, spdot(psii, j))) / n
     # oDL = np.zeros((oDD.shape[0], oLL.shape[1]))
-    mu3 = np.sum(u_s ** 3) / n
+    mu3 = np.sum(u_s**3) / n
     psiDL = (mu3 * spdot(reg.x.T, np.hstack((vecdA1, np.zeros((int(n), 1)))))) / n
     oDL = spdot(spdot(spdot(p.T, psiDL), spdot(psii, j)), oLL)
 
@@ -1702,9 +1734,9 @@ if __name__ == "__main__":
     import numpy as np
     import libpysal
 
-    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
+    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
     y = np.array(db.by_col("HOVAL"))
-    y = np.reshape(y, (49,1))
+    y = np.reshape(y, (49, 1))
     X = []
     X.append(db.by_col("INC"))
     X = np.array(X).T
@@ -1716,12 +1748,23 @@ if __name__ == "__main__":
     q = np.array(q).T
 
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-    w.transform = 'r'
-    #reg = GM_Error_Hom(y, X, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus', vm=True)
-    #reg = GM_Endog_Error_Hom(y, X, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
+    w.transform = "r"
+    # reg = GM_Error_Hom(y, X, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus', vm=True)
+    # reg = GM_Endog_Error_Hom(y, X, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
     #                         name_q=['discbd'], name_ds='columbus',vm=True)
-    reg = GM_Combo_Hom(y, X, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'], name_q=['discbd'],
-                       name_ds='columbus', vm=True)
+    reg = GM_Combo_Hom(
+        y,
+        X,
+        yd,
+        q,
+        w=w,
+        name_x=["inc"],
+        name_y="hoval",
+        name_yend=["crime"],
+        name_q=["discbd"],
+        name_ds="columbus",
+        vm=True,
+    )
 
     print(reg.output)
     print(reg.summary)

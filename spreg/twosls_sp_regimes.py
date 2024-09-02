@@ -11,14 +11,22 @@ from . import regimes as REGI
 from . import user_output as USER
 from .twosls_regimes import TSLS_Regimes, _optimal_weight
 from .twosls import BaseTSLS
-from .utils import set_endog, set_endog_sparse, sp_att, set_warn, sphstack, spdot, optim_k
+from .utils import (
+    set_endog,
+    set_endog_sparse,
+    sp_att,
+    set_warn,
+    sphstack,
+    spdot,
+    optim_k,
+)
 from .robust import hac_multi
 from .output import output, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 from .skater_reg import Skater_reg
 from .twosls_sp import BaseGM_Lag
 
-class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
+class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     """
     Spatial two stage least squares (S2SLS) with regimes;
     :cite:`Anselin1988`
@@ -456,7 +464,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         w_lags=1,
         slx_lags=0,
         lag_q=True,
-        robust='white',
+        robust="white",
         gwk=None,
         sig2n_k=False,
         spat_diag=True,
@@ -478,17 +486,19 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         latex=False,
         hard_bound=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         USER.check_robust(robust, gwk)
         if regime_lag_sep and not regime_err_sep:
-            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")                
+            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")
             regime_err_sep = True
         if regime_err_sep and not regime_lag_sep:
-            set_warn(self, "Groupwise heteroskedasticity is not currently available for this method,\n so regime_err_sep has been set to False.")                
+            set_warn(
+                self,
+                "Groupwise heteroskedasticity is not currently available for this method,\n so regime_err_sep has been set to False.",
+            )
             regime_err_sep = False
         if robust == "hac":
             if regime_err_sep:
@@ -514,22 +524,33 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.constant_regi = constant_regi
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags)
+            yend2, q2, wx = set_endog(
+                y, x_constant, w, yend, q, w_lags, lag_q, slx_lags
+            )
             x_constant = np.hstack((x_constant, wx))
             name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
-            name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
+            name_q.extend(
+                USER.set_name_q_sp(
+                    name_slx[-len(name_x) :], w_lags, name_q, lag_q, force_all=True
+                )
+            )
             name_x += name_slx
-            if cols2regi == 'all':
+            if cols2regi == "all":
                 cols2regi = REGI.check_cols2regi(
-                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)[0:-1]
+                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
+                )[0:-1]
             else:
                 cols2regi = REGI.check_cols2regi(
-                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
+                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
+                )
         else:
-            name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
+            name_q.extend(
+                USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True)
+            )
             yend2, q2 = yend, q
             cols2regi = REGI.check_cols2regi(
-                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
+                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
+            )
         self.n = x_constant.shape[0]
         self.cols2regi = cols2regi
         self.regimes_set = REGI._get_regimes_set(regimes)
@@ -632,25 +653,38 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 self.sp_att_reg(w_i, regi_ids, yend2[:, -1].reshape(self.n, 1))
             else:
                 self.rho = self.betas[-1]
-                self.output.iat[-1, self.output.columns.get_loc('var_type')] = 'rho'
+                self.output.iat[-1, self.output.columns.get_loc("var_type")] = "rho"
                 self.predy_e, self.e_pred, warn = sp_att(
-                    w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho, hard_bound=hard_bound)
+                    w,
+                    self.y,
+                    self.predy,
+                    yend2[:, -1].reshape(self.n, 1),
+                    self.rho,
+                    hard_bound=hard_bound,
+                )
                 set_warn(self, warn)
             self.regime_lag_sep = regime_lag_sep
             self.title = "SPATIAL " + self.title
             if slx_lags > 0:
                 for m in self.regimes_set:
-                    r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
-                    wx_index = r_output.index[-((len(r_output)-1)//(slx_lags+1)) * slx_lags:]
-                    self.output.loc[wx_index, 'var_type'] = 'wx'
+                    r_output = self.output[
+                        (self.output["regime"] == str(m))
+                        & (self.output["var_type"] == "x")
+                    ]
+                    wx_index = r_output.index[
+                        -((len(r_output) - 1) // (slx_lags + 1)) * slx_lags :
+                    ]
+                    self.output.loc[wx_index, "var_type"] = "wx"
                 self.title = " SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIMES"
             self.other_top = _spat_pseudo_r2(self)
             self.slx_lags = slx_lags
             diag_out = None
             if spat_diag:
-                diag_out = _spat_diag_out(self, w, 'yend')
+                diag_out = _spat_diag_out(self, w, "yend")
             if spat_impacts:
-                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags, regimes=True)
+                self.sp_multipliers, impacts_str = _summary_impacts(
+                    self, w, spat_impacts, slx_lags, regimes=True
+                )
                 try:
                     diag_out += impacts_str
                 except TypeError:
@@ -789,7 +823,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.name_h,
         ) = ([], [], [], [], [], [])
         counter = 0
-        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
+        self.output = pd.DataFrame(
+            columns=["var_names", "var_type", "regime", "equation"]
+        )
         for r in self.regimes_set:
             """
             if is_win:
@@ -806,7 +842,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 results[r].y,
                 results[r].predy,
                 results[r].yend[:, -1].reshape(results[r].n, 1),
-                results[r].rho, hard_bound=hard_bound
+                results[r].rho,
+                hard_bound=hard_bound,
             )
             set_warn(results[r], warn)
             results[r].w = w_i[r]
@@ -814,21 +851,13 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[
-                (counter * self.kr) : ((counter + 1) * self.kr),
-            ] = results[r].betas
-            self.u[
-                regi_ids[r],
-            ] = results[r].u
-            self.predy[
-                regi_ids[r],
-            ] = results[r].predy
-            self.predy_e[
-                regi_ids[r],
-            ] = results[r].predy_e
-            self.e_pred[
-                regi_ids[r],
-            ] = results[r].e_pred
+            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
+                r
+            ].betas
+            self.u[regi_ids[r],] = results[r].u
+            self.predy[regi_ids[r],] = results[r].predy
+            self.predy_e[regi_ids[r],] = results[r].predy_e
+            self.e_pred[regi_ids[r],] = results[r].e_pred
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.name_yend += results[r].name_yend
@@ -837,24 +866,38 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.name_h += results[r].name_h
             if r == self.regimes_set[0]:
                 self.hac_var = np.zeros((self.n, results[r].h.shape[1]), float)
-            self.hac_var[
-                regi_ids[r],
-            ] = results[r].h
+            self.hac_var[regi_ids[r],] = results[r].h
             results[r].other_top = _spat_pseudo_r2(results[r])
             results[r].other_mid = ""
             if slx_lags > 0:
                 kx = (results[r].k - results[r].kstar - 1) // (slx_lags + 1)
-                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(results[r].name_yend) - 1) + ['rho']
+                var_types = (
+                    ["x"] * (kx + 1)
+                    + ["wx"] * kx * slx_lags
+                    + ["yend"] * (len(results[r].name_yend) - 1)
+                    + ["rho"]
+                )
             else:
-                var_types = ['x'] * len(results[r].name_x) + ['yend'] * (len(results[r].name_yend)-1) + ['rho']
-            results[r].output = pd.DataFrame({'var_names': results[r].name_x + results[r].name_yend,
-                                                                'var_type': var_types,
-                                                                'regime': r, 'equation': r})
+                var_types = (
+                    ["x"] * len(results[r].name_x)
+                    + ["yend"] * (len(results[r].name_yend) - 1)
+                    + ["rho"]
+                )
+            results[r].output = pd.DataFrame(
+                {
+                    "var_names": results[r].name_x + results[r].name_yend,
+                    "var_type": var_types,
+                    "regime": r,
+                    "equation": r,
+                }
+            )
             self.output = pd.concat([self.output, results[r].output], ignore_index=True)
             if spat_diag:
-                results[r].other_mid += _spat_diag_out(results[r], results[r].w, 'yend')
+                results[r].other_mid += _spat_diag_out(results[r], results[r].w, "yend")
             if spat_impacts:
-                results[r].sp_multipliers, impacts_str = _summary_impacts(results[r], results[r].w, spat_impacts, slx_lags)
+                results[r].sp_multipliers, impacts_str = _summary_impacts(
+                    results[r], results[r].w, spat_impacts, slx_lags
+                )
                 results[r].other_mid += impacts_str
             counter += 1
         self.multi = results
@@ -866,7 +909,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 "Residuals treated as homoskedastic for the purpose of diagnostics.",
             )
         self.chow = REGI.Chow(self)
-        #if spat_diag:
+        # if spat_diag:
         #   self._get_spat_diag_props(y, x, w, yend, q, w_lags, lag_q)
         output(reg=self, vm=vm, robust=robust, other_end=False, latex=latex)
 
@@ -976,9 +1019,7 @@ def _work(
 
 
 class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
-    def __init__(
-        self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
-
+    def __init__(self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True)
@@ -988,29 +1029,53 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
 
         if not n_clusters:
             if quorum < 0:
-                quorum = np.max([(x.shape[1]+1)*10, 30])
-            n_clusters_opt = x.shape[0]*0.70//quorum
+                quorum = np.max([(x.shape[1] + 1) * 10, 30])
+            n_clusters_opt = x.shape[0] * 0.70 // quorum
             if n_clusters_opt < 2:
                 raise ValueError(
-                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation.")
-            sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x,'w':w}, quorum=quorum, trace=True)
-            n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
-            self.clusters = sk_reg_results._trace[n_clusters-1][0]
+                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation."
+                )
+            sk_reg_results = Skater_reg().fit(
+                n_clusters_opt,
+                w,
+                x_std,
+                {"reg": BaseGM_Lag, "y": y, "x": x, "w": w},
+                quorum=quorum,
+                trace=True,
+            )
+            n_clusters = optim_k(
+                [
+                    sk_reg_results._trace[i][1][2]
+                    for i in range(1, len(sk_reg_results._trace))
+                ]
+            )
+            self.clusters = sk_reg_results._trace[n_clusters - 1][0]
         else:
             try:
                 # Call the Skater_reg method based on GM_Lag
-                sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x,'w':w}, quorum=quorum, trace=trace)
+                sk_reg_results = Skater_reg().fit(
+                    n_clusters,
+                    w,
+                    x_std,
+                    {"reg": BaseGM_Lag, "y": y, "x": x, "w": w},
+                    quorum=quorum,
+                    trace=trace,
+                )
                 self.clusters = sk_reg_results.current_labels_
             except Exception as e:
                 if str(e) == "one or more input arrays have more columns than rows":
-                    raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
+                    raise ValueError(
+                        "One or more input ended up with more variables than observations. Please check your setting for `quorum`."
+                    )
                 else:
                     print("An error occurred:", e)
 
         self._trace = sk_reg_results._trace
         self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
 
-        GM_Lag_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_regimes='Skater_reg', **kwargs)
+        GM_Lag_Regimes.__init__(
+            self, y, x, regimes=self.clusters, w=w, name_regimes="Skater_reg", **kwargs
+        )
 
 
 def _test():
@@ -1062,7 +1127,7 @@ if __name__ == "__main__":
         name_ds="columbus",
         name_w="columbus.gal",
         regime_err_sep=True,
-        regime_lag_sep = True,
+        regime_lag_sep=True,
         robust="white",
     )
     print(model.output)

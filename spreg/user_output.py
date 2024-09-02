@@ -15,8 +15,8 @@ from . import sputils as spu
 from libpysal import weights
 from libpysal import graph
 from scipy.sparse.csr import csr_matrix
-from .utils import get_lags        # new for flex_wx
-from itertools import compress     # new for lfex_wx
+from .utils import get_lags  # new for flex_wx
+from itertools import compress  # new for lfex_wx
 
 
 def set_name_ds(name_ds):
@@ -152,6 +152,7 @@ def set_name_yend_sp(name_y):
     """
     return "W_" + name_y
 
+
 def set_name_spatial_lags(names, w_lags):
     """Set the spatial lag names for multiple variables and lag orders"
 
@@ -166,9 +167,10 @@ def set_name_spatial_lags(names, w_lags):
 
     """
     lag_names = ["W_" + s for s in names]
-    for i in range(w_lags-1):
-        lag_names += ["W" + str(i+2) + "_" + s for s in names]
+    for i in range(w_lags - 1):
+        lag_names += ["W" + str(i + 2) + "_" + s for s in names]
     return lag_names
+
 
 def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
     """Set the spatial instrument names in regression; return generic name if user
@@ -194,7 +196,7 @@ def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
         names = names + name_q
     sp_inst_names = []
     existing_names = set(names)
-    name_count = {} # Dictionary to store the count of each name
+    name_count = {}  # Dictionary to store the count of each name
 
     for name in names:
         if not name.startswith("W_"):
@@ -415,7 +417,7 @@ def check_y(y, n, name_y=None):
 
     n       : int
               number of observations
-    
+
     name_y  : string
               Name of the y variable
 
@@ -423,7 +425,7 @@ def check_y(y, n, name_y=None):
     -------
     y       : anything
               Object passed by the user to a regression class
-    
+
     name_y  : string
               Name of the y variable
 
@@ -452,7 +454,7 @@ def check_y(y, n, name_y=None):
                 name_y = y.columns.to_list()
                 if len(name_y) == 1:
                     name_y = name_y[0]
-                    
+
         y = y.to_numpy()
     if not isinstance(y, np.ndarray):
         print(y.__class__.__name__)
@@ -472,6 +474,7 @@ def check_y(y, n, name_y=None):
             "y must be a single column array matching the length of other arrays"
         )
     return y, name_y
+
 
 def check_endog(arrays, names):
     """Check if each of the endogenous arrays passed by a user to a regression class are
@@ -498,6 +501,7 @@ def check_endog(arrays, names):
         elif len(arrays[i].shape) == 1:
             arrays[i].shape = (arrays[i].shape[0], 1)
     return (*arrays, *names)
+
 
 def check_weights(w, y, w_required=False, time=False, slx_lags=0):
     """Check if the w parameter passed by the user is a libpysal.W object and
@@ -547,17 +551,18 @@ def check_weights(w, y, w_required=False, time=False, slx_lags=0):
     if w_required == True or (w is not None) or slx_lags > 0:
         if isinstance(w, graph.Graph):
             w = w.to_W()
-            
+
         if w == None:
             raise Exception("A weights matrix w must be provided to run this method.")
-        
+
         if not isinstance(w, weights.W):
             from warnings import warn
+
             warn("w must be API-compatible pysal weights object")
 
         # check for kernel weights, if so insert zeros on diagonal
         if slx_lags == 1 and isinstance(w, weights.Kernel):
-            w = weights.fill_diagonal(w,val=0.0)
+            w = weights.fill_diagonal(w, val=0.0)
 
         if w.n != y.shape[0] and time == False:
             raise Exception("y must have n rows, and w must be an nxn PySAL W object")
@@ -565,7 +570,7 @@ def check_weights(w, y, w_required=False, time=False, slx_lags=0):
         # check to make sure all entries equal 0
         if diag.min() != 0 or diag.max() != 0:
             raise Exception("All entries on diagonal must equal 0.")
-        
+
     return w
 
 
@@ -636,13 +641,14 @@ def check_robust(robust, wk):
                     # NOTE: we are not checking for the case of exactly 1.0 ###
                     raise Exception("Off-diagonal entries must be less than 1.")
         elif robust.lower() == "white" or robust.lower() == "ogmm":
-  #          if wk:
-  #              raise Exception("White requires that wk be set to None")
-            pass      # these options are not affected by wk
+            #          if wk:
+            #              raise Exception("White requires that wk be set to None")
+            pass  # these options are not affected by wk
         else:
             raise Exception(
                 "invalid value passed to robust, see docs for valid options"
             )
+
 
 ''' Deprecated in 1.6.1
 def check_spat_diag(spat_diag, w):
@@ -686,6 +692,7 @@ def check_spat_diag(spat_diag, w):
             raise Exception("w must be a libpysal.W object to run spatial diagnostics")
 '''
 
+
 def check_reg_list(regimes, name_regimes, n):
     """Check if the regimes parameter passed by the user is a valid list of
     regimes. Note: this does not check if the regimes are valid for the
@@ -696,7 +703,7 @@ def check_reg_list(regimes, name_regimes, n):
     regimes     : list or np.array or pd.Series
                     Object passed by the user to a regression class
     name_regimes : string
-                    Name of the regimes variable    
+                    Name of the regimes variable
     n           : int
                     number of observations
 
@@ -722,11 +729,6 @@ def check_reg_list(regimes, name_regimes, n):
             "regimes must have the same number of observations as the dependent variable"
         )
     return regimes, name_regimes
-
-
-
-
-
 
 
 def check_regimes(reg_set, N=None, K=None):
@@ -824,7 +826,7 @@ def check_constant(x, name_x=None, just_rem=False):
         return x_constant, keep_x, warn
 
 
-def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
+def flex_wx(w, x, name_x, constant=True, slx_lags=1, slx_vars="All"):
     """
     Adds spatially lagged variables to an existing x matrix with or without a constant term
     Adds variable names prefaced by W_ for the lagged variables
@@ -849,24 +851,24 @@ def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
 
     """
     if constant == True:
-        xwork = x[:,1:]
-        xnamework = name_x[1:]        
+        xwork = x[:, 1:]
+        xnamework = name_x[1:]
     else:
         xwork = x
         xnamework = name_x
-    
-    if isinstance(slx_vars,list):
+
+    if isinstance(slx_vars, list):
         if len(slx_vars) == len(xnamework):
-            xwork = xwork[:,slx_vars]
-            xnamework = list(compress(xnamework,slx_vars))
+            xwork = xwork[:, slx_vars]
+            xnamework = list(compress(xnamework, slx_vars))
         else:
             raise Exception("Mismatch number of columns and length slx_vars")
-    
-    lagx = get_lags(w,xwork,slx_lags)
-    xlagname = set_name_spatial_lags(xnamework,slx_lags)
-    bigx = np.hstack((x,lagx))
+
+    lagx = get_lags(w, xwork, slx_lags)
+    xlagname = set_name_spatial_lags(xnamework, slx_lags)
+    bigx = np.hstack((x, lagx))
     bignamex = name_x + xlagname
-    return(bigx,bignamex)
+    return (bigx, bignamex)
 
 
 def _test():

@@ -214,7 +214,9 @@ class Regimes_Frame:
 
     """
 
-    def __init__(self, x, regimes, constant_regi, cols2regi, names=None, yend=False, rlist=False):
+    def __init__(
+        self, x, regimes, constant_regi, cols2regi, names=None, yend=False, rlist=False
+    ):
         if cols2regi == "all":
             cols2regi = [True] * x.shape[1]
         else:
@@ -433,7 +435,9 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
     return xsp
 
 
-def set_name_x_regimes(name_x, regimes, constant_regi, cols2regi, regimes_set, rlist=False):
+def set_name_x_regimes(
+    name_x, regimes, constant_regi, cols2regi, regimes_set, rlist=False
+):
     """
     Generate the set of variable names in a regimes setup, according to the
     order of the betas

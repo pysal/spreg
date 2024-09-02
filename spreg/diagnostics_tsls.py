@@ -1,6 +1,6 @@
 """
-Diagnostics for two stage least squares regression estimations. 
-        
+Diagnostics for two stage least squares regression estimations.
+
 """
 
 __author__ = (

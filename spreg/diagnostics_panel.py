@@ -62,7 +62,7 @@ def panel_LMlag(y, x, w):
     num = num2 + (trw * trw * ols.sig2)
     J = num / ols.sig2
     utwy = spdot(ols.u.T, spdot(Wsp_nt, y))
-    lm = utwy ** 2 / (ols.sig2 ** 2 * J)
+    lm = utwy**2 / (ols.sig2**2 * J)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -98,7 +98,7 @@ def panel_LMerror(y, x, w):
     wTw = spdot(W.T, W)
     trw = ww.diagonal().sum() + wTw.diagonal().sum()
     utwu = spdot(ols.u.T, spdot(Wsp_nt, ols.u))
-    lm = utwu ** 2 / (ols.sig2 ** 2 * t * trw)
+    lm = utwu**2 / (ols.sig2**2 * t * trw)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 

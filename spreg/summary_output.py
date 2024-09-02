@@ -237,11 +237,12 @@ def ML_Lag(reg, w, vm, spat_diag, regimes=False):  # extra space d
         "Akaike info criterion",
         reg.aic,
     )
-    reg.__summary[
-        "summary_r2"
-    ] += "                                                 %-22s:%12.3f\n" % (
-        "Schwarz criterion",
-        reg.schwarz,
+    reg.__summary["summary_r2"] += (
+        "                                                 %-22s:%12.3f\n"
+        % (
+            "Schwarz criterion",
+            reg.schwarz,
+        )
     )
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat)
@@ -270,11 +271,12 @@ def ML_Lag_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False
             "Akaike info criterion",
             mreg.aic,
         )
-        mreg.__summary[
-            "summary_r2"
-        ] += "                                                 %-22s:%12.3f\n" % (
-            "Schwarz criterion",
-            mreg.schwarz,
+        mreg.__summary["summary_r2"] += (
+            "                                                 %-22s:%12.3f\n"
+            % (
+                "Schwarz criterion",
+                mreg.schwarz,
+            )
         )
         # build coefficients table body
         summary_coefs_allx(mreg, mreg.z_stat)
@@ -312,11 +314,12 @@ def ML_Error(reg, w, vm, spat_diag, regimes=False):  # extra space d
         "Akaike info criterion",
         reg.aic,
     )
-    reg.__summary[
-        "summary_r2"
-    ] += "                                                 %-22s:%12.3f\n" % (
-        "Schwarz criterion",
-        reg.schwarz,
+    reg.__summary["summary_r2"] += (
+        "                                                 %-22s:%12.3f\n"
+        % (
+            "Schwarz criterion",
+            reg.schwarz,
+        )
     )
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat)
@@ -345,11 +348,12 @@ def ML_Error_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=Fal
             "Akaike info criterion",
             mreg.aic,
         )
-        mreg.__summary[
-            "summary_r2"
-        ] += "                                                 %-22s:%12.3f\n" % (
-            "Schwarz criterion",
-            mreg.schwarz,
+        mreg.__summary["summary_r2"] += (
+            "                                                 %-22s:%12.3f\n"
+            % (
+                "Schwarz criterion",
+                mreg.schwarz,
+            )
         )
         # build coefficients table body
         summary_coefs_allx(mreg, mreg.z_stat)
@@ -459,7 +463,7 @@ def GM_Error_Hom(reg, vm, w, regimes=False):
     # build coefficients table body
     beta_position = summary_coefs_allx(reg, reg.z_stat, lambd=True)
     if regimes:
-        #summary_coefs_lambda(reg, reg.z_stat)
+        # summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=False, nonspat_diag=False, spat_diag=False)
@@ -501,7 +505,7 @@ def GM_Endog_Error_Hom(reg, vm, w, regimes=False):
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
     summary_coefs_instruments(reg)
     if regimes:
-        #summary_coefs_lambda(reg, reg.z_stat)
+        # summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True, nonspat_diag=False, spat_diag=False)
@@ -543,7 +547,7 @@ def GM_Error_Het(reg, vm, w, regimes=False):
     # build coefficients table body
     beta_position = summary_coefs_allx(reg, reg.z_stat, lambd=True)
     if regimes:
-        #summary_coefs_lambda(reg, reg.z_stat)
+        # summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=False, nonspat_diag=False, spat_diag=False)
@@ -585,7 +589,7 @@ def GM_Endog_Error_Het(reg, vm, w, regimes=False):
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
     summary_coefs_instruments(reg)
     if regimes:
-        #summary_coefs_lambda(reg, reg.z_stat)
+        # summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True, nonspat_diag=False, spat_diag=False)
@@ -671,7 +675,7 @@ def GM_Combo_Hom(reg, vm, w, regimes=False):
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
     summary_coefs_instruments(reg)
     if regimes:
-        #summary_coefs_lambda(reg, reg.z_stat)
+        # summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True, nonspat_diag=False, spat_diag=False)
@@ -715,7 +719,7 @@ def GM_Combo_Het(reg, vm, w, regimes=False):
     summary_coefs_allx(reg, reg.z_stat, lambd=True)
     summary_coefs_instruments(reg)
     if regimes:
-        #summary_coefs_lambda(reg, reg.z_stat)
+        # summary_coefs_lambda(reg, reg.z_stat)
         summary_regimes(reg)
     summary_warning(reg)
     summary(reg=reg, vm=vm, instruments=True, nonspat_diag=False, spat_diag=False)
@@ -765,9 +769,9 @@ def Probit(reg, vm, w, spat_diag):
     reg.__summary["summary_r2"] += "%-21s: %3.4f\n" % ("LR test", reg.LR[0])
     reg.__summary["summary_r2"] += "%-21s: %3.4f\n" % ("LR test (p-value)", reg.LR[1])
     if reg.warning:
-        reg.__summary[
-            "summary_r2"
-        ] += "\nMaximum number of iterations exceeded or gradient and/or function calls not changing\n"
+        reg.__summary["summary_r2"] += (
+            "\nMaximum number of iterations exceeded or gradient and/or function calls not changing\n"
+        )
     # build coefficients table body
     beta_position = summary_coefs_allx(reg, reg.z_stat)
     reg.__summary["summary_other_mid"] = summary_coefs_slopes(reg)
@@ -879,11 +883,12 @@ def Panel_FE_Lag(reg, w, vm):
         "Akaike info criterion",
         reg.aic,
     )
-    reg.__summary[
-        "summary_r2"
-    ] += "                                                 %-22s:%12.3f\n" % (
-        "Schwarz criterion",
-        reg.schwarz,
+    reg.__summary["summary_r2"] += (
+        "                                                 %-22s:%12.3f\n"
+        % (
+            "Schwarz criterion",
+            reg.schwarz,
+        )
     )
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat)
@@ -907,11 +912,12 @@ def Panel_FE_Error(reg, w, vm, regimes=False):
         "Akaike info criterion",
         reg.aic,
     )
-    reg.__summary[
-        "summary_r2"
-    ] += "                                                 %-22s:%12.3f\n" % (
-        "Schwarz criterion",
-        reg.schwarz,
+    reg.__summary["summary_r2"] += (
+        "                                                 %-22s:%12.3f\n"
+        % (
+            "Schwarz criterion",
+            reg.schwarz,
+        )
     )
     # build coefficients table body
     summary_coefs_allx(reg, reg.z_stat)
@@ -975,9 +981,7 @@ def beta_diag_lag(reg, robust, error=True):
             reg.pr2_e,
         )
     else:
-        reg.__summary[
-            "summary_r2"
-        ] += (
+        reg.__summary["summary_r2"] += (
             "Spatial Pseudo R-squared: omitted due to rho outside the boundary (-1, 1)."
         )
 
@@ -1195,7 +1199,7 @@ def _get_var_indices(reg, zt_stat, lambd=False):
             j = i * krex
             jyd = krex * reg.nr + i * reg.kryd + kf - kfyd
             if len(zt_stat) == len(reg.betas) and lambd:
-                jyd += -1 #discount lambda as fixed coefficient in this counter
+                jyd += -1  # discount lambda as fixed coefficient in this counter
             name_reg = var_names[j + j_con : j + krex] + var_names[jyd : jyd + reg.kryd]
             # name_reg.sort()
             if reg.constant_regi == "many":
@@ -1205,12 +1209,13 @@ def _get_var_indices(reg, zt_stat, lambd=False):
         if reg.constant_regi == "one":
             indices += [krex * reg.nr]
         if len(indices) < last_v:
-            if len(indices) - last_v == -1 and reg.kryd>0 and lambd:
-                name_reg = ['lambda']
+            if len(indices) - last_v == -1 and reg.kryd > 0 and lambd:
+                name_reg = ["lambda"]
             else:
                 name_reg = (
-                var_names[krex * reg.nr + 1 - j_con : krex * reg.nr + kf - kfyd]
-                + var_names[reg.kr * reg.nr + kf - kfyd : reg.kr * reg.nr + kf])
+                    var_names[krex * reg.nr + 1 - j_con : krex * reg.nr + kf - kfyd]
+                    + var_names[reg.kr * reg.nr + kf - kfyd : reg.kr * reg.nr + kf]
+                )
 
             # name_reg.sort()
             indices += [var_names.index(ind) for ind in name_reg]
@@ -1427,14 +1432,15 @@ def summary_coefs_lambda(reg, zt_stat):
     except:
         name_var = reg.name_x
     if len(reg.betas) == len(zt_stat):
-        reg.__summary[
-            "summary_coefs"
-        ] += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n" % (
-            name_var[-1],
-            reg.betas[-1][0],
-            reg.std_err[-1],
-            zt_stat[-1][0],
-            zt_stat[-1][1],
+        reg.__summary["summary_coefs"] += (
+            "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n"
+            % (
+                name_var[-1],
+                reg.betas[-1][0],
+                reg.std_err[-1],
+                zt_stat[-1][0],
+                zt_stat[-1][1],
+            )
         )
     else:
         n_coef = len(reg.betas) - len(zt_stat)

@@ -31,7 +31,6 @@ __all__ = ["ML_Error"]
 
 
 class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
-
     """
     ML estimation of the spatial error model (note no consistency
     checks, diagnostics or constants added): :cite:`Anselin1988`
@@ -268,7 +267,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
         tr3 = waiTwai.diagonal().sum()
 
         v1 = np.vstack((tr2 + tr3, tr1 / self.sig2))
-        v2 = np.vstack((tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2)))
+        v2 = np.vstack((tr1 / self.sig2, self.n / (2.0 * self.sig2**2)))
 
         v = np.hstack((v1, v2))
 
@@ -297,7 +296,6 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
 
 
 class ML_Error(BaseML_Error):
-
     """
     ML estimation of the spatial error model with all results and diagnostics;
     :cite:`Anselin1988`
@@ -488,16 +486,24 @@ class ML_Error(BaseML_Error):
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(name_x, x_constant) # initialize in case None includes constant
+        name_x = USER.set_name_x(
+            name_x, x_constant
+        )  # initialize in case None includes constant
         set_warn(self, warn)
         self.title = "ML SPATIAL ERROR"
-        if slx_lags >0:
-        #    lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-        #    x_constant = np.hstack((x_constant, lag_x))
-#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-        #    name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
-            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
+        if slx_lags > 0:
+            #    lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #    x_constant = np.hstack((x_constant, lag_x))
+            #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            #    name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
+            x_constant, name_x = USER.flex_wx(
+                w,
+                x=x_constant,
+                name_x=name_x,
+                constant=True,
+                slx_lags=slx_lags,
+                slx_vars=slx_vars,
+            )
             self.title += " WITH SLX (SLX-Error)"
         self.title += " (METHOD = " + method + ")"
 
@@ -512,9 +518,9 @@ class ML_Error(BaseML_Error):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-        self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['lambda']
-        self.output['regime'], self.output['equation'] = (0, 0)
+        self.output = pd.DataFrame(self.name_x, columns=["var_names"])
+        self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
+        self.output["regime"], self.output["equation"] = (0, 0)
         self.other_top = _nonspat_top(self, ml=True)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
@@ -593,6 +599,7 @@ def _test():
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
+
 
 if __name__ == "__main__":
     _test()

@@ -17,9 +17,7 @@ from .sputils import *
 import copy
 
 
-
 class RegressionPropsY(object):
-
     """
     Helper class that adds common regression properties to any regression
     class that inherits it.  It takes no parameters.  See BaseOLS for example
@@ -81,7 +79,6 @@ class RegressionPropsY(object):
 
 
 class RegressionPropsVM(object):
-
     """
     Helper class that adds common regression properties to any regression
     class that inherits it.  It takes no parameters.  See BaseOLS for example
@@ -109,9 +106,9 @@ class RegressionPropsVM(object):
             return self._cache["utu"]
         except AttributeError:
             self._cache = {}
-            self._cache["utu"] = np.sum(self.u ** 2)
+            self._cache["utu"] = np.sum(self.u**2)
         except KeyError:
-            self._cache["utu"] = np.sum(self.u ** 2)
+            self._cache["utu"] = np.sum(self.u**2)
         return self._cache["utu"]
 
     @utu.setter
@@ -323,7 +320,9 @@ def _moments2eqs(A1, s, u):
     return [G, g]
 
 
-def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None, hard_bound=False):
+def optim_moments(
+    moments_in, vcX=np.array([0]), all_par=False, start=None, hard_bound=False
+):
     """
     Optimization of moments
     ...
@@ -345,7 +344,7 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None, hard
     hard_bound   : boolean
                    If true, raises an exception if the estimated spatial
                    autoregressive parameter is outside the maximum/minimum bounds.
-                   
+
     Returns
     -------
     x, f, d     : tuple
@@ -392,7 +391,9 @@ def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None, hard
 
     if hard_bound:
         if abs(lambdaX[0][0]) >= 0.99:
-            raise Exception("Spatial parameter was outside the bounds of -0.99 and 0.99")
+            raise Exception(
+                "Spatial parameter was outside the bounds of -0.99 and 0.99"
+            )
 
     if all_par:
         return lambdaX[0]
@@ -421,7 +422,7 @@ def foptim_par(par, moments):
     """
     vv = np.dot(moments[0], par)
     vv2 = moments[1] - vv
-    return sum(vv2 ** 2)
+    return sum(vv2**2)
 
 
 def get_spFilter(w, lamb, sf):
@@ -498,6 +499,7 @@ def get_lags(w, x, w_lags):
         spat_lags = sphstack(spat_lags, lag)
     return spat_lags
 
+
 def get_lags_split(w, x, max_lags, split_at):
     """
     Calculates a given order of spatial lags and all the smaller orders,
@@ -524,7 +526,7 @@ def get_lags_split(w, x, max_lags, split_at):
     rs_l = lag = lag_spatial(w, x)
     rs_h = None
     if 0 < split_at < max_lags:
-        for _ in range(split_at-1):
+        for _ in range(split_at - 1):
             lag = lag_spatial(w, lag)
             rs_l = sphstack(rs_l, lag)
 
@@ -532,9 +534,12 @@ def get_lags_split(w, x, max_lags, split_at):
             lag = lag_spatial(w, lag)
             rs_h = sphstack(rs_h, lag) if i > 0 else lag
     else:
-        raise ValueError("max_lags must be greater than split_at and split_at must be greater than 0")
+        raise ValueError(
+            "max_lags must be greater than split_at and split_at must be greater than 0"
+        )
 
     return rs_l, rs_h
+
 
 def inverse_prod(
     w,
@@ -617,11 +622,13 @@ def inverse_prod(
         except:
             matrix = la.inv(np.eye(w.shape[0]) - (scalar * w))
         if post_multiply:
-#            inv_prod = spdot(data.T, matrix)
-            inv_prod = np.matmul(data.T,matrix)   # inverse matrix is dense, wrong type in spdot
+            #            inv_prod = spdot(data.T, matrix)
+            inv_prod = np.matmul(
+                data.T, matrix
+            )  # inverse matrix is dense, wrong type in spdot
         else:
-#            inv_prod = spdot(matrix, data)
-            inv_prod = np.matmul(matrix,data)
+            #            inv_prod = spdot(matrix, data)
+            inv_prod = np.matmul(matrix, data)
     else:
         raise Exception("Invalid method selected for inversion.")
     return inv_prod
@@ -671,13 +678,13 @@ def power_expansion(
     return running_total
 
 
-def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
+def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="All"):
     # Create spatial lag of y
     yl = lag_spatial(w, y)
     # spatial and non-spatial instruments
     if issubclass(type(yend), np.ndarray):
         if slx_lags > 0:
-            lag_x, lag_xq = get_lags_split(w, x, slx_lags+1, slx_lags)
+            lag_x, lag_xq = get_lags_split(w, x, slx_lags + 1, slx_lags)
         else:
             lag_xq = x
         if lag_q:
@@ -689,7 +696,7 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
         yend = sphstack(yend, yl)
     elif yend == None:  # spatial instruments only
         if slx_lags > 0:
-            lag_x, lag_xq = get_lags_split(w, x, slx_lags+w_lags, slx_lags)
+            lag_x, lag_xq = get_lags_split(w, x, slx_lags + w_lags, slx_lags)
         else:
             lag_xq = get_lags(w, x, w_lags)
         q = lag_xq
@@ -699,16 +706,15 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
     if slx_lags == 0:
         return yend, q
     else:  # ajdust returned lag_x here using slx_vars
-        if (isinstance(slx_vars,list)):     # slx_vars has True,False
-            if len(slx_vars) != x.shape[1] :
+        if isinstance(slx_vars, list):  # slx_vars has True,False
+            if len(slx_vars) != x.shape[1]:
                 raise Exception("slx_vars incompatible with x column dimensions")
             else:  # use slx_vars to extract proper columns
                 vv = slx_vars * slx_lags
-                lag_x = lag_x[:,vv]
+                lag_x = lag_x[:, vv]
             return yend, q, lag_x
         else:  # slx_vars is "All"
             return yend, q, lag_x
-
 
 
 def set_endog_sparse(y, x, w, yend, q, w_lags, lag_q):
@@ -799,11 +805,12 @@ def RegressionProps_basic(
     if sig2 is not None:
         reg.sig2 = sig2
     elif sig2n_k:
-        reg.sig2 = np.sum(reg.u ** 2) / (reg.n - reg.k)
+        reg.sig2 = np.sum(reg.u**2) / (reg.n - reg.k)
     else:
-        reg.sig2 = np.sum(reg.u ** 2) / reg.n
+        reg.sig2 = np.sum(reg.u**2) / reg.n
     if vm is not None:
         reg.vm = vm
+
 
 def optim_k(trace, window_size=None):
     """
@@ -842,19 +849,21 @@ def optim_k(trace, window_size=None):
 
     N = len(trace)
     if not window_size:
-        window_size = N//4 # Mojena suggests from 70% to 90%
-    std_dev = [np.std(trace[i:i+window_size]) for i in range(N - window_size + 1)]
-    ma = np.convolve(trace, np.ones(window_size)/window_size, mode='valid')
+        window_size = N // 4  # Mojena suggests from 70% to 90%
+    std_dev = [np.std(trace[i : i + window_size]) for i in range(N - window_size + 1)]
+    ma = np.convolve(trace, np.ones(window_size) / window_size, mode="valid")
     treshold = [True]
     i = 0
     while treshold[-1] and i < (N - window_size):
-        b = (6/(window_size*(window_size*window_size-1))
-            )*((2*np.sum(np.arange(1, i+2)*trace[window_size-1:i+window_size])
-            )-((window_size+1)*np.sum(trace[window_size-1:i+window_size])))
-        l = (window_size-1)*b/2
-        treshold.append(trace[i+window_size] < ma[i] - b - l - 2.75*std_dev[i])
+        b = (6 / (window_size * (window_size * window_size - 1))) * (
+            (2 * np.sum(np.arange(1, i + 2) * trace[window_size - 1 : i + window_size]))
+            - ((window_size + 1) * np.sum(trace[window_size - 1 : i + window_size]))
+        )
+        l = (window_size - 1) * b / 2
+        treshold.append(trace[i + window_size] < ma[i] - b - l - 2.75 * std_dev[i])
         i += 1
-    return i+window_size
+    return i + window_size
+
 
 def _test():
     import doctest

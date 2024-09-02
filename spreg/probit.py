@@ -7,6 +7,7 @@ import numpy.linalg as la
 import scipy.optimize as op
 from scipy.stats import norm, chi2
 from libpysal import weights
+
 chisqprob = chi2.sf
 import scipy.sparse as SP
 from . import user_output as USER
@@ -17,7 +18,6 @@ __all__ = ["Probit"]
 
 
 class BaseProbit(object):
-
     """
     Probit class to do all the computations
 
@@ -166,24 +166,18 @@ class BaseProbit(object):
         except AttributeError:
             self._cache = {}
             variance = self.vm.diagonal()
-            zStat = (
-                self.betas.reshape(
-                    len(self.betas),
-                )
-                / np.sqrt(variance)
-            )
+            zStat = self.betas.reshape(
+                len(self.betas),
+            ) / np.sqrt(variance)
             rs = {}
             for i in range(len(self.betas)):
                 rs[i] = (zStat[i], norm.sf(abs(zStat[i])) * 2)
             self._cache["z_stat"] = rs.values()
         except KeyError:
             variance = self.vm.diagonal()
-            zStat = (
-                self.betas.reshape(
-                    len(self.betas),
-                )
-                / np.sqrt(variance)
-            )
+            zStat = self.betas.reshape(
+                len(self.betas),
+            ) / np.sqrt(variance)
             rs = {}
             for i in range(len(self.betas)):
                 rs[i] = (zStat[i], norm.sf(abs(zStat[i])) * 2)
@@ -415,13 +409,13 @@ class BaseProbit(object):
             x = self.xmean
             b = self.betas
             dfdb = np.eye(self.k) - spdot(b.T, x) * spdot(b, x.T)
-            slopes_vm = (self.scale ** 2) * np.dot(np.dot(dfdb, self.vm), dfdb.T)
+            slopes_vm = (self.scale**2) * np.dot(np.dot(dfdb, self.vm), dfdb.T)
             self._cache["slopes_vm"] = slopes_vm[1:, 1:]
         except KeyError:
             x = self.xmean
             b = self.betas
             dfdb = np.eye(self.k) - spdot(b.T, x) * spdot(b, x.T)
-            slopes_vm = (self.scale ** 2) * np.dot(np.dot(dfdb, self.vm), dfdb.T)
+            slopes_vm = (self.scale**2) * np.dot(np.dot(dfdb, self.vm), dfdb.T)
             self._cache["slopes_vm"] = slopes_vm[1:, 1:]
         return self._cache["slopes_vm"]
 
@@ -635,7 +629,6 @@ class BaseProbit(object):
 
 
 class Probit(BaseProbit):
-
     """
     Classic non-spatial Probit and spatial diagnostics. The class includes a
     printout that formats all the results and tests in a nice format.
@@ -851,7 +844,6 @@ class Probit(BaseProbit):
         name_ds=None,
         spat_diag=False,
     ):
-
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
@@ -865,7 +857,7 @@ class Probit(BaseProbit):
             if slx_lags > 0:
                 lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
                 x_constant = np.hstack((x_constant, lag_x))
-                self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)            
+                self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
         else:
             ws = None
 
@@ -874,7 +866,7 @@ class Probit(BaseProbit):
         )
         self.title = "CLASSIC PROBIT ESTIMATOR"
         if slx_lags > 0:
-            self.title += " WITH SPATIALLY LAGGED X (SLX)"        
+            self.title += " WITH SPATIALLY LAGGED X (SLX)"
         self.slx_lags = slx_lags
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
@@ -941,7 +933,7 @@ def sp_tests(reg):
         LM_err_num = np.dot(u_gen.T, (w * u_gen)) ** 2
         trWW = np.sum((w * w).diagonal())
         trWWWWp = trWW + np.sum((w * w.T).diagonal())
-        LM_err = float(1.0 * LM_err_num / (sig2 ** 2 * trWWWWp))
+        LM_err = float(1.0 * LM_err_num / (sig2**2 * trWWWWp))
         LM_err = np.array([LM_err, chisqprob(LM_err, 1)])
         # KP_error:
         moran = moran_KP(reg.w, u_naive, Phi_prod)

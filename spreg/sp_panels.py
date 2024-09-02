@@ -21,7 +21,6 @@ __all__ = ["GM_KKP"]
 
 
 class BaseGM_KKP(RegressionPropsY):
-
     '''
     Base GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
@@ -69,7 +68,6 @@ class BaseGM_KKP(RegressionPropsY):
     '''
 
     def __init__(self, y, x, w, full_weights=False):
-
         # 1a. OLS --> \tilde{\delta}
         ols = OLS.BaseOLS(y=y, x=x)
         self.x, self.y, self.n, self.k, self.xtx = ols.x, ols.y, ols.n, ols.k, ols.xtx
@@ -117,7 +115,6 @@ class BaseGM_KKP(RegressionPropsY):
 
 
 class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
-
     '''
     GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
