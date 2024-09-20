@@ -1543,7 +1543,7 @@ def moments_hom(w, wA1, wA2, u):
 
 
 def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
-    """
+    r"""
     VC matrix \psi of Spatial error with homoscedasticity. As in
     Anselin (2011) :cite:`Anselin2011` (p. 20)
     ...
