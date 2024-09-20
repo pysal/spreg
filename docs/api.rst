@@ -19,6 +19,7 @@ These are the standard spatial regression models supported by the `spreg` packag
     spreg.ML_Lag
     spreg.ML_Error
     spreg.GM_Lag
+    spreg.GMM_Error
     spreg.GM_Error
     spreg.GM_Error_Het
     spreg.GM_Error_Hom
@@ -30,6 +31,7 @@ These are the standard spatial regression models supported by the `spreg` packag
     spreg.GM_Endog_Error_Hom
     spreg.TSLS
     spreg.ThreeSLS
+    spreg.NSLX
 
 Discrete Choice Models
 ----------------------
@@ -107,6 +109,7 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.akaike
     spreg.schwarz
     spreg.condition_index
+    spreg.dwh
     spreg.jarque_bera
     spreg.breusch_pagan
     spreg.white
