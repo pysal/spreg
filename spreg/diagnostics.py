@@ -1388,6 +1388,8 @@ def likratiotest(reg0, reg1):
 
     # generalize to multiple parameters, e.g., spatial Durbin
     df = reg1.k - reg0.k
+    if not(df > 0):
+        df = 1
 
     #pvalue = stats.chisqprob(likr, 1)
     pvalue = stats.chisqprob(likr, df)
