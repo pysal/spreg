@@ -7,7 +7,9 @@ RTOL = 1e-04
 
 class TestNSLX(unittest.TestCase):
     def setUp(self):
-        dfs = gpd.read_file(libpysal.examples.get_path('Chi-SDOH.shp'))
+        csdoh = libpysal.examples.load_example('chicagoSDOH')
+
+        dfs = gpd.read_file(csdoh.get_path('Chi-SDOH.shp'))
         self.y = dfs[['HIS_ct']]
         self.x = dfs[['Blk14P','Hisp14P','EP_NOHSDP']]
         self.coords = dfs[["COORD_X","COORD_Y"]]
