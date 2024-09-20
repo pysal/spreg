@@ -1,8 +1,7 @@
 """
-Diagnostics for regression estimations.
-
+Diagnostics for regression estimations. 
+        
 """
-
 __author__ = (
     "Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu "
 )
@@ -39,7 +38,7 @@ __all__ = [
 ]
 
 
-def f_stat(reg, df=0):
+def f_stat(reg,df=0):
     """
     Calculates the f-statistic and associated p-value for multiple
     coefficient constraints :cite:`Greene2003`.
@@ -50,7 +49,7 @@ def f_stat(reg, df=0):
     ----------
     reg             : regression object
                       output instance from a regression model
-    df              : number of coefficient constraints
+    df              : number of coefficient constraints 
                       (zero constraint for last df coefficients in betas)
 
     Returns
@@ -101,15 +100,15 @@ def f_stat(reg, df=0):
     utu = reg.utu  # (scalar) residual sum of squares
     # default case, all coefficients
     if df == 0:
-        r = k - 1
+        r = k-1
         predy = reg.predy  # (array) vector of predicted values (n x 1)
         mean_y = reg.mean_y  # (scalar) mean of dependent observations
         U = np.sum((predy - mean_y) ** 2)
-    else:  # F test on last df coefficients
+    else:     # F test on last df coefficients
         y = reg.y
         r = df
-        x0 = reg.x[:, :-r]
-        olsr = BaseOLS(y, x0)  # constrained regression
+        x0 = reg.x[:,:-r]
+        olsr = BaseOLS(y,x0)  # constrained regression
         rtr = olsr.utu
         U = rtr - utu
     fStat = (U / r) / (utu / (n - k))
@@ -1386,10 +1385,15 @@ def likratiotest(reg0, reg1):
         raise Exception("Missing or improper log-likelihoods in regression objects")
     if likr < 0.0:  # always enforces positive likelihood ratio
         likr = -likr
-    pvalue = stats.chisqprob(likr, 1)
-    likratio = {"likr": likr, "df": 1, "p-value": pvalue}
-    return likratio
 
+    # generalize to multiple parameters, e.g., spatial Durbin
+    df = reg1.k - reg0.k
+
+    #pvalue = stats.chisqprob(likr, 1)
+    pvalue = stats.chisqprob(likr, df)
+    #likratio = {"likr": likr, "df": 1, "p-value": pvalue}
+    likratio = {"likr": likr, "df": df, "p-value": pvalue}
+    return likratio
 
 def dwh(reg):
     """
@@ -1408,23 +1412,23 @@ def dwh(reg):
                 and associated p-value
 
     """
-    n = reg.n
-    ny = reg.yend.shape[1]  # number of endogenous variables
+    n = reg.n  
+    ny = reg.yend.shape[1]   # number of endogenous variables
     qq = reg.h  # all exogenous and instruments
     xx = reg.z  # all exogenous and endogenous
     # get predicted values for endogenous variables on all instruments
-    py = np.zeros((n, ny))
+    py = np.zeros((n,ny))
     for i in range(ny):
-        yy = reg.yend[:, i].reshape(n, 1)
-        ols1 = BaseOLS(y=yy, x=qq)
+        yy = reg.yend[:, i].reshape(n,1)
+        ols1 = BaseOLS(y=yy,x=qq)
         yp = ols1.predy
-        py[0:n, i] = yp.flatten()
+        py[0:n,i] = yp.flatten()
     nxq = sphstack(xx, py)
     # F-test in augmented regression
     ols2 = BaseOLS(y=reg.y, x=nxq)
     dwh = f_stat(ols2, df=ny)
-    return dwh
-
+    return dwh 
+    
 
 def _test():
     import doctest

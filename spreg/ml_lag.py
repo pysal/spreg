@@ -16,13 +16,7 @@ from .sputils import spdot, spfill_diagonal, spinv
 from . import diagnostics as DIAG
 from . import user_output as USER
 import pandas as pd
-from .output import (
-    output,
-    _nonspat_top,
-    _spat_diag_out,
-    _spat_pseudo_r2,
-    _summary_impacts,
-)
+from .output import output, _nonspat_top, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 from .w_utils import symmetrize
 from libpysal import weights
 
@@ -37,6 +31,7 @@ __all__ = ["ML_Lag"]
 
 
 class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
+
     """
     ML estimation of the spatial lag model (note no consistency
     checks, diagnostics or constants added) :cite:`Anselin1988`
@@ -200,9 +195,9 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
         ylag = weights.lag_spatial(w, y)
         # b0, b1, e0 and e1
 
-        # now set in ML_Lag
-        #        if slx_lags>0:
-        #            self.x = np.hstack((self.x, get_lags(w, self.x[:, 1:], slx_lags)))
+# now set in ML_Lag
+#        if slx_lags>0:
+#            self.x = np.hstack((self.x, get_lags(w, self.x[:, 1:], slx_lags)))
 
         self.n, self.k = self.x.shape
         xtx = spdot(self.x.T, self.x)
@@ -224,19 +219,19 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
                     bounds=(-1.0, 1.0),
                     args=(self.n, e0, e1, W),
                     method="bounded",
-                    options={"xatol": epsilon},
+                    options={'xatol': epsilon},
                 )
             elif methodML == "LU":
                 I = sp.identity(w.n)
                 Wsp = w.sparse  # moved here
-                W = Wsp  # .tocsc()
+                W = Wsp#.tocsc()
                 res = minimize_scalar(
                     lag_c_loglik_sp,
                     0.0,
                     bounds=(-1.0, 1.0),
                     args=(self.n, e0, e1, I, Wsp),
                     method="bounded",
-                    options={"xatol": epsilon},
+                    options={'xatol': epsilon},
                 )
             elif methodML == "ORD":
                 # check on symmetry structure
@@ -254,7 +249,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
                     bounds=(-1.0, 1.0),
                     args=(self.n, e0, e1, evals),
                     method="bounded",
-                    options={"xatol": epsilon},
+                    options={'xatol': epsilon},
                 )
         else:
             # program will crash, need to catch
@@ -313,7 +308,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
             (xTwpy / self.sig2, tr2 + tr3 + wpyTwpy / self.sig2, tr1 / self.sig2)
         )
         v3 = np.vstack(
-            (np.zeros((self.k, 1)), tr1 / self.sig2, self.n / (2.0 * self.sig2**2))
+            (np.zeros((self.k, 1)), tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2))
         )
 
         v = np.hstack((v1, v2, v3))
@@ -323,6 +318,7 @@ class BaseML_Lag(RegressionPropsY, RegressionPropsVM):
 
 
 class ML_Lag(BaseML_Lag):
+
     """
     ML estimation of the spatial lag model with all results and diagnostics; :cite:`Anselin1988`
 
@@ -351,7 +347,7 @@ class ML_Lag(BaseML_Lag):
                    Include average direct impact (ADI), average indirect impact (AII),
                     and average total impact (ATI) in summary results.
                     Options are 'simple', 'full', 'power', 'all' or None.
-                    See sputils._spmultiplier for more information.
+                    See sputils.spmultiplier for more information.
     vm           : boolean
                    if True, include variance-covariance matrix in summary
                    results
@@ -619,56 +615,38 @@ class ML_Lag(BaseML_Lag):
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(
-            name_x, x_constant
-        )  # needs to be initialized for none, now with constant
+        name_x = USER.set_name_x(name_x, x_constant) # needs to be initialized for none, now with constant
         set_warn(self, warn)
         method = method.upper()
         # using flex_wx
         kx = len(name_x)
         if slx_lags > 0:
-            x_constant, name_x = USER.flex_wx(
-                w,
-                x=x_constant,
-                name_x=name_x,
-                constant=True,
-                slx_lags=slx_lags,
-                slx_vars=slx_vars,
-            )
-            if isinstance(slx_vars, list):
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+            if isinstance(slx_vars,list):
                 kw = slx_vars.count(True)
                 if kw < kx - 1:
-                    spat_diag = False  # no common factor test
+                    spat_diag = False   # no common factor test
             else:
-                kw = kx - 1
+                kw = kx-1
+    
 
         BaseML_Lag.__init__(
-            self,
-            y=y,
-            x=x_constant,
-            w=w,
-            slx_lags=slx_lags,
-            method=method,
-            epsilon=epsilon,
+            self, y=y, x=x_constant, w=w, slx_lags=slx_lags, method=method, epsilon=epsilon
         )
         # increase by 1 to have correct aic and sc, include rho in count
         self.k += 1
 
-        if slx_lags > 0:
-            #        kx = len(name_x)
-            #        name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+        if slx_lags>0:
+    #        kx = len(name_x)
+    #        name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
 
-            self.title = (
-                "MAXIMUM LIKELIHOOD SPATIAL LAG WITH SLX - SPATIAL DURBIN MODEL"
-                + " (METHOD = "
-                + method
-                + ")"
-            )
-            #            var_types = ['x'] * kx + ['wx'] * (kx-1) * slx_lags + ['rho']
-            var_types = ["x"] * kx + ["wx"] * (kw) * slx_lags + ["rho"]
+            self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG WITH SLX - SPATIAL DURBIN MODEL" + " (METHOD = " + method + ")"
+#            var_types = ['x'] * kx + ['wx'] * (kx-1) * slx_lags + ['rho']
+            var_types = ['x'] * kx + ['wx'] * (kw) * slx_lags + ['rho']
         else:
             self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
-            var_types = ["x"] * len(name_x) + ["rho"]
+            var_types = ['x'] * len(name_x) + ['rho']
         self.slx_lags = slx_lags
         self.slx_vars = slx_vars
         self.name_ds = USER.set_name_ds(name_ds)
@@ -679,24 +657,21 @@ class ML_Lag(BaseML_Lag):
         self.name_w = USER.set_name_w(name_w, w)
         self.aic = DIAG.akaike(reg=self)
         self.schwarz = DIAG.schwarz(reg=self)
-        self.output = pd.DataFrame(self.name_x, columns=["var_names"])
-        self.output["var_type"] = var_types
-        self.output["regime"], self.output["equation"] = (0, 0)
+        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+        self.output['var_type'] = var_types
+        self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _spat_pseudo_r2(self)
         self.other_top += _nonspat_top(self, ml=True)
         diag_out = None
-        if spat_diag and slx_lags == 1:
-            diag_out = _spat_diag_out(self, w, "yend", ml=True)
+        if spat_diag and slx_lags==1:
+            diag_out = _spat_diag_out(self, w, 'yend', ml=True)
         if spat_impacts:
-            self.sp_multipliers, impacts_str = _summary_impacts(
-                self, w, spat_impacts, slx_lags, slx_vars
-            )
+            self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags,slx_vars)
             try:
                 diag_out += impacts_str
             except TypeError:
                 diag_out = impacts_str
         output(reg=self, vm=vm, robust=False, other_end=diag_out, latex=latex)
-
 
 def lag_c_loglik(rho, n, e0, e1, W):
     # concentrated log-lik for lag model, no constants, brute force
@@ -747,7 +722,6 @@ def _test():
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
-
 
 if __name__ == "__main__":
     _test()

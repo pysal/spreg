@@ -1,3 +1,4 @@
+
 import contextlib
 from importlib.metadata import PackageNotFoundError, version
 
@@ -17,6 +18,7 @@ from .ml_error import *
 from .ml_error_regimes import *
 from .ml_lag import *
 from .ml_lag_regimes import *
+from .nslx import *
 from .ols import *
 from .ols_regimes import *
 from .panel_fe import *
@@ -24,6 +26,7 @@ from .panel_re import *
 from .probit import *
 from .regimes import *
 from .skater_reg import *
+from .spsearch import *
 from .sp_panels import *
 from .sputils import *
 from .sur import *
