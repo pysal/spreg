@@ -135,7 +135,7 @@ def out_part_middle(strSummary, reg, robust, m=None, latex=False):
         df_2 = df_2.set_axis(['Variable', 'Coefficient', 'Std.Error', _reg.__summary['summary_zt']+'-Statistic', 'Prob.'], axis='columns', copy=False)
         cols = df_2.columns.difference(['Variable'])
         df_2[cols] = df_2[cols].astype(float).map(lambda x: "%12.5f" % x)
-        df_2['Variable'] = df_2['Variable'].str.replace("_", "\_").str.replace("%", "\%")
+        df_2['Variable'] = df_2['Variable'].str.replace("_", r"\_").str.replace("%", r"\%")
         df_inlatex = df_2.style.hide(axis='index').to_latex(hrules=True)
         strSummary += df_inlatex
         strSummary += "------------------------------------------------------------------------------------\n"

@@ -288,7 +288,7 @@ class MoranRes:
 
 
 class AKtest:
-    """
+    r"""
     Moran's I test of spatial autocorrelation for IV estimation.
     Implemented following the original reference :cite:`Anselin1997`
 
@@ -441,7 +441,7 @@ class AKtest:
 
 
 class spDcache:
-    """
+    r"""
     Helper class to compute reusable pieces in the spatial diagnostics module
     ...
 
@@ -919,7 +919,7 @@ def get_zI(I, ei, vi):
 
 
 def akTest(iv, w, spDcache):
-    """
+    r"""
     Computes AK-test for the general case (end. reg. + sp. lag)
 
     Parameters

@@ -221,7 +221,7 @@ def get_A1_het(S):
 
 
 def get_A1_hom(s, scalarKP=False):
-    """
+    r"""
     Builds A1 for the spatial error GM estimation with homoscedasticity as in
     Drukker et al. [Drukker2011]_ (p. 9).
 
@@ -260,7 +260,7 @@ def get_A1_hom(s, scalarKP=False):
 
 
 def get_A2_hom(s):
-    """
+    r"""
     Builds A2 for the spatial error GM estimation with homoscedasticity as in
     Anselin (2011) :cite:`Anselin2011`
 
@@ -632,7 +632,7 @@ def inverse_prod(
 def power_expansion(
     w, data, scalar, post_multiply=False, threshold=0.0000000001, max_iterations=None
 ):
-    """
+    r"""
     Compute the inverse of a matrix using the power expansion (Leontief
     expansion).  General form is:
 

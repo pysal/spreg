@@ -1572,7 +1572,7 @@ def get_psi_sigma(w, u, lamb):
 
 
 def get_vc_het(w, wA1, E):
-    """
+    r"""
     Computes the VC matrix Psi based on lambda as in Arraiz et al :cite:`Arraiz2010`:
 
     ..math::
