@@ -2,8 +2,12 @@ import numpy as np
 import numpy.linalg as la
 import scipy.sparse as SP
 import pandas as pd
+import geopandas as gpd
 from scipy.sparse import linalg as SPla
 from itertools import compress
+import libpysal.weights as weights
+from libpysal import graph
+from scipy import sparse
 
 
 def spdot(a, b, array_out=True):
@@ -273,8 +277,8 @@ def spisfinite(a):
     return np.isfinite(a.sum())
 
 
-def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
-    """ "
+def spmultiplier(w, rho, method="simple", mtol=0.00000001):
+    """"
     Spatial Lag Multiplier Calculation
     Follows Kim, Phipps and Anselin (2003) (simple), and LeSage and Pace (2009) (full, power)
 
@@ -294,7 +298,7 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
                   pow = powers used in power approximation (otherwise 0)
 
     """
-    multipliers = {"ati": 1.0, "adi": 1.0, "aii": 1.0, "method": method, "warn": ""}
+    multipliers = {"ati": 1.0, "adi": 1.0, "aii": 1.0, "method": method, "warn": ''}
     multipliers["pow"] = 0
     multipliers["ati"] = 1.0 / (1.0 - rho)
     n = w.n
@@ -303,12 +307,12 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
     elif method == "full":
         wf = w.full()[0]
         id0 = np.identity(n)
-        irw0 = id0 - rho * wf
+        irw0 = (id0 - rho * wf)
         invirw0 = np.linalg.inv(irw0)
         adii0 = np.sum(np.diag(invirw0))
         multipliers["adi"] = adii0 / n
     elif method == "power":
-        ws3 = w.to_sparse(fmt="csr")
+        ws3 = w.to_sparse(fmt='csr')        
         rhop = rho
         ww = ws3
         pow = 1
@@ -325,18 +329,15 @@ def _spmultiplier(w, rho, method="simple", mtol=0.00000001):
         multipliers["adi"] = adi.item()
         multipliers["pow"] = pow
     else:
-        multipliers["warn"] = (
-            "Method '" + method + "' not supported for spatial impacts.\n"
-        )
-        multipliers["method"] = "simple"
+        multipliers["warn"] = "Method '"+method+"' not supported for spatial impacts.\n"
+        multipliers["method"] ='simple'
     multipliers["aii"] = multipliers["ati"] - multipliers["adi"]
-    return multipliers
+    return (multipliers)
 
-
-def _sp_effects(reg, variables, spmult, slx_lags=0, slx_vars="All"):
+def _sp_effects(reg, variables, spmult, slx_lags=0,slx_vars="All"):
     """
     Calculate spatial lag, direct and indirect effects
-
+    
     Attributes
     ----------
     reg        : regression object
@@ -352,23 +353,21 @@ def _sp_effects(reg, variables, spmult, slx_lags=0, slx_vars="All"):
     bdir       : direct effects
     bind       : indirect effects
     """
-
+    
     variables_x_index = variables.index
 
-    m1 = spmult["ati"]
+    m1 = spmult['ati']
     btot = m1 * reg.betas[variables_x_index]
-    m2 = spmult["adi"]
+    m2 = spmult['adi']
     bdir = m2 * reg.betas[variables_x_index]
 
-    # Assumes all SLX effects are indirect effects.
+    # Assumes all SLX effects are indirect effects. 
     if slx_lags > 0:
         if reg.output.regime.nunique() > 1:
-            btot_idx = pd.Series(btot.flatten(), index=variables_x_index)
-            wchunk_size = len(
-                variables.query("regime == @reg.output.regime.iloc[0]")
-            )  # Number of exogenous variables in each regime
+            btot_idx = pd.Series(btot.flatten(), index=variables_x_index)   
+            wchunk_size = len(variables.query("regime == @reg.output.regime.iloc[0]")) #Number of exogenous variables in each regime
             for i in range(slx_lags):
-                chunk_indices = variables_x_index + (i + 1) * wchunk_size
+                chunk_indices = variables_x_index + (i+1) * wchunk_size
                 bmult = m1 * reg.betas[chunk_indices]
                 btot_idx[variables_x_index] += bmult.flatten()
                 btot = btot_idx.to_numpy().reshape(btot.shape)
@@ -376,14 +375,12 @@ def _sp_effects(reg, variables, spmult, slx_lags=0, slx_vars="All"):
         else:
             variables_wx = reg.output.query("var_type == 'wx'")
             variables_wx_index = variables_wx.index
-            if hasattr(reg, "slx_vars") and isinstance(slx_vars, list):
-                flexwx_indices = list(
-                    compress(variables_x_index, slx_vars)
-                )  # indices of x variables in wx
+            if hasattr(reg, 'slx_vars') and isinstance(slx_vars,list):
+                flexwx_indices = list(compress(variables_x_index,slx_vars))   # indices of x variables in wx
             else:
-                flexwx_indices = variables_x_index  # all x variables
+                flexwx_indices = variables_x_index    # all x variables
             xind = [h - 1 for h in flexwx_indices]
-            wchunk_size = len(variables_wx_index) // slx_lags
+            wchunk_size = len(variables_wx_index)//slx_lags
             for i in range(slx_lags):
                 start_idx = i * wchunk_size
                 end_idx = start_idx + wchunk_size
@@ -393,11 +390,101 @@ def _sp_effects(reg, variables, spmult, slx_lags=0, slx_vars="All"):
 
         bind = btot - bdir
     else:
-        m3 = spmult["aii"]
+        m3 = spmult['aii']
         bind = m3 * reg.betas[variables_x_index]
 
     return btot, bdir, bind
 
+def i_multipliers(w,coef=0.0,model='lag',id=None):
+    '''
+    Creates pandas DataFrame with spatial multipliers with direct effects
+    (diagonal), effect of neighbors (row sum) and effect on neighbors
+    (column sum) for each observation
+
+    Parameters
+    ----------
+    w         : spatial weights, either sparse CSR, PySAL weights object
+                or full array
+    coef      : spatial coefficient, default is 0.0; non-zero values for
+                spatial autoregressive coefficient or parameter in nonlinear
+                SLX -- coef has no effect on slx and kernel models
+    model     : type of spatial model, default is 'lag' for spatial lag or 
+                spatial Durbin model; other options are "slx" (contiguity
+                weights without parameters), "kernel" (kernel weights),
+                "power" (nonlinear SLX power model) and "exponential" (nonlinear
+                SLX exponential model)
+    id        : pandas Series with ID variable for each observation, default is none,
+                which creates a vector with sequence numbers and assigns variable name
+                "ID"; otherwise variable name is extracted from Series columns.
+
+    '''
+    
+    if sparse.issparse(w):   # sparse kernel or dist fraction
+        n = w.shape[0]
+        edirect = np.zeros((n,1))
+        ww = w.copy()
+        if model == 'power':
+            ww = ww.power(coef)
+        elif model == 'exponential':
+
+            wdata = ww.data    # uses data attribute of CSR to apply transformation
+            wexp = np.exp(wdata * -coef)
+            ww.data = wexp
+        else:
+            raise Exception("Model not supported")
+        
+    else:     # pysal weights
+        if isinstance(w,weights.W):
+            n = w.n
+            wf = w.full()[0]
+        elif isinstance(w, graph.Graph):
+            w = w.to_W()
+            n = w.n
+            wf = w.full()[0]
+        elif type(w) == np.ndarray:
+            n = w.shape[0]  
+            wf = w
+        else:
+            raise Exception("Weights object not supported")
+        
+        edirect = np.zeros((n,1))
+
+        if model == 'slx':
+            ww = wf
+        elif model == 'kernel':
+            edirect = np.diag(wf).copy().reshape(-1,1)
+            ww = wf.copy()
+            np.fill_diagonal(ww,0)                  
+        elif model == 'lag':
+            
+            id0 = np.identity(n)
+            irw0 = (id0 - coef * wf)
+            invirw0 = np.linalg.inv(irw0)
+            edirect = np.diag(invirw0).copy().reshape(-1,1)
+            ww = invirw0.copy()
+            np.fill_diagonal(ww,0)
+        else:
+            raise Exception("Model not supported")
+            
+    eofNbrs = ww.sum(axis=1).reshape(-1,1)
+    eonNbrs = ww.sum(axis=0).reshape(-1,1) 
+
+    if (isinstance(id,pd.core.frame.DataFrame)) or (isinstance(id,gpd.geoseries.GeoSeries)):
+        pdid = id   # already a data frame
+    elif isinstance(id,np.ndarray):
+        pdid = pd.DataFrame(id,columns=["ID"])
+    elif id == None:
+        id = np.arange(n,dtype='int32').reshape(-1,1)
+        pdid = pd.DataFrame(id,columns=["ID"])
+    else:
+        raise Exception("ID format not supported")
+        
+    impacts = np.concatenate((edirect,eofNbrs,eonNbrs),axis=1)  
+    dfimpacts = pd.DataFrame(impacts,columns=["Direct","EofNbrs","EonNbrs"])
+    dfimpacts = pd.concat([pdid,dfimpacts],axis=1)
+
+    return dfimpacts
+    
 
 def _test():
     import doctest

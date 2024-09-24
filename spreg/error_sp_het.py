@@ -25,6 +25,7 @@ __all__ = ["GM_Error_Het", "GM_Endog_Error_Het", "GM_Combo_Het"]
 
 
 class BaseGM_Error_Het(RegressionPropsY):
+
     """
     GMM method for a spatial error model with heteroskedasticity (note: no
     consistency checks, diagnostics or constant added); based on
@@ -109,9 +110,8 @@ class BaseGM_Error_Het(RegressionPropsY):
      [ 0.4118  0.168 ]]
     """
 
-    def __init__(
-        self, y, x, w, max_iter=1, epsilon=0.00001, step1c=False, hard_bound=False
-    ):
+    def __init__(self, y, x, w, max_iter=1, epsilon=0.00001, step1c=False, hard_bound=False):
+
         self.step1c = step1c
         # 1a. OLS --> \tilde{betas}
         ols = OLS.BaseOLS(y=y, x=x)
@@ -153,15 +153,10 @@ class BaseGM_Error_Het(RegressionPropsY):
         self.iter_stop = UTILS.iter_msg(self.iteration, max_iter)
         if hard_bound:
             if abs(lambda3) >= 0.99:
-                raise Exception(
-                    "Spatial error parameter was outside the bounds of -0.99 and 0.99"
-                )
+                raise Exception("Spatial error parameter was outside the bounds of -0.99 and 0.99")
         else:
             if abs(lambda3) >= 0.99:
-                set_warn(
-                    self,
-                    "Spatial error parameter was outside the bounds of -0.99 and 0.99",
-                )
+                set_warn(self, "Spatial error parameter was outside the bounds of -0.99 and 0.99")
 
         sigma = get_psi_sigma(w, self.u, lambda3)
         vc3 = get_vc_het(w, wA1, sigma)
@@ -376,40 +371,33 @@ class GM_Error_Het(BaseGM_Error_Het):
         latex=False,
         hard_bound=False,
     ):
+
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(
-            name_x, x_constant
-        )  # initialize in case None, includes constant
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES (HET)"
 
-        if slx_lags > 0:
-            # lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            # x_constant = np.hstack((x_constant, lag_x))
-            #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
+        if slx_lags >0:
+            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #x_constant = np.hstack((x_constant, lag_x))
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
 
-            x_constant, name_x = USER.flex_wx(
-                w,
-                x=x_constant,
-                name_x=name_x,
-                constant=True,
-                slx_lags=slx_lags,
-                slx_vars=slx_vars,
-            )
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
 
             self.title += " WITH SLX (SLX-Error)"
 
         # OLD
-        # if slx_lags >0:
-        # lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-        # x_constant = np.hstack((x_constant, lag_x))
-        #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-        # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # no constant
-        # self.title += " WITH SLX (SLX-Error)"
+        #if slx_lags >0:
+            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #x_constant = np.hstack((x_constant, lag_x))
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # no constant
+            #self.title += " WITH SLX (SLX-Error)"
 
         BaseGM_Error_Het.__init__(
             self,
@@ -419,23 +407,25 @@ class GM_Error_Het(BaseGM_Error_Het):
             max_iter=max_iter,
             step1c=step1c,
             epsilon=epsilon,
-            hard_bound=hard_bound,
+            hard_bound = hard_bound
         )
+
 
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        #        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x = name_x  # constant already included
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
-        self.output = pd.DataFrame(self.name_x, columns=["var_names"])
-        self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
-        self.output["regime"], self.output["equation"] = (0, 0)
+        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+        self.output['var_type'] = ['x'] * (len(self.name_x)-1) + ['lambda']
+        self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 class BaseGM_Endog_Error_Het(RegressionPropsY):
+
     """
     GMM method for a spatial error model with heteroskedasticity and
     endogenous variables (note: no consistency checks, diagnostics or constant
@@ -560,6 +550,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
         inv_method="power_exp",
         hard_bound=False,
     ):
+
         self.step1c = step1c
         # 1a. reg --> \tilde{betas}
         tsls = TSLS.BaseTSLS(y=y, x=x, yend=yend, q=q)
@@ -599,11 +590,11 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             lambda2 = lambda1
 
         # Forcing the 1st step lambda to be in the range [-0.9, 0.9] to avoid perfect collinearity in step 2 in case of SLX-Error or GNS models
-        # if lambda2 > 0.9:
+        #if lambda2 > 0.9:
         #    lambda_old = 0.9
-        # elif lambda2 < -0.9:
+        #elif lambda2 < -0.9:
         #    lambda_old = -0.9
-        # else:
+        #else:
         lambda_old = lambda2
 
         self.iteration, eps = 0, 1
@@ -639,11 +630,11 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
             moments_i = UTILS._moments2eqs(wA1, w, self.u)
             lambda3 = UTILS.optim_moments(moments_i, vc2)
 
-            # if abs(lambda3) <= 0.9:
+            #if abs(lambda3) <= 0.9:
             #    pass
-            # elif lambda3 > 0.9:
+            #elif lambda3 > 0.9:
             #    lambda3 = 0.9
-            # elif lambda3 < -0.9:
+            #elif lambda3 < -0.9:
             #    lambda3 = -0.9
 
             eps = abs(lambda3 - lambda_old)
@@ -653,24 +644,14 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
         self.iter_stop = UTILS.iter_msg(self.iteration, max_iter)
         if hard_bound:
             if abs(lambda3) >= 0.99:
-                raise Exception(
-                    "Spatial error parameter was outside the bounds of -0.99 and 0.99"
-                )
+                raise Exception("Spatial error parameter was outside the bounds of -0.99 and 0.99")
             if abs(tsls_s.betas[-1]) >= 0.99:
-                raise Exception(
-                    "Spatial lag parameter was outside the bounds of -0.99 and 0.99"
-                )
+                raise Exception("Spatial lag parameter was outside the bounds of -0.99 and 0.99")
         else:
             if abs(lambda3) >= 0.99:
-                set_warn(
-                    self,
-                    "Spatial error parameter was outside the bounds of -0.99 and 0.99",
-                )
+                set_warn(self, "Spatial error parameter was outside the bounds of -0.99 and 0.99")
             if abs(tsls_s.betas[-1]) >= 0.99:
-                set_warn(
-                    self,
-                    "Spatial lag parameter was outside the bounds of -0.99 and 0.99",
-                )
+                set_warn(self, "Spatial lag parameter was outside the bounds of -0.99 and 0.99")
 
         zs = UTILS.get_spFilter(w, lambda3, self.z)
         P = get_P_hat(self, tsls.hthi, zs)
@@ -682,6 +663,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
 
 
 class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
+
     """
     GMM method for a spatial error model with heteroskedasticity and
     endogenous variables, with results and diagnostics; based on
@@ -707,7 +689,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX-Error type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
-                   to be lagged
+                   to be lagged   
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional
@@ -934,37 +916,32 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
         name_w=None,
         name_ds=None,
         latex=False,
-        hard_bound=False,
+        hard_bound=False
     ):
+
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(
-            name_x, x_constant
-        )  # initialize in case None, includes constant
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
         self.title = "GM SPATIALLY WEIGHTED TWO STAGE LEAST SQUARES (HET)"
 
-        if slx_lags > 0:
-            x_constant, name_x = USER.flex_wx(
-                w,
-                x=x_constant,
-                name_x=name_x,
-                constant=True,
-                slx_lags=slx_lags,
-                slx_vars=slx_vars,
-            )
+        if slx_lags >0:
 
-            self.title += " WITH SLX (SLX-Error)"
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                             slx_lags=slx_lags,slx_vars=slx_vars)
+
+            self.title += " WITH SLX (SLX-Error)"   
 
         # OLD
-        # if slx_lags > 0:
-        # lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-        # x_constant = np.hstack((x_constant, lag_x))
-        # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)    # no constant
-        # self.title += " WITH SLX (SLX-Error)"
+        #if slx_lags > 0:
+            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+            #x_constant = np.hstack((x_constant, lag_x))
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)    # no constant
+            #self.title += " WITH SLX (SLX-Error)"
+
 
         BaseGM_Endog_Error_Het.__init__(
             self,
@@ -981,7 +958,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
         )
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        #        self.name_x = USER.set_name_x(name_x, x_constant)
+#        self.name_x = USER.set_name_x(name_x, x_constant)
         self.name_x = name_x  # constant already included
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_z = self.name_x + self.name_yend
@@ -989,16 +966,16 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
         self.name_q = USER.set_name_q(name_q, q)
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
-        self.output = pd.DataFrame(self.name_z, columns=["var_names"])
-        self.output["var_type"] = (
-            ["x"] * len(self.name_x) + ["yend"] * len(self.name_yend) + ["lambda"]
-        )
-        self.output["regime"], self.output["equation"] = (0, 0)
+        self.output = pd.DataFrame(self.name_z,
+                                   columns=['var_names'])
+        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend) + ['lambda']
+        self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
+
     """
     GMM method for a spatial lag and error model with heteroskedasticity and
     endogenous variables (note: no consistency checks, diagnostics or constant
@@ -1153,6 +1130,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
         inv_method="power_exp",
         hard_bound=False,
     ):
+
         BaseGM_Endog_Error_Het.__init__(
             self,
             y=y,
@@ -1169,6 +1147,7 @@ class BaseGM_Combo_Het(BaseGM_Endog_Error_Het):
 
 
 class GM_Combo_Het(BaseGM_Combo_Het):
+
     """
     GMM method for a spatial lag and error model with heteroskedasticity and
     endogenous variables, with results and diagnostics; based on
@@ -1452,30 +1431,27 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         latex=False,
         hard_bound=False,
     ):
+
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(
-            name_x, x_constant
-        )  # initialize in case None, includes constant
+        name_x = USER.set_name_x(name_x, x_constant)  # initialize in case None, includes constant
         set_warn(self, warn)
 
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(
-                y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags, slx_vars
-            )
+            yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags,slx_vars)
             x_constant = np.hstack((x_constant, wx))
         else:
             yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
 
         # OLS
-        # if slx_lags == 0:
-        # yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
-        # else:
-        # yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
-        # x_constant = np.hstack((x_constant, wx))
+        #if slx_lags == 0:
+            #yend2, q2 = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q)
+        #else:
+            #yend2, q2, wx = set_endog(y, x_constant[:, 1:], w, yend, q, w_lags, lag_q, slx_lags)
+            #x_constant = np.hstack((x_constant, wx))
 
         BaseGM_Combo_Het.__init__(
             self,
@@ -1500,33 +1476,31 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         self.title = "SPATIALLY WEIGHTED 2SLS- GM-COMBO MODEL (HET)"
 
         if slx_lags > 0:  # adjust for flexwx
-            if isinstance(slx_vars, list):  # slx_vars has True,False
-                if len(slx_vars) != x.shape[1]:
+            if (isinstance(slx_vars,list)):     # slx_vars has True,False
+                if len(slx_vars) != x.shape[1] :
                     raise Exception("slx_vars incompatible with x column dimensions")
                 else:  # use slx_vars to extract proper columns
                     workname = name_x[1:]
                     kx = len(workname)
-                    vv = list(compress(workname, slx_vars))
+                    vv = list(compress(workname,slx_vars))
                     name_x += USER.set_name_spatial_lags(vv, slx_lags)
                     wkx = slx_vars.count(True)
             else:
                 kx = len(name_x) - 1
                 wkx = kx
-                name_x += USER.set_name_spatial_lags(
-                    name_x[1:], slx_lags
-                )  # exclude constant
+                name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
             self.title += " WITH SLX (GNSM)"
 
         # OLD
-        # if slx_lags > 0:
-        #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-        # name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)   # no constant
-        # self.title += " WITH SLX (GNSM)"
+        #if slx_lags > 0:
+#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)   # no constant
+            #self.title += " WITH SLX (GNSM)"
 
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_y = USER.set_name_y(name_y)
-        #        self.name_x = USER.set_name_x(name_x, x_constant)
-        self.name_x = name_x  # constant already included
+#        self.name_x = USER.set_name_x(name_x, x_constant)
+        self.name_x = name_x   # constant already included
         self.name_yend = USER.set_name_yend(name_yend, yend)
         self.name_yend.append(USER.set_name_yend_sp(self.name_y))
         self.name_z = self.name_x + self.name_yend
@@ -1536,52 +1510,39 @@ class GM_Combo_Het(BaseGM_Combo_Het):
         if slx_lags > 0:  # need to remove all but last SLX variables from name_x
             self.name_x0 = []
             self.name_x0.append(self.name_x[0])  # constant
-            if isinstance(slx_vars, list):  # boolean list passed
+            if (isinstance(slx_vars,list)):   # boolean list passed
                 # x variables that were not lagged
-                self.name_x0.extend(
-                    list(compress(self.name_x[1:], [not i for i in slx_vars]))
-                )
+                self.name_x0.extend(list(compress(self.name_x[1:],[not i for i in slx_vars])))
                 # last wkx variables
                 self.name_x0.extend(self.name_x[-wkx:])
 
+
             else:
-                okx = int(
-                    (self.k - self.yend.shape[1] - 1) / (slx_lags + 1)
-                )  # number of original exogenous vars
+                okx = int((self.k - self.yend.shape[1] - 1) / (slx_lags + 1))  # number of original exogenous vars
 
                 self.name_x0.extend(self.name_x[-okx:])
 
-            self.name_q.extend(
-                USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q)
-            )
+            self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
 
-            # var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
-            var_types = (
-                ["x"] * (kx + 1)
-                + ["wx"] * wkx * slx_lags
-                + ["yend"] * (len(self.name_yend) - 1)
-                + ["rho", "lambda"]
-            )
+            #var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
+            var_types = ['x'] * (kx + 1) + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
         else:
-            self.name_q.extend(
-                USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q)
-            )
-            var_types = (
-                ["x"] * len(self.name_x)
-                + ["yend"] * (len(self.name_yend) - 1)
-                + ["rho", "lambda"]
-            )
+            self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+            var_types = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
 
-        # self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+
+
+        #self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
         self.name_h = USER.set_name_h(self.name_x, self.name_q)
         self.name_w = USER.set_name_w(name_w, w)
-        self.output = pd.DataFrame(self.name_z, columns=["var_names"])
+        self.output = pd.DataFrame(self.name_z,
+                                   columns=['var_names'])
+        
+        self.output['var_type'] = var_types
 
-        self.output["var_type"] = var_types
+        #self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend)-1) + ['rho', 'lambda']
 
-        # self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend)-1) + ['rho', 'lambda']
-
-        self.output["regime"], self.output["equation"] = (0, 0)
+        self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _spat_pseudo_r2(self)
         self.other_top += _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
@@ -1611,7 +1572,7 @@ def get_psi_sigma(w, u, lamb):
 
 
 def get_vc_het(w, wA1, E):
-    """
+    r"""
     Computes the VC matrix Psi based on lambda as in Arraiz et al :cite:`Arraiz2010`:
 
     ..math::
@@ -1748,6 +1709,7 @@ def get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt):
 def get_vc_het_tsls(
     w, wA1, reg, lambdapar, P, zs, inv_method, filt=True, save_a1a2=False
 ):
+
     sigma = get_psi_sigma(w, reg.u, lambdapar)
     vc1 = get_vc_het(w, wA1, sigma)
     a1, a2 = get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt)
@@ -1831,9 +1793,9 @@ if __name__ == "__main__":
     import numpy as np
     import libpysal
 
-    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     y = np.array(db.by_col("HOVAL"))
-    y = np.reshape(y, (49, 1))
+    y = np.reshape(y, (49,1))
     X = []
     X.append(db.by_col("INC"))
     X = np.array(X).T
@@ -1845,23 +1807,11 @@ if __name__ == "__main__":
     q = np.array(q).T
 
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-    w.transform = "r"
+    w.transform = 'r'
     # reg = GM_Error_Het(y, X, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus', vm=True)
     # reg = GM_Endog_Error_Het(y, X, yd, q, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
     #                         name_q=['discbd'], name_ds='columbus',vm=True)
-    reg = GM_Combo_Het(
-        y,
-        X,
-        yd,
-        q,
-        w=w,
-        step1c=True,
-        name_x=["inc"],
-        name_y="hoval",
-        name_yend=["crime"],
-        name_q=["discbd"],
-        name_ds="columbus",
-        vm=True,
-    )
+    reg = GM_Combo_Het(y, X, yd, q, w=w, step1c=True, name_x=['inc'], name_y='hoval', name_yend=['crime'], name_q=['discbd'], name_ds='columbus',
+                       vm=True)
     print(reg.output)
     print(reg.summary)

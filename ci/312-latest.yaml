@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.12
   # required
-  - libpysal
+  - libpysal>=4.12.1
   - numpy>=1.3
   - pandas>=1.0
   - scipy>=0.11

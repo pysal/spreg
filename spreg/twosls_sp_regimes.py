@@ -11,22 +11,14 @@ from . import regimes as REGI
 from . import user_output as USER
 from .twosls_regimes import TSLS_Regimes, _optimal_weight
 from .twosls import BaseTSLS
-from .utils import (
-    set_endog,
-    set_endog_sparse,
-    sp_att,
-    set_warn,
-    sphstack,
-    spdot,
-    optim_k,
-)
+from .utils import set_endog, set_endog_sparse, sp_att, set_warn, sphstack, spdot, optim_k
 from .robust import hac_multi
 from .output import output, _spat_diag_out, _spat_pseudo_r2, _summary_impacts
 from .skater_reg import Skater_reg
 from .twosls_sp import BaseGM_Lag
 
-
 class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
+
     """
     Spatial two stage least squares (S2SLS) with regimes;
     :cite:`Anselin1988`
@@ -99,7 +91,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                    Include average direct impact (ADI), average indirect impact (AII),
                     and average total impact (ATI) in summary results.
                     Options are 'simple', 'full', 'power', 'all' or None.
-                    See sputils._spmultiplier for more information.
+                    See sputils.spmultiplier for more information.
     spat_diag    : boolean
                    If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)
     vm           : boolean
@@ -397,8 +389,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     the coefficient estimates by calling:
 
     >>> model.std_err
-    array([0.44682888, 0.14358192, 0.05655124, 1.06044865, 0.20184548,
-           0.06118262, 0.12387232])
+    array([0.38492902, 0.19106926, 0.06063249, 1.25607153, 0.36117334,
+           0.092293  , 0.15116983])
 
     In the example above, all coefficients but the spatial lag vary
     according to the regime. It is also possible to have the spatial lag
@@ -408,15 +400,15 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
 
     >>> model=GM_Lag_Regimes(y, x, regimes, w=w, regime_lag_sep=True, name_y=y_var, name_x=x_var, name_regimes=r_var, name_ds='NAT', name_w='NAT.shp')
     >>> print(model.output)
-        var_names coefficients   std_err    zt_stat      prob
-    0  0_CONSTANT     1.365848  0.398547   3.427066   0.00061
-    1      0_PS90     0.808757  0.113249   7.141418       0.0
-    2      0_UE90     0.569468  0.046251  12.312591       0.0
-    3    0_W_HR90    -0.434244  0.133502  -3.252724  0.001143
-    4  1_CONSTANT     7.907311  1.636019   4.833264  0.000001
-    5      1_PS90     1.274657  0.247099   5.158493       0.0
-    6      1_UE90     0.601677  0.079933   7.527245       0.0
-    7    1_W_HR90    -0.296034  0.199345  -1.485036  0.137534
+        var_names coefficients   std_err   zt_stat      prob
+    0  0_CONSTANT     1.365848  0.385177  3.546023  0.000391
+    1      0_PS90     0.808757  0.206672   3.91325  0.000091
+    2      0_UE90     0.569468  0.067703  8.411247       0.0
+    3    0_W_HR90    -0.434244  0.177208 -2.450478  0.014267
+    4  1_CONSTANT     7.907311  1.772336  4.461518  0.000008
+    5      1_PS90     1.274657  0.368306  3.460869  0.000538
+    6      1_UE90     0.601677  0.102102  5.892907       0.0
+    7    1_W_HR90    -0.296034  0.226243 -1.308474  0.190712
 
     Alternatively, we can type: 'model.summary' to see the organized results output.
     The class is flexible enough to accomodate a spatial lag model that,
@@ -449,8 +441,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     model.summary
 
     >>> model.std_err
-    array([0.49163311, 0.12237382, 0.05633464, 0.72555909, 0.17250521,
-           0.06749131, 0.27370369, 0.25106224, 0.05804213])
+    array([0.49529467, 0.18912143, 0.05157813, 0.92277557, 0.33711135,
+           0.08993181, 0.33506177, 0.36381449, 0.07209498])
     """
 
     def __init__(
@@ -464,7 +456,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         w_lags=1,
         slx_lags=0,
         lag_q=True,
-        robust="white",
+        robust='white',
         gwk=None,
         sig2n_k=False,
         spat_diag=True,
@@ -486,19 +478,17 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         latex=False,
         hard_bound=False,
     ):
+
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
         USER.check_robust(robust, gwk)
         if regime_lag_sep and not regime_err_sep:
-            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")
+            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")                
             regime_err_sep = True
         if regime_err_sep and not regime_lag_sep:
-            set_warn(
-                self,
-                "Groupwise heteroskedasticity is not currently available for this method,\n so regime_err_sep has been set to False.",
-            )
+            set_warn(self, "Groupwise heteroskedasticity is not currently available for this method,\n so regime_err_sep has been set to False.")                
             regime_err_sep = False
         if robust == "hac":
             if regime_err_sep:
@@ -507,12 +497,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                     "Error by regimes is not available for HAC estimation. The error by regimes has been disabled for this model.",
                 )
                 regime_err_sep = False
-            if spat_diag:
-                set_warn(
-                    self,
-                    "Spatial diagnostics are not available for HAC estimation. The spatial diagnostics have been disabled for this model.",
-                )
-                spat_diag = False
+        spat_diag, warn = USER.check_spat_diag(spat_diag=spat_diag, w=w, robust=robust, slx_lags=slx_lags)
+        set_warn(self, warn)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
@@ -524,33 +510,22 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.constant_regi = constant_regi
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(
-                y, x_constant, w, yend, q, w_lags, lag_q, slx_lags
-            )
+            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags)
             x_constant = np.hstack((x_constant, wx))
             name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
-            name_q.extend(
-                USER.set_name_q_sp(
-                    name_slx[-len(name_x) :], w_lags, name_q, lag_q, force_all=True
-                )
-            )
+            name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
             name_x += name_slx
-            if cols2regi == "all":
+            if cols2regi == 'all':
                 cols2regi = REGI.check_cols2regi(
-                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
-                )[0:-1]
+                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)[0:-1]
             else:
                 cols2regi = REGI.check_cols2regi(
-                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
-                )
+                    constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
         else:
-            name_q.extend(
-                USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True)
-            )
+            name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
             yend2, q2 = yend, q
             cols2regi = REGI.check_cols2regi(
-                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
-            )
+                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
         self.n = x_constant.shape[0]
         self.cols2regi = cols2regi
         self.regimes_set = REGI._get_regimes_set(regimes)
@@ -653,38 +628,25 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 self.sp_att_reg(w_i, regi_ids, yend2[:, -1].reshape(self.n, 1))
             else:
                 self.rho = self.betas[-1]
-                self.output.iat[-1, self.output.columns.get_loc("var_type")] = "rho"
+                self.output.iat[-1, self.output.columns.get_loc('var_type')] = 'rho'
                 self.predy_e, self.e_pred, warn = sp_att(
-                    w,
-                    self.y,
-                    self.predy,
-                    yend2[:, -1].reshape(self.n, 1),
-                    self.rho,
-                    hard_bound=hard_bound,
-                )
+                    w, self.y, self.predy, yend2[:, -1].reshape(self.n, 1), self.rho, hard_bound=hard_bound)
                 set_warn(self, warn)
             self.regime_lag_sep = regime_lag_sep
             self.title = "SPATIAL " + self.title
             if slx_lags > 0:
                 for m in self.regimes_set:
-                    r_output = self.output[
-                        (self.output["regime"] == str(m))
-                        & (self.output["var_type"] == "x")
-                    ]
-                    wx_index = r_output.index[
-                        -((len(r_output) - 1) // (slx_lags + 1)) * slx_lags :
-                    ]
-                    self.output.loc[wx_index, "var_type"] = "wx"
+                    r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
+                    wx_index = r_output.index[-((len(r_output)-1)//(slx_lags+1)) * slx_lags:]
+                    self.output.loc[wx_index, 'var_type'] = 'wx'
                 self.title = " SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIMES"
             self.other_top = _spat_pseudo_r2(self)
             self.slx_lags = slx_lags
             diag_out = None
             if spat_diag:
-                diag_out = _spat_diag_out(self, w, "yend")
+                diag_out = _spat_diag_out(self, w, 'yend')
             if spat_impacts:
-                self.sp_multipliers, impacts_str = _summary_impacts(
-                    self, w, spat_impacts, slx_lags, regimes=True
-                )
+                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags, regimes=True)
                 try:
                     diag_out += impacts_str
                 except TypeError:
@@ -823,9 +785,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.name_h,
         ) = ([], [], [], [], [], [])
         counter = 0
-        self.output = pd.DataFrame(
-            columns=["var_names", "var_type", "regime", "equation"]
-        )
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -842,8 +802,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 results[r].y,
                 results[r].predy,
                 results[r].yend[:, -1].reshape(results[r].n, 1),
-                results[r].rho,
-                hard_bound=hard_bound,
+                results[r].rho, hard_bound=hard_bound
             )
             set_warn(results[r], warn)
             results[r].w = w_i[r]
@@ -851,13 +810,21 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
-                r
-            ].betas
-            self.u[regi_ids[r],] = results[r].u
-            self.predy[regi_ids[r],] = results[r].predy
-            self.predy_e[regi_ids[r],] = results[r].predy_e
-            self.e_pred[regi_ids[r],] = results[r].e_pred
+            self.betas[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.predy_e[
+                regi_ids[r],
+            ] = results[r].predy_e
+            self.e_pred[
+                regi_ids[r],
+            ] = results[r].e_pred
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.name_yend += results[r].name_yend
@@ -866,38 +833,24 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.name_h += results[r].name_h
             if r == self.regimes_set[0]:
                 self.hac_var = np.zeros((self.n, results[r].h.shape[1]), float)
-            self.hac_var[regi_ids[r],] = results[r].h
+            self.hac_var[
+                regi_ids[r],
+            ] = results[r].h
             results[r].other_top = _spat_pseudo_r2(results[r])
             results[r].other_mid = ""
             if slx_lags > 0:
                 kx = (results[r].k - results[r].kstar - 1) // (slx_lags + 1)
-                var_types = (
-                    ["x"] * (kx + 1)
-                    + ["wx"] * kx * slx_lags
-                    + ["yend"] * (len(results[r].name_yend) - 1)
-                    + ["rho"]
-                )
+                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(results[r].name_yend) - 1) + ['rho']
             else:
-                var_types = (
-                    ["x"] * len(results[r].name_x)
-                    + ["yend"] * (len(results[r].name_yend) - 1)
-                    + ["rho"]
-                )
-            results[r].output = pd.DataFrame(
-                {
-                    "var_names": results[r].name_x + results[r].name_yend,
-                    "var_type": var_types,
-                    "regime": r,
-                    "equation": r,
-                }
-            )
+                var_types = ['x'] * len(results[r].name_x) + ['yend'] * (len(results[r].name_yend)-1) + ['rho']
+            results[r].output = pd.DataFrame({'var_names': results[r].name_x + results[r].name_yend,
+                                                                'var_type': var_types,
+                                                                'regime': r, 'equation': r})
             self.output = pd.concat([self.output, results[r].output], ignore_index=True)
             if spat_diag:
-                results[r].other_mid += _spat_diag_out(results[r], results[r].w, "yend")
+                results[r].other_mid += _spat_diag_out(results[r], results[r].w, 'yend')
             if spat_impacts:
-                results[r].sp_multipliers, impacts_str = _summary_impacts(
-                    results[r], results[r].w, spat_impacts, slx_lags
-                )
+                results[r].sp_multipliers, impacts_str = _summary_impacts(results[r], results[r].w, spat_impacts, slx_lags)
                 results[r].other_mid += impacts_str
             counter += 1
         self.multi = results
@@ -909,7 +862,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                 "Residuals treated as homoskedastic for the purpose of diagnostics.",
             )
         self.chow = REGI.Chow(self)
-        # if spat_diag:
+        #if spat_diag:
         #   self._get_spat_diag_props(y, x, w, yend, q, w_lags, lag_q)
         output(reg=self, vm=vm, robust=robust, other_end=False, latex=latex)
 
@@ -1019,63 +972,369 @@ def _work(
 
 
 class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
-    def __init__(self, y, x, w, n_clusters=None, quorum=-np.inf, trace=True, **kwargs):
+
+    """
+    Spatial two stage least squares (S2SLS) with endogenous regimes. 
+    Based on the function skater_reg as shown in :cite:`Anselin2021`.
+
+    Parameters
+    ----------
+    y            : numpy.ndarray or pandas.Series
+                   nx1 array for dependent variable
+    x            : numpy.ndarray or pandas object
+                   Two dimensional array with n rows and one column for each
+                   independent (exogenous) variable, excluding the constant
+    w            : pysal W object
+                   Spatial weights object (required if running spatial
+                   diagnostics)
+    n_clusters   : int
+                   Number of clusters to be used in the endogenous regimes.
+                   If None (default), the number of clusters will be chosen
+                   according to the function utils.optim_k using a method 
+                   adapted from Mojena (1977)'s Rule Two
+    quorum       : int
+                   Minimum number of observations in a cluster to be considered
+                   Must be at least larger than the number of variables in x
+                   Default value is 30 or 10*k, whichever is larger.
+    trace        : boolean
+                   Sets  whether to store intermediate results of the clustering
+                   Hard-coded to True if n_clusters is None
+    name_y       : string
+                   Name of dependent variable for use in output
+    name_x       : list of strings
+                   Names of independent variables for use in output
+    name_w       : string
+                   Name of weights matrix for use in output
+    name_gwk     : string
+                   Name of kernel weights matrix for use in output
+    name_ds      : string
+                   Name of dataset for use in output
+    name_regimes : string
+                   Name of regimes variable for use in output
+    latex        : boolean
+                   Specifies if summary is to be printed in latex format
+    **kwargs     : additional keyword arguments depending on the specific model
+
+    Attributes
+    ----------
+    output       : dataframe
+                   regression results pandas dataframe
+    summary      : string
+                   Summary of regression results and diagnostics (note: use in
+                   conjunction with the print command)
+    betas        : array
+                   kx1 array of estimated coefficients
+    u            : array
+                   nx1 array of residuals
+    e_pred       : array
+                   nx1 array of residuals (using reduced form)
+    predy        : array
+                   nx1 array of predicted y values
+    predy_e      : array
+                   nx1 array of predicted y values (using reduced form)
+    n            : integer
+                   Number of observations
+    k            : integer
+                   Number of variables for which coefficients are estimated
+                   (including the constant)
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    kstar        : integer
+                   Number of endogenous variables.
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    y            : array
+                   nx1 array for dependent variable
+    x            : array
+                   Two dimensional array with n rows and one column for each
+                   independent (exogenous) variable, including the constant
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    yend         : array
+                   Two dimensional array with n rows and one column for each
+                   endogenous variable
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    q            : array
+                   Two dimensional array with n rows and one column for each
+                   external exogenous variable used as instruments
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    z            : array
+                   nxk array of variables (combination of x and yend)
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    h            : array
+                   nxl array of instruments (combination of x and q)
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    robust       : string
+                   Adjustment for robust standard errors
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    mean_y       : float
+                   Mean of dependent variable
+    std_y        : float
+                   Standard deviation of dependent variable
+    vm           : array
+                   Variance covariance matrix (kxk)
+    pr2          : float
+                   Pseudo R squared (squared correlation between y and ypred)
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    pr2_e        : float
+                   Pseudo R squared (squared correlation between y and ypred_e
+                   (using reduced form))
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    utu          : float
+                   Sum of squared residuals
+    sig2         : float
+                   Sigma squared used in computations
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    std_err      : array
+                   1xk array of standard errors of the betas
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    z_stat       : list of tuples
+                   z statistic; each tuple contains the pair (statistic,
+                   p-value), where each is a float
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    ak_test      : tuple
+                   Anselin-Kelejian test; tuple contains the pair (statistic,
+                   p-value)
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    cfh_test     : tuple
+                   Common Factor Hypothesis test; tuple contains the pair (statistic,
+                   p-value). Only when it applies (see specific documentation).
+    name_y       : string
+                   Name of dependent variable for use in output
+    name_x       : list of strings
+                   Names of independent variables for use in output
+    name_yend    : list of strings
+                   Names of endogenous variables for use in output
+    name_z       : list of strings
+                   Names of exogenous and endogenous variables for use in
+                   output
+    name_q       : list of strings
+                   Names of external instruments
+    name_h       : list of strings
+                   Names of all instruments used in ouput
+    name_w       : string
+                   Name of weights matrix for use in output
+    name_gwk     : string
+                   Name of kernel weights matrix for use in output
+    name_ds      : string
+                   Name of dataset for use in output
+    name_regimes : string
+                   Name of regimes variable for use in output
+    title        : string
+                   Name of the regression method used
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    sig2n        : float
+                   Sigma squared (computed with n in the denominator)
+    sig2n_k      : float
+                   Sigma squared (computed with n-k in the denominator)
+    hth          : float
+                   :math:`H'H`.
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    hthi         : float
+                   :math:`(H'H)^{-1}`.
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    varb         : array
+                   :math:`(Z'H (H'H)^{-1} H'Z)^{-1}`.
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    zthhthi      : array
+                   :math:`Z'H(H'H)^{-1}`.
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    pfora1a2     : array
+                   n(zthhthi)'varb
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    sp_multipliers: dict
+                   Dictionary of spatial multipliers (if spat_impacts is not None)
+                   Only available in dictionary 'multi' when multiple regressions
+                   (see 'multi' below for details)
+    regimes      : list
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+    constant_regi: string
+                   Ignored if regimes=False. Constant option for regimes.
+                   Switcher controlling the constant term setup. It may take
+                   the following values:
+
+                   * 'one': a vector of ones is appended to x and held constant across regimes.
+
+                   * 'many': a vector of ones is appended to x and considered different per regime.
+    cols2regi    : list, 'all'
+                   Ignored if regimes=False. Argument indicating whether each
+                   column of x should be considered as different per regime
+                   or held constant across regimes (False).
+                   If a list, k booleans indicating for each variable the
+                   option (True if one per regime, False to be held constant).
+                   If 'all', all the variables vary by regime.
+    regime_lag_sep: boolean
+                    If True, the spatial parameter for spatial lag is also
+                    computed according to different regimes. If False (default),
+                    the spatial parameter is fixed accross regimes.
+    regime_err_sep: boolean
+                    If True, a separate regression is run for each regime.
+    kr           : int
+                   Number of variables/columns to be "regimized" or subject
+                   to change by regime. These will result in one parameter
+                   estimate by regime for each variable (i.e. nr parameters per
+                   variable)
+    kf           : int
+                   Number of variables/columns to be considered fixed or
+                   global across regimes and hence only obtain one parameter
+                   estimate
+    nr           : int
+                   Number of different regimes in the 'regimes' list
+    multi        : dictionary
+                   Only available when multiple regressions are estimated,
+                   i.e. when regime_err_sep=True and no variable is fixed
+                   across regimes.
+                   Contains all attributes of each individual regression
+    SSR          : list
+                   list with the total sum of squared residuals for the model 
+                   considering all regimes for each of steps of number of regimes
+                   considered, starting with the solution with 2 regimes. 
+    clusters     : int
+                   Number of clusters considered in the endogenous regimes
+    _trace       : list
+                   List of dictionaries with the clustering results for each
+                   number of clusters tested. Only available if n_clusters is
+                   None or trace=True.
+    Examples
+    --------
+    >>> import libpysal
+    >>> import numpy as np
+    >>> np.set_printoptions(legacy='1.25') #to avoid printing issues with numpy floats
+    >>> import geopandas as gpd
+    >>> from spreg import OLS_Endog_Regimes
+
+    Open data on Baltimore house sales price and characteristics in Baltimore
+    from libpysal examples using geopandas.
+
+    >>> db = gpd.read_file(libpysal.examples.get_path('baltim.shp'))
+
+    We will create a weights matrix based on contiguity.
+
+    >>> w = libpysal.weights.Queen.from_dataframe(db, use_index=True)
+    >>> w.transform = "r"
+
+    For this example, we will use the 'PRICE' column as the dependent variable and
+    the 'NROOM', 'AGE', and 'SQFT' columns as independent variables.
+    At this point, we will let the model choose the number of clusters.
+
+    >>> reg = GM_Lag_Endog_Regimes(y=db['PRICE'], x=db[['NROOM','AGE','SQFT']], w=w, name_w="baltim_q.gal")
+    
+    The function `print(reg.summary)` can be used to visualize the results of the regression.
+
+    Alternatively, we can check individual attributes:
+    >>> reg.betas
+    array([[ 6.20932938],
+           [ 4.25581944],
+           [-0.1468118 ],
+           [ 0.40893082],
+           [ 5.01866492],
+           [ 4.84994184],
+           [-0.55425337],
+           [ 1.04577632],
+           [ 0.05155043]])
+    >>> reg.SSR
+    [59784.06769835169, 56858.621800274515]
+    >>> reg.clusters
+    array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1,
+           1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0,
+           1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], dtype=int32)
+
+    We  will now set the number of clusters to 2 and run the regression again.
+
+    >>> reg = GM_Lag_Endog_Regimes(y=db['PRICE'], x=db[['NROOM','AGE','SQFT']], w=w, n_clusters=2, name_w="baltim_q.gal")
+
+    The function `print(reg.summary)` can be used to visualize the results of the regression.
+
+    Alternatively, we can check individual attributes as before:
+    >>> reg.betas
+    array([[ 6.20932938],
+           [ 4.25581944],
+           [-0.1468118 ],
+           [ 0.40893082],
+           [ 5.01866492],
+           [ 4.84994184],
+           [-0.55425337],
+           [ 1.04577632],
+           [ 0.05155043]])
+    >>> reg.SSR
+    [59784.06769835169]
+    >>> reg.clusters
+    array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1,
+           1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0,
+           1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], dtype=int32)
+
+    """
+
+
+    def __init__(
+        self, y, x, w, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None, **kwargs):
+
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True)
-
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
         # Standardize the variables
-        x_std = (x - np.mean(x, axis=0)) / np.std(x, axis=0)
+        x_std = (x_constant - np.mean(x_constant, axis=0)) / np.std(x_constant, axis=0)
 
+        if quorum < 0:
+            quorum = np.max([(x.shape[1]+1)*10, 30])
+        
         if not n_clusters:
-            if quorum < 0:
-                quorum = np.max([(x.shape[1] + 1) * 10, 30])
-            n_clusters_opt = x.shape[0] * 0.70 // quorum
+            n_clusters_opt = x_constant.shape[0]*0.70//quorum
             if n_clusters_opt < 2:
                 raise ValueError(
-                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation."
-                )
-            sk_reg_results = Skater_reg().fit(
-                n_clusters_opt,
-                w,
-                x_std,
-                {"reg": BaseGM_Lag, "y": y, "x": x, "w": w},
-                quorum=quorum,
-                trace=True,
-            )
-            n_clusters = optim_k(
-                [
-                    sk_reg_results._trace[i][1][2]
-                    for i in range(1, len(sk_reg_results._trace))
-                ]
-            )
-            self.clusters = sk_reg_results._trace[n_clusters - 1][0]
+                    "The combination of the values of `N` and `quorum` is not compatible with regimes estimation.")
+            sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x_constant,'w':w}, quorum=quorum, trace=True)
+            n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
+            self.clusters = sk_reg_results._trace[n_clusters-1][0]
         else:
             try:
                 # Call the Skater_reg method based on GM_Lag
-                sk_reg_results = Skater_reg().fit(
-                    n_clusters,
-                    w,
-                    x_std,
-                    {"reg": BaseGM_Lag, "y": y, "x": x, "w": w},
-                    quorum=quorum,
-                    trace=trace,
-                )
+                sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x_constant,'w':w}, quorum=quorum, trace=trace)
                 self.clusters = sk_reg_results.current_labels_
             except Exception as e:
                 if str(e) == "one or more input arrays have more columns than rows":
-                    raise ValueError(
-                        "One or more input ended up with more variables than observations. Please check your setting for `quorum`."
-                    )
+                    raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
                 else:
                     print("An error occurred:", e)
 
         self._trace = sk_reg_results._trace
         self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
 
-        GM_Lag_Regimes.__init__(
-            self, y, x, regimes=self.clusters, w=w, name_regimes="Skater_reg", **kwargs
-        )
+        GM_Lag_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_y=name_y, name_x=name_x, name_regimes='Skater_reg', **kwargs)
 
 
 def _test():
@@ -1127,7 +1386,7 @@ if __name__ == "__main__":
         name_ds="columbus",
         name_w="columbus.gal",
         regime_err_sep=True,
-        regime_lag_sep=True,
+        regime_lag_sep = True,
         robust="white",
     )
     print(model.output)

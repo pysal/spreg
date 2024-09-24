@@ -2,7 +2,7 @@
 Tools for different procedure estimations
 """
 
-__author__ = "Luc Anselin luc.anselin@asu.edu, \
+__author__ = "Luc Anselin lanselin@gmail.com, \
         Pedro V. Amaral pedro.amaral@asu.edu, \
         David C. Folch david.folch@asu.edu, \
         Daniel Arribas-Bel darribas@asu.edu,\
@@ -13,11 +13,15 @@ from scipy import sparse as SP
 import scipy.optimize as op
 import numpy.linalg as la
 from libpysal.weights.spatial_lag import lag_spatial
+from libpysal.cg import KDTree        # new for make_wnslx
+from scipy.sparse import coo_array,csr_array    # new for make_wnslx
 from .sputils import *
 import copy
 
 
+
 class RegressionPropsY(object):
+
     """
     Helper class that adds common regression properties to any regression
     class that inherits it.  It takes no parameters.  See BaseOLS for example
@@ -79,6 +83,7 @@ class RegressionPropsY(object):
 
 
 class RegressionPropsVM(object):
+
     """
     Helper class that adds common regression properties to any regression
     class that inherits it.  It takes no parameters.  See BaseOLS for example
@@ -106,9 +111,9 @@ class RegressionPropsVM(object):
             return self._cache["utu"]
         except AttributeError:
             self._cache = {}
-            self._cache["utu"] = np.sum(self.u**2)
+            self._cache["utu"] = np.sum(self.u ** 2)
         except KeyError:
-            self._cache["utu"] = np.sum(self.u**2)
+            self._cache["utu"] = np.sum(self.u ** 2)
         return self._cache["utu"]
 
     @utu.setter
@@ -216,7 +221,7 @@ def get_A1_het(S):
 
 
 def get_A1_hom(s, scalarKP=False):
-    """
+    r"""
     Builds A1 for the spatial error GM estimation with homoscedasticity as in
     Drukker et al. [Drukker2011]_ (p. 9).
 
@@ -255,7 +260,7 @@ def get_A1_hom(s, scalarKP=False):
 
 
 def get_A2_hom(s):
-    """
+    r"""
     Builds A2 for the spatial error GM estimation with homoscedasticity as in
     Anselin (2011) :cite:`Anselin2011`
 
@@ -320,9 +325,7 @@ def _moments2eqs(A1, s, u):
     return [G, g]
 
 
-def optim_moments(
-    moments_in, vcX=np.array([0]), all_par=False, start=None, hard_bound=False
-):
+def optim_moments(moments_in, vcX=np.array([0]), all_par=False, start=None, hard_bound=False):
     """
     Optimization of moments
     ...
@@ -344,7 +347,7 @@ def optim_moments(
     hard_bound   : boolean
                    If true, raises an exception if the estimated spatial
                    autoregressive parameter is outside the maximum/minimum bounds.
-
+                   
     Returns
     -------
     x, f, d     : tuple
@@ -391,9 +394,7 @@ def optim_moments(
 
     if hard_bound:
         if abs(lambdaX[0][0]) >= 0.99:
-            raise Exception(
-                "Spatial parameter was outside the bounds of -0.99 and 0.99"
-            )
+            raise Exception("Spatial parameter was outside the bounds of -0.99 and 0.99")
 
     if all_par:
         return lambdaX[0]
@@ -422,7 +423,7 @@ def foptim_par(par, moments):
     """
     vv = np.dot(moments[0], par)
     vv2 = moments[1] - vv
-    return sum(vv2**2)
+    return sum(vv2 ** 2)
 
 
 def get_spFilter(w, lamb, sf):
@@ -499,7 +500,6 @@ def get_lags(w, x, w_lags):
         spat_lags = sphstack(spat_lags, lag)
     return spat_lags
 
-
 def get_lags_split(w, x, max_lags, split_at):
     """
     Calculates a given order of spatial lags and all the smaller orders,
@@ -526,7 +526,7 @@ def get_lags_split(w, x, max_lags, split_at):
     rs_l = lag = lag_spatial(w, x)
     rs_h = None
     if 0 < split_at < max_lags:
-        for _ in range(split_at - 1):
+        for _ in range(split_at-1):
             lag = lag_spatial(w, lag)
             rs_l = sphstack(rs_l, lag)
 
@@ -534,12 +534,9 @@ def get_lags_split(w, x, max_lags, split_at):
             lag = lag_spatial(w, lag)
             rs_h = sphstack(rs_h, lag) if i > 0 else lag
     else:
-        raise ValueError(
-            "max_lags must be greater than split_at and split_at must be greater than 0"
-        )
+        raise ValueError("max_lags must be greater than split_at and split_at must be greater than 0")
 
     return rs_l, rs_h
-
 
 def inverse_prod(
     w,
@@ -622,13 +619,11 @@ def inverse_prod(
         except:
             matrix = la.inv(np.eye(w.shape[0]) - (scalar * w))
         if post_multiply:
-            #            inv_prod = spdot(data.T, matrix)
-            inv_prod = np.matmul(
-                data.T, matrix
-            )  # inverse matrix is dense, wrong type in spdot
+#            inv_prod = spdot(data.T, matrix)
+            inv_prod = np.matmul(data.T,matrix)   # inverse matrix is dense, wrong type in spdot
         else:
-            #            inv_prod = spdot(matrix, data)
-            inv_prod = np.matmul(matrix, data)
+#            inv_prod = spdot(matrix, data)
+            inv_prod = np.matmul(matrix,data)
     else:
         raise Exception("Invalid method selected for inversion.")
     return inv_prod
@@ -637,7 +632,7 @@ def inverse_prod(
 def power_expansion(
     w, data, scalar, post_multiply=False, threshold=0.0000000001, max_iterations=None
 ):
-    """
+    r"""
     Compute the inverse of a matrix using the power expansion (Leontief
     expansion).  General form is:
 
@@ -678,13 +673,13 @@ def power_expansion(
     return running_total
 
 
-def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="All"):
+def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
     # Create spatial lag of y
     yl = lag_spatial(w, y)
     # spatial and non-spatial instruments
     if issubclass(type(yend), np.ndarray):
         if slx_lags > 0:
-            lag_x, lag_xq = get_lags_split(w, x, slx_lags + 1, slx_lags)
+            lag_x, lag_xq = get_lags_split(w, x, slx_lags+1, slx_lags)
         else:
             lag_xq = x
         if lag_q:
@@ -696,7 +691,7 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="All"):
         yend = sphstack(yend, yl)
     elif yend == None:  # spatial instruments only
         if slx_lags > 0:
-            lag_x, lag_xq = get_lags_split(w, x, slx_lags + w_lags, slx_lags)
+            lag_x, lag_xq = get_lags_split(w, x, slx_lags+w_lags, slx_lags)
         else:
             lag_xq = get_lags(w, x, w_lags)
         q = lag_xq
@@ -706,15 +701,16 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="All"):
     if slx_lags == 0:
         return yend, q
     else:  # ajdust returned lag_x here using slx_vars
-        if isinstance(slx_vars, list):  # slx_vars has True,False
-            if len(slx_vars) != x.shape[1]:
+        if (isinstance(slx_vars,list)):     # slx_vars has True,False
+            if len(slx_vars) != x.shape[1] :
                 raise Exception("slx_vars incompatible with x column dimensions")
             else:  # use slx_vars to extract proper columns
                 vv = slx_vars * slx_lags
-                lag_x = lag_x[:, vv]
+                lag_x = lag_x[:,vv]
             return yend, q, lag_x
         else:  # slx_vars is "All"
             return yend, q, lag_x
+
 
 
 def set_endog_sparse(y, x, w, yend, q, w_lags, lag_q):
@@ -805,12 +801,11 @@ def RegressionProps_basic(
     if sig2 is not None:
         reg.sig2 = sig2
     elif sig2n_k:
-        reg.sig2 = np.sum(reg.u**2) / (reg.n - reg.k)
+        reg.sig2 = np.sum(reg.u ** 2) / (reg.n - reg.k)
     else:
-        reg.sig2 = np.sum(reg.u**2) / reg.n
+        reg.sig2 = np.sum(reg.u ** 2) / reg.n
     if vm is not None:
         reg.vm = vm
-
 
 def optim_k(trace, window_size=None):
     """
@@ -841,7 +836,7 @@ def optim_k(trace, window_size=None):
     >>> w = ps.weights.Queen.from_shapefile(ps.examples.get_path("NAT.shp"))
     >>> x_std = (x - np.mean(x,axis=0)) / np.std(x,axis=0)
     >>> reg = spreg.Skater_reg().fit(20, w, x_std, {'reg':spreg.OLS,'y':y,'x':x}, quorum=100, trace=True)
-    >>> spreg.utils.optim_k([reg._trace[i][1][2] for i in range(1, len(reg._trace))])
+    >>> spreg.optim_k([reg._trace[i][1][2] for i in range(1, len(reg._trace))])
     9
 
 
@@ -849,20 +844,104 @@ def optim_k(trace, window_size=None):
 
     N = len(trace)
     if not window_size:
-        window_size = N // 4  # Mojena suggests from 70% to 90%
-    std_dev = [np.std(trace[i : i + window_size]) for i in range(N - window_size + 1)]
-    ma = np.convolve(trace, np.ones(window_size) / window_size, mode="valid")
+        window_size = N//4 # Mojena suggests from 70% to 90%
+        if window_size < 2:
+            window_size = N
+    std_dev = [np.std(trace[i:i+window_size]) for i in range(N - window_size + 1)]
+    ma = np.convolve(trace, np.ones(window_size)/window_size, mode='valid')
     treshold = [True]
     i = 0
     while treshold[-1] and i < (N - window_size):
-        b = (6 / (window_size * (window_size * window_size - 1))) * (
-            (2 * np.sum(np.arange(1, i + 2) * trace[window_size - 1 : i + window_size]))
-            - ((window_size + 1) * np.sum(trace[window_size - 1 : i + window_size]))
-        )
-        l = (window_size - 1) * b / 2
-        treshold.append(trace[i + window_size] < ma[i] - b - l - 2.75 * std_dev[i])
+        b = (6/(window_size*(window_size*window_size-1))
+            )*((2*np.sum(np.arange(1, i+2)*trace[window_size-1:i+window_size])
+            )-((window_size+1)*np.sum(trace[window_size-1:i+window_size])))
+        l = (window_size-1)*b/2
+        treshold.append(trace[i+window_size] < ma[i] - b - l - 2.75*std_dev[i])
         i += 1
-    return i + window_size
+    return i+window_size
+
+
+def make_wnslx(coords,params,leafsize=30,distance_metric='Euclidean'):
+    '''
+    
+    Computes transformed distances as triangular kernel weights for transform = 'power', or fraction of maximum distance 
+    (bandwidth) for transform = 'exponential'. Uses libpysal.cg.KDTree. The three main characteristics of the kernel weights
+    are passed as a tuple with k (number of nearest neighbors), upper_distance_bound (variable or fixed bandwidth),
+    and transform (power or exponential).
+
+    With distance_upper_bound=np.inf, the computation is for a variable bandwidth, where the bandwidth 
+    is determined by the number of nearest neighbors, k. When a distance_upper_bound is set that is larger than the 
+    largest k-nearest neighbor distance, there is no effect. When the distance_upper_bound is less than the max 
+    k-nearest neighbor distance for a given point, then it has the effect of imposing a fixed bandwidth, and 
+    truncating the number of nearest neighbors to those within the bandwidth. As a result, the number of neighbors 
+    will be less than k.
+
+    Note that k is a binding constraint, so if imposing the bandwidth is important, k should be taken large enough.
+
+    Parameters
+    ----------
+    coords               : n by 2 numpy array of x,y coordinates
+    params               : tuple with
+       k                 : number of nearest neighbors (the diagonal is not included in k, so to obtain
+                           k real nearest neighbors KDTree query must be called with k+1
+       distance_upper_bound : bandwidth (see above for interpretation), np.inf is for no bandwidth, used by
+                           KDTree query
+       transform         : determines type of transformation, triangular kernel weights for 'power',
+                           fractional distance for 'exponential' (exponential)
+    leafsize             : argument to construct KDTree, default is 30 (from sklearn)
+    distance_metric      : type of distance, default is "Euclidean", other option is "Arc" for arc-distance, to be used with long,lat
+                           (note: long should be x and lat is y), both are supported by libpysal.cg.KDTree, but not
+                           by its scipy and sklearn counterparts
+
+
+    Returns
+    -------
+    spdis                : transformed distance matrix as CSR sparse array
+
+    '''
+    k = params[0]
+    distance_upper_bound = params[1]
+    transform = params[2]
+    kdt = KDTree(coords,leafsize=leafsize,distance_metric=distance_metric)
+    dis,nbrs = kdt.query(coords,k=k+1,distance_upper_bound=distance_upper_bound) 
+    # get rid of diagonals
+    dis = dis[:,1:]
+    nbrs = nbrs[:,1:]
+    n = dis.shape[0]
+
+    # maximum distance in each row
+    if (np.isinf(distance_upper_bound)): # no fixed bandwidth
+        mxrow = dis[:,-1].reshape(-1,1)
+    else:
+        dis = np.nan_to_num(dis,copy=True,posinf=0)   # turn inf to zero
+        mxrow = np.amax(dis,axis=1).reshape(-1,1)
+
+    # rescaled distance
+    fdis = dis / mxrow
+
+    if transform.lower() == 'power':   # triangular kernel weights
+        fdis = -fdis + 1.0
+    elif transform.lower() == 'exponential':   # distance fraction
+        fdis = fdis
+    else:
+        raise Exception("Method not supported")
+
+    # turn into COO sparse format and then into CSR
+    kk = fdis.shape[1]
+    rowids = np.repeat(np.arange(n),kk)
+    if (np.isinf(distance_upper_bound)):
+        colids = nbrs.flatten()
+        fdis = fdis.flatten()
+    else: # neighbors outside bandwidth have ID n
+        pickgd = (nbrs != n)
+        rowids = rowids[pickgd.flatten()]
+        colids = nbrs[pickgd].flatten()
+        fdis = fdis[pickgd].flatten()
+    
+    spdis = coo_array((fdis,(rowids,colids)))
+    spdis = spdis.tocsr(copy=True)
+    
+    return spdis
 
 
 def _test():

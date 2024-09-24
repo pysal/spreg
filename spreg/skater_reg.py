@@ -308,8 +308,7 @@ class Skater_reg(object):
                     print("cut made {}...".format(best_deletion))
                 if best_deletion.score > prev_score:
                     raise ValueError(
-                        (
-                            "The score increased with the number of clusters. "
+                        ("The score increased with the number of clusters. "
                             "Please check your data.\nquorum: {}; n_clusters: {}"
                         ).format(quorum, n_clusters)
                     )
@@ -378,10 +377,7 @@ class Skater_reg(object):
             }
             trees_scores = {}
 
-            if (
-                data_reg["reg"].__name__ == "GM_Lag"
-                or data_reg["reg"].__name__ == "BaseGM_Lag"
-            ):
+            if data_reg["reg"].__name__ == "GM_Lag" or data_reg["reg"].__name__ == "BaseGM_Lag":
                 try:
                     x = np.hstack((np.ones((data_reg["x"].shape[0], 1)), data_reg["x"]))
                     reg = TSLS_Regimes(
@@ -389,8 +385,7 @@ class Skater_reg(object):
                         x=x,
                         yend=data_reg["yend"],
                         q=data_reg["q"],
-                        regimes=all_labels,
-                    )
+                        regimes=all_labels,)
                 except:
                     x = _const_x(data_reg["x"])
                     reg = TSLS_Regimes(
@@ -398,10 +393,10 @@ class Skater_reg(object):
                         x=x,
                         yend=data_reg["yend"],
                         q=data_reg["q"],
-                        regimes=all_labels,
-                    )
+                        regimes=all_labels,)
                 score = np.dot(reg.u.T, reg.u)[0][0]
             else:
+
                 for l in set_labels:
                     x = data_reg["x"][all_labels == l]
                     if np.linalg.matrix_rank(x) < x.shape[1]:
@@ -428,18 +423,12 @@ class Skater_reg(object):
                         try:
                             x = np.hstack((np.ones((x.shape[0], 1)), x))
                             reg = data_reg["reg"](
-                                y=data_reg["y"][all_labels == l],
-                                x=x,
-                                w=w_regi_i,
-                                **kargs,
+                                y=data_reg["y"][all_labels == l], x=x, w=w_regi_i, **kargs
                             )
                         except np.linalg.LinAlgError:
                             x = _const_x(x)
                             reg = data_reg["reg"](
-                                y=data_reg["y"][all_labels == l],
-                                x=x,
-                                w=w_regi_i,
-                                **kargs,
+                                y=data_reg["y"][all_labels == l], x=x, w=w_regi_i, **kargs
                             )
                     trees_scores[l] = np.dot(reg.u.T, reg.u)[0][0]
                 score = sum(trees_scores.values())
@@ -513,7 +502,7 @@ class Skater_reg(object):
                         data_reg["y"][all_labels == l], x, **kargs
                     ).fit()
 
-                trees_scores[l] = np.sum(reg.resid**2)
+                trees_scores[l] = np.sum(reg.resid ** 2)
             score = sum(trees_scores.values())
         else:
             part_scores, score, trees_scores = self._data_reg_none(
@@ -535,10 +524,10 @@ class Skater_reg(object):
         return labels, subtree_quorums
 
     def _data_reg_none(self, data, all_labels, l, set_labels):
-        assert data.shape[0] == len(all_labels), (
-            "Length of label array ({}) does not match " "length of data ({})! ".format(
-                all_labels.shape[0], data.shape[0]
-            )
+        assert data.shape[0] == len(
+            all_labels
+        ), "Length of label array ({}) does not match " "length of data ({})! ".format(
+            all_labels.shape[0], data.shape[0]
         )
         part_scores = [
             self.reduction(
@@ -556,15 +545,8 @@ class Skater_reg(object):
 
     def _prep_lag(self, data_reg):
         # if the model is a spatial lag, add the lagged dependent variable to the model
-        data_reg["yend"], data_reg["q"] = set_endog(
-            data_reg["y"],
-            data_reg["x"][:, 1:],
-            data_reg["w"],
-            yend=None,
-            q=None,
-            w_lags=1,
-            lag_q=True,
-        )
+        data_reg['yend'], data_reg['q'] = set_endog(data_reg["y"], data_reg["x"][:, 1:], data_reg["w"], yend=None,
+            q=None, w_lags=1, lag_q=True)
         return data_reg
 
     def find_cut(
@@ -636,10 +618,7 @@ class Skater_reg(object):
         best_d_score = -np.inf
 
         try:
-            if (
-                data_reg["reg"].__name__ == "GM_Lag"
-                or data_reg["reg"].__name__ == "BaseGM_Lag"
-            ):
+            if data_reg["reg"].__name__ == "GM_Lag" or data_reg["reg"].__name__ == "BaseGM_Lag":
                 data_reg = self._prep_lag(data_reg)
         except:
             pass
@@ -696,9 +675,9 @@ class Skater_reg(object):
                     best_d_score = d_score
                     try:
                         for i in set(current_labels):
-                            best_scores[local_labels[current_list.index(i)]] = (
-                                trees_scores[i]
-                            )
+                            best_scores[
+                                local_labels[current_list.index(i)]
+                            ] = trees_scores[i]
                         for i in new_trees_scores:
                             best_scores[i] = new_trees_scores[i]
                     except:

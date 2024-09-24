@@ -1,7 +1,6 @@
 """
 Spatial diagnostics module
 """
-
 __author__ = "Luc Anselin lanselin@gmail.com, Daniel Arribas-Bel darribas@asu.edu, Pedro Amaral pedrovma@gmail.com"
 
 from .utils import spdot
@@ -163,20 +162,10 @@ class LMtests:
     def __init__(self, ols, w, tests=["all"]):
         cache = spDcache(ols, w)
         if tests == ["all"]:
-            tests = [
-                "lme",
-                "lml",
-                "rlme",
-                "rlml",
-                "sarma",
-                "lmwx",
-                "lmspdurbin",
-                "rlmwx",
-                "rlmdurlag",
-                "lmslxerr",
-            ]  # added back in for access
+            tests = ["lme", "lml", "rlme", "rlml", "sarma", "lmwx", "lmspdurbin", "rlmwx",
+                "rlmdurlag", "lmslxerr"]    # added back in for access
         if any(test in ["lme", "lmslxerr"] for test in tests):
-            # if "lme" in tests:
+        #if "lme" in tests:
             self.lme = lmErr(ols, w, cache)
         if any(test in ["lml", "rlmwx"] for test in tests):
             self.lml = lmLag(ols, w, cache)
@@ -186,8 +175,8 @@ class LMtests:
             self.rlml = rlmLag(ols, w, cache)
         if "sarma" in tests:
             self.sarma = lmSarma(ols, w, cache)
-        # if any(test in ["lmwx", "rlmdurlag", "lmslxerr"] for test in tests):
-        if any(test in ["lmwx", "rlmdurlag", "lmslxerr"] for test in tests):
+        #if any(test in ["lmwx", "rlmdurlag", "lmslxerr"] for test in tests):
+        if any(test in ["lmwx", "rlmdurlag","lmslxerr"] for test in tests):
             self.lmwx = lm_wx(ols, w)
         if any(test in ["lmspdurbin", "rlmdurlag", "rlmwx"] for test in tests):
             self.lmspdurbin = lm_spdurbin(ols, w)
@@ -195,9 +184,8 @@ class LMtests:
             self.rlmwx = rlm_wx(ols, self.lmspdurbin, self.lml)
         if "rlmdurlag" in tests:
             self.rlmdurlag = rlm_durlag(self.lmspdurbin, self.lmwx)
-        if "lmslxerr" in tests:  # currently removed - LA added back in for access
+        if "lmslxerr" in tests: #currently removed - LA added back in for access
             self.lmslxerr = lm_slxerr(ols, self.lme, self.lmwx)
-
 
 class MoranRes:
     """
@@ -300,7 +288,7 @@ class MoranRes:
 
 
 class AKtest:
-    """
+    r"""
     Moran's I test of spatial autocorrelation for IV estimation.
     Implemented following the original reference :cite:`Anselin1997`
 
@@ -453,7 +441,7 @@ class AKtest:
 
 
 class spDcache:
-    """
+    r"""
     Helper class to compute reusable pieces in the spatial diagnostics module
     ...
 
@@ -576,7 +564,7 @@ def lmErr(reg, w, spDcache):
                   Pair of statistic and p-value for the LM error test.
 
     """
-    lm = spDcache.utwuDs**2 / spDcache.t
+    lm = spDcache.utwuDs ** 2 / spDcache.t
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -601,7 +589,7 @@ def lmLag(ols, w, spDcache):
                   Pair of statistic and p-value for the LM lag test.
 
     """
-    lm = spDcache.utwyDs**2 / (ols.n * spDcache.j)
+    lm = spDcache.utwyDs ** 2 / (ols.n * spDcache.j)
     pval = chisqprob(lm, 1)
     return (lm[0][0], pval[0][0])
 
@@ -684,11 +672,10 @@ def lmSarma(ols, w, spDcache):
     """
 
     first = (spDcache.utwyDs - spDcache.utwuDs) ** 2 / (w.n * spDcache.j - spDcache.t)
-    secnd = spDcache.utwuDs**2 / spDcache.t
+    secnd = spDcache.utwuDs ** 2 / spDcache.t
     lm = first + secnd
     pval = chisqprob(lm, 2)
     return (lm[0][0], pval[0][0])
-
 
 def lm_wx(reg, w):
     """
@@ -711,7 +698,7 @@ def lm_wx(reg, w):
     # preliminaries
     # set up X1 (constant) and X (no constant) as x1 and xx
     x1 = reg.x
-    xx = x1[:, 1:]
+    xx = x1[:,1:]
     # WX
     wx = w.sparse * xx
     # end of preliminaries
@@ -728,11 +715,10 @@ def lm_wx(reg, w):
     rsg1 = (xpwpu.T @ xqxi) @ xpwpu
     rsgam = rsg1[0][0] / reg.sig2n
     pval = chisqprob(rsgam, (reg.k - 1))
-    rsgamma = (rsgam, pval)
-    return rsgamma
+    rsgamma = (rsgam,pval)
+    return(rsgamma)
 
-
-def lm_spdurbin(reg, w):
+def lm_spdurbin(reg,w):
     """
     Joint test for SDM. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
 
@@ -753,7 +739,7 @@ def lm_spdurbin(reg, w):
     # preliminaries
     # set up X1 (constant) and X (no constant) as x1 and xx
     x1 = reg.x
-    xx = x1[:, 1:]
+    xx = x1[:,1:]
     k = x1.shape[1]
     # WX
     wx = w.sparse * xx
@@ -771,23 +757,21 @@ def lm_spdurbin(reg, w):
     pp = w.trcWtW_WW
     # end of preliminaries
     # J_11: block matrix with X1'X1 and n/2sig2n
-    jj1a = np.hstack((reg.xtx, np.zeros((k, 1))))
-    jj1b = np.hstack(
-        (np.zeros((1, k)), np.array([reg.n / (2.0 * reg.sig2n)]).reshape(1, 1))
-    )
-    jj11 = np.vstack((jj1a, jj1b))
+    jj1a = np.hstack((reg.xtx,np.zeros((k,1))))
+    jj1b = np.hstack((np.zeros((1,k)),np.array([reg.n/(2.0*reg.sig2n)]).reshape(1,1)))
+    jj11 = np.vstack((jj1a,jj1b))
     # J_12: matrix with k-1 rows X1'WX1b and X1'WX, and 1 row of zeros
     jj12a = np.hstack((x1.T @ wxb, x1.T @ wx))
-    jj12 = np.vstack((jj12a, np.zeros((1, k))))
+    jj12 = np.vstack((jj12a,np.zeros((1,k))))
     # J_22 matrix with diagonal elements b'X1'W'WX1b + T.sig2n and X'W'WX
     # and off-diagonal element b'X1'W'WX
     jj22a = wxb.T @ wxb + pp * reg.sig2n
-    jj22a = jj22a.reshape(1, 1)
-    wxbtwx = (wxb.T @ wx).reshape(1, k - 1)
-    jj22b = np.hstack((jj22a, wxbtwx))
+    jj22a = jj22a.reshape(1,1)
+    wxbtwx = (wxb.T @ wx).reshape(1,k-1)
+    jj22b = np.hstack((jj22a,wxbtwx))
     wxtwx = wx.T @ wx
-    jj22c = np.hstack((wxbtwx.T, wxtwx))
-    jj22 = np.vstack((jj22b, jj22c))
+    jj22c = np.hstack((wxbtwx.T,wxtwx))
+    jj22 = np.vstack((jj22b,jj22c))
     # J^22 (the inverse) from J^22 = (J_22 - J_21.J_11^-1.J_12)^-1
     jj11i = la.inv(jj11)
     j121121 = (jj12.T @ jj11i) @ jj12
@@ -796,15 +780,14 @@ def lm_spdurbin(reg, w):
     # rescale by sig2n
     jj22i = jj22i * reg.sig2n
     # statistic
-    dd = np.vstack((drho, dgam))
+    dd = np.vstack((drho,dgam))
     rsjoint = (dd.T @ jj22i) @ dd
     rsjoint = rsjoint[0][0]
     pval = chisqprob(rsjoint, k)
     rsrhogam = (rsjoint, pval)
-    return rsrhogam
+    return(rsrhogam)
 
-
-def rlm_wx(reg, lmspdurbin, lmlag):
+def rlm_wx(reg,lmspdurbin,lmlag):
     """
     Robust LM WX test. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
 
@@ -825,12 +808,11 @@ def rlm_wx(reg, lmspdurbin, lmlag):
     """
     # robust gamma = rsjoint - rsrho
     rsgams = lmspdurbin[0] - lmlag[0]
-    pval = chisqprob(rsgams, (reg.k - 1))
+    pval = chisqprob(rsgams,(reg.k - 1))
     rsgamstar = (rsgams, pval)
-    return rsgamstar
+    return(rsgamstar)
 
-
-def rlm_durlag(lmspdurbin, lmwx):
+def rlm_durlag(lmspdurbin,lmwx):
     """
     Robust LM Lag - SDM. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
 
@@ -849,12 +831,11 @@ def rlm_durlag(lmspdurbin, lmwx):
 
     # robust rho = rsjoint - rsgam
     rsrhos = lmspdurbin[0] - lmwx[0]
-    pval = chisqprob(rsrhos, 1)
+    pval = chisqprob(rsrhos,1)
     rsrhostar = (rsrhos, pval)
-    return rsrhostar
+    return(rsrhostar)
 
-
-def lm_slxerr(reg, lmerr, lmwx):
+def lm_slxerr(reg,lmerr,lmwx):
     """
     Joint test for Error and WX. Implemented as presented in Koley & Bera (2024) :cite:`KoleyBera2024`.
 
@@ -873,10 +854,9 @@ def lm_slxerr(reg, lmerr, lmwx):
                   Pair of statistic and p-value for the Joint test for Error and WX.
     """
     rslamgam = lmerr[0] + lmwx[0]
-    pval = chisqprob(rslamgam, reg.k)
-    rslamgamma = (rslamgam, pval)
-    return rslamgamma
-
+    pval = chisqprob(rslamgam,reg.k)
+    rslamgamma = (rslamgam,pval)
+    return(rslamgamma)
 
 def get_mI(reg, w, spDcache):
     """
@@ -912,8 +892,8 @@ def get_vI(ols, w, ei, spDcache):
 
     B = spDcache.AB[1]
     trB = np.sum(B.diagonal()) * 4.0
-    vi = (w.n**2 / (w.s0**2 * (w.n - ols.k) * (w.n - ols.k + 2.0))) * (
-        w.s1 + 2.0 * trA2 - trB - ((2.0 * (spDcache.trA**2)) / (w.n - ols.k))
+    vi = (w.n ** 2 / (w.s0 ** 2 * (w.n - ols.k) * (w.n - ols.k + 2.0))) * (
+            w.s1 + 2.0 * trA2 - trB - ((2.0 * (spDcache.trA ** 2)) / (w.n - ols.k))
     )
     return vi
 
@@ -931,13 +911,15 @@ def get_zI(I, ei, vi):
 
     Returns two-sided p-values as provided in the GeoDa family
     """
-    z = abs((I - ei) / np.sqrt(vi))
-    pval = norm.sf(z) * 2.0
+    #z = abs((I - ei) / np.sqrt(vi))
+    z = (I - ei) / np.sqrt(vi)
+    #pval = norm.sf(z) * 2.0
+    pval = norm.sf(abs(z)) * 2.0
     return (z, pval)
 
 
 def akTest(iv, w, spDcache):
-    """
+    r"""
     Computes AK-test for the general case (end. reg. + sp. lag)
 
     Parameters
@@ -967,7 +949,7 @@ def akTest(iv, w, spDcache):
     a = np.dot(etwz, np.dot(iv.varb, etwz.T))
     s12 = (w.s0 / w.n) ** 2
     phi2 = (spDcache.t + (4.0 / iv.sig2n) * a) / (s12 * w.n)
-    ak = w.n * mi**2 / phi2
+    ak = w.n * mi ** 2 / phi2
     pval = chisqprob(ak, 1)
     return (mi, ak[0][0], pval[0][0])
 
