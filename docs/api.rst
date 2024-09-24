@@ -7,6 +7,15 @@ API reference
 
 .. _models_api:
 
+Classic Models
+--------------
+
+.. autosummary::
+   :toctree: generated/
+    
+    spreg.OLS
+    spreg.TSLS
+
 Spatial Regression Models
 -------------------------
 
@@ -15,11 +24,10 @@ These are the standard spatial regression models supported by the `spreg` packag
 .. autosummary::
    :toctree: generated/
     
-    spreg.OLS
-    spreg.ML_Lag
-    spreg.ML_Error
     spreg.GM_Lag
+    spreg.ML_Lag
     spreg.GMM_Error
+    spreg.ML_Error
     spreg.GM_Error
     spreg.GM_Error_Het
     spreg.GM_Error_Hom
@@ -29,12 +37,11 @@ These are the standard spatial regression models supported by the `spreg` packag
     spreg.GM_Endog_Error
     spreg.GM_Endog_Error_Het
     spreg.GM_Endog_Error_Hom
-    spreg.TSLS
-    spreg.ThreeSLS
     spreg.NSLX
 
 Discrete Choice Models
 ----------------------
+
 .. autosummary::
     :toctree: generated/
 
@@ -62,6 +69,8 @@ Regimes models are variants of spatial regression models which allow for structu
     spreg.GM_Endog_Error_Regimes
     spreg.GM_Endog_Error_Hom_Regimes
     spreg.GM_Endog_Error_Het_Regimes
+    spreg.OLS_Endog_Regimes
+    spreg.GM_Lag_Endog_Regimes
     spreg.Skater_reg
 
 Seemingly-Unrelated Regressions
