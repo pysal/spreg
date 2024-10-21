@@ -487,7 +487,7 @@ def dgp_sperror(u, xb, w, lam=0.5, model="sar", imethod="power_exp"):
 
 def dgp_slxerror(u, xb, wxg, w, lam=0.5, model="sar", imethod="power_exp"):
     """
-    dgp_sperror: generates y for SLX spatial error model with xb, wxg, weights,
+    dgp_slxrror: generates y for SLX spatial error model with xb, wxg, weights,
                   spatial parameter lam, model type (sar or ma),
                   error term, method for inverse transform
 
