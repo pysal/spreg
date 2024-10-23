@@ -26,7 +26,7 @@ from .panel_re import *
 from .probit import *
 from .regimes import *
 from .skater_reg import *
-#from .spsearch import *
+from .spsearch import *
 from .sp_panels import *
 from .sputils import *
 from .sur import *
