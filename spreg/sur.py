@@ -8,13 +8,12 @@ __author__ = "Luc Anselin lanselin@gmail.com,    \
 
 import numpy as np
 import numpy.linalg as la
-from scipy import stats
 from . import summary_output as SUMMARY
 from . import user_output as USER
 from . import regimes as REGI
 from .sur_utils import (
-    sur_dict2mat,
-    sur_mat2dict,
+    sur_dictxy,
+    sur_dictZ,
     sur_corr,
     sur_crossprod,
     sur_est,
@@ -188,11 +187,15 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    bigy       : dictionary
-                 with vector for dependent variable by equation
-    bigX       : dictionary
-                 with matrix of explanatory variables by equation
-                 (note, already includes constant term)
+    bigy       : list or dictionary
+                 list with the name of the dependent variable for each equation
+                 or dictionary with vectors for dependent variable by equation                  
+    bigX       : list or dictionary
+                 list of lists the name of the explanatory variables for each equation
+                 or dictionary with matrix of explanatory variables by equation
+                 (note, already includes constant term)  
+    db         : Pandas DataFrame
+                 Optional. Required in case bigy and bigX are lists with names of variables
     w          : spatial weights object
                  default = None
     regimes    : list
@@ -300,19 +303,14 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
     Examples
     --------
 
-    First import libpysal to load the spatial analysis tools.
-
     >>> import libpysal
-    >>> from libpysal.examples import load_example
-    >>> from libpysal.weights import Queen
-    >>> from spreg import ML_Error_Regimes, sur_dictxy
+    >>> import geopandas as gpd
+    >>> from spreg import SUR
 
-    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
-    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
-    also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) from libpysal examples using geopandas.
 
-    >>> nat = load_example('Natregimes')
-    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
+    >>> nat = libpysal.examples.load_example('Natregimes')
+    >>> df = gpd.read_file(nat.get_path("natregimes.shp"))
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. In this example, equation 1
@@ -323,26 +321,16 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
     >>> y_var = ['HR80','HR90']
     >>> x_var = [['PS80','UE80'],['PS90','UE90']]
 
-    Although not required for this method, we can load a weights matrix file
+    Although not required for this method, we can create a weights matrix 
     to allow for spatial diagnostics.
 
-    >>> w = libpysal.weights.Queen.from_shapefile(nat.get_path("natregimes.shp"))
+    >>> w = libpysal.weights.Queen.from_dataframe(df)
     >>> w.transform='r'
-
-    The SUR method requires data to be provided as dictionaries. PySAL
-    provides the tool sur_dictxy to create these dictionaries from the
-    list of variables. The line below will create four dictionaries
-    containing respectively the dependent variables (bigy), the regressors
-    (bigX), the dependent variables' names (bigyvars) and regressors' names
-    (bigXvars). All these will be created from th database (db) and lists
-    of variables (y_var and x_var) created above.
-
-    >>> bigy,bigX,bigyvars,bigXvars = sur_dictxy(db,y_var,x_var)
 
     We can now run the regression and then have a summary of the output by typing:
     'print(reg.summary)'
 
-    >>> reg = SUR(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,spat_diag=True,name_ds="nat")
+    >>> reg = SUR(y_var,x_var,df=df,w=w,spat_diag=True,name_ds="nat")
     >>> print(reg.summary)
     REGRESSION
     ----------
@@ -410,6 +398,7 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         self,
         bigy,
         bigX,
+        df=None,
         w=None,
         regimes=None,
         nonspat_diag=True,
@@ -425,6 +414,19 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
+
+        if isinstance(bigy, list) or isinstance(bigX, list):
+            if isinstance(bigy, list) and isinstance(bigX, list):            
+                if len(bigy) == len(bigX):
+                    if df is not None:
+                        bigy,bigX,name_bigy,name_bigX = sur_dictxy(df,bigy,bigX)
+                    else:
+                        raise Exception("Error: df argument is required if bigy and bigX are lists")
+                else:
+                    raise Exception("Error: bigy and bigX must have the same number of elements")
+            else:
+                raise Exception("Error: bigy and bigX must be both lists or both dictionaries")
+
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_w = USER.set_name_w(name_w, w)
         self.n_eq = len(bigy.keys())
@@ -440,7 +442,8 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
         if name_bigX is None:
             name_bigX = {}
             for r in range(self.n_eq):
-                k = self.bigX[r].shape[1] - 1
+                #k = self.bigX[r].shape[1] - 1
+                k = bigX[r].shape[1] - 1
                 name_x = ["var_" + str(i + 1) + "_" + str(r) for i in range(k)]
                 ct = "Constant_" + str(r)  # NOTE: constant always included in X
                 name_x.insert(0, ct)
@@ -566,7 +569,7 @@ class BaseThreeSLS:
     bigyend    : dictionary
                  with matrix of endogenous variables by equation
     bigq       : dictionary
-                 with matrix of instruments by equation
+                 with matrix of instruments by equation    
 
     Attributes
     ----------
@@ -642,16 +645,21 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
 
     Parameters
     ----------
-
-    bigy       : dictionary
-                 with vector for dependent variable by equation
-    bigX       : dictionary
-                 with matrix of explanatory variables by equation
-                 (note, already includes constant term)
-    bigyend    : dictionary
-                 with matrix of endogenous variables by equation
-    bigq       : dictionary
-                 with matrix of instruments by equation
+    bigy       : list or dictionary
+                 list with the names of the dependent variable for each equation
+                 or dictionary with vectors for dependent variable by equation                  
+    bigX       : list or dictionary
+                 list of lists the names of the explanatory variables for each equation
+                 or dictionary with matrix of explanatory variables by equation
+                 (note, already includes constant term)                 
+    bigyend    : list or dictionary
+                 list of lists the names of the endogenous variables for each equation
+                 or dictionary with matrix of endogenous variables by equation
+    bigq       : list or dictionary
+                 list of lists the names of the instrument variables for each equation
+                 or dictionary with matrix of instruments by equation
+    db         : Pandas DataFrame
+                 Optional. Required in case bigy and bigX are lists with names of variables
     regimes    : list
                  List of n values with the mapping of each
                  observation to a regime. Assumed to be aligned with 'x'.
@@ -736,20 +744,17 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
 
     Examples
     --------
-    First import libpysal to load the spatial analysis tools.
-
+    
     >>> import libpysal
-    >>> from libpysal.examples import load_example
-    >>> from libpysal.weights import Queen
-    >>> import spreg
+    >>> import geopandas as gpd
+    >>> from spreg import ThreeSLS
+    >>> import numpy as np
     >>> np.set_printoptions(suppress=True) #prevent scientific format
 
-    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
-    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
-    also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) from libpysal examples using geopandas.
 
-    >>> nat = load_example('Natregimes')
-    >>> db = libpysal.io.open(nat.get_path("natregimes.dbf"),'r')
+    >>> nat = libpysal.examples.load_example('Natregimes')
+    >>> df = gpd.read_file(nat.get_path("natregimes.shp"))
 
     The specification of the model to be estimated can be provided as lists.
     Each equation should be listed separately. In this example, equation 1
@@ -764,23 +769,13 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
     >>> yend_var = [['RD80'],['RD90']]
     >>> q_var = [['FP79'],['FP89']]
 
-    The SUR method requires data to be provided as dictionaries. PySAL
-    provides two tools to create these dictionaries from the list of variables:
-    sur_dictxy and sur_dictZ. The tool sur_dictxy can be used to create the
-    dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
-    additional instruments (q).
-
-    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
-    >>> bigyend,bigyendvars = spreg.sur_dictZ(db,yend_var)
-    >>> bigq,bigqvars = spreg.sur_dictZ(db,q_var)
-
     We can now run the regression and then have a summary of the output by typing:
     print(reg.summary)
 
     Alternatively, we can just check the betas and standard errors, asymptotic t
     and p-value of the parameters:
 
-    >>> reg = spreg.ThreeSLS(bigy,bigX,bigyend,bigq,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT")
+    >>> reg = ThreeSLS(y_var,x_var,yend_var,q_var,df=df,name_ds="NAT")
     >>> reg.b3SLS
     {0: array([[6.92426353],
            [1.42921826],
@@ -807,6 +802,7 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
         bigX,
         bigyend,
         bigq,
+        df=None,
         regimes=None,
         nonspat_diag=True,
         name_bigy=None,
@@ -816,6 +812,21 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
         name_ds=None,
         name_regimes=None,
     ):
+
+        if isinstance(bigy, list) or isinstance(bigX, list) or isinstance(bigyend, list) or isinstance(bigq, list):
+            if isinstance(bigy, list) and isinstance(bigX, list) and isinstance(bigyend, list) and isinstance(bigq, list):        
+                if len(bigy) == len(bigX) == len(bigyend) == len(bigq):
+                    if df is not None:
+                        bigy,bigX,name_bigy,name_bigX = sur_dictxy(df,bigy,bigX)
+                        bigyend,name_bigyend = sur_dictZ(df,bigyend)
+                        bigq,name_bigq = sur_dictZ(df,bigq)                        
+                    else:
+                        raise Exception("Error: df argument is required if bigy, bigX, bigyend and bigq are lists")
+                else:
+                    raise Exception("Error: bigy, bigX, bigyend and bigq must have the same number of elements")
+            else:
+                raise Exception("Error: bigy, bigX, bigyend and bigq must be all lists or all dictionaries")
+
         self.name_ds = USER.set_name_ds(name_ds)
         self.n_eq = len(bigy.keys())
 

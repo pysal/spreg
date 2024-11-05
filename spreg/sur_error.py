@@ -166,13 +166,16 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    bigy         : dictionary
-                   with vectors of dependent variable, one for
-                   each equation
-    bigX         : dictionary
-                   with matrices of explanatory variables,
-                   one for each equation
+    bigy         : list or dictionary
+                   list with the name of the dependent variable for each equation
+                   or dictionary with vectors for dependent variable by equation                  
+    bigX         : list or dictionary
+                   list of lists the name of the explanatory variables for each equation
+                   or dictionary with matrix of explanatory variables by equation
+                   (note, already includes constant term)  
     w            : spatial weights object
+    db           : Pandas DataFrame
+                   Optional. Required in case bigy and bigX are lists with names of variables
     regimes      : list
                    List of n values with the mapping of each
                    observation to a regime. Assumed to be aligned with 'x'.
@@ -248,48 +251,30 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     Examples
     --------
 
-    First import libpysal to load the spatial analysis tools.
-
     >>> import libpysal
-    >>> from libpysal.examples import load_example
-    >>> from libpysal.weights import Queen
-    >>> import spreg
-    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> import geopandas as gpd
+    >>> from spreg import SURerrorGM
 
-    Open data on NCOVR US County Homicides (3085 areas) using pysal.open().
-    This is the DBF associated with the NAT shapefile. Note that pysal.open()
-    also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) from libpysal examples using geopandas.
 
-    >>> nat = load_example('Natregimes')
-    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
+    >>> nat = libpysal.examples.load_example('Natregimes')
+    >>> df = gpd.read_file(nat.get_path("natregimes.shp"))
 
     The specification of the model to be estimated can be provided as lists.
-    Each equation should be listed separately. Equation 1 has HR80 as dependent
-    variable, and PS80 and UE80 as exogenous regressors.
+    Each equation should be listed separately. In this example, equation 1
+    has HR80 as dependent variable and PS80 and UE80 as exogenous regressors.
     For equation 2, HR90 is the dependent variable, and PS90 and UE90 the
     exogenous regressors.
 
     >>> y_var = ['HR80','HR90']
     >>> x_var = [['PS80','UE80'],['PS90','UE90']]
-    >>> yend_var = [['RD80'],['RD90']]
-    >>> q_var = [['FP79'],['FP89']]
-
-    The SUR method requires data to be provided as dictionaries. PySAL
-    provides the tool sur_dictxy to create these dictionaries from the
-    list of variables. The line below will create four dictionaries
-    containing respectively the dependent variables (bigy), the regressors
-    (bigX), the dependent variables' names (bigyvars) and regressors' names
-    (bigXvars). All these will be created from th database (db) and lists
-    of variables (y_var and x_var) created above.
-
-    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
 
     To run a spatial error model, we need to specify the spatial weights matrix.
     To do that, we can open an already existing gal file or create a new one.
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
+    >>> w = libpysal.weights.Queen.from_dataframe(df)
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -298,7 +283,7 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t
     and p-value of the parameters:
 
-    >>> reg = spreg.SURerrorGM(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg = SURerrorGM(y_var,x_var,w=w,df=df,name_ds="NAT",name_w="nat_queen")
     >>> reg.bSUR
     {0: array([[3.97746866],
            [0.89021219],
@@ -318,6 +303,7 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
         bigy,
         bigX,
         w,
+        df=None,
         regimes=None,
         nonspat_diag=True,
         spat_diag=False,
@@ -328,6 +314,19 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
+
+        if isinstance(bigy, list) or isinstance(bigX, list):
+            if isinstance(bigy, list) and isinstance(bigX, list):            
+                if len(bigy) == len(bigX):
+                    if df is not None:
+                        bigy,bigX,name_bigy,name_bigX = sur_dictxy(df,bigy,bigX)
+                    else:
+                        raise Exception("Error: df argument is required if bigy and bigX are lists")
+                else:
+                    raise Exception("Error: bigy and bigX must have the same number of elements")
+            else:
+                raise Exception("Error: bigy and bigX must be both lists or both dictionaries")
+
         # check on variable names for listing results
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_w = USER.set_name_w(name_w, w)
@@ -575,13 +574,16 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    bigy         : dictionary
-                   with vectors of dependent variable, one for
-                   each equation
-    bigX         : dictionary
-                   with matrices of explanatory variables,
-                   one for each equation
+    bigy         : list or dictionary
+                   list with the name of the dependent variable for each equation
+                   or dictionary with vectors for dependent variable by equation                  
+    bigX         : list or dictionary
+                   list of lists the name of the explanatory variables for each equation
+                   or dictionary with matrix of explanatory variables by equation
+                   (note, already includes constant term)  
     w            : spatial weights object
+    db           : Pandas DataFrame
+                   Optional. Required in case bigy and bigX are lists with names of variables
     regimes      : list
                    default = None.
                    List of n values with the mapping of each
@@ -693,48 +695,30 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
     Examples
     --------
 
-    First import libpysal to load the spatial analysis tools.
-
     >>> import libpysal
-    >>> from libpysal.examples import load_example
-    >>> from libpysal.weights import Queen
-    >>> import spreg
-    >>> np.set_printoptions(suppress=True) #prevent scientific format
+    >>> import geopandas as gpd
+    >>> from spreg import SURerrorML
 
-    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
-    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
-    also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) from libpysal examples using geopandas.
 
-    >>> nat = load_example('Natregimes')
-    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
+    >>> nat = libpysal.examples.load_example('Natregimes')
+    >>> df = gpd.read_file(nat.get_path("natregimes.shp"))
 
     The specification of the model to be estimated can be provided as lists.
-    Each equation should be listed separately. Equation 1 has HR80 as dependent
-    variable, and PS80 and UE80 as exogenous regressors.
+    Each equation should be listed separately. In this example, equation 1
+    has HR80 as dependent variable and PS80 and UE80 as exogenous regressors.
     For equation 2, HR90 is the dependent variable, and PS90 and UE90 the
     exogenous regressors.
 
     >>> y_var = ['HR80','HR90']
     >>> x_var = [['PS80','UE80'],['PS90','UE90']]
-    >>> yend_var = [['RD80'],['RD90']]
-    >>> q_var = [['FP79'],['FP89']]
-
-    The SUR method requires data to be provided as dictionaries. PySAL
-    provides the tool sur_dictxy to create these dictionaries from the
-    list of variables. The line below will create four dictionaries
-    containing respectively the dependent variables (bigy), the regressors
-    (bigX), the dependent variables' names (bigyvars) and regressors' names
-    (bigXvars). All these will be created from th database (db) and lists
-    of variables (y_var and x_var) created above.
-
-    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
 
     To run a spatial error model, we need to specify the spatial weights matrix.
     To do that, we can open an already existing gal file or create a new one.
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
+    >>> w = libpysal.weights.Queen.from_dataframe(df)
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -743,7 +727,7 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t
     and p-value of the parameters:
 
-    >>> reg = spreg.SURerrorML(bigy,bigX,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg = spreg.SURerrorML(y_var,x_var,w=w,df=df,name_ds="NAT",name_w="nat_queen")
     >>> reg.bSUR
     {0: array([[4.02228606],
            [0.88489637],
@@ -765,6 +749,7 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
         bigy,
         bigX,
         w,
+        df=None,
         regimes=None,
         nonspat_diag=True,
         spat_diag=False,
@@ -776,7 +761,19 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
-        # need checks on match between bigy, bigX dimensions
+
+        if isinstance(bigy, list) or isinstance(bigX, list):
+            if isinstance(bigy, list) and isinstance(bigX, list):            
+                if len(bigy) == len(bigX):
+                    if df is not None:
+                        bigy,bigX,name_bigy,name_bigX = sur_dictxy(df,bigy,bigX)
+                    else:
+                        raise Exception("Error: df argument is required if bigy and bigX are lists")
+                else:
+                    raise Exception("Error: bigy and bigX must have the same number of elements")
+            else:
+                raise Exception("Error: bigy and bigX must be both lists or both dictionaries")
+            
         # check on variable names for listing results
         self.name_ds = USER.set_name_ds(name_ds)
         self.name_w = USER.set_name_w(name_w, w)
@@ -1117,7 +1114,7 @@ if __name__ == "__main__":
         bigy0,
         bigX0,
         w,
-        # regimes=regimes,
+        #regimes=regimes,
         name_bigy=bigyvars0,
         name_bigX=bigXvars0,
         name_w="natqueen",

@@ -14,6 +14,7 @@ import copy as COPY
 from . import sputils as spu
 from libpysal import weights
 from libpysal import graph
+import scipy
 from scipy.sparse.csr import csr_matrix
 from .utils import get_lags        # new for flex_wx
 from itertools import compress     # new for lfex_wx
@@ -549,7 +550,13 @@ def check_weights(w, y, w_required=False, time=False, slx_lags=0, allow_wk=False
     if w_required == True or (w is not None) or slx_lags > 0:
         if isinstance(w, graph.Graph):
             w = w.to_W()
-            
+
+        if isinstance(w, np.ndarray):        
+            w = weights.full2W(w)
+
+        if isinstance(w, scipy.sparse.spmatrix):        
+            w = weights.WSP(w).to_W()
+
         if w == None:
             raise Exception("A weights matrix w must be provided to run this method.")
         

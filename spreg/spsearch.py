@@ -121,9 +121,22 @@ def stge_classic(y,x,w, w_lags=2, robust= None, sig2n_k = True,
     p=p_value
     k=0 # indicator for type of final model 0 = OLS; 1 = Lag; 2 = Error; 3 = SAR-SAR; 4 = LAG from SAR
     
-    model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
-                            name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
+    if not(name_y) or not(name_x):
+        
+        model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
+                            name_w=name_w,name_ds=name_ds,latex=latex)
+
+        name_y = model_ols_1.name_y
+        name_x = model_ols_1.name_x[1:]
     
+    else:
+        
+        model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
+                            name_y=name_y,name_x=name_x,
+                            name_w=name_w,name_ds=name_ds,latex=latex)
+
+
+
     pvals = [model_ols_1.lm_error[1],model_ols_1.lm_lag[1],
                              model_ols_1.rlm_error[1],model_ols_1.rlm_lag[1],
                              model_ols_1.lm_sarma[1]]
@@ -187,8 +200,9 @@ def stge_classic(y,x,w, w_lags=2, robust= None, sig2n_k = True,
         if k == 0: # OLS
             finreg = model_ols_1
    
-        elif k == 1: # LAG
+        elif (k == 1) or (k == 4): # LAG
             try:
+                
                 finreg = STSLS.GM_Lag(y,x,w=w,slx_lags=0,w_lags=w_lags,hard_bound=True,
                                 name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
             except:
@@ -209,11 +223,12 @@ def stge_classic(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                 result = result + " -- Exception: SARSAR parameters outside bounds"
                 finreg = False
             
-        elif k == 4: # LAG already computed
-            finreg = model_lag
+#        elif k == 4: # LAG already computed
+#            finreg = model_lag
         if mprint:
             print(msel + result)
-            print(finreg.summary)
+            if not(finreg == False):   # cannot print when finreg=False
+                print(finreg.summary)
     
     return (result,finreg)
 
@@ -282,8 +297,20 @@ def stge_kb(y,x,w, w_lags=2, robust= None, sig2n_k = True,
     p=p_value
     k=0 # indicator for type of final model 0 = OLS; 1 = Lag; 2 = SLX; 3 = SDM
 
-    model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
-                            name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
+    if not(name_y) or not(name_x):
+        
+        model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
+                            name_w=name_w,name_ds=name_ds,latex=latex)
+
+        name_y = model_ols_1.name_y
+        name_x = model_ols_1.name_x[1:]
+    
+    else:
+        
+        model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
+                            name_y=name_y,name_x=name_x,
+                            name_w=name_w,name_ds=name_ds,latex=latex)
+        
     pvals = [model_ols_1.rlm_wx[1],model_ols_1.rlm_durlag[1],
                              model_ols_1.lm_spdurbin[1]]
 
@@ -330,7 +357,8 @@ def stge_kb(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                 finreg = False
         if mprint:
             print(msel + result)
-            print(finreg.summary)
+            if not(finreg == False):   # cannot print when finreg=False
+                print(finreg.summary)
     
     return (result,finreg)
 
@@ -405,8 +433,20 @@ def stge_pre(y,x,w, w_lags=2, robust= None, sig2n_k = True,
         
     models = ['OLS','LAG','ERROR','SARSAR','SLX','SDM','SLX-ERR','GNS']
 
-    model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
-                            name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
+    if not(name_y) or not(name_x):
+        
+        model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
+                            name_w=name_w,name_ds=name_ds,latex=latex)
+
+        name_y = model_ols_1.name_y
+        name_x = model_ols_1.name_x[1:]
+    
+    else:
+        
+        model_ols_1 = OLS.OLS(y,x,w=w,slx_lags=0,spat_diag=True,
+                            name_y=name_y,name_x=name_x,
+                            name_w=name_w,name_ds=name_ds,latex=latex)
+        
     
     pv1 = model_ols_1.lm_wx[1]   # LM test on WX
     pv2 = model_ols_1.rlm_wx[1]  # robust LM test in presence of rho
@@ -518,7 +558,8 @@ def stge_pre(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                 finreg = False
         if mprint:
             print(msel + result)
-            print(finreg.summary)
+            if not(finreg == False):   # cannot print when finreg=False
+                print(finreg.summary)
     
     return (result,finreg)
         
@@ -591,12 +632,30 @@ def gets_gns(y,x,w, w_lags=2, robust= None, sig2n_k = True,
     
     k = x.shape[1]
     
-    try:
-        model_gns=ERROR.GMM_Error(y,x,w=w,slx_lags=1,add_wy=True,w_lags=w_lags,hard_bound=True,
+    if not(name_y) or not(name_x):
+        
+        try:
+            model_gns=ERROR.GMM_Error(y,x,w=w,slx_lags=1,
+                                    add_wy=True,w_lags=w_lags,hard_bound=True,
+                                    name_w=name_w,name_ds=name_ds,latex=latex)
+        except:
+            result = 'Exception: GNS parameters out of bounds'
+            print(result)
+            return(result,finreg)
+
+        name_y = model_gns.name_y
+        name_x = model_sdm.name_x[1:k+1]
+
+    
+    else:
+        
+        try:
+            model_gns=ERROR.GMM_Error(y,x,w=w,slx_lags=1,add_wy=True,w_lags=w_lags,hard_bound=True,
                                 name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
-    except:
-        result = 'Exception: GNS parameters out of bounds'
-        return(result,finreg)
+        except:
+            result = 'Exception: GNS parameters out of bounds'
+            print(result)
+            return(result,finreg)
         
     pstats = np.array(model_gns.z_stat)[1+k:,1]    # t statistics p-values
     pk = len(pstats)   # number of p-values, last one is p_lam, next to last p_rho, before that p_gam
@@ -619,6 +678,7 @@ def gets_gns(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                                 name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
             except:
                 result = 'Exception: SDM parameters out of bounds'
+                print(result)
                 return(result,finreg)
             
             pstats = np.array(model_sdm.z_stat)[1+k:,1]
@@ -650,6 +710,7 @@ def gets_gns(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                                 name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
             except:
                 result = 'Exception: SLX Error parameters out of bounds'
+                print(result)
                 return(result,finreg)
                 
             pstats = np.array(model_slxerr.z_stat)[1+k:,1]
@@ -678,6 +739,7 @@ def gets_gns(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                                 name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
             except:
                 result = 'Exception: SARSAR parameters out of bounds'
+                print(result)
                 return(result,finreg)
                 
                 
@@ -723,7 +785,8 @@ def gets_gns(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                 finreg = False
         if mprint:
             print(msel + result)
-            print(finreg.summary)                
+            if not(finreg == False):   # cannot print when finreg=False
+                print(finreg.summary)            
     
     return (result,finreg)
     
@@ -796,13 +859,33 @@ def gets_sdm(y,x,w, w_lags=2, robust= None, sig2n_k = True,
     p=p_value
     
     k = x.shape[1]
+
+    if not(name_y) or not(name_x):
+        
+        try:
+            model_sdm = STSLS.GM_Lag(y,x,w=w,slx_lags=1,w_lags=w_lags,
+                                    hard_bound=True,
+                                    name_w=name_w,name_ds=name_ds,latex=latex)
+        except:
+            result = 'Exception: SDM parameters out of bounds'
+            print(result)
+            return(result,finreg)
+
+        name_y = model_sdm.name_y
+        name_x = model_sdm.name_x[1:k+1]
     
-    try:
-        model_sdm = STSLS.GM_Lag(y,x,w=w,slx_lags=1,w_lags=w_lags,hard_bound=True,
+    else:
+        
+        try:
+            model_sdm = STSLS.GM_Lag(y,x,w=w,slx_lags=1,w_lags=w_lags,
+                                hard_bound=True,
                                 name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
-    except:
-        result = 'Exception: SDM parameters out of bounds'
-        return(result,finreg)
+        except:
+            result = 'Exception: SDM parameters out of bounds'
+            print(result)
+            return(result,finreg)
+
+    
                 
     pstats = np.array(model_sdm.z_stat)[1+k:,1]         # spatial parameters
     pk = len(pstats)
@@ -857,6 +940,7 @@ def gets_sdm(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                                         name_y=name_y,name_x=name_x,name_w=name_w,name_ds=name_ds,latex=latex)
             except:
                 result = 'Exception: LAG parameters out of bounds'
+                print(result)
                 return(result,finreg)
             #print(model_lag.summary)
             ak_lag = AKtest(model_lag,w,case='gen')
@@ -900,7 +984,8 @@ def gets_sdm(y,x,w, w_lags=2, robust= None, sig2n_k = True,
                 result = result + ' -- Exception: GNS parameters out of bounds'   
         if mprint:
             print(msel + result)
-            print(finreg.summary)           
+            if not(finreg == False):   # cannot print when finreg=False
+                print(finreg.summary)          
     
     return (result,finreg)
 

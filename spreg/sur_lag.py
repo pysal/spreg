@@ -12,7 +12,7 @@ from . import user_output as USER
 from . import regimes as REGI
 from .sur import BaseThreeSLS
 from .diagnostics_sur import sur_setp, sur_chow, sur_joinrho
-from .sur_utils import check_k
+from .sur_utils import check_k, sur_dictxy, sur_dictZ
 
 __all__ = ["SURlagIV"]
 
@@ -23,18 +23,22 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
 
     Parameters
     ----------
-    bigy       : dictionary
-                 with vector for dependent variable by equation
-    bigX       : dictionary
-                 with matrix of explanatory variables by equation
-                 (note, already includes constant term)
-    bigyend    : dictionary
-                 with matrix of endogenous variables by equation
-                 (optional)
-    bigq       : dictionary
-                 with matrix of instruments by equation
-                 (optional)
+    bigy       : list or dictionary
+                 list with the names of the dependent variable for each equation
+                 or dictionary with vectors for dependent variable by equation                  
+    bigX       : list or dictionary
+                 list of lists the names of the explanatory variables for each equation
+                 or dictionary with matrix of explanatory variables by equation
+                 (note, already includes constant term)                 
+    bigyend    : list or dictionary
+                 list of lists the names of the endogenous variables for each equation
+                 or dictionary with matrix of endogenous variables by equation
+    bigq       : list or dictionary
+                 list of lists the names of the instrument variables for each equation
+                 or dictionary with matrix of instruments by equation
     w          : spatial weights object, required
+    db         : Pandas DataFrame
+                 Optional. Required in case bigy and bigX are lists with names of variables
     vm         : boolean
                  listing of full variance-covariance matrix, default = False
     w_lags     : integer
@@ -137,26 +141,20 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
 
     Examples
     --------
-
-    First import libpysal to load the spatial analysis tools.
-
     >>> import libpysal
-    >>> from libpysal.examples import load_example
-    >>> from libpysal.weights import Queen
-    >>> import spreg
+    >>> import geopandas as gpd
+    >>> from spreg import SURlagIV
+    >>> import numpy as np
     >>> np.set_printoptions(suppress=True) #prevent scientific format
 
-    Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
-    This is the DBF associated with the NAT shapefile. Note that libpysal.io.open()
-    also reads data in CSV format.
+    Open data on NCOVR US County Homicides (3085 areas) from libpysal examples using geopandas.
 
-    >>> nat = load_example('Natregimes')
-    >>> db = libpysal.io.open(nat.get_path('natregimes.dbf'), 'r')
+    >>> nat = libpysal.examples.load_example('Natregimes')
+    >>> df = gpd.read_file(nat.get_path("natregimes.shp"))
 
     The specification of the model to be estimated can be provided as lists.
-    Each equation should be listed separately. Although not required,
-    in this example we will specify additional endogenous regressors.
-    Equation 1 has HR80 as dependent variable, PS80 and UE80 as exogenous regressors,
+    Each equation should be listed separately. In this example, equation 1
+    has HR80 as dependent variable, PS80 and UE80 as exogenous regressors,
     RD80 as endogenous regressor and FP79 as additional instrument.
     For equation 2, HR90 is the dependent variable, PS90 and UE90 the
     exogenous regressors, RD90 as endogenous regressor and FP99 as
@@ -167,22 +165,12 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
     >>> yend_var = [['RD80'],['RD90']]
     >>> q_var = [['FP79'],['FP89']]
 
-    The SUR method requires data to be provided as dictionaries. PySAL
-    provides two tools to create these dictionaries from the list of variables:
-    sur_dictxy and sur_dictZ. The tool sur_dictxy can be used to create the
-    dictionaries for Y and X, and sur_dictZ for endogenous variables (yend) and
-    additional instruments (q).
-
-    >>> bigy,bigX,bigyvars,bigXvars = spreg.sur_dictxy(db,y_var,x_var)
-    >>> bigyend,bigyendvars = spreg.sur_dictZ(db,yend_var)
-    >>> bigq,bigqvars = spreg.sur_dictZ(db,q_var)
-
     To run a spatial lag model, we need to specify the spatial weights matrix.
     To do that, we can open an already existing gal file or create a new one.
     In this example, we will create a new one from NAT.shp and transform it to
     row-standardized.
 
-    >>> w = Queen.from_shapefile(nat.get_path("natregimes.shp"))
+    >>> w = libpysal.weights.Queen.from_dataframe(df)
     >>> w.transform='r'
 
     We can now run the regression and then have a summary of the output by typing:
@@ -191,7 +179,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
     Alternatively, we can just check the betas and standard errors, asymptotic t
     and p-value of the parameters:
 
-    >>> reg = spreg.SURlagIV(bigy,bigX,bigyend,bigq,w=w,name_bigy=bigyvars,name_bigX=bigXvars,name_bigyend=bigyendvars,name_bigq=bigqvars,name_ds="NAT",name_w="nat_queen")
+    >>> reg = SURlagIV(y_var,x_var,yend_var,q_var,w=w,df=df,name_ds="NAT",name_w="nat_queen")
     >>> reg.b3SLS
     {0: array([[ 6.95472387],
            [ 1.44044301],
@@ -222,6 +210,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
         bigyend=None,
         bigq=None,
         w=None,
+        df=None,
         regimes=None,
         vm=False,
         regime_lag_sep=False,
@@ -237,6 +226,27 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
         name_w=None,
         name_regimes=None,
     ):
+        
+        if isinstance(bigy, list) or isinstance(bigX, list) or isinstance(bigyend, list) or isinstance(bigq, list):
+            if isinstance(bigy, list) and isinstance(bigX, list) and (isinstance(bigyend, list) or bigyend is None) and (isinstance(bigq, list) or bigq is None):   
+                if (len(bigy) == len(bigX) and 
+                    (bigyend is None or len(bigy) == len(bigyend)) and 
+                    (bigq is None or len(bigy) == len(bigq))):
+                    if df is not None:
+                        bigy,bigX,name_bigy,name_bigX = sur_dictxy(df,bigy,bigX)
+                        if bigyend is not None:
+                            bigyend,name_bigyend = sur_dictZ(df,bigyend)
+                            bigq,name_bigq = sur_dictZ(df,bigq)                        
+                    else:
+                        raise Exception("Error: df argument is required if bigy, bigX, bigyend (if provided) and bigq (if provided) are lists")
+                else:
+                    raise Exception("Error: bigy, bigX, bigyend (if provided) and bigq (if provided) must have the same number of elements")
+            else:
+                raise Exception("Error: bigy, bigX, bigyend (if provided) and bigq (if provided) must be all lists or all dictionaries")
+
+        self.name_ds = USER.set_name_ds(name_ds)
+        self.n_eq = len(bigy.keys())
+        
         if w is None:
             raise Exception("Spatial weights required for SUR-Lag")
         self.w = w
