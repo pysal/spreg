@@ -23,13 +23,11 @@ class Test_SUR_error(unittest.TestCase):
     def test_error(self):  # 2 equations
         y_var0 = ["HR80", "HR90"]
         x_var0 = [["PS80", "UE80"], ["PS90", "UE90"]]
-        bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(self.dbs, y_var0, x_var0)
         reg = SURerrorML(
-            bigy0,
-            bigX0,
+            y_var0,
+            x_var0,
             self.w,
-            name_bigy=bigyvars0,
-            name_bigX=bigXvars0,
+            df=self.dbs,
             spat_diag=True,
             vm=True,
             name_w="natqueen",

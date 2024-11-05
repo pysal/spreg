@@ -22,8 +22,7 @@ class Test_SUR(unittest.TestCase):
     def test_SUR(self):  # 2 equations, same K in each, two-step estimation
         y_var0 = ["HR80", "HR90"]
         x_var0 = [["PS80", "UE80"], ["PS90", "UE90"]]
-        bigy0, bigX0, bigyvars0, bigXvars0 = sur_dictxy(self.db, y_var0, x_var0)
-        reg = SUR(bigy0, bigX0, name_bigy=bigyvars0, name_bigX=bigXvars0)
+        reg = SUR(y_var0, x_var0, df=self.db)
 
         dict_compare(
             reg.bOLS,
