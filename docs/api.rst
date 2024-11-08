@@ -179,4 +179,8 @@ Tools for simulating synthetic data according to data-generating processes impli
     spreg.dgp.dgp_spdurbin
     spreg.dgp.dgp_lagerr
     spreg.dgp.dgp_gns
-    spreg.dgp.dgp_mes
+    spreg.dgp.dgp_mess
+    spreg.dgp.dgp_probit
+    spreg.dgp.make_bin
+    spreg.dgp.make_heterror
+    spreg.dgp.make_vmult
