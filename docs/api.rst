@@ -141,6 +141,22 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.panel_rLMerror
     spreg.panel_Hausman
 
+
+Spatial Specification Search
+--------------------------------
+
+The `spsearch` module contains tools for conducting incremental specification searches for spatial econometric models following the approach of :cite:p:`anselin2024SpatialEconometric`
+
+.. autosummary:: 
+    :toctree: generated/
+
+    spreg.spsearch.stge_classic
+    spreg.spsearch.stge_kb
+    spreg.spsearch.stge_pre
+    spreg.spsearch.gets_gns
+    spreg.spsearch.gets_sdm
+
+
 DGP
 -----------
 
