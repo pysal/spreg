@@ -29,5 +29,5 @@ dependencies:
   - nbsphinx
   - numpydoc
   - sphinx>=1.4.3
-  - sphinxcontrib-bibtex<2.0.0
+  - sphinxcontrib-bibtex
   - sphinx_bootstrap_theme
