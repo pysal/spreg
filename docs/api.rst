@@ -140,7 +140,6 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.panel_rLMlag
     spreg.panel_rLMerror
     spreg.panel_Hausman
-    spreg.diagnostics_probit.sp_tests
     spreg.sputils.spmultiplier
 
 
