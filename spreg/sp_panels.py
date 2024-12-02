@@ -8,6 +8,7 @@ __author__ = (
 
 from scipy import sparse as SP
 import numpy as np
+import pandas as pd
 from . import ols as OLS
 from .utils import optim_moments, RegressionPropsY, get_spFilter, spdot, set_warn
 from . import user_output as USER
@@ -21,6 +22,7 @@ __all__ = ["GM_KKP"]
 
 
 class BaseGM_KKP(RegressionPropsY):
+
     '''
     Base GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
@@ -68,6 +70,7 @@ class BaseGM_KKP(RegressionPropsY):
     '''
 
     def __init__(self, y, x, w, full_weights=False):
+
         # 1a. OLS --> \tilde{\delta}
         ols = OLS.BaseOLS(y=y, x=x)
         self.x, self.y, self.n, self.k, self.xtx = ols.x, ols.y, ols.n, ols.k, ols.xtx
@@ -115,16 +118,17 @@ class BaseGM_KKP(RegressionPropsY):
 
 
 class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
+
     '''
     GMM method for a spatial random effects panel model based on
     Kapoor, Kelejian and Prucha (2007) :cite:`KKP2007`.
 
     Parameters
     ----------
-    y          : array
+    y          : array or pandas DataFrame
                  n*tx1 or nxt array for dependent variable
-    x          : array
-                 Two dimensional array with n*t rows and k columns for
+    x          : array or pandas DataFrame
+                 Two dimensional array or DF with n*t rows and k columns for
                  independent (exogenous) variable or n rows and k*t columns
                  (note, must not include a constant term)
     w          : spatial weights object
@@ -195,26 +199,33 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
     """
     Examples
     --------
+
     We first need to import the needed modules, namely numpy to convert the
     data we read into arrays that ``spreg`` understands and ``pysal`` to
     perform all the analysis.
+
     >>> from spreg import GM_KKP
     >>> import numpy as np
     >>> import libpysal
+
     Open data on NCOVR US County Homicides (3085 areas) using libpysal.io.open().
     This is the DBF associated with the NAT shapefile. Note that
     libpysal.io.open() also reads data in CSV format; The GM_KKP function requires
     data to be passed in as numpy arrays, hence the user can read their
     data in using any method.
+
     >>> nat = libpysal.examples.load_example('NCOVR')
     >>> db = libpysal.io.open(nat.get_path("NAT.dbf"),'r')
+
     Extract the HR (homicide rates) data in the 70's, 80's and 90's from the DBF file
     and make it the dependent variable for the regression. Note that the data can also
     be passed in the long format instead of wide format (i.e. a vector with n*t rows
     and a single column for the dependent variable and a matrix of dimension n*txk
     for the independent variables).
+
     >>> name_y = ['HR70','HR80','HR90']
     >>> y = np.array([db.by_col(name) for name in name_y]).T
+
     Extract RD and PS in the same time periods from the DBF to be used as
     independent variables in the regression.  Note that PySAL requires this to
     be an nxk*t numpy array, where k is the number of independent variables (not
@@ -222,32 +233,42 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
     organized in a way that all time periods of a given variable are side-by-side
     and in the correct time order.
     By default a vector of ones will be added to the independent variables passed in.
+
     >>> name_x = ['RD70','RD80','RD90','PS70','PS80','PS90']
     >>> x = np.array([db.by_col(name) for name in name_x]).T
+
     Since we want to run a spatial error panel model, we need to specify the spatial
     weights matrix that includes the spatial configuration of the observations
     into the error component of the model. To do that, we can open an already
     existing gal file or create a new one. In this case, we will create one
     from ``NAT.shp``.
+
     >>> w = libpysal.weights.Queen.from_shapefile(libpysal.examples.get_path("NAT.shp"))
+
     Unless there is a good reason not to do it, the weights have to be
     row-standardized so every row of the matrix sums to one. Among other
     things, his allows to interpret the spatial lag of a variable as the
     average value of the neighboring observations. In PySAL, this can be
     easily performed in the following way:
+
     >>> w.transform = 'r'
+
     We are all set with the preliminaries, we are good to run the model. In this
     case, we will need the variables and the weights matrix. If we want to
     have the names of the variables printed in the output summary, we will
     have to pass them in as well, although this is optional. In this example
     we set full_weights to False (the default), indicating that we will use
     only 2 sets of moments weights for the first 3 and the last 3 moment conditions.
+
     >>> reg = GM_KKP(y,x,w,full_weights=False,name_y=name_y, name_x=name_x)
+
     Warning: Assuming time data is in wide format, i.e. y[0] refers to T0, y[1], refers to T1, etc.
      Similarly, assuming x[0:k] refers to independent variables for T0, x[k+1:2k] refers to T1, etc.
+
     Once we have run the model, we can explore a little bit the output. We can
     either request a printout of the results with the command print(reg.summary) or
     check out the individual attributes of GM_KKP:
+
     >>> print(reg.summary)
     REGRESSION
     ----------
@@ -271,10 +292,13 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
                 sigma2_1      39.9099323
     ------------------------------------------------------------------------------------
     ================================ END OF REPORT =====================================
+
     >>> print(reg.name_x)
     ['CONSTANT', 'RD', 'PS', 'lambda', ' sigma2_v', 'sigma2_1']
+
     The attribute reg.betas contains all the coefficients: betas, the spatial error
     coefficient lambda, sig2_v and sig2_1:
+
     >>> print(np.around(reg.betas,4))
     [[ 6.4922]
      [ 3.6245]
@@ -282,7 +306,9 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
      [ 0.4178]
      [22.8191]
      [39.9099]]
+     
     Finally, we can check the standard erros of the betas:
+
     >>> print(np.around(np.sqrt(reg.vm.diagonal().reshape(3,1)),4))
     [[0.1127]
      [0.0877]
@@ -457,6 +483,22 @@ def _get_panel_data(y, x, w, name_y, name_x):
     name_x       : list of strings
                    Names of independent variables for use in output
     """
+
+    if isinstance(y, (pd.Series, pd.DataFrame)):
+        if name_y is None:
+            try:
+                name_y = y.columns.to_list()
+            except AttributeError:
+                name_y = y.name
+        y = y.to_numpy()
+        
+    if isinstance(x, (pd.Series, pd.DataFrame)):
+        if name_x is None:
+            try:
+                name_x = x.columns.to_list()
+            except AttributeError:
+                name_x = x.name
+        x = x.to_numpy()
 
     if y.shape[0] / w.n != y.shape[0] // w.n:
         raise Exception("y must be ntx1 or nxt, and w must be an nxn PySAL W object.")

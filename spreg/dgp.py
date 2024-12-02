@@ -909,13 +909,13 @@ def make_bin(yy):
 
     >>> import numpy as np
     >>> import libpysal
-    >>> from spreg import make_x, dgp_ols, dgp_pbit
+    >>> from spreg import make_x, dgp_ols, make_bin
     >>> rng = np.random.default_rng(12345)
     >>> u = make_x(rng,25,mu=[0],varu=[1], method='normal')
     >>> x = make_x(rng,25,mu=[0],varu=[1])
     >>> xb = make_xb(x,[1,2])
     >>> yy = dgp_ols(u,xb)
-    >>> dgp_pbit(yy)[0:5,:]
+    >>> make_bin(yy)[0:5,:]
     array([[1],
            [0],
            [0],
@@ -925,7 +925,7 @@ def make_bin(yy):
     """
     mm = yy.mean()
     y = (yy > mm)
-    return y
+    return y * 1
 
 
 def make_heterror(u,v):
