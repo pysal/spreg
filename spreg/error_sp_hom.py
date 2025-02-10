@@ -1469,7 +1469,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
 
             # var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
             var_types = (
-                ["x"] * (kx + 1)
+                ["o"]+["x"] * kx
                 + ["wx"] * wkx * slx_lags
                 + ["yend"] * (len(self.name_yend) - 1)
                 + ["rho", "lambda"]
@@ -1479,7 +1479,7 @@ class GM_Combo_Hom(BaseGM_Combo_Hom):
                 USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q)
             )
             var_types = (
-                ["x"] * len(self.name_x)
+                ["o"]+["x"] * (len(self.name_x)-1)
                 + ["yend"] * (len(self.name_yend) - 1)
                 + ["rho", "lambda"]
             )

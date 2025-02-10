@@ -21,6 +21,7 @@ __all__ = ["ML_Error_Regimes"]
 
 
 class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
+
     """
     ML estimation of the spatial error model with regimes (note no consistency 
     checks, diagnostics or constants added); :cite:`Anselin1988`
@@ -299,6 +300,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         name_regimes=None,
         latex=False,
     ):
+
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
@@ -315,7 +317,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
-        if slx_lags > 0:
+        if slx_lags >0:
             lag_x = get_lags(w, x_constant, slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
@@ -323,7 +325,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         self.name_x_r = USER.set_name_x(name_x, x_constant)
 
         cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant)
-        self.cols2regi = cols2regi
+        self.cols2regi = cols2regi        
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
         USER.check_regimes(self.regimes_set, self.n, x.shape[1])
@@ -350,20 +352,18 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                     "All coefficients must vary across regimes if regime_err_sep = True."
                 )
         else:
-            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
-            name_x = USER.set_name_x(name_x, x_constant)
             regimes_att = {}
-            regimes_att["x"] = x_constant
+            regimes_att["x"] = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
             regimes_att["regimes"] = regimes
             regimes_att["cols2regi"] = cols2regi
-            x, name_x, x_rlist = REGI.Regimes_Frame.__init__(
+            x, name_x, xtype, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
-                constant_regi=None,
-                cols2regi=cols2regi,
+                constant_regi=constant_regi,
+                cols2regi=cols2regi[1:],
                 names=name_x,
-                rlist=True,
+                rlist=True
             )
             BaseML_Error.__init__(
                 self,
@@ -376,7 +376,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
             )
 
             self.title = "ML SPATIAL ERROR"
-            if slx_lags > 0:
+            if slx_lags >0:
                 self.title += " WITH SLX (SLX-Error)"
             self.title += " - REGIMES (METHOD = " + method + ")"
 
@@ -386,28 +386,17 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
             self.chow = REGI.Chow(self)
             self.aic = DIAG.akaike(reg=self)
             self.schwarz = DIAG.schwarz(reg=self)
-            self.output = pd.DataFrame(self.name_x, columns=["var_names"])
-            self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
-            self.output["regime"] = x_rlist + ["_Global"]
-            self.output["equation"] = 0
+            self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+            self.output['var_type'] = xtype + ['lambda']
+            self.output['regime'] = x_rlist + ['_Global']
+            self.output['equation'] = 0
             self.other_top = _nonspat_top(self, ml=True)
             output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _error_regimes_multi(
-        self,
-        y,
-        x,
-        regimes,
-        w,
-        slx_lags,
-        cores,
-        method,
-        epsilon,
-        cols2regi,
-        vm,
-        name_x,
-        latex,
+        self, y, x, regimes, w, slx_lags, cores, method, epsilon, cols2regi, vm, name_x, latex
     ):
+
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
         )
@@ -485,9 +474,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
         results = {}
         counter = 0
-        self.output = pd.DataFrame(
-            columns=["var_names", "var_type", "regime", "equation"]
-        )
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -504,30 +491,24 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
-                r
-            ].betas
-            self.u[regi_ids[r],] = results[r].u
-            self.predy[regi_ids[r],] = results[r].predy
-            self.e_filtered[regi_ids[r],] = results[r].e_filtered
+            self.betas[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.e_filtered[
+                regi_ids[r],
+            ] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             results[r].other_top = _nonspat_top(results[r], ml=True)
-            self.output = pd.concat(
-                [
-                    self.output,
-                    pd.DataFrame(
-                        {
-                            "var_names": results[r].name_x,
-                            "var_type": ["x"] * (len(results[r].name_x) - 1)
-                            + ["lambda"],
-                            "regime": r,
-                            "equation": r,
-                        }
-                    ),
-                ],
-                ignore_index=True,
-            )
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
+                                                                'var_type': ['o'] + ['x'] * (len(results[r].name_x) - 2) + ['lambda'],
+                                                                'regime': r, 'equation': r})], ignore_index=True)
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
@@ -535,19 +516,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
 
 
 def _work_error(
-    y,
-    x,
-    regi_ids,
-    r,
-    w,
-    slx_lags,
-    method,
-    epsilon,
-    name_ds,
-    name_y,
-    name_x,
-    name_w,
-    name_regimes,
+    y, x, regi_ids, r, w, slx_lags, method, epsilon, name_ds, name_y, name_x, name_w, name_regimes
 ):
     w_r, warn = REGI.w_regime(w, regi_ids[r], r, transform=True)
     y_r = y[regi_ids[r]]
@@ -556,7 +525,7 @@ def _work_error(
     set_warn(model, warn)
     model.w = w_r
     model.title = "ML SPATIAL ERROR"
-    if slx_lags > 0:
+    if slx_lags >0:
         model.title += " WITH SLX (SLX-Error)"
     model.title += " - REGIME " + str(r) + " (METHOD = " + method + ")"
     model.name_ds = name_ds

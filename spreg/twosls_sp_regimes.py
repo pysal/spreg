@@ -636,7 +636,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.title = "SPATIAL " + self.title
             if slx_lags > 0:
                 for m in self.regimes_set:
-                    r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
+                    r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'].isin(['x', 'o']))]
                     wx_index = r_output.index[-((len(r_output)-1)//(slx_lags+1)) * slx_lags:]
                     self.output.loc[wx_index, 'var_type'] = 'wx'
                 self.title = " SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIMES"
@@ -840,9 +840,9 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             results[r].other_mid = ""
             if slx_lags > 0:
                 kx = (results[r].k - results[r].kstar - 1) // (slx_lags + 1)
-                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(results[r].name_yend) - 1) + ['rho']
+                var_types = ['o'] + ['x']*kx + ['wx'] * kx * slx_lags + ['yend'] * (len(results[r].name_yend) - 1) + ['rho']
             else:
-                var_types = ['x'] * len(results[r].name_x) + ['yend'] * (len(results[r].name_yend)-1) + ['rho']
+                var_types = ['o'] + ['x'] * (len(results[r].name_x)-1) + ['yend'] * (len(results[r].name_yend)-1) + ['rho']
             results[r].output = pd.DataFrame({'var_names': results[r].name_x + results[r].name_yend,
                                                                 'var_type': var_types,
                                                                 'regime': r, 'equation': r})
@@ -1219,7 +1219,7 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
     >>> import numpy as np
     >>> np.set_printoptions(legacy='1.25') #to avoid printing issues with numpy floats
     >>> import geopandas as gpd
-    >>> from spreg import OLS_Endog_Regimes
+    >>> from spreg import GM_Lag_Endog_Regimes
 
     Open data on Baltimore house sales price and characteristics in Baltimore
     from libpysal examples using geopandas.
@@ -1231,7 +1231,7 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
     >>> w = libpysal.weights.Queen.from_dataframe(db, use_index=True)
     >>> w.transform = "r"
 
-    For this example, we will use the 'PRICE' column as the dependent variable and
+    For this example, we will use the 'PRICE' column as the dependent variable, and
     the 'NROOM', 'AGE', and 'SQFT' columns as independent variables.
     At this point, we will let the model choose the number of clusters.
 

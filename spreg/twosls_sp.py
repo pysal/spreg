@@ -514,6 +514,7 @@ class GM_Lag(BaseGM_Lag):
             lag_q=True,
             slx_lags=0,
             slx_vars="All",
+            regimes = None,
             robust=None,
             gwk=None,
             sig2n_k=False,
@@ -529,114 +530,145 @@ class GM_Lag(BaseGM_Lag):
             name_ds=None,
             latex=False,
             hard_bound=False,
+            **kwargs,
     ):
+        if regimes is not None:
+            from .twosls_sp_regimes import GM_Lag_Regimes
+            self.__class__ = GM_Lag_Regimes
+            self.__init__(
+                y=y,
+                x=x,
+                regimes=regimes,
+                yend=yend,
+                q=q,
+                w=w,
+                w_lags=w_lags,
+                slx_lags=slx_lags,
+                lag_q=lag_q,
+                robust=robust,
+                gwk=gwk,
+                sig2n_k=sig2n_k,
+                spat_diag=spat_diag,
+                spat_impacts=spat_impacts,
+                vm=vm,
+                name_y=name_y,
+                name_x=name_x,
+                name_yend=name_yend,
+                name_q=name_q,
+                name_w=name_w,
+                name_gwk=name_gwk,
+                name_ds=name_ds,
+                latex=latex,
+                hard_bound=hard_bound,
+                **kwargs,
+            )
+        else:            
+            n = USER.check_arrays(x, yend, q)
+            y, name_y = USER.check_y(y, n, name_y)
+            w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+            USER.check_robust(robust, gwk)
+            yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
+            spat_diag, warn = USER.check_spat_diag(spat_diag=spat_diag, w=w, robust=robust, slx_lags=slx_lags)
+            set_warn(self, warn)
+            x_constant, name_x, warn = USER.check_constant(x, name_x)
+            set_warn(self, warn)
+            name_x = USER.set_name_x(name_x, x_constant)  # need to check for None and set defaults
 
-        n = USER.check_arrays(x, yend, q)
-        y, name_y = USER.check_y(y, n, name_y)
-        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
-        USER.check_robust(robust, gwk)
-        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
-        spat_diag, warn = USER.check_spat_diag(spat_diag=spat_diag, w=w, robust=robust, slx_lags=slx_lags)
-        set_warn(self, warn)
-        x_constant, name_x, warn = USER.check_constant(x, name_x)
-        set_warn(self, warn)
-        name_x = USER.set_name_x(name_x, x_constant)  # need to check for None and set defaults
+            # kx and wkx are used to replace complex calculation for output
+            if slx_lags > 0:  # adjust for flexwx
+                if (isinstance(slx_vars,list)):     # slx_vars has True,False
+                    if len(slx_vars) != x.shape[1] :
+                        raise Exception("slx_vars incompatible with x column dimensions")
+                    else:  # use slx_vars to extract proper columns
+                        workname = name_x[1:]
+                        kx = len(workname)
+                        vv = list(compress(workname,slx_vars))
+                        name_x += USER.set_name_spatial_lags(vv, slx_lags)
+                        wkx = slx_vars.count(True)
+                else:
+                    kx = len(name_x) - 1
+                    wkx = kx
+                    name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+                    
 
-        # kx and wkx are used to replace complex calculation for output
-        if slx_lags > 0:  # adjust for flexwx
-            if (isinstance(slx_vars,list)):     # slx_vars has True,False
-                if len(slx_vars) != x.shape[1] :
-                    raise Exception("slx_vars incompatible with x column dimensions")
-                else:  # use slx_vars to extract proper columns
-                    workname = name_x[1:]
-                    kx = len(workname)
-                    vv = list(compress(workname,slx_vars))
-                    name_x += USER.set_name_spatial_lags(vv, slx_lags)
-                    wkx = slx_vars.count(True)
+            BaseGM_Lag.__init__(
+                self,
+                y=y,
+                x=x_constant,
+                w=w,
+                yend=yend,
+                q=q,
+                w_lags=w_lags,
+                slx_lags=slx_lags,
+                slx_vars=slx_vars,
+                robust=robust,
+                gwk=gwk,
+                lag_q=lag_q,
+                sig2n_k=sig2n_k,
+            )
+
+            self.rho = self.betas[-1]
+            self.predy_e, self.e_pred, warn = sp_att(
+                w, self.y, self.predy, self.yend[:, -1].reshape(self.n, 1), self.rho, hard_bound=hard_bound
+            )
+            set_warn(self, warn)
+            self.title = "SPATIAL TWO STAGE LEAST SQUARES"
+            if slx_lags > 0:
+                self.title += " WITH SLX (SPATIAL DURBIN MODEL)"
+            self.name_ds = USER.set_name_ds(name_ds)
+            self.name_y = USER.set_name_y(name_y)
+            #        self.name_x = USER.set_name_x(name_x, x_constant)   # name_x contains SLX terms for slx_lags > 0
+            self.name_x = name_x  # already contains constant in new setup
+            self.name_yend = USER.set_name_yend(name_yend, yend)
+            self.name_yend.append(USER.set_name_yend_sp(self.name_y))
+            self.name_z = self.name_x + self.name_yend
+            self.name_q = USER.set_name_q(name_q, q)
+
+            if slx_lags > 0:  # need to remove all but last SLX variables from name_x
+                self.name_x0 = []
+                self.name_x0.append(self.name_x[0])  # constant
+                if (isinstance(slx_vars,list)):   # boolean list passed
+                    # x variables that were not lagged
+                    self.name_x0.extend(list(compress(self.name_x[1:],[not i for i in slx_vars])))
+                    # last wkx variables
+                    self.name_x0.extend(self.name_x[-wkx:])
+
+
+                else:
+                    okx = int((self.k - self.kstar - 1) / (slx_lags + 1))  # number of original exogenous vars
+
+                    self.name_x0.extend(self.name_x[-okx:])
+
+                self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
+
+                #var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
+                var_types = ['o'] + ['x']*kx + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
             else:
-                kx = len(name_x) - 1
-                wkx = kx
-                name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-                
+                self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
+                var_types = ['o'] + ['x'] * (len(self.name_x)-1) + ['yend'] * (len(self.name_yend) - 1) + ['rho']
 
-        BaseGM_Lag.__init__(
-            self,
-            y=y,
-            x=x_constant,
-            w=w,
-            yend=yend,
-            q=q,
-            w_lags=w_lags,
-            slx_lags=slx_lags,
-            slx_vars=slx_vars,
-            robust=robust,
-            gwk=gwk,
-            lag_q=lag_q,
-            sig2n_k=sig2n_k,
-        )
+            self.name_h = USER.set_name_h(self.name_x, self.name_q)
+            self.robust = USER.set_robust(robust)
+            self.name_w = USER.set_name_w(name_w, w)
+            self.name_gwk = USER.set_name_w(name_gwk, gwk)
+            self.slx_lags = slx_lags
+            self.slx_vars = slx_vars
 
-        self.rho = self.betas[-1]
-        self.predy_e, self.e_pred, warn = sp_att(
-            w, self.y, self.predy, self.yend[:, -1].reshape(self.n, 1), self.rho, hard_bound=hard_bound
-        )
-        set_warn(self, warn)
-        self.title = "SPATIAL TWO STAGE LEAST SQUARES"
-        if slx_lags > 0:
-            self.title += " WITH SLX (SPATIAL DURBIN MODEL)"
-        self.name_ds = USER.set_name_ds(name_ds)
-        self.name_y = USER.set_name_y(name_y)
-        #        self.name_x = USER.set_name_x(name_x, x_constant)   # name_x contains SLX terms for slx_lags > 0
-        self.name_x = name_x  # already contains constant in new setup
-        self.name_yend = USER.set_name_yend(name_yend, yend)
-        self.name_yend.append(USER.set_name_yend_sp(self.name_y))
-        self.name_z = self.name_x + self.name_yend
-        self.name_q = USER.set_name_q(name_q, q)
+            self.output = pd.DataFrame(self.name_x + self.name_yend, columns=['var_names'])
+            self.output['var_type'] = var_types
+            self.output['regime'], self.output['equation'] = (0, 0)
+            self.other_top = _spat_pseudo_r2(self)
+            diag_out = None
 
-        if slx_lags > 0:  # need to remove all but last SLX variables from name_x
-            self.name_x0 = []
-            self.name_x0.append(self.name_x[0])  # constant
-            if (isinstance(slx_vars,list)):   # boolean list passed
-                # x variables that were not lagged
-                self.name_x0.extend(list(compress(self.name_x[1:],[not i for i in slx_vars])))
-                # last wkx variables
-                self.name_x0.extend(self.name_x[-wkx:])
-
-
-            else:
-                okx = int((self.k - self.kstar - 1) / (slx_lags + 1))  # number of original exogenous vars
-
-                self.name_x0.extend(self.name_x[-okx:])
-
-            self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
-
-            #var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
-            var_types = ['x'] * (kx + 1) + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
-        else:
-            self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
-            var_types = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho']
-
-        self.name_h = USER.set_name_h(self.name_x, self.name_q)
-        self.robust = USER.set_robust(robust)
-        self.name_w = USER.set_name_w(name_w, w)
-        self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        self.slx_lags = slx_lags
-        self.slx_vars = slx_vars
-
-        self.output = pd.DataFrame(self.name_x + self.name_yend, columns=['var_names'])
-        self.output['var_type'] = var_types
-        self.output['regime'], self.output['equation'] = (0, 0)
-        self.other_top = _spat_pseudo_r2(self)
-        diag_out = None
-
-        if spat_diag:
-            diag_out = _spat_diag_out(self, w, 'yend')
-        if spat_impacts:
-            self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags,slx_vars)
-            try:
-                diag_out += impacts_str
-            except TypeError:
-                diag_out = impacts_str
-        output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
+            if spat_diag:
+                diag_out = _spat_diag_out(self, w, 'yend')
+            if spat_impacts:
+                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags,slx_vars)
+                try:
+                    diag_out += impacts_str
+                except TypeError:
+                    diag_out = impacts_str
+            output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
 
 def _test():

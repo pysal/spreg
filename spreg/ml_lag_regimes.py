@@ -414,7 +414,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
         else:
             # if regime_lag_sep == True:
             #    w = REGI.w_regimes_union(w, w_i, self.regimes_set)
-            x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
+            x, self.name_x, xtype, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
@@ -434,7 +434,8 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             self.regime_lag_sep = regime_lag_sep
             self.output = pd.DataFrame(self.name_x, columns=['var_names'])
             self.output['regime'] = x_rlist + ['_Global']
-            self.output['var_type'] = ['x'] * (len(self.name_x) - 1) + ['rho']
+            self.output['var_type'] = xtype + ['rho']
+            #self.output['var_type'] = ['o'] + ['x'] * (len(self.name_x) - 2) + ['rho']
             self.output['equation'] = 0
             self.slx_lags = slx_lags
             diag_out = None
@@ -444,7 +445,7 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
                 kwx = kwx - fixed_wx
                 if kwx > 0:
                     for m in self.regimes_set:
-                        r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'] == 'x')]
+                        r_output = self.output[(self.output['regime'] == str(m)) & (self.output['var_type'].isin(['x', 'o']))]
                         wx_index = r_output.index[-kwx:]
                         self.output.loc[wx_index, 'var_type'] = 'wx'
                 if fixed_wx > 0:
@@ -602,9 +603,9 @@ class ML_Lag_Regimes(BaseML_Lag, REGI.Regimes_Frame):
             results[r].other_mid = ""
             if slx_lags > 0:
                 kx = (len(results[r].name_x) - 1) // (slx_lags + 1)
-                var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['rho']
+                var_types = ['o']+['x']*kx + ['wx'] * kx * slx_lags + ['rho']
             else:
-                var_types = ['x'] * (len(results[r].name_x) - 1) + ['rho']
+                var_types = ['o']+['x'] * (len(results[r].name_x) - 2) + ['rho']
             results[r].output = pd.DataFrame({'var_names': results[r].name_x,
                                               'var_type': var_types,
                                               'regime': r, 'equation': r})

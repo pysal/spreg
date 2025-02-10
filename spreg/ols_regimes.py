@@ -64,9 +64,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
     constant_regi: string, optional
                    Switcher controlling the constant term setup. It may take
                    the following values:
-
                    *  'one': a vector of ones is appended to x and held constant across regimes
-
                    * 'many': a vector of ones is appended to x and considered different per regime (default)
     cols2regi    : list, 'all'
                    Argument indicating whether each
@@ -492,16 +490,15 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                 latex
             )
         else:
-            x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
+            x, self.name_x, xtype, x_rlist = REGI.Regimes_Frame.__init__(
                 self, x_constant, regimes, constant_regi, cols2regi, name_x, rlist=True
             )
 
             self.output = pd.DataFrame(self.name_x,
                                        columns=['var_names'])
-            self.output['var_type'] = ['x'] * len(self.name_x)
+            self.output['var_type'] = xtype
             self.output['regime'] = x_rlist
             self.output['equation'] = 0
-
             BaseOLS.__init__(self, y=y, x=x, robust=robust, gwk=gwk, sig2n_k=sig2n_k)
             if regime_err_sep == True and robust == None:
                 y2, x2 = REGI._get_weighted_var(
@@ -653,7 +650,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
-                                                       'var_type': ['x']*len(results[r].name_x),
+                                                       'var_type': ['o']+['x']*(len(results[r].name_x)-1),
                                                        'regime': r, 'equation': r})], ignore_index=True)
             results[r].other_top, results[r].other_mid = ("", "")
             if nonspat_diag:
@@ -668,7 +665,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
         other_end = ""
         if spat_diag:
             self._get_spat_diag_props(x_constant, sig2n_k)
-            #other_end += _spat_diag_out(self, w, 'ols', moran=moran) Need to consider W before implementing
+            other_end += _spat_diag_out(self, w, 'ols', moran=moran) #Need to consider W 
         output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
     def _get_spat_diag_props(self, x, sig2n_k):

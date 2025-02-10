@@ -26,8 +26,8 @@ These are the standard spatial regression models supported by the `spreg` packag
     
     spreg.GM_Lag
     spreg.ML_Lag
-    spreg.GMM_Error
     spreg.ML_Error
+    spreg.GMM_Error
     spreg.GM_Error
     spreg.GM_Error_Het
     spreg.GM_Error_Hom

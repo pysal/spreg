@@ -385,7 +385,7 @@ class NSLX(BaseNSLX):
         self.name_coords = name_coords
         self.title = "NONLINEAR SLX"
         self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(name_x) + ['wx'] * len(xw_name)
+        self.output['var_type'] = ['o'] + ['x'] * (len(name_x)-1) + ['wx'] * len(xw_name)
         self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _nslx_out(self, "top")
         self.other_mid = _nslx_out(self, "mid")
