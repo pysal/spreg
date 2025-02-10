@@ -3,7 +3,7 @@ Spatial diagnostics module
 """
 __author__ = "Luc Anselin lanselin@gmail.com, Daniel Arribas-Bel darribas@asu.edu, Pedro Amaral pedrovma@gmail.com"
 
-from .utils import spdot
+from .sputils import spdot
 
 # from scipy.stats.stats import chisqprob
 from scipy import stats
@@ -698,7 +698,10 @@ def lm_wx(reg, w):
     # preliminaries
     # set up X1 (constant) and X (no constant) as x1 and xx
     x1 = reg.x
-    xx = x1[:,1:]
+    try:
+        xx = reg.x[:, reg.output["var_type"] == 'x']
+    except KeyError:
+        xx = reg.x[:, reg._var_type == 'x']
     # WX
     wx = w.sparse * xx
     # end of preliminaries
@@ -739,7 +742,10 @@ def lm_spdurbin(reg,w):
     # preliminaries
     # set up X1 (constant) and X (no constant) as x1 and xx
     x1 = reg.x
-    xx = x1[:,1:]
+    try:
+        xx = reg.x[:, reg.output["var_type"] == 'x']
+    except KeyError:
+        xx = reg.x[:, reg._var_type == 'x']
     k = x1.shape[1]
     # WX
     wx = w.sparse * xx
@@ -761,15 +767,15 @@ def lm_spdurbin(reg,w):
     jj1b = np.hstack((np.zeros((1,k)),np.array([reg.n/(2.0*reg.sig2n)]).reshape(1,1)))
     jj11 = np.vstack((jj1a,jj1b))
     # J_12: matrix with k-1 rows X1'WX1b and X1'WX, and 1 row of zeros
-    jj12a = np.hstack((x1.T @ wxb, x1.T @ wx))
-    jj12 = np.vstack((jj12a,np.zeros((1,k))))
+    jj12a = np.hstack((x1.T @ wxb, spdot(x1.T, wx, array_out=True)))
+    jj12 = np.vstack((jj12a,np.zeros((1,jj12a.shape[1]))))
     # J_22 matrix with diagonal elements b'X1'W'WX1b + T.sig2n and X'W'WX
     # and off-diagonal element b'X1'W'WX
     jj22a = wxb.T @ wxb + pp * reg.sig2n
     jj22a = jj22a.reshape(1,1)
-    wxbtwx = (wxb.T @ wx).reshape(1,k-1)
+    wxbtwx = (wxb.T @ wx).reshape(1,xx.shape[1])
     jj22b = np.hstack((jj22a,wxbtwx))
-    wxtwx = wx.T @ wx
+    wxtwx = spdot(wx.T,wx, array_out=True)
     jj22c = np.hstack((wxbtwx.T,wxtwx))
     jj22 = np.vstack((jj22b,jj22c))
     # J^22 (the inverse) from J^22 = (J_22 - J_21.J_11^-1.J_12)^-1

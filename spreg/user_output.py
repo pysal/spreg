@@ -9,15 +9,16 @@ __author__ = (
 )
 import numpy as np
 import pandas as pd
-import geopandas as gpd     # new for check_coords
+import geopandas as gpd     
 import copy as COPY
 from . import sputils as spu
 from libpysal import weights
 from libpysal import graph
 import scipy
 from scipy.sparse.csr import csr_matrix
-from .utils import get_lags        # new for flex_wx
-from itertools import compress     # new for lfex_wx
+from scipy.sparse import issparse
+from .utils import get_lags        
+from itertools import compress    
 
 
 def set_name_ds(name_ds):
@@ -340,6 +341,26 @@ def set_name_multi(
             multireg[r].name_h = multireg[r].name_x + multireg[r].name_q
     return multireg
 
+def check_numeric_bool(array):
+    """Check if the array passed by a user to a regression class is
+    correctly structured. If the user's data is correctly formed this function
+    returns nothing, if not then an exception is raised. Note, this does not
+    check for model setup, simply the types of the objects."""
+
+    if array is None:
+        return
+    
+    if issparse(array):
+        array = array.data    
+
+    if np.issubdtype(array.dtype, np.bool_):
+        raise ValueError("The array contains boolean elements, which are not supported. Please convert them to integers.")
+    
+    if not np.issubdtype(array.dtype, np.number):
+        raise ValueError("The array contains non-numeric elements, which are not supported.")
+    
+    if not np.isfinite(array).all():
+        raise ValueError("The array contains NaN or infinite values, which are not supported.")  
 
 def check_arrays(*arrays):
     """Check if the objects passed by a user to a regression class are
@@ -472,6 +493,9 @@ def check_y(y, n, name_y=None):
         raise Exception(
             "y must be a single column array matching the length of other arrays"
         )
+    
+    check_numeric_bool(y)
+
     return y, name_y
 
 def check_endog(arrays, names):
@@ -498,6 +522,7 @@ def check_endog(arrays, names):
             pass
         elif len(arrays[i].shape) == 1:
             arrays[i].shape = (arrays[i].shape[0], 1)
+        check_numeric_bool(arrays[i])
     return (*arrays, *names)
 
 def check_weights(w, y, w_required=False, time=False, slx_lags=0, allow_wk=False):
@@ -768,12 +793,6 @@ def check_reg_list(regimes, name_regimes, n):
         )
     return regimes, name_regimes
 
-
-
-
-
-
-
 def check_regimes(reg_set, N=None, K=None):
     """Check if there are at least two regimes
 
@@ -836,38 +855,44 @@ def check_constant(x, name_x=None, just_rem=False):
             try:
                 name_x = x.columns.to_list()
             except AttributeError:
-                name_x = x.name
+                name_x = [x.name]
         x = x.to_numpy()
+
+    check_numeric_bool(x) 
     x_constant = COPY.copy(x)
     keep_x = COPY.copy(name_x)
     warn = None
+
+    if x_constant.ndim == 1:
+        x_constant = x_constant.reshape(-1, 1)
+
     if isinstance(x_constant, np.ndarray):
         diffs = np.ptp(x_constant, axis=0)
-        if sum(diffs == 0) > 0:
+        if np.any(diffs == 0):
             x_constant = np.delete(x_constant, np.nonzero(diffs == 0), 1)
     else:
         diffs = (x_constant.max(axis=0).toarray() - x_constant.min(axis=0).toarray())[0]
-        if sum(diffs == 0) > 0:
+        if np.any(diffs == 0):
             x_constant = x_constant[:, np.nonzero(diffs > 0)[0]]
 
-    if sum(diffs == 0) > 0:
+    if np.any(diffs == 0):
         if keep_x:
             rem_x = [keep_x[i] for i in np.nonzero(diffs == 0)[0]]
             warn = "Variable(s) " + str(rem_x) + " removed for being constant."
             keep_x[:] = [keep_x[i] for i in np.nonzero(diffs > 0)[0]]
         else:
-            if sum(diffs == 0) == 1:
+            if np.sum(diffs == 0) == 1:
                 warn = "One variable has been removed for being constant."
             else:
                 warn = (
-                    str(sum(diffs == 0))
+                    str(np.sum(diffs == 0))
                     + " variables have been removed for being constant."
                 )
+
     if not just_rem:
         return spu.sphstack(np.ones((x_constant.shape[0], 1)), x_constant), keep_x, warn
     else:
         return x_constant, keep_x, warn
-
 
 def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
     """

@@ -342,7 +342,7 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
             self.name_regimes = USER.set_name_ds(name_regimes)
             regimes_l = self._set_regimes(w, bigy.shape[0])
             self.name_x_r = self.name_x
-            x_constant, self.name_x = REGI.Regimes_Frame.__init__(
+            x_constant, self.name_x, xtype = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes_l,

@@ -31,6 +31,7 @@ __all__ = ["ML_Error"]
 
 
 class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
+
     """
     ML estimation of the spatial error model (note no consistency
     checks, diagnostics or constants added): :cite:`Anselin1988`
@@ -267,7 +268,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
         tr3 = waiTwai.diagonal().sum()
 
         v1 = np.vstack((tr2 + tr3, tr1 / self.sig2))
-        v2 = np.vstack((tr1 / self.sig2, self.n / (2.0 * self.sig2**2)))
+        v2 = np.vstack((tr1 / self.sig2, self.n / (2.0 * self.sig2 ** 2)))
 
         v = np.hstack((v1, v2))
 
@@ -296,6 +297,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
 
 
 class ML_Error(BaseML_Error):
+
     """
     ML estimation of the spatial error model with all results and diagnostics;
     :cite:`Anselin1988`
@@ -313,7 +315,11 @@ class ML_Error(BaseML_Error):
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX-Error type. 
     slx_vars     : either "All" (default) or list of booleans to select x variables
-                   to be lagged                  
+                   to be lagged
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see ML_Error_Regimes
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -473,6 +479,7 @@ class ML_Error(BaseML_Error):
         w,
         slx_lags=0,
         slx_vars="All",
+        regimes=None,
         method="full",
         epsilon=0.0000001,
         vm=False,
@@ -481,48 +488,61 @@ class ML_Error(BaseML_Error):
         name_w=None,
         name_ds=None,
         latex=False,
+        **kwargs
     ):
-        n = USER.check_arrays(y, x)
-        y, name_y = USER.check_y(y, n, name_y)
-        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
-        x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(
-            name_x, x_constant
-        )  # initialize in case None includes constant
-        set_warn(self, warn)
-        self.title = "ML SPATIAL ERROR"
-        if slx_lags > 0:
+        if regimes is not None:
+            from .ml_error_regimes import ML_Error_Regimes
+            self.__class__ = ML_Error_Regimes
+            self.__init__(
+                y=y,
+                x=x,
+                regimes=regimes,
+                w=w,
+                slx_lags=slx_lags,
+                method=method,
+                epsilon=epsilon,
+                vm=vm,
+                name_y=name_y,
+                name_x=name_x,
+                name_w=name_w,
+                name_ds=name_ds,
+                latex=latex,
+                **kwargs,
+            )
+        else:        
+            n = USER.check_arrays(y, x)
+            y, name_y = USER.check_y(y, n, name_y)
+            w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+            x_constant, name_x, warn = USER.check_constant(x, name_x)
+            name_x = USER.set_name_x(name_x, x_constant) # initialize in case None includes constant
+            set_warn(self, warn)
+            self.title = "ML SPATIAL ERROR"
+            if slx_lags >0:
             #    lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
             #    x_constant = np.hstack((x_constant, lag_x))
-            #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+    #            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
             #    name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant from name_x
-            x_constant, name_x = USER.flex_wx(
-                w,
-                x=x_constant,
-                name_x=name_x,
-                constant=True,
-                slx_lags=slx_lags,
-                slx_vars=slx_vars,
-            )
-            self.title += " WITH SLX (SLX-Error)"
-        self.title += " (METHOD = " + method + ")"
+                x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
+                self.title += " WITH SLX (SLX-Error)"
+            self.title += " (METHOD = " + method + ")"
 
-        method = method.upper()
-        BaseML_Error.__init__(
-            self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon
-        )
-        self.name_ds = USER.set_name_ds(name_ds)
-        self.name_y = USER.set_name_y(name_y)
-        self.name_x = name_x
-        self.name_x.append("lambda")
-        self.name_w = USER.set_name_w(name_w, w)
-        self.aic = DIAG.akaike(reg=self)
-        self.schwarz = DIAG.schwarz(reg=self)
-        self.output = pd.DataFrame(self.name_x, columns=["var_names"])
-        self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
-        self.output["regime"], self.output["equation"] = (0, 0)
-        self.other_top = _nonspat_top(self, ml=True)
-        output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
+            method = method.upper()
+            BaseML_Error.__init__(
+                self, y=y, x=x_constant, w=w, method=method, epsilon=epsilon
+            )
+            self.name_ds = USER.set_name_ds(name_ds)
+            self.name_y = USER.set_name_y(name_y)
+            self.name_x = name_x
+            self.name_x.append("lambda")
+            self.name_w = USER.set_name_w(name_w, w)
+            self.aic = DIAG.akaike(reg=self)
+            self.schwarz = DIAG.schwarz(reg=self)
+            self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+            self.output['var_type'] = ['o'] + ['x'] * (len(self.name_x)-2) + ['lambda']
+            self.output['regime'], self.output['equation'] = (0, 0)
+            self.other_top = _nonspat_top(self, ml=True)
+            output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
 
 def err_c_loglik(lam, n, y, ylag, x, xlag, W):
@@ -599,7 +619,6 @@ def _test():
     np.set_printoptions(suppress=True)
     doctest.testmod()
     np.set_printoptions(suppress=start_suppress)
-
 
 if __name__ == "__main__":
     _test()

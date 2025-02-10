@@ -464,7 +464,7 @@ class SUR(BaseSUR, REGI.Regimes_Frame):
                     self.constant_regi, self.cols2regi, bigX[r], add_cons=False
                 )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                bigX[r], self.name_bigX[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigX[r],
                     regimes,
@@ -887,7 +887,7 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
                     add_cons=False,
                 )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                bigX[r], self.name_bigX[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigX[r],
                     regimes,
@@ -895,7 +895,7 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
                     cols2regi=cols2regi_dic[r],
                     names=name_bigX[r],
                 )
-                bigq[r], self.name_bigq[r] = REGI.Regimes_Frame.__init__(
+                bigq[r], self.name_bigq[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigq[r],
                     regimes,
@@ -903,7 +903,7 @@ class ThreeSLS(BaseThreeSLS, REGI.Regimes_Frame):
                     cols2regi="all",
                     names=name_bigq[r],
                 )
-                bigyend[r], self.name_bigyend[r] = REGI.Regimes_Frame.__init__(
+                bigyend[r], self.name_bigyend[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigyend[r],
                     regimes,

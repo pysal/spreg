@@ -8,7 +8,6 @@ from collections import namedtuple
 from warnings import warn
 from libpysal.weights import w_subset
 from .utils import set_endog
-from .twosls_regimes import TSLS_Regimes
 import time
 import numpy as np
 import copy
@@ -350,92 +349,81 @@ class Skater_reg(object):
         If a quorum is passed and the labels do not meet quorum, the score is inf.
 
         data        :   (N,P) array of data on which to compute the score of the regions expressed in labels
-        data_reg    :   list containing:
-                        1- a callable spreg regression method (ex. OLS or GM_Lag)
-                        2- np.ndarray of (N,1) shape with N observations on the depedent variable for the regression
-                        3- np.ndarray of (N,k) shape with N observations and k columns containing the explanatory variables (constant must not be included)
-                        4- pysal W object to be used in the regression (optional)
+        data_reg    :   dict containing:
+                        - 'reg': callable spreg regression method (e.g., OLS or GM_Lag)
+                        - 'y': (N,1) np.ndarray with dependent variable
+                        - 'x': (N,k) np.ndarray with explanatory variables (excluding constant)
+                        - 'w': (optional) pysal W object for spatial weights
+                        - 'yend', 'q': (optional) np.ndarrays for instrumental variables
         all_labels  :   (N,) flat vector of labels expressing the classification of each observation into a region considering the cut under evaluation.
         quorum      :   int expressing the minimum size of regions. Can be -inf if there is no lower bound.
                         Any region below quorum makes the score inf.
         current_labels: (N,) flat vector of labels expressing the classification of each observation into a region not considering the cut under evaluation.
-
         current_tree: integer indicating the tree's label currently being considered for division
         """
 
-        labels, subtree_quorums = self._prep_score(
-            all_labels, current_tree, current_labels
-        )
+        labels, subtree_quorums = self._prep_score(all_labels, current_tree, current_labels)
         if (subtree_quorums < quorum).any():
             return np.inf, None
+
         set_labels = set(labels)
         if data_reg is not None:
-            kargs = {
-                k: v
-                for k, v in data_reg.items()
-                if k not in ["reg", "y", "x", "w", "x_nd"]
-            }
+            kargs = {k: v for k, v in data_reg.items() if k not in ["reg", "y", "x", "w", "x_nd", "yend", "q"]}
             trees_scores = {}
 
-            if data_reg["reg"].__name__ == "GM_Lag" or data_reg["reg"].__name__ == "BaseGM_Lag":
+            if data_reg["reg"].__name__ in {"GM_Lag", "BaseGM_Lag"}:
                 try:
                     x = np.hstack((np.ones((data_reg["x"].shape[0], 1)), data_reg["x"]))
-                    reg = TSLS_Regimes(
-                        y=data_reg["y"],
-                        x=x,
-                        yend=data_reg["yend"],
-                        q=data_reg["q"],
-                        regimes=all_labels,)
-                except:
+                except np.linalg.LinAlgError:
                     x = _const_x(data_reg["x"])
-                    reg = TSLS_Regimes(
-                        y=data_reg["y"],
-                        x=x,
-                        yend=data_reg["yend"],
-                        q=data_reg["q"],
-                        regimes=all_labels,)
+                from .twosls_regimes import TSLS_Regimes
+                reg = TSLS_Regimes(
+                    y=data_reg["y"],
+                    x=x,
+                    yend=data_reg.get("yend"),
+                    q=data_reg.get("q"),
+                    regimes=all_labels,
+                )
                 score = np.dot(reg.u.T, reg.u)[0][0]
             else:
+                label_indices = {l: np.where(all_labels == l)[0] for l in set_labels}
 
                 for l in set_labels:
-                    x = data_reg["x"][all_labels == l]
-                    if np.linalg.matrix_rank(x) < x.shape[1]:
-                        small_diag_indices = np.abs(np.diag(np.linalg.qr(x)[1])) < 1e-10
-                        x = x[:, ~small_diag_indices]
+                    regi_ids = label_indices[l]
 
-                    if "w" not in data_reg:
-                        try:
-                            x = np.hstack((np.ones((x.shape[0], 1)), x))
-                            reg = data_reg["reg"](
-                                y=data_reg["y"][all_labels == l], x=x, **kargs
-                            )
-                        except np.linalg.LinAlgError:
-                            x = _const_x(x)
-                            reg = data_reg["reg"](
-                                y=data_reg["y"][all_labels == l], x=x, **kargs
-                            )
-                    else:
-                        l_arrays = np.array(all_labels)
-
-                        regi_ids = list(np.where(l_arrays == l)[0])
+                    if "w" in data_reg:
                         w_ids = list(map(data_reg["w"].id_order.__getitem__, regi_ids))
-                        w_regi_i = w_subset(data_reg["w"], w_ids, silence_warnings=True)
-                        try:
-                            x = np.hstack((np.ones((x.shape[0], 1)), x))
-                            reg = data_reg["reg"](
-                                y=data_reg["y"][all_labels == l], x=x, w=w_regi_i, **kargs
-                            )
-                        except np.linalg.LinAlgError:
-                            x = _const_x(x)
-                            reg = data_reg["reg"](
-                                y=data_reg["y"][all_labels == l], x=x, w=w_regi_i, **kargs
-                            )
+                        kargs["w"] = w_subset(data_reg["w"], w_ids, silence_warnings=True)
+
+                    x = data_reg["x"][regi_ids]
+                    y = data_reg["y"][regi_ids]
+                    yend = data_reg["yend"][regi_ids] if "yend" in data_reg else None
+                    q = data_reg["q"][regi_ids] if "q" in data_reg else None
+
+                    temp_vars = {"x": x, "yend": yend, "q": q}
+                    for key in ["x", "yend", "q"]:
+                        mat = temp_vars[key]
+                        if mat is not None and mat.size > 0 and np.linalg.matrix_rank(mat) < mat.shape[1]:
+                            _, r = np.linalg.qr(mat)
+                            small_diag_indices = np.abs(np.diag(r)) < 1e-10
+                            temp_vars[key] = mat[:, ~small_diag_indices]
+
+                    x = temp_vars["x"]
+                    try:
+                        x = np.hstack((np.ones((x.shape[0], 1)), x))
+                    except np.linalg.LinAlgError:
+                        x = _const_x(x)
+
+                    if temp_vars["yend"] is not None:
+                        kargs["yend"] = temp_vars["yend"]
+                        kargs["q"] = temp_vars["q"]
+
+                    reg = data_reg["reg"](y=y, x=x, **kargs)
                     trees_scores[l] = np.dot(reg.u.T, reg.u)[0][0]
+
                 score = sum(trees_scores.values())
         else:
-            part_scores, score, trees_scores = self._data_reg_none(
-                data, all_labels, l, set_labels
-            )
+            part_scores, score, trees_scores = self._data_reg_none(data, all_labels, set_labels)
 
         return score, trees_scores
 
@@ -506,7 +494,7 @@ class Skater_reg(object):
             score = sum(trees_scores.values())
         else:
             part_scores, score, trees_scores = self._data_reg_none(
-                data, all_labels, l, set_labels
+                data, all_labels, set_labels
             )
         return score, trees_scores
 
@@ -523,7 +511,7 @@ class Skater_reg(object):
         _, subtree_quorums = np.unique(labels, return_counts=True)
         return labels, subtree_quorums
 
-    def _data_reg_none(self, data, all_labels, l, set_labels):
+    def _data_reg_none(self, data, all_labels, set_labels):
         assert data.shape[0] == len(
             all_labels
         ), "Length of label array ({}) does not match " "length of data ({})! ".format(

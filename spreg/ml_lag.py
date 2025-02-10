@@ -336,6 +336,10 @@ class ML_Lag(BaseML_Lag):
                    If slx_lags>0, the specification becomes of the Spatial Durbin type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
                    to be lagged
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see ML_Lag_Regimes
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method
@@ -600,6 +604,7 @@ class ML_Lag(BaseML_Lag):
         w,
         slx_lags=0,
         slx_vars="All",
+        regimes=None,
         method="full",
         epsilon=0.0000001,
         spat_impacts="simple",
@@ -610,68 +615,90 @@ class ML_Lag(BaseML_Lag):
         name_w=None,
         name_ds=None,
         latex=False,
+        **kwargs
     ):
-        n = USER.check_arrays(y, x)
-        y, name_y = USER.check_y(y, n, name_y)
-        w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
-        x_constant, name_x, warn = USER.check_constant(x, name_x)
-        name_x = USER.set_name_x(name_x, x_constant) # needs to be initialized for none, now with constant
-        set_warn(self, warn)
-        method = method.upper()
-        # using flex_wx
-        kx = len(name_x)
-        if slx_lags > 0:
-            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
-            if isinstance(slx_vars,list):
-                kw = slx_vars.count(True)
-                if kw < kx - 1:
-                    spat_diag = False   # no common factor test
-            else:
-                kw = kx-1
-    
-
-        BaseML_Lag.__init__(
-            self, y=y, x=x_constant, w=w, slx_lags=slx_lags, method=method, epsilon=epsilon
-        )
-        # increase by 1 to have correct aic and sc, include rho in count
-        self.k += 1
-
-        if slx_lags>0:
-    #        kx = len(name_x)
-    #        name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
-
-            self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG WITH SLX - SPATIAL DURBIN MODEL" + " (METHOD = " + method + ")"
-#            var_types = ['x'] * kx + ['wx'] * (kx-1) * slx_lags + ['rho']
-            var_types = ['x'] * kx + ['wx'] * (kw) * slx_lags + ['rho']
+        if regimes is not None:
+            from .ml_lag_regimes import ML_Lag_Regimes
+            self.__class__ = ML_Lag_Regimes
+            self.__init__(
+                y=y,
+                x=x,
+                regimes=regimes,
+                w=w,
+                slx_lags=slx_lags,
+                method=method,
+                epsilon=epsilon,
+                spat_impacts=spat_impacts,
+                vm=vm,
+                spat_diag=spat_diag,
+                name_y=name_y,
+                name_x=name_x,
+                name_w=name_w,
+                name_ds=name_ds,
+                latex=latex,
+                **kwargs
+            )
         else:
-            self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
-            var_types = ['x'] * len(name_x) + ['rho']
-        self.slx_lags = slx_lags
-        self.slx_vars = slx_vars
-        self.name_ds = USER.set_name_ds(name_ds)
-        self.name_y = USER.set_name_y(name_y)
-        self.name_x = name_x  # already has constant
-        name_ylag = USER.set_name_yend_sp(self.name_y)
-        self.name_x.append(name_ylag)  # rho changed to last position
-        self.name_w = USER.set_name_w(name_w, w)
-        self.aic = DIAG.akaike(reg=self)
-        self.schwarz = DIAG.schwarz(reg=self)
-        self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-        self.output['var_type'] = var_types
-        self.output['regime'], self.output['equation'] = (0, 0)
-        self.other_top = _spat_pseudo_r2(self)
-        self.other_top += _nonspat_top(self, ml=True)
-        diag_out = None
-        if spat_diag and slx_lags==1:
-            diag_out = _spat_diag_out(self, w, 'yend', ml=True)
-        if spat_impacts:
-            self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags,slx_vars)
-            try:
-                diag_out += impacts_str
-            except TypeError:
-                diag_out = impacts_str
-        output(reg=self, vm=vm, robust=False, other_end=diag_out, latex=latex)
+            n = USER.check_arrays(y, x)
+            y, name_y = USER.check_y(y, n, name_y)
+            w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
+            x_constant, name_x, warn = USER.check_constant(x, name_x)
+            name_x = USER.set_name_x(name_x, x_constant) # needs to be initialized for none, now with constant
+            set_warn(self, warn)
+            method = method.upper()
+            # using flex_wx
+            kx = len(name_x)
+            if slx_lags > 0:
+                x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
+                if isinstance(slx_vars,list):
+                    kw = slx_vars.count(True)
+                    if kw < kx - 1:
+                        spat_diag = False   # no common factor test
+                else:
+                    kw = kx-1
+        
+
+            BaseML_Lag.__init__(
+                self, y=y, x=x_constant, w=w, slx_lags=slx_lags, method=method, epsilon=epsilon
+            )
+            # increase by 1 to have correct aic and sc, include rho in count
+            self.k += 1
+
+            if slx_lags>0:
+        #        kx = len(name_x)
+        #        name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # exclude constant
+
+                self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG WITH SLX - SPATIAL DURBIN MODEL" + " (METHOD = " + method + ")"
+                var_types = ['o'] + ['x'] * (kx-1) + ['wx'] * (kw) * slx_lags + ['rho']
+            else:
+                self.title = "MAXIMUM LIKELIHOOD SPATIAL LAG" + " (METHOD = " + method + ")"
+                var_types = ['o'] + ['x'] * (len(name_x)-1) + ['rho']
+            self.slx_lags = slx_lags
+            self.slx_vars = slx_vars
+            self.name_ds = USER.set_name_ds(name_ds)
+            self.name_y = USER.set_name_y(name_y)
+            self.name_x = name_x  # already has constant
+            name_ylag = USER.set_name_yend_sp(self.name_y)
+            self.name_x.append(name_ylag)  # rho changed to last position
+            self.name_w = USER.set_name_w(name_w, w)
+            self.aic = DIAG.akaike(reg=self)
+            self.schwarz = DIAG.schwarz(reg=self)
+            self.output = pd.DataFrame(self.name_x, columns=['var_names'])
+            self.output['var_type'] = var_types
+            self.output['regime'], self.output['equation'] = (0, 0)
+            self.other_top = _spat_pseudo_r2(self)
+            self.other_top += _nonspat_top(self, ml=True)
+            diag_out = None
+            if spat_diag and slx_lags==1:
+                diag_out = _spat_diag_out(self, w, 'yend', ml=True)
+            if spat_impacts:
+                self.sp_multipliers, impacts_str = _summary_impacts(self, w, spat_impacts, slx_lags,slx_vars)
+                try:
+                    diag_out += impacts_str
+                except TypeError:
+                    diag_out = impacts_str
+            output(reg=self, vm=vm, robust=False, other_end=diag_out, latex=latex)
 
 def lag_c_loglik(rho, n, e0, e1, W):
     # concentrated log-lik for lag model, no constants, brute force

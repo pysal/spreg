@@ -323,7 +323,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
                         self.constant_regi, self.cols2regi, bigX[r], add_cons=False
                     )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                bigX[r], self.name_bigX[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigX[r],
                     regimes,
@@ -332,7 +332,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
                     names=name_bigX[r],
                 )
                 if bigq is not None:
-                    bigq[r], self.name_bigq[r] = REGI.Regimes_Frame.__init__(
+                    bigq[r], self.name_bigq[r], xtype = REGI.Regimes_Frame.__init__(
                         self,
                         bigq[r],
                         regimes,
@@ -341,7 +341,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
                         names=name_bigq[r],
                     )
                 if bigyend is not None:
-                    bigyend[r], self.name_bigyend[r] = REGI.Regimes_Frame.__init__(
+                    bigyend[r], self.name_bigyend[r], xtype = REGI.Regimes_Frame.__init__(
                         self,
                         bigyend[r],
                         regimes,

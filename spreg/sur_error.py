@@ -364,7 +364,7 @@ class SURerrorGM(BaseSURerrorGM, REGI.Regimes_Frame):
                     self.constant_regi, self.cols2regi, bigX[r], add_cons=False
                 )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                bigX[r], self.name_bigX[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigX[r],
                     regimes,
@@ -810,7 +810,7 @@ class SURerrorML(BaseSURerrorML, REGI.Regimes_Frame):
                     self.constant_regi, self.cols2regi, bigX[r], add_cons=False
                 )
                 USER.check_regimes(self.regimes_set, bigy[0].shape[0], bigX[r].shape[1])
-                bigX[r], self.name_bigX[r] = REGI.Regimes_Frame.__init__(
+                bigX[r], self.name_bigX[r], xtype = REGI.Regimes_Frame.__init__(
                     self,
                     bigX[r],
                     regimes,

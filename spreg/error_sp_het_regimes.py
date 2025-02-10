@@ -1,7 +1,6 @@
 """
 Spatial Error with Heteroskedasticity and Regimes family of models
 """
-
 __author__ = "Luc Anselin luc.anselin@asu.edu, Pedro V. Amaral pedro.amaral@asu.edu"
 
 import numpy as np
@@ -22,15 +21,7 @@ from .error_sp_het import (
     get_vc_het_tsls,
     get_Omega_GS2SLS,
 )
-from .utils import (
-    RegressionPropsY,
-    spdot,
-    set_endog,
-    sphstack,
-    set_warn,
-    sp_att,
-    get_lags,
-)
+from .utils import RegressionPropsY, spdot, set_endog, sphstack, set_warn, sp_att, get_lags
 from scipy import sparse as SP
 from libpysal.weights.spatial_lag import lag_spatial
 from platform import system
@@ -39,6 +30,7 @@ from .output import output, _summary_iteration, _spat_pseudo_r2
 
 
 class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
+
     """
     GMM method for a spatial error model with heteroskedasticity and regimes;
     based on Arraiz et al :cite:`Arraiz2010`, following Anselin :cite:`Anselin2011`.
@@ -333,6 +325,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         latex=False,
         hard_bound=False,
     ):
+
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
@@ -351,7 +344,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         set_warn(self, warn)
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
-        if slx_lags > 0:
+        if slx_lags >0:
             lag_x = get_lags(w, x_constant, slx_lags)
             x_constant = np.hstack((x_constant, lag_x))
             name_x += USER.set_name_spatial_lags(name_x, slx_lags)
@@ -387,14 +380,14 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     "All coefficients must vary across regimes if regime_err_sep = True."
                 )
         else:
-            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
-            name_x = USER.set_name_x(name_x, x_constant)
-            self.x, self.name_x, x_rlist = REGI.Regimes_Frame.__init__(
+            x_constant1 = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant, constant=True)
+            self.x, self.name_x, xtype, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
-                constant_regi=None,
-                cols2regi=cols2regi,
+                constant_regi=constant_regi,
+                cols2regi=cols2regi[1:],
                 names=name_x,
                 rlist=True,
             )
@@ -418,7 +411,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.iteration, eps = 0, 1
             while self.iteration < max_iter and eps > epsilon:
                 # 2a. reg -->\hat{betas}
-                xs = UTILS.get_spFilter(w, lambda_old, x_constant)
+                xs = UTILS.get_spFilter(w, lambda_old, x_constant1)
                 ys = UTILS.get_spFilter(w, lambda_old, y)
                 xs = REGI.Regimes_Frame.__init__(
                     self, xs, regimes, constant_regi=None, cols2regi=cols2regi
@@ -446,36 +439,24 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             if slx_lags == 0:
                 self.title = "GM SPATIALLY WEIGHTED MODEL (HET) - REGIMES"
             else:
-                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (Error-HET) - REGIMES"
-
+                self.title = "GM SPATIALLY WEIGHTED MODEL + SLX (Error-HET) - REGIMES"            
+            
             self.name_x.append("lambda")
             self.kf += 1
             self.chow = REGI.Chow(self)
             self._cache = {}
-            self.output = pd.DataFrame(self.name_x, columns=["var_names"])
-            self.output["var_type"] = ["x"] * (len(self.name_x) - 1) + ["lambda"]
-            self.output["regime"] = x_rlist + ["_Global"]
-            self.output["equation"] = 0
+            self.output = pd.DataFrame(self.name_x,
+                                       columns=['var_names'])
+            self.output['var_type'] = xtype + ['lambda']
+            self.output['regime'] = x_rlist + ['_Global']
+            self.output['equation'] = 0
             self.other_top = _summary_iteration(self)
             output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _error_het_regimes_multi(
-        self,
-        y,
-        x,
-        regimes,
-        w,
-        slx_lags,
-        cores,
-        max_iter,
-        epsilon,
-        step1c,
-        cols2regi,
-        vm,
-        name_x,
-        latex,
-        hard_bound,
+        self, y, x, regimes, w, slx_lags, cores, max_iter, epsilon, step1c, cols2regi, vm, name_x, latex, hard_bound
     ):
+
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
         )
@@ -557,9 +538,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         results = {}
         self.name_y, self.name_x = [], []
         counter = 0
-        self.output = pd.DataFrame(
-            columns=["var_names", "var_type", "regime", "equation"]
-        )
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -576,34 +555,26 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
-                r
-            ].betas
-            self.u[regi_ids[r],] = results[r].u
-            self.predy[regi_ids[r],] = results[r].predy
-            self.e_filtered[regi_ids[r],] = results[r].e_filtered
+            self.betas[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.e_filtered[
+                regi_ids[r],
+            ] = results[r].e_filtered
             self.name_y += results[r].name_y
-            results[r].name_x = [
-                str(r) + "_lambda" if value == "lambda" else value
-                for value in results[r].name_x
-            ]
+            results[r].name_x = [str(r) + '_lambda' if value == 'lambda' else value for value in results[r].name_x]
             self.name_x += results[r].name_x
             results[r].other_top = _summary_iteration(results[r])
-            self.output = pd.concat(
-                [
-                    self.output,
-                    pd.DataFrame(
-                        {
-                            "var_names": results[r].name_x,
-                            "var_type": ["x"] * (len(results[r].name_x) - 1)
-                            + ["lambda"],
-                            "regime": r,
-                            "equation": r,
-                        }
-                    ),
-                ],
-                ignore_index=True,
-            )
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
+                                                                'var_type': ['o'] + ['x'] * (len(results[r].name_x)-2) +
+                                                                            ['lambda'],
+                                                                'regime': r, 'equation': r})], ignore_index=True)
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
@@ -611,6 +582,7 @@ class GM_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
 
 class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
+
     """
     GMM method for a spatial error model with heteroskedasticity, regimes and
     endogenous variables, with results and diagnostics; based on Arraiz et al
@@ -966,6 +938,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         latex=False,
         hard_bound=False,
     ):
+
         n = USER.check_arrays(y, x, yend, q)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True, slx_lags=slx_lags)
@@ -1030,21 +1003,21 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                     "All coefficients must vary across regimes if regime_err_sep = True."
                 )
         else:
-            x_constant = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
-            name_x = USER.set_name_x(name_x, x_constant)
-            q, name_q = REGI.Regimes_Frame.__init__(
+            x_constant1 = sphstack(np.ones((x_constant.shape[0], 1)), x_constant)
+            name_x = USER.set_name_x(name_x, x_constant, constant=True)
+            q, name_q, _ = REGI.Regimes_Frame.__init__(
                 self, q, regimes, constant_regi=None, cols2regi="all", names=name_q
             )
-            x, name_x, x_rlist = REGI.Regimes_Frame.__init__(
+            x, name_x, xtype, x_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 x_constant,
                 regimes,
-                constant_regi=None,
-                cols2regi=cols2regi,
+                constant_regi=constant_regi,
+                cols2regi=cols2regi[1:],
                 names=name_x,
                 rlist=True,
             )
-            yend2, name_yend, yend_rlist = REGI.Regimes_Frame.__init__(
+            yend2, name_yend, xtypeyd, yend_rlist = REGI.Regimes_Frame.__init__(
                 self,
                 yend,
                 regimes,
@@ -1088,7 +1061,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.iteration, eps = 0, 1
             while self.iteration < max_iter and eps > epsilon:
                 # 2a. reg -->\hat{betas}
-                xs = UTILS.get_spFilter(w, lambda1, x_constant)
+                xs = UTILS.get_spFilter(w, lambda1, x_constant1)
                 xs = REGI.Regimes_Frame.__init__(
                     self, xs, regimes, constant_regi=None, cols2regi=cols2regi
                 )[0]
@@ -1141,20 +1114,17 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.kf += 1
             self.chow = REGI.Chow(self)
             self._cache = {}
-            self.output = pd.DataFrame(self.name_z, columns=["var_names"])
-            self.output["var_type"] = (
-                ["x"] * len(self.name_x) + ["yend"] * len(self.name_yend) + ["lambda"]
-            )
-            self.output["regime"] = x_rlist + yend_rlist + ["_Global"]
-            self.output["equation"] = 0
+            self.output = pd.DataFrame(self.name_z,
+                                       columns=['var_names'])
+            self.output['var_type'] = xtype + xtypeyd + ['lambda']
+            self.output['regime'] = x_rlist + yend_rlist + ['_Global']
+            self.output['equation'] = 0
             if summ:
                 self.other_top = _summary_iteration(self)
                 if slx_lags == 0:
-                    self.title = "GM SPATIALLY WEIGHTED 2SLS (HET) - REGIMES"
+                    self.title = ("GM SPATIALLY WEIGHTED 2SLS (HET) - REGIMES")
                 else:
-                    self.title = (
-                        "GM SPATIALLY WEIGHTED 2SLS + SLX (Error-HET) - REGIMES"
-                    )
+                    self.title = ("GM SPATIALLY WEIGHTED 2SLS + SLX (Error-HET) - REGIMES")
                 output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
 
     def _endog_error_het_regimes_multi(
@@ -1180,6 +1150,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         latex,
         hard_bound,
     ):
+
         regi_ids = dict(
             (r, list(np.where(np.array(regimes) == r)[0])) for r in self.regimes_set
         )
@@ -1284,9 +1255,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.name_h,
         ) = ([], [], [], [], [], [])
         counter = 0
-        self.output = pd.DataFrame(
-            columns=["var_names", "var_type", "regime", "equation"]
-        )
+        self.output = pd.DataFrame(columns=['var_names', 'var_type', 'regime', 'equation'])
         for r in self.regimes_set:
             """
             if is_win:
@@ -1303,12 +1272,18 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                 (counter * self.kr) : ((counter + 1) * self.kr),
                 (counter * self.kr) : ((counter + 1) * self.kr),
             ] = results[r].vm
-            self.betas[(counter * self.kr) : ((counter + 1) * self.kr),] = results[
-                r
-            ].betas
-            self.u[regi_ids[r],] = results[r].u
-            self.predy[regi_ids[r],] = results[r].predy
-            self.e_filtered[regi_ids[r],] = results[r].e_filtered
+            self.betas[
+                (counter * self.kr) : ((counter + 1) * self.kr),
+            ] = results[r].betas
+            self.u[
+                regi_ids[r],
+            ] = results[r].u
+            self.predy[
+                regi_ids[r],
+            ] = results[r].predy
+            self.e_filtered[
+                regi_ids[r],
+            ] = results[r].e_filtered
             self.name_y += results[r].name_y
             self.name_x += results[r].name_x
             self.name_yend += results[r].name_yend
@@ -1316,36 +1291,21 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.name_z += results[r].name_z
             self.name_h += results[r].name_h
             if add_lag != False:
-                self.predy_e[regi_ids[r],] = results[r].predy_e
-                self.e_pred[regi_ids[r],] = results[r].e_pred
+                self.predy_e[
+                    regi_ids[r],
+                ] = results[r].predy_e
+                self.e_pred[
+                    regi_ids[r],
+                ] = results[r].e_pred
                 results[r].other_top = _spat_pseudo_r2(results[r])
-                v_type = (
-                    ["x"] * len(results[r].name_x)
-                    + ["yend"] * (len(results[r].name_yend) - 1)
-                    + ["rho", "lambda"]
-                )
+                v_type = ['o'] + ['x'] * (len(results[r].name_x)-1) + ['yend'] * (len(results[r].name_yend)-1) + ['rho','lambda']
             else:
                 results[r].other_top = ""
-                v_type = (
-                    ["x"] * len(results[r].name_x)
-                    + ["yend"] * len(results[r].name_yend)
-                    + ["lambda"]
-                )
+                v_type = ['o'] + ['x'] * (len(results[r].name_x)-1) + ['yend'] * len(results[r].name_yend) + ['lambda']
             results[r].other_top += _summary_iteration(results[r])
-            self.output = pd.concat(
-                [
-                    self.output,
-                    pd.DataFrame(
-                        {
-                            "var_names": results[r].name_z,
-                            "var_type": v_type,
-                            "regime": r,
-                            "equation": r,
-                        }
-                    ),
-                ],
-                ignore_index=True,
-            )
+            self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_z,
+                                                                'var_type': v_type,
+                                                                'regime': r, 'equation': r})], ignore_index=True)
             counter += 1
         self.chow = REGI.Chow(self)
         self.multi = results
@@ -1353,6 +1313,7 @@ class GM_Endog_Error_Het_Regimes(RegressionPropsY, REGI.Regimes_Frame):
 
 
 class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
+
     """
     GMM method for a spatial lag and error model with heteroskedasticity,
     regimes and endogenous variables, with results and diagnostics;
@@ -1399,7 +1360,7 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
                    the spatial parameter is fixed across regimes.
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
-                   If slx_lags>0, the specification becomes of the GNSM type.
+                   If slx_lags>0, the specification becomes of the GNSM type.                   
     w_lags       : integer
                    Orders of W to include as instruments for the spatially
                    lagged dependent variable. For example, w_lags=1, then
@@ -1751,10 +1712,10 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
         hard_bound=False,
     ):
         if regime_lag_sep and not regime_err_sep:
-            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")
+            set_warn(self, "regime_err_sep set to True when regime_lag_sep=True.")                
             regime_err_sep = True
         if regime_err_sep and not regime_lag_sep:
-            set_warn(self, "regime_err_sep set to False when regime_lag_sep=False.")
+            set_warn(self, "regime_err_sep set to False when regime_lag_sep=False.")                
             regime_err_sep = False
         n = USER.check_arrays(y, x)
         self.step1c = step1c
@@ -1771,35 +1732,20 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
         regimes, name_regimes = USER.check_reg_list(regimes, name_regimes, n)
 
         if regime_err_sep and any(col != True for col in cols2regi):
-            set_warn(
-                self,
-                "All coefficients must vary across regimes if regime_err_sep = True, so setting cols2regi = 'all'.",
-            )
+            set_warn(self, "All coefficients must vary across regimes if regime_err_sep = True, so setting cols2regi = 'all'.")
             cols2regi = "all"
 
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(
-                y, x_constant, w, yend, q, w_lags, lag_q, slx_lags
-            )
+            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags)
             x_constant = np.hstack((x_constant, wx))
             name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
-            name_q.extend(
-                USER.set_name_q_sp(
-                    name_slx[-len(name_x) :], w_lags, name_q, lag_q, force_all=True
-                )
-            )
-            name_x += name_slx
-            cols2regi = REGI.check_cols2regi(
-                constant_regi, cols2regi, x_constant[:, :-1], yend=yend2, add_cons=False
-            )
+            name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
+            name_x += name_slx   
+            cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant[:, :-1], yend=yend2, add_cons=False)
         else:
-            name_q.extend(
-                USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True)
-            )
+            name_q.extend(USER.set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=True))
             yend2, q2 = yend, q
-            cols2regi = REGI.check_cols2regi(
-                constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False
-            )
+            cols2regi = REGI.check_cols2regi(constant_regi, cols2regi, x_constant, yend=yend2, add_cons=False)
 
         self.regimes_set = REGI._get_regimes_set(regimes)
         self.regimes = regimes
@@ -1861,10 +1807,8 @@ class GM_Combo_Het_Regimes(GM_Endog_Error_Het_Regimes):
             if slx_lags == 0:
                 self.title = "GM SPATIALLY WEIGHTED 2SLS-COMBO MODEL (HET) - REGIMES"
             else:
-                self.title = (
-                    "GM SPATIALLY WEIGHTED 2SLS-COMBO + SLX (GNSM-HET) - REGIMES"
-                )
-            self.output.iat[-2, self.output.columns.get_loc("var_type")] = "rho"
+                self.title = "GM SPATIALLY WEIGHTED 2SLS-COMBO + SLX (GNSM-HET) - REGIMES"
+            self.output.iat[-2, self.output.columns.get_loc('var_type')] = 'rho'
             self.other_top = _spat_pseudo_r2(self)
             self.other_top += _summary_iteration(self)
             output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
@@ -1891,13 +1835,7 @@ def _work_error(
     y_r = y[regi_ids[r]]
     x_r = x[regi_ids[r]]
     model = BaseGM_Error_Het(
-        y_r,
-        x_r,
-        w_r.sparse,
-        max_iter=max_iter,
-        epsilon=epsilon,
-        step1c=step1c,
-        hard_bound=hard_bound,
+        y_r, x_r, w_r.sparse, max_iter=max_iter, epsilon=epsilon, step1c=step1c, hard_bound=hard_bound,
     )
     set_warn(model, warn)
     model.w = w_r
@@ -1967,22 +1905,22 @@ def _work_endog_error(
             w_r, model.y, model.predy, model.yend[:, -1].reshape(model.n, 1), model.rho
         )
         set_warn(model, warn)
-
+        
     if slx_lags == 0:
         if add_lag != False:
-            model.title = "GM SPATIALLY WEIGHTED 2SLS-COMBO MODEL (HET)- REGIME %s" % r
+            model.title = "GM SPATIALLY WEIGHTED 2SLS-COMBO MODEL (HET)- REGIME %s" % r            
         else:
             model.title = "GM SPATIALLY WEIGHTED 2SLS (HET) - REGIME %s" % r
     else:
         if add_lag != False:
-            model.title = "GM SPATIAL COMBO MODEL + SLX (GNSM-HET) - REGIME %s" % r
+            model.title = "GM SPATIAL COMBO MODEL + SLX (GNSM-HET) - REGIME %s" % r   
         else:
             model.title = "GM SPATIALLY WEIGHTED 2SLS + SLX (Error-HET) - REGIME %s" % r
     model.name_ds = name_ds
     model.name_y = "%s_%s" % (str(r), name_y)
     model.name_x = ["%s_%s" % (str(r), i) for i in name_x]
     model.name_yend = ["%s_%s" % (str(r), i) for i in name_yend]
-    model.name_z = model.name_x + model.name_yend + [str(r) + "lambda"]
+    model.name_z = model.name_x + model.name_yend + [str(r)+"lambda"]
     model.name_q = ["%s_%s" % (str(r), i) for i in name_q]
     model.name_h = model.name_x + model.name_q
     model.name_w = name_w
@@ -2005,9 +1943,9 @@ if __name__ == "__main__":
     import numpy as np
     import libpysal
 
-    db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+    db = libpysal.io.open(libpysal.examples.get_path('columbus.dbf'),'r')
     y = np.array(db.by_col("HOVAL"))
-    y = np.reshape(y, (49, 1))
+    y = np.reshape(y, (49,1))
     X = []
     X.append(db.by_col("INC"))
     X = np.array(X).T
@@ -2018,31 +1956,16 @@ if __name__ == "__main__":
     q.append(db.by_col("DISCBD"))
     q = np.array(q).T
 
-    r_var = "NSA"
+    r_var = 'NSA'
     regimes = db.by_col(r_var)
 
     w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path("columbus.shp"))
-    w.transform = "r"
-    # reg = GM_Error_Het_Regimes(y, X, regimes, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus', vm=True,
+    w.transform = 'r'
+    #reg = GM_Error_Het_Regimes(y, X, regimes, w=w, name_x=['inc'], name_y='hoval', name_ds='columbus', vm=True,
     #                           regime_err_sep=True)
-    # reg = GM_Endog_Error_Het_Regimes(y, X, yd, q, regimes, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
+    #reg = GM_Endog_Error_Het_Regimes(y, X, yd, q, regimes, w=w, name_x=['inc'], name_y='hoval', name_yend=['crime'],
     #                         name_q=['discbd'], name_ds='columbus',vm=True, regime_err_sep=True)
-    reg = GM_Combo_Het_Regimes(
-        y,
-        X,
-        regimes,
-        yd,
-        q,
-        w=w,
-        step1c=True,
-        name_x=["inc"],
-        name_y="hoval",
-        name_yend=["crime"],
-        name_q=["discbd"],
-        name_ds="columbus",
-        vm=True,
-        regime_err_sep=False,
-        regime_lag_sep=False,
-    )
+    reg = GM_Combo_Het_Regimes(y, X, regimes, yd, q, w=w, step1c=True, name_x=['inc'], name_y='hoval', name_yend=['crime'],
+                       name_q=['discbd'], name_ds='columbus', vm=True, regime_err_sep=False, regime_lag_sep=False)
     print(reg.output)
     print(reg.summary)

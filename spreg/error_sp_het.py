@@ -418,7 +418,7 @@ class GM_Error_Het(BaseGM_Error_Het):
         self.name_x.append("lambda")
         self.name_w = USER.set_name_w(name_w, w)
         self.output = pd.DataFrame(self.name_x, columns=['var_names'])
-        self.output['var_type'] = ['x'] * (len(self.name_x)-1) + ['lambda']
+        self.output['var_type'] = ['o'] + ['x'] * (len(self.name_x)-2) + ['lambda']
         self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
@@ -968,7 +968,7 @@ class GM_Endog_Error_Het(BaseGM_Endog_Error_Het):
         self.name_w = USER.set_name_w(name_w, w)
         self.output = pd.DataFrame(self.name_z,
                                    columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend) + ['lambda']
+        self.output['var_type'] = ['o'] + ['x'] * (len(self.name_x)-1) + ['yend'] * len(self.name_yend) + ['lambda']
         self.output['regime'], self.output['equation'] = (0, 0)
         self.other_top = _summary_iteration(self)
         output(reg=self, vm=vm, robust=False, other_end=False, latex=latex)
@@ -1525,10 +1525,10 @@ class GM_Combo_Het(BaseGM_Combo_Het):
             self.name_q.extend(USER.set_name_q_sp(self.name_x0, w_lags, self.name_q, lag_q))
 
             #var_types = ['x'] * (kx + 1) + ['wx'] * kx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho']
-            var_types = ['x'] * (kx + 1) + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
+            var_types = ['o'] + ['x'] * kx + ['wx'] * wkx * slx_lags + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
         else:
             self.name_q.extend(USER.set_name_q_sp(self.name_x, w_lags, self.name_q, lag_q))
-            var_types = ['x'] * len(self.name_x) + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
+            var_types = ['o'] + ['x'] * (len(self.name_x)-1) + ['yend'] * (len(self.name_yend) - 1) + ['rho','lambda']
 
 
 

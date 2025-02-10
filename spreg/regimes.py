@@ -200,6 +200,8 @@ class Regimes_Frame:
                    Names of independent variables for use in output
                    conveniently arranged by regimes. The structure of the name
                    is "regimeName_-_varName"
+    x_types      : list
+                   List of strings indicating the type of each variable in x
     kr           : int
                    Number of variables/columns to be "regimized" or subject
                    to change by regime. These will result in one parameter
@@ -214,18 +216,19 @@ class Regimes_Frame:
 
     """
 
-    def __init__(
-        self, x, regimes, constant_regi, cols2regi, names=None, yend=False, rlist=False
-    ):
+    def __init__(self, x, regimes, constant_regi, cols2regi, names=None, yend=False, rlist=False):
+        xtype = ['x'] * x.shape[1]
         if cols2regi == "all":
             cols2regi = [True] * x.shape[1]
         else:
             if yend:
                 cols2regi = cols2regi[-x.shape[1] :]
+                xtype[-x.shape[1]:] = ["yend"] * x.shape[1]
             else:
                 cols2regi = cols2regi[0 : x.shape[1]]
         if constant_regi:
             x = np.hstack((np.ones((x.shape[0], 1)), x))
+            xtype.insert(0, 'o')
             if constant_regi == "one":
                 cols2regi.insert(0, False)
             elif constant_regi == "many":
@@ -258,16 +261,16 @@ class Regimes_Frame:
 
         if rlist:
             if names:
-                names, r_list = set_name_x_regimes(
-                    names, regimes, constant_regi, cols2regi, self.regimes_set, rlist
+                names, xtype, r_list = set_name_x_regimes(
+                    names, constant_regi, cols2regi, self.regimes_set, xtype, rlist
                 )
-            return (x, names, r_list)
+            return (x, names, xtype, r_list)
         else:
             if names:
-                names = set_name_x_regimes(
-                    names, regimes, constant_regi, cols2regi, self.regimes_set
+                names, xtype = set_name_x_regimes(
+                    names, constant_regi, cols2regi, self.regimes_set, xtype
                 )
-            return (x, names)
+            return (x, names, xtype)
 
 
 def wald_test(betas, r, q, vm):
@@ -435,45 +438,27 @@ def regimeX_setup(x, regimes, cols2regi, regimes_set, constant=False):
     return xsp
 
 
-def set_name_x_regimes(
-    name_x, regimes, constant_regi, cols2regi, regimes_set, rlist=False
-):
+def set_name_x_regimes(name_x, constant_regi, cols2regi, regimes_set, xtype, rlist=False):
     """
-    Generate the set of variable names in a regimes setup, according to the
-    order of the betas
-
-    NOTE: constant term, if desired in the model, should be included in the x
-    already
+    Generate the set of variable names and types in a regimes setup, according to the
+    order of the betas.
 
     Parameters
     ----------
     name_x          : list/None
-                      If passed, list of strings with the names of the
-                      variables aligned with the original dense array x
-                      IMPORTANT: constant term (if desired in the model) should be
-                      included
-    regimes         : list
-                      list of n values with the mapping of each observation to a
-                      regime. Assumed to be aligned with 'x'.
+                      List of variable names.
     constant_regi   : [False, 'one', 'many']
-                      Switcher controlling the constant term setup. It may take
-                      the following values:
-
-                      *  False: no constant term is appended in any way
-
-                      *  'one': a vector of ones is appended to x and held constant across regimes
-
-                      * 'many': a vector of ones is appended to x and considered different per regime
+                      Controls the constant term setup.
     cols2regi       : list
-                      List of k booleans indicating whether each column should be
-                      considered as different per regime (True) or held constant
-                      across regimes (False)
+                      Boolean list indicating if each column should vary by regime.
     regimes_set     : list
-                      List of ordered regimes tags
-
+                      List of ordered regimes tags.
+    xtype           : list
+                      List of strings indicating the type of each variable ('o', 'x', or 'yend').
+                      Should have the same length as cols2regi.
     Returns
     -------
-    name_x_regi
+    name_x_regi, xtype_regi
     """
     k = len(cols2regi)
     if constant_regi:
@@ -482,22 +467,34 @@ def set_name_x_regimes(
         name_x = ["var_" + str(i + 1) for i in range(k)]
     if constant_regi:
         name_x.insert(0, "CONSTANT")
+
     nxa = np.array(name_x)
     c2ra = np.array(cols2regi)
+    xtype_arr = np.array(xtype)
+
     vars_regi = nxa[np.where(c2ra == True)]
     vars_glob = nxa[np.where(c2ra == False)]
+    xtype_regi = xtype_arr[np.where(c2ra == True)]
+    xtype_glob = xtype_arr[np.where(c2ra == False)]
+
     name_x_regi = []
+    xtype_full = []
     r_list = []
+    
     for r in regimes_set:
         rl = ["%s_%s" % (str(r), i) for i in vars_regi]
         name_x_regi.extend(rl)
+        xtype_full.extend(xtype_regi)  # Replicate xtype for regime-specific variables
         r_list.extend([str(r)] * len(rl))
+    
     name_x_regi.extend(["_Global_%s" % i for i in vars_glob])
+    xtype_full.extend(xtype_glob)  # Keep xtype for global variables
     r_list.extend(["_Global"] * len(vars_glob))
+
     if rlist:
-        return (name_x_regi, r_list)
+        return name_x_regi, xtype_full, r_list
     else:
-        return name_x_regi
+        return name_x_regi, xtype_full
 
 
 def w_regime(w, regi_ids, regi_i, transform=True, min_n=None):

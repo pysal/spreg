@@ -262,6 +262,10 @@ class TSLS(BaseTSLS):
                    If slx_lags>0, the specification becomes of the SLX type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
                    to be lagged
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see TSLS_Regimes
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     spat_diag    : boolean
@@ -463,6 +467,7 @@ class TSLS(BaseTSLS):
         sig2n_k=False,
         spat_diag=False,
         nonspat_diag=True,
+        regimes=None,
         vm=False,
         name_y=None,
         name_x=None,
@@ -472,61 +477,86 @@ class TSLS(BaseTSLS):
         name_gwk=None,
         name_ds=None,
         latex=False,
+        **kwargs,
     ):
+        if regimes is not None:
+            from .twosls_regimes import TSLS_Regimes
+            self.__class__ = TSLS_Regimes
+            self.__init__(
+                y=y,
+                x=x,
+                yend=yend,
+                q=q,
+                regimes=regimes,
+                w=w,
+                robust=robust,
+                gwk=gwk,
+                slx_lags=slx_lags,
+                sig2n_k=sig2n_k,
+                spat_diag=spat_diag,
+                vm=vm,
+                name_y=name_y,
+                name_x=name_x,
+                name_yend=name_yend,
+                name_q=name_q,
+                name_w=name_w,
+                name_gwk=name_gwk,
+                name_ds=name_ds,
+                latex=latex,
+                **kwargs,
+            )
+        else:
+            n = USER.check_arrays(y, x, yend, q)
+            y, name_y = USER.check_y(y, n, name_y)
+            yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
+            USER.check_robust(robust, gwk)
+            spat_diag, warn = USER.check_spat_diag(spat_diag=spat_diag, w=w, robust=robust, slx_lags=slx_lags)
+            set_warn(self, warn)        
+            x_constant, name_x, warn = USER.check_constant(x, name_x)
+            self.name_x = USER.set_name_x(name_x, x_constant)
+            w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=spat_diag)        
+            if slx_lags>0:
+    #            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
+    #            x_constant = np.hstack((x_constant, lag_x))
+    #            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
+                x_constant,self.name_x = USER.flex_wx(w,x=x_constant,name_x=self.name_x,constant=True,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
 
-        n = USER.check_arrays(y, x, yend, q)
-        y, name_y = USER.check_y(y, n, name_y)
-        yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
-        USER.check_robust(robust, gwk)
-        spat_diag, warn = USER.check_spat_diag(spat_diag=spat_diag, w=w, robust=robust, slx_lags=slx_lags)
-        set_warn(self, warn)        
-        x_constant, name_x, warn = USER.check_constant(x, name_x)
-        self.name_x = USER.set_name_x(name_x, x_constant)
-        w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=spat_diag)        
-        if slx_lags>0:
-#            lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-#            x_constant = np.hstack((x_constant, lag_x))
-#            self.name_x += USER.set_name_spatial_lags(self.name_x[1:], slx_lags)
-            x_constant,self.name_x = USER.flex_wx(w,x=x_constant,name_x=self.name_x,constant=True,
-                                             slx_lags=slx_lags,slx_vars=slx_vars)
-
-        set_warn(self, warn)
-        BaseTSLS.__init__(
-            self,
-            y=y,
-            x=x_constant,
-            yend=yend,
-            q=q,
-            robust=robust,
-            gwk=gwk,
-            sig2n_k=sig2n_k,
-        )
-        self.title = "TWO STAGE LEAST SQUARES"
-        if slx_lags > 0:
-            self.title += " WITH SPATIALLY LAGGED X (2SLS-SLX)"
-        self.name_ds = USER.set_name_ds(name_ds)
-        self.name_y = USER.set_name_y(name_y)
-        self.name_yend = USER.set_name_yend(name_yend, yend)
-        self.name_z = self.name_x + self.name_yend
-        self.name_q = USER.set_name_q(name_q, q)
-        self.name_h = USER.set_name_h(self.name_x, self.name_q)
-        self.robust = USER.set_robust(robust)
-        self.name_w = USER.set_name_w(name_w, w)
-        self.name_gwk = USER.set_name_w(name_gwk, gwk)
-        self.output = pd.DataFrame(self.name_x + self.name_yend,
-                                   columns=['var_names'])
-        self.output['var_type'] = ['x'] * len(self.name_x) + ['yend'] * len(self.name_yend)
-        self.output['regime'], self.output['equation'] = (0, 0)
-        diag_out = ""
-        if nonspat_diag:
-            self.dwh = DIAG.dwh(self)
-            sum_dwh = _summary_dwh(self)
-            diag_out += sum_dwh
-        if spat_diag:
-            diag_out += _spat_diag_out(self, w, 'yend')
-
-
-        output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
+            set_warn(self, warn)
+            BaseTSLS.__init__(
+                self,
+                y=y,
+                x=x_constant,
+                yend=yend,
+                q=q,
+                robust=robust,
+                gwk=gwk,
+                sig2n_k=sig2n_k,
+            )
+            self.title = "TWO STAGE LEAST SQUARES"
+            if slx_lags > 0:
+                self.title += " WITH SPATIALLY LAGGED X (2SLS-SLX)"
+            self.name_ds = USER.set_name_ds(name_ds)
+            self.name_y = USER.set_name_y(name_y)
+            self.name_yend = USER.set_name_yend(name_yend, yend)
+            self.name_z = self.name_x + self.name_yend
+            self.name_q = USER.set_name_q(name_q, q)
+            self.name_h = USER.set_name_h(self.name_x, self.name_q)
+            self.robust = USER.set_robust(robust)
+            self.name_w = USER.set_name_w(name_w, w)
+            self.name_gwk = USER.set_name_w(name_gwk, gwk)
+            self.output = pd.DataFrame(self.name_x + self.name_yend,
+                                    columns=['var_names'])
+            self.output['var_type'] = ['o'] + ['x'] * (len(self.name_x)-1) + ['yend'] * len(self.name_yend)
+            self.output['regime'], self.output['equation'] = (0, 0)
+            diag_out = ""
+            if nonspat_diag:
+                self.dwh = DIAG.dwh(self)
+                sum_dwh = _summary_dwh(self)
+                diag_out += sum_dwh
+            if spat_diag:
+                diag_out += _spat_diag_out(self, w, 'yend')
+            output(reg=self, vm=vm, robust=robust, other_end=diag_out, latex=latex)
 
 def _test():
     import doctest
