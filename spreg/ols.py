@@ -149,6 +149,10 @@ class OLS(BaseOLS):
                    If slx_lags>0, the specification becomes of the SLX type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
                    to be lagged
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see OLS_Regimes
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     nonspat_diag : boolean

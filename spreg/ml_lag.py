@@ -336,6 +336,10 @@ class ML_Lag(BaseML_Lag):
                    If slx_lags>0, the specification becomes of the Spatial Durbin type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
                    to be lagged
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see ML_Lag_Regimes
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue method

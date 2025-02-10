@@ -1111,6 +1111,10 @@ class GMM_Error(GM_Error, GM_Endog_Error, GM_Combo, GM_Error_Het, GM_Endog_Error
                    If slx_lags>0, the specification becomes of the SLX-Error or GNSM type. 
     slx_vars     : either "All" (default) or list of booleans to select x variables
                    to be lagged            
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see GMM_Error_Regimes
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results

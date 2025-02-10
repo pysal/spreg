@@ -235,6 +235,10 @@ class GM_Lag(BaseGM_Lag):
                    If slx_lags>0, the specification becomes of the Spatial Durbin type.
     slx_vars     : either "All" (default) or list of booleans to select x variables
                    to be lagged
+    regimes      : list or pandas.Series
+                   List of n values with the mapping of each
+                   observation to a regime. Assumed to be aligned with 'x'.
+                   For other regimes-specific arguments, see GM_Lag_Regimes
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
