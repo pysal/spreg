@@ -8,6 +8,7 @@ from .diagnostics_panel import *
 from .diagnostics_sp import *
 from .diagnostics_sur import *
 from .diagnostics_tsls import *
+from .diagnostics_probit import *
 from .error_sp import *
 from .error_sp_het import *
 from .error_sp_het_regimes import *

@@ -141,6 +141,7 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.panel_rLMerror
     spreg.panel_Hausman
     spreg.sputils.spmultiplier
+    spreg.diagnostics_probit.sp_tests
 
 
 Spatial Specification Search
