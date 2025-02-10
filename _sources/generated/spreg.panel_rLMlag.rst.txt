@@ -1,0 +1,6 @@
+﻿spreg.panel\_rLMlag
+===================
+
+.. currentmodule:: spreg
+
+.. autofunction:: panel_rLMlag

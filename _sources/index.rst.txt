@@ -1,20 +1,27 @@
-.. No Errors Test Project documentation master file, created by
-   sphinx-quickstart on Fri Aug 30 17:07:56 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. documentation master file
 
-Welcome to No Errors Test Project's documentation!
-==================================================
+Spatial Regression Models (spreg)
+=================================
+
+`spreg`, short for "spatial regression," is a python package to estimate simultaneous autoregressive spatial regression models. These models are useful when modeling processes where observations interact with one another. For more information on these models, consult the Spatial Regression short course by Luc Anselin (Spring, 2017), with the Center for Spatial Data Science at the University of Chicago:
+
+----
+
+.. raw:: html
+
+    <div style="position: center; padding-bottom=75%; height:0; overflow: hidden; max-width: 100%; height:auto">
+        <iframe class="center-block" width="854" height="480" src="https://www.youtube.com/embed/50kc3F0aE6Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Hello World!
+   :hidden:
+   :maxdepth: 3
+   :caption: Contents:
+
+   Installation <installation>
+   Tutorials <tutorials>
+   API <api>
+   References <references>
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. _PySAL: https://github.com/pysal/pysal
