@@ -29,7 +29,7 @@ class TestTSLS(unittest.TestCase):
         betas = np.array([[ 80.23408166],[  5.48218125],[ 82.98396737],[  0.49775429],[ -3.72663211],[ -1.27451485]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
         h_0 = np.array([[  0.   ,   0.   ,   1.   ,  19.531,   0.   ,   5.03 ]])
-        np.testing.assert_allclose(reg.h[0]*np.eye(6), h_0, RTOL)
+        np.testing.assert_allclose(reg.h[0] @ np.eye(6), h_0, RTOL)
         hth = np.array([[   25.        ,   416.378999  ,     0.        ,     0.        ,\
            76.03      ,     0.        ],\
        [  416.378999  ,  7831.05477839,     0.        ,     0.        ,\
@@ -79,7 +79,7 @@ class TestTSLS(unittest.TestCase):
         predy_5 = np.array([[ -9.85078372],[ 36.75098196],[ 57.34266859],[ 42.89851907],[ 58.9840913 ]]) 
         np.testing.assert_allclose(reg.predy[0:5], predy_5,RTOL)
         q_5 = np.array([ 5.03,  4.27,  3.89,  3.7 ,  2.83])
-        np.testing.assert_array_equal((reg.q[0:5].T*np.eye(5))[1,:], q_5)
+        np.testing.assert_array_equal((reg.q[0:5].T @ np.eye(5))[1,:], q_5)
         np.testing.assert_allclose(reg.sig2n_k, 990.00750983736714,RTOL)
         np.testing.assert_allclose(reg.sig2n, 868.78210046952631,RTOL)
         np.testing.assert_allclose(reg.sig2, 990.00750983736714,RTOL)
@@ -114,13 +114,13 @@ class TestTSLS(unittest.TestCase):
            0.        ,    1.3154267 ]]) 
         np.testing.assert_allclose(reg.vm, vm,RTOL)
         x_0 = np.array([[  0.   ,   0.   ,   1.   ,  19.531]])
-        np.testing.assert_allclose(reg.x[0]*np.eye(4), x_0,RTOL)
+        np.testing.assert_allclose(reg.x[0] @ np.eye(4), x_0,RTOL)
         y_5 = np.array([[ 15.72598 ], [ 18.801754], [ 30.626781], [ 32.38776 ], [ 50.73151 ]]) 
         np.testing.assert_allclose(reg.y[0:5], y_5,RTOL)
         yend_3 = np.array([[  0.      ,  80.467003],[  0.      ,  44.567001],[  0.      ,  26.35    ]]) 
-        np.testing.assert_allclose(reg.yend[0:3]*np.eye(2), yend_3,RTOL)
+        np.testing.assert_allclose(reg.yend[0:3] @ np.eye(2), yend_3,RTOL)
         z_0 = np.array([[  0.      ,   0.      ,   1.      ,  19.531   ,   0.      , 80.467003]]) 
-        np.testing.assert_allclose(reg.z[0]*np.eye(6), z_0,RTOL)
+        np.testing.assert_allclose(reg.z[0] @ np.eye(6), z_0,RTOL)
         zthhthi = np.array([[  1.00000000e+00,   0.00000000e+00,   0.00000000e+00,\
           0.00000000e+00,  -4.44089210e-16,   0.00000000e+00],\
        [ -1.24344979e-14,   1.00000000e+00,   0.00000000e+00,\

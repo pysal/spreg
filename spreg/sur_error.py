@@ -109,16 +109,16 @@ class BaseSURerrorGM:
         # spatially lagged variables
         self.bigylag = {}
         for r in range(self.n_eq):
-            self.bigylag[r] = WS * self.bigy[r]
+            self.bigylag[r] = WS @ self.bigy[r]
         # note: unlike WX as instruments, this includes the constant
         self.bigXlag = {}
         for r in range(self.n_eq):
-            self.bigXlag[r] = WS * self.bigX[r]
+            self.bigXlag[r] = WS @ self.bigX[r]
 
         # spatially filtered variables
         sply = filter_dict(lam, self.bigy, self.bigylag)
         splX = filter_dict(lam, self.bigX, self.bigXlag)
-        WbigE = WS * reg0.olsE
+        WbigE = WS @ reg0.olsE
         splbigE = reg0.olsE - WbigE * lam.T
         splXX, splXy = sur_crossprod(splX, sply)
         b1, varb1, sig1 = sur_est(splXX, splXy, splbigE, self.bigK)
@@ -135,10 +135,10 @@ class BaseSURerrorGM:
 def _momentsGM_sur_Error(w, u):
     n = w.shape[0]
     u2 = (u * u).sum(0)
-    wu = w * u
+    wu = w @ u
     uwu = (u * wu).sum(0)
     wu2 = (wu * wu).sum(0)
-    wwu = w * wu
+    wwu = w @ wu
     uwwu = (u * wwu).sum(0)
     wwu2 = (wwu * wwu).sum(0)
     wwuwu = (wwu * wu).sum(0)
@@ -500,11 +500,11 @@ class BaseSURerrorML:
         # spatially lagged variables
         self.bigylag = {}
         for r in range(self.n_eq):
-            self.bigylag[r] = WS * self.bigy[r]
+            self.bigylag[r] = WS @ self.bigy[r]
         # note: unlike WX as instruments, this includes the constant
         self.bigXlag = {}
         for r in range(self.n_eq):
-            self.bigXlag[r] = WS * self.bigX[r]
+            self.bigXlag[r] = WS @ self.bigX[r]
 
         # spatial parameter starting values
         lam = np.zeros((self.n_eq, 1))  # initialize as an array
@@ -544,7 +544,7 @@ class BaseSURerrorML:
             fun0 = fun1
             sply = filter_dict(lam, self.bigy, self.bigylag)
             splX = filter_dict(lam, self.bigX, self.bigXlag)
-            WbigE = WS * bigE
+            WbigE = WS @ bigE
             splbigE = bigE - WbigE * lam.T
             splXX, splXy = sur_crossprod(splX, sply)
             b1, varb1, sig1 = sur_est(splXX, splXy, splbigE, self.bigK)
@@ -964,7 +964,7 @@ def clik(lam, n, n2, n_eq, bigE, I, WS):
                   log-likelihood function
 
     """
-    WbigE = WS * bigE
+    WbigE = WS @ bigE
     spfbigE = bigE - WbigE * lam.T
     sig = np.dot(spfbigE.T, spfbigE) / n
     ldet = la.slogdet(sig)[1]
@@ -1018,7 +1018,7 @@ def surerrvm(n, n_eq, w, lam, sig):
         B = I - lamWS
         bb = B.todense()
         Bi = la.inv(bb)
-        D = WS * Bi
+        D = WS @ Bi
         trDi[i] = np.trace(D)
         DD = np.dot(D, D)
         trDDi[i] = np.trace(DD)
@@ -1030,7 +1030,7 @@ def surerrvm(n, n_eq, w, lam, sig):
             B = I - lamWS
             bb = B.todense()
             Bi = la.inv(bb)
-            Dj = WS * Bi
+            Dj = WS @ Bi
             DD = np.dot(D.T, Dj)
             trDTiDj[i, j] = np.trace(DD)
             trDTiDj[j, i] = trDTiDj[i, j]

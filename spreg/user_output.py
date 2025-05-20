@@ -15,10 +15,10 @@ from . import sputils as spu
 from libpysal import weights
 from libpysal import graph
 import scipy
-from scipy.sparse.csr import csr_matrix
+from scipy.sparse import csr_matrix
 from scipy.sparse import issparse
-from .utils import get_lags        
-from itertools import compress    
+from .utils import get_lags
+from itertools import compress
 
 
 def set_name_ds(name_ds):

@@ -112,7 +112,7 @@ class BaseGM_Error(RegressionPropsY):
         self.u = y - self.predy
         self.betas = np.vstack((ols2.betas, np.array([[lambda1]])))
         self.sig2 = ols2.sig2n
-        self.e_filtered = self.u - lambda1 * w * self.u
+        self.e_filtered = self.u - lambda1 * w @ self.u
 
         self.vm = self.sig2 * ols2.xtxi
         se_betas = np.sqrt(self.vm.diagonal())
@@ -435,8 +435,8 @@ class BaseGM_Endog_Error(RegressionPropsY):
         self.betas = np.vstack((tsls2.betas, np.array([[lambda1]])))
         self.predy = spdot(tsls.z, tsls2.betas)
         self.u = y - self.predy
-        self.sig2 = float(np.dot(tsls2.u.T, tsls2.u)) / self.n
-        self.e_filtered = self.u - lambda1 * w * self.u
+        self.sig2 = float(np.dot(tsls2.u.T, tsls2.u).squeeze()) / self.n
+        self.e_filtered = self.u - lambda1 * w @ self.u
         self.vm = self.sig2 * tsls2.varb
         self._cache = {}
 
@@ -1384,14 +1384,14 @@ def _momentsGM_Error(w, u):
         wsparse = w
     n = wsparse.shape[0]
     u2 = np.dot(u.T, u)
-    wu = wsparse * u
+    wu = wsparse @ u
     uwu = np.dot(u.T, wu)
     wu2 = np.dot(wu.T, wu)
-    wwu = wsparse * wu
+    wwu = wsparse @ wu
     uwwu = np.dot(u.T, wwu)
     wwu2 = np.dot(wwu.T, wwu)
     wuwwu = np.dot(wu.T, wwu)
-    wtw = wsparse.T * wsparse
+    wtw = wsparse.T @ wsparse
     trWtW = np.sum(wtw.diagonal())
     g = np.array([[u2[0][0], wu2[0][0], uwu[0][0]]]).T / n
     G = (
