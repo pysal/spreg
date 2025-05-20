@@ -154,7 +154,7 @@ def set_name_yend_sp(name_y):
     """
     return "W_" + name_y
 
-def set_name_spatial_lags(names, w_lags):
+def set_name_spatial_lags(names, w_lags, slx_vars="all"):
     """Set the spatial lag names for multiple variables and lag orders"
 
     Parameters
@@ -167,6 +167,8 @@ def set_name_spatial_lags(names, w_lags):
     lag_names : string
 
     """
+    if slx_vars != "all":
+        names = list(compress(names,slx_vars))
     lag_names = ["W_" + s for s in names]
     for i in range(w_lags-1):
         lag_names += ["W" + str(i+2) + "_" + s for s in names]
@@ -815,6 +817,33 @@ def check_regimes(reg_set, N=None, K=None):
         raise Exception(
             "There aren't enough observations for the given number of regimes and variables. Please check your regimes variable."
         )
+
+
+def check_regi_args(constant_regi, cols2regi, regime_err_sep, err_flag=True):
+    """Check if the regimes parameters passed by the user are valid for separate regressions.
+    Returns warning if not informing the user that the parameters will be ignored.
+
+    Parameters
+    ----------
+    constant_regi : string
+                    Switcher controlling the constant term setup.
+    cols2regi     : list
+                    List of columns to be used in the regimes
+    regime_err_sep: boolean
+                    Value passed by a user to a regression class
+    err_flag      : boolean
+                    Set the expected value for the regime_err_sep parameter
+                    Default is True
+
+    Returns
+    -------
+    warn          : string
+                    Warning message if the parameters are not valid
+    """
+    warn = None
+    if constant_regi != 'many' or cols2regi != 'all' or regime_err_sep != err_flag:
+        warn = f"Only the following values are accepted for this method:\nconstant_regi='many', cols2regi='all', and regime_err_sep={err_flag}."
+    return warn
 
 
 def check_constant(x, name_x=None, just_rem=False):

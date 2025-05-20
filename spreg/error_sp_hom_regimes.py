@@ -70,6 +70,8 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX-Error type.
+    slx_vars     : either "all" (default) or list of booleans to select x variables
+                   to be lagged       
     max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
                    :cite:`Arraiz2010`. Note: epsilon provides an additional
@@ -327,6 +329,7 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         regime_err_sep=False,
         regime_lag_sep=False,
         slx_lags=0,
+        slx_vars="all",
         vm=False,
         name_y=None,
         name_x=None,
@@ -356,9 +359,10 @@ class GM_Error_Hom_Regimes(RegressionPropsY, REGI.Regimes_Frame):
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
         if slx_lags >0:
-            lag_x = get_lags(w, x_constant, slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=False,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
+            set_warn(self,"WX is computed using the complete W, i.e. not trimmed by regimes.")
+
 
         self.name_x_r = USER.set_name_x(name_x, x_constant)
 

@@ -673,7 +673,7 @@ def power_expansion(
     return running_total
 
 
-def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
+def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="all"):
     # Create spatial lag of y
     yl = lag_spatial(w, y)
     # spatial and non-spatial instruments

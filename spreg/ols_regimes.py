@@ -44,6 +44,8 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX type.
                    Note: WX is computed using the complete weights matrix
+    slx_vars     : either "All" (default) or list of booleans to select x variables
+                   to be lagged                   
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     nonspat_diag : boolean
@@ -394,6 +396,7 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
             robust=None,
             gwk=None,
             slx_lags=0,
+            slx_vars = "all",
             sig2n_k=True,
             nonspat_diag=True,
             spat_diag=False,
@@ -410,7 +413,8 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
             name_w=None,
             name_gwk=None,
             name_ds=None,
-            latex=False
+            latex=False,
+            **kwargs,
     ):
 
         n = USER.check_arrays(y, x)
@@ -433,17 +437,17 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
             white_test = False
 
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
-        name_x = USER.set_name_x(name_x, x_constant, constant=True)
-        if spat_diag or moran:
+        set_warn(self, warn)
+        name_x = USER.set_name_x(name_x, x_constant, constant=True)        
+        if spat_diag or moran or slx_lags > 0:
             w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=True, allow_wk=True)
         else:
             w = USER.check_weights(w, y, slx_lags=slx_lags, allow_wk=True)
         if slx_lags > 0:
-            lag_x = get_lags(w, x_constant, slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=False,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
+            set_warn(self,"WX is computed using the complete W, i.e. not trimmed by regimes.")
 
-        set_warn(self, warn)
         self.slx_lags = slx_lags
         self.name_x_r = USER.set_name_x(name_x, x_constant)
         self.constant_regi = constant_regi
@@ -523,10 +527,14 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
                     self.title = "ORDINARY LEAST SQUARES WITH SLX - REGIMES"
             self.robust = USER.set_robust(robust)
             self.chow = REGI.Chow(self)
-            self.other_top, self.other_mid, other_end = ("", "", "")  # strings where function-specific diag. are stored
+            self.other_mid, other_end = ("", "")  # strings where function-specific diag. are stored
             if nonspat_diag:
                 self.other_mid += _nonspat_mid(self, white_test=white_test)
-                self.other_top += _nonspat_top(self)
+                top_diag = _nonspat_top(self)
+                try:
+                    self.other_top += top_diag
+                except:
+                    self.other_top = top_diag
             if spat_diag:
                 other_end += _spat_diag_out(self, w, 'ols', moran=moran) #Must decide what to do with W.
             output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
@@ -652,7 +660,11 @@ class OLS_Regimes(BaseOLS, REGI.Regimes_Frame, RegressionPropsY):
             self.output = pd.concat([self.output, pd.DataFrame({'var_names': results[r].name_x,
                                                        'var_type': ['o']+['x']*(len(results[r].name_x)-1),
                                                        'regime': r, 'equation': r})], ignore_index=True)
-            results[r].other_top, results[r].other_mid = ("", "")
+            try:
+                results[r].other_top = self.other_top
+            except:
+                results[r].other_top = ""
+            results[r].other_mid = ""
             if nonspat_diag:
                 results[r].other_mid += _nonspat_mid(results[r], white_test=white_test)
                 results[r].other_top += _nonspat_top(results[r])
@@ -1030,12 +1042,15 @@ class OLS_Endog_Regimes(OLS_Regimes):
     """
    
     def __init__(
-        self, y, x, w, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None, **kwargs):
+        self, y, x, w, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None,
+         constant_regi='many', cols2regi='all', regime_err_sep=True, **kwargs):
 
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
+        warn = USER.check_regi_args(constant_regi, cols2regi, regime_err_sep)
         set_warn(self, warn)
         # Standardize the variables
         x_std = (x_constant - np.mean(x_constant, axis=0)) / np.std(x_constant, axis=0)
@@ -1051,11 +1066,13 @@ class OLS_Endog_Regimes(OLS_Regimes):
             sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseOLS,'y':y,'x':x_constant}, quorum=quorum, trace=True)
             n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
             self.clusters = sk_reg_results._trace[n_clusters-1][0]
+            self.score = sk_reg_results._trace[n_clusters-1][1][2]
         else:
             try:
                 # Call the Skater_reg method based on OLS
                 sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseOLS,'y':y,'x':x_constant}, quorum=quorum, trace=trace)
                 self.clusters = sk_reg_results.current_labels_
+                self.score = sk_reg_results._trace[-1][1][2]
             except Exception as e:
                 if str(e) == "one or more input arrays have more columns than rows":
                     raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
@@ -1064,8 +1081,8 @@ class OLS_Endog_Regimes(OLS_Regimes):
 
         self._trace = sk_reg_results._trace
         self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
-
-        OLS_Regimes.__init__(self, y, x_constant, regimes=self.clusters, w=w, name_regimes='Skater_reg', name_y=name_y, name_x=name_x, **kwargs)
+        OLS_Regimes.__init__(self, y, x_constant, regimes=self.clusters, w=w, name_regimes='Skater_reg', name_y=name_y, name_x=name_x,
+                                     constant_regi='many', cols2regi='all', regime_err_sep=True, **kwargs)
 
 def _test():
     import doctest
