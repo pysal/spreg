@@ -67,6 +67,8 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the Spatial Durbin type.
+    slx_vars     : either "all" (default) or list of booleans to select x variables
+                   to be lagged        
     regime_lag_sep: boolean
                     If True (default), the spatial parameter for spatial lag is also
                     computed according to different regimes. If False,
@@ -455,6 +457,7 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         w=None,
         w_lags=1,
         slx_lags=0,
+        slx_vars='all',
         lag_q=True,
         robust='white',
         gwk=None,
@@ -510,10 +513,13 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
         self.name_regimes = USER.set_name_ds(name_regimes)
         self.constant_regi = constant_regi
         if slx_lags > 0:
-            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags)
+            yend2, q2, wx = set_endog(y, x_constant, w, yend, q, w_lags, lag_q, slx_lags, slx_vars=slx_vars)
+            set_warn(self,"WX is computed using the complete W, i.e. not trimmed by regimes.")
             x_constant = np.hstack((x_constant, wx))
-            name_slx = USER.set_name_spatial_lags(name_x, slx_lags)
-            name_q.extend(USER.set_name_q_sp(name_slx[-len(name_x):], w_lags, name_q, lag_q, force_all=True))
+            name_slx = USER.set_name_spatial_lags(name_x, slx_lags, slx_vars=slx_vars)
+            iter_slx = iter(name_slx) 
+            name_q_temp = [next(iter_slx) if keep else name for name, keep in zip(name_x, slx_vars)]
+            name_q.extend(USER.set_name_q_sp(name_q_temp, w_lags, name_q, lag_q, force_all=True))
             name_x += name_slx
             if cols2regi == 'all':
                 cols2regi = REGI.check_cols2regi(
@@ -640,7 +646,11 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
                     wx_index = r_output.index[-((len(r_output)-1)//(slx_lags+1)) * slx_lags:]
                     self.output.loc[wx_index, 'var_type'] = 'wx'
                 self.title = " SPATIAL 2SLS WITH SLX (SPATIAL DURBIN MODEL) - REGIMES"
-            self.other_top = _spat_pseudo_r2(self)
+            top_diag = _spat_pseudo_r2(self)
+            try:
+                self.other_top = top_diag + self.other_top
+            except:
+                self.other_top = top_diag
             self.slx_lags = slx_lags
             diag_out = None
             if spat_diag:
@@ -836,7 +846,11 @@ class GM_Lag_Regimes(TSLS_Regimes, REGI.Regimes_Frame):
             self.hac_var[
                 regi_ids[r],
             ] = results[r].h
-            results[r].other_top = _spat_pseudo_r2(results[r])
+            try:
+                results[r].other_top = self.other_top
+            except:
+                results[r].other_top = ""
+            results[r].other_top += _spat_pseudo_r2(results[r])
             results[r].other_mid = ""
             if slx_lags > 0:
                 kx = (results[r].k - results[r].kstar - 1) // (slx_lags + 1)
@@ -1299,12 +1313,15 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
 
 
     def __init__(
-        self, y, x, w, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None, **kwargs):
+        self, y, x, w, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None,
+        constant_regi='many', cols2regi='all', regime_err_sep=False, **kwargs):
 
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         w = USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
+        warn = USER.check_regi_args(constant_regi, cols2regi, regime_err_sep, err_flag=False)
         set_warn(self, warn)
         # Standardize the variables
         x_std = (x_constant - np.mean(x_constant, axis=0)) / np.std(x_constant, axis=0)
@@ -1320,11 +1337,13 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
             sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x_constant,'w':w}, quorum=quorum, trace=True)
             n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
             self.clusters = sk_reg_results._trace[n_clusters-1][0]
+            self.score = sk_reg_results._trace[n_clusters-1][1][2]
         else:
             try:
                 # Call the Skater_reg method based on GM_Lag
                 sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseGM_Lag,'y':y,'x':x_constant,'w':w}, quorum=quorum, trace=trace)
                 self.clusters = sk_reg_results.current_labels_
+                self.score = sk_reg_results._trace[-1][1][2]
             except Exception as e:
                 if str(e) == "one or more input arrays have more columns than rows":
                     raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
@@ -1333,8 +1352,8 @@ class GM_Lag_Endog_Regimes(GM_Lag_Regimes):
 
         self._trace = sk_reg_results._trace
         self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
-
-        GM_Lag_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_y=name_y, name_x=name_x, name_regimes='Skater_reg', **kwargs)
+        GM_Lag_Regimes.__init__(self, y, x, regimes=self.clusters, w=w, name_y=name_y, name_x=name_x, name_regimes='Skater_reg',
+                                constant_regi='many', cols2regi='all', regime_err_sep=False, **kwargs)
 
 
 def _test():

@@ -162,7 +162,7 @@ class BaseGM_Error_Het(RegressionPropsY):
         vc3 = get_vc_het(w, wA1, sigma)
         self.vm = get_vm_het(moments_i[0], lambda3, self, w, vc3)
         self.betas = np.vstack((ols_s.betas, lambda3))
-        self.e_filtered = self.u - lambda3 * w * self.u
+        self.e_filtered = self.u - lambda3 * w @ self.u
         self._cache = {}
 
 
@@ -658,7 +658,7 @@ class BaseGM_Endog_Error_Het(RegressionPropsY):
         vc3 = get_vc_het_tsls(w, wA1, self, lambda3, P, zs, inv_method, save_a1a2=True)
         self.vm = get_Omega_GS2SLS(w, lambda3, self, moments_i[0], vc3, P)
         self.betas = np.vstack((tsls_s.betas, lambda3))
-        self.e_filtered = self.u - lambda3 * w * self.u
+        self.e_filtered = self.u - lambda3 * w @ self.u
         self._cache = {}
 
 
@@ -1566,7 +1566,7 @@ def get_psi_sigma(w, u, lamb):
 
     """
 
-    e = (u - lamb * (w * u)) ** 2
+    e = (u - lamb * (w @ u)) ** 2
     E = SP.dia_matrix((e.flat, 0), shape=(w.shape[0], w.shape[0]))
     return E.tocsr()
 
@@ -1602,12 +1602,12 @@ def get_vc_het(w, wA1, E):
                   2x2 array with estimator of the variance-covariance matrix
 
     """
-    aPatE = 2 * wA1 * E
-    wPwtE = (w + w.T) * E
+    aPatE = 2 * wA1 @ E
+    wPwtE = (w + w.T) @ E
 
-    psi11 = aPatE * aPatE
-    psi12 = aPatE * wPwtE
-    psi22 = wPwtE * wPwtE
+    psi11 = aPatE @ aPatE
+    psi12 = aPatE @ wPwtE
+    psi22 = wPwtE @ wPwtE
     psi = list(map(np.sum, [psi11.diagonal(), psi12.diagonal(), psi22.diagonal()]))
     return np.array([[psi[0], psi[1]], [psi[1], psi[2]]]) / (2.0 * w.shape[0])
 
@@ -1648,7 +1648,7 @@ def get_vm_het(G, lamb, reg, w, psi):
 
     J = np.dot(G, np.array([[1], [2 * lamb]]))
     Zs = UTILS.get_spFilter(w, lamb, reg.x)
-    ZstEZs = spdot((Zs.T * get_psi_sigma(w, reg.u, lamb)), Zs)
+    ZstEZs = spdot((Zs.T @ get_psi_sigma(w, reg.u, lamb)), Zs)
     ZsZsi = la.inv(spdot(Zs.T, Zs))
     omega11 = w.shape[0] * np.dot(np.dot(ZsZsi, ZstEZs), ZsZsi)
     omega22 = la.inv(np.dot(np.dot(J.T, la.inv(psi)), J))
@@ -1713,8 +1713,8 @@ def get_vc_het_tsls(
     sigma = get_psi_sigma(w, reg.u, lambdapar)
     vc1 = get_vc_het(w, wA1, sigma)
     a1, a2 = get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt)
-    a1s = a1.T * sigma
-    a2s = a2.T * sigma
+    a1s = a1.T @ sigma
+    a2s = a2.T @ sigma
     psi11 = float(np.dot(a1s, a1))
     psi12 = float(np.dot(a1s, a2))
     psi21 = float(np.dot(a2s, a1))
@@ -1751,7 +1751,7 @@ def get_Omega_GS2SLS(w, lamb, reg, G, psi, P):
     """
     psi, a1, a2 = psi
     sigma = get_psi_sigma(w, reg.u, lamb)
-    psi_dd_1 = (1.0 / w.shape[0]) * reg.h.T * sigma
+    psi_dd_1 = (1.0 / w.shape[0]) * reg.h.T @ sigma
     psi_dd = spdot(psi_dd_1, reg.h)
     psi_dl = spdot(psi_dd_1, np.hstack((a1, a2)))
     psi_o = np.hstack((np.vstack((psi_dd, psi_dl.T)), np.vstack((psi_dl, psi))))

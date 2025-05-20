@@ -69,6 +69,8 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX type.
                    Note: WX is computed using the complete weights matrix
+    slx_vars     : either "all" (default) or list of booleans to select x variables
+                   to be lagged                         
     sig2n_k      : boolean
                    If True, then use n-k to estimate sigma^2. If False, use n.
     vm           : boolean
@@ -320,6 +322,7 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         robust=None,
         gwk=None,
         slx_lags=0,
+        slx_vars="all",
         sig2n_k=True,
         spat_diag=False,
         vm=False,
@@ -357,9 +360,9 @@ class TSLS_Regimes(BaseTSLS, REGI.Regimes_Frame):
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
         w = USER.check_weights(w, y, slx_lags=slx_lags, w_required=spat_diag)
         if slx_lags > 0:
-            lag_x = get_lags(w, x_constant, slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=False,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
+            set_warn(self,"WX is computed using the complete W, i.e. not trimmed by regimes.")
 
         self.constant_regi = constant_regi
         self.cols2regi = cols2regi
@@ -1057,13 +1060,16 @@ class TSLS_Endog_Regimes(TSLS_Regimes):
 
 
     def __init__(
-        self, y, x, yend, q, w=None, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None, name_yend=None, name_q=None, **kwargs):
+        self, y, x, yend, q, w=None, n_clusters=None, quorum=-1, trace=True, name_y=None, name_x=None, name_yend=None, name_q=None, 
+        constant_regi='many', cols2regi='all', regime_err_sep=True, **kwargs):
 
         n = USER.check_arrays(y, x)
         y, name_y = USER.check_y(y, n, name_y)
         yend, q, name_yend, name_q = USER.check_endog([yend, q], [name_yend, name_q])
         w = USER.check_weights(w, y, w_required=True)
         x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
+        set_warn(self, warn)
+        warn = USER.check_regi_args(constant_regi, cols2regi, regime_err_sep)
         set_warn(self, warn)
         # Standardize the variables
         x_combined = np.hstack((x_constant, yend))
@@ -1080,10 +1086,12 @@ class TSLS_Endog_Regimes(TSLS_Regimes):
             sk_reg_results = Skater_reg().fit(n_clusters_opt, w, x_std, {'reg':BaseTSLS,'y':y,'x':x_constant,'yend':yend,'q':q}, quorum=quorum, trace=True)
             n_clusters = optim_k([sk_reg_results._trace[i][1][2] for i in range(1, len(sk_reg_results._trace))])
             self.clusters = sk_reg_results._trace[n_clusters-1][0]
+            self.score = sk_reg_results._trace[n_clusters-1][1][2]
         else:
             try:
                 sk_reg_results = Skater_reg().fit(n_clusters, w, x_std, {'reg':BaseTSLS,'y':y,'x':x_constant,'yend':yend,'q':q}, quorum=quorum, trace=trace)
                 self.clusters = sk_reg_results.current_labels_
+                self.score = sk_reg_results._trace[-1][1][2]
             except Exception as e:
                 if str(e) == "one or more input arrays have more columns than rows":
                     raise ValueError("One or more input ended up with more variables than observations. Please check your setting for `quorum`.")
@@ -1092,9 +1100,8 @@ class TSLS_Endog_Regimes(TSLS_Regimes):
 
         self._trace = sk_reg_results._trace
         self.SSR = [self._trace[i][1][2] for i in range(1, len(self._trace))]
-
         TSLS_Regimes.__init__(self, y, x_constant, yend, q, regimes=self.clusters, w=w, name_y=name_y, name_x=name_x, name_yend=name_yend, 
-                              name_q=name_q, name_regimes='Skater_reg', **kwargs)
+                              name_q=name_q, name_regimes='Skater_reg', constant_regi='many', cols2regi='all', regime_err_sep=True, **kwargs)
 
 
 def _test():

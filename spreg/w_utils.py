@@ -20,7 +20,7 @@ def symmetrize(w):
     d = w.sparse.sum(axis=1)  # row sum
     d.shape = (w.n,)
     d = np.sqrt(d)
-    Di12 = SPARSE.spdiags(1.0 / d, [0], w.n, w.n)
-    D12 = SPARSE.spdiags(d, [0], w.n, w.n)
+    Di12 = SPARSE.dia_matrix((1.0 / d, [0]), shape=(w.n, w.n))
+    D12 = SPARSE.dia_matrix((d, [0]), shape=(w.n, w.n))
     w.transform = "r"
-    return D12 * w.sparse * Di12
+    return D12 @ w.sparse @ Di12

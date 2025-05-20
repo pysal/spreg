@@ -55,6 +55,8 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
     slx_lags     : integer
                    Number of spatial lags of X to include in the model specification.
                    If slx_lags>0, the specification becomes of the SLX-Error type.                          
+    slx_vars     : either "all" (default) or list of booleans to select x variables
+                   to be lagged       
     method       : string
                    if 'full', brute force calculation (full matrix expressions)
                    if 'ord', Ord eigenvalue computation
@@ -285,6 +287,7 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         regimes,
         w=None,
         slx_lags=0,
+        slx_vars="all",
         constant_regi="many",
         cols2regi="all",
         method="full",
@@ -318,9 +321,9 @@ class ML_Error_Regimes(BaseML_Error, REGI.Regimes_Frame):
         name_x = USER.set_name_x(name_x, x_constant, constant=True)
 
         if slx_lags >0:
-            lag_x = get_lags(w, x_constant, slx_lags)
-            x_constant = np.hstack((x_constant, lag_x))
-            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
+            x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=False,
+                                                slx_lags=slx_lags,slx_vars=slx_vars)
+            set_warn(self,"WX is computed using the complete W, i.e. not trimmed by regimes.")
 
         self.name_x_r = USER.set_name_x(name_x, x_constant)
 

@@ -36,7 +36,7 @@ def spdot(a, b, array_out=True):
         or type(a).__name__ == "csc_matrix"
         or type(b).__name__ == "csc_matrix"
     ):
-        ab = a * b
+        ab = a @ b
         if array_out:
             if type(ab).__name__ == "csc_matrix" or type(ab).__name__ == "csr_matrix":
                 ab = ab.toarray()
@@ -147,7 +147,7 @@ def spbroadcast(a, b, array_out=False):
     elif type(a).__name__ == "csr_matrix":
         b_mod = SP.lil_matrix((b.shape[0], b.shape[0]))
         b_mod.setdiag(b)
-        ab = (a.T * b_mod).T
+        ab = (a.T @ b_mod).T
         if array_out:
             if type(ab).__name__ == "csr_matrix":
                 ab = ab.toarray()

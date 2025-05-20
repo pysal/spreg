@@ -264,28 +264,28 @@ def sp_tests(regprob=None, obj_list=None):
     elif obj_list:
         w, fittedvalues, u_naive, u_gen = obj_list
         Phi = norm.cdf(fittedvalues)
-        phi = norm.pdf(fittedvalues)        
+        phi = norm.pdf(fittedvalues)
         n = w.n
 
     try:
         w = w.sparse
     except:
-        w = w    
+        w = w
         
     # Pinkse_error:
     Phi_prod = Phi * (1 - Phi)
     sig2 = np.sum((phi * phi) / Phi_prod) / n
-    LM_err_num = np.dot(u_gen.T, (w * u_gen)) ** 2
-    trWW = np.sum((w * w).diagonal())
-    trWWWWp = trWW + np.sum((w * w.T).diagonal())
+    LM_err_num = np.dot(u_gen.T, (w @ u_gen)) ** 2
+    trWW = np.sum((w @ w).diagonal())
+    trWWWWp = trWW + np.sum((w @ w.T).diagonal())
     LM_err = float(1.0 * LM_err_num / (sig2 ** 2 * trWWWWp))
     LM_err = np.array([LM_err, stats.chisqprob(LM_err, 1)])
     # KP_error:
     moran = moran_KP(w, u_naive, Phi_prod)
     # Pinkse-Slade_error:
     u_std = u_naive / np.sqrt(Phi_prod)
-    ps_num = np.dot(u_std.T, (w * u_std)) ** 2
-    trWpW = np.sum((w.T * w).diagonal())
+    ps_num = np.dot(u_std.T, (w @ u_std)) ** 2
+    trWpW = np.sum((w.T @ w).diagonal())
     ps = float(ps_num / (trWW + trWpW))
     # chi-square instead of bootstrap.
     ps = np.array([ps, stats.chisqprob(ps, 1)])
@@ -322,12 +322,12 @@ def moran_KP(w, u, sig2i):
         w = w.sparse
     except:
         pass
-    moran_num = np.dot(u.T, (w * u))
-    E = SP.lil_matrix(w.get_shape())
+    moran_num = np.dot(u.T, (w @ u))
+    E = SP.lil_matrix(w.shape)
     E.setdiag(sig2i.flat)
     E = E.asformat("csr")
-    WE = w * E
-    moran_den = np.sqrt(np.sum((WE * WE + (w.T * E) * WE).diagonal()))
+    WE = w @ E
+    moran_den = np.sqrt(np.sum((WE @ WE + (w.T @ E) @ WE).diagonal()))
     moran = float(1.0 * moran_num / moran_den)
     moran = np.array([moran, stats.norm.sf(abs(moran)) * 2.0])
     return moran

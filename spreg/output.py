@@ -222,7 +222,18 @@ def out_part_end(strSummary, reg, vm, other_end, m=None):
     return (strSummary, reg)
 
 def _summary_chow(reg):
-    sum_text = "\nREGIMES DIAGNOSTICS - CHOW TEST"
+    sum_text = "\nREGIMES DIAGNOSTICS\n"
+    try:
+        tot_SSR = reg.score
+    except:
+        tot_SSR = np.dot(reg.u.T, reg.u)
+    try:
+        n_clust = reg.nr
+    except:
+        n_clust = len(set(reg.clusters))
+    sum_text += "%-20s:%14.2f\n%-20s:%14d\n" % (
+            "Overall SSR", tot_SSR, "Number of clusters", n_clust)
+    sum_text += "\n- CHOW TEST -"
     name_x_r = reg.name_x_r
     joint, regi = reg.chow.joint, reg.chow.regi
     sum_text += "\n                 VARIABLE        DF        VALUE           PROB\n"

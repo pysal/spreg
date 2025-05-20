@@ -367,13 +367,13 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
         wxnames = {}
         if w_lags == 1:
             for r in range(self.n_eq):
-                bigwx[r] = WS * bigX[r][:, 1:]
+                bigwx[r] = WS @ bigX[r][:, 1:]
                 wxnames[r] = ["W_" + i for i in self.name_bigX[r][1:]]
             if bigq:  # other instruments
                 if lag_q:  # also lags for instruments
                     bigwq = {}
                     for r in range(self.n_eq):
-                        bigwq = WS * bigq[r]
+                        bigwq = WS @ bigq[r]
                         bigq[r] = np.hstack((bigq[r], bigwx[r], bigwq))
                         wqnames = ["W_" + i for i in self.name_bigq[r]]
                         wxnames[r] = wxnames[r] + wqnames
@@ -389,12 +389,12 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
                     self.name_bigq[r] = wxnames[r]
         elif w_lags > 1:  # higher order lags for WX
             for r in range(self.n_eq):
-                bigwxwork = WS * bigX[r][:, 1:]
+                bigwxwork = WS @ bigX[r][:, 1:]
                 bigwx[r] = bigwxwork
                 nameswork = ["W_" + i for i in self.name_bigX[r][1:]]
                 wxnames[r] = nameswork
                 for i in range(1, w_lags):
-                    bigwxwork = WS * bigwxwork
+                    bigwxwork = WS @ bigwxwork
                     bigwx[r] = np.hstack((bigwx[r], bigwxwork))
                     nameswork = ["W" + i for i in nameswork]
                     wxnames[r] = wxnames[r] + nameswork
@@ -403,12 +403,12 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
                     wq = {}
                     wqnames = {}
                     for r in range(self.n_eq):
-                        bigwq = WS * bigq[r]
+                        bigwq = WS @ bigq[r]
                         wqnameswork = ["W_" + i for i in self.name_bigq[r]]
                         wqnames[r] = wqnameswork
                         wq[r] = bigwq
                         for i in range(1, w_lags):
-                            bigwq = WS * bigwq
+                            bigwq = WS @ bigwq
                             wq[r] = np.hstack((wq[r], bigwq))
                             wqnameswork = ["W" + i for i in wqnameswork]
                             wqnames[r] = wqnames[r] + wqnameswork
@@ -481,7 +481,7 @@ class SURlagIV(BaseThreeSLS, REGI.Regimes_Frame):
 def _get_spatial_lag(reg, bigyend, WS, name_bigyend):
     bigylag = {}
     for r in range(reg.n_eq):
-        bigylag[r] = WS * reg.bigy[r]
+        bigylag[r] = WS @ reg.bigy[r]
     if bigyend is not None:
         for r in range(reg.n_eq):
             bigyend[r] = np.hstack((bigyend[r], bigylag[r]))
