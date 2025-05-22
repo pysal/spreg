@@ -644,7 +644,7 @@ def gets_gns(y,x,w, w_lags=2, robust= None, sig2n_k = True,
             return(result,finreg)
 
         name_y = model_gns.name_y
-        name_x = model_sdm.name_x[1:k+1]
+        name_x = model_gns.name_x[1:k+1]
 
     
     else:
