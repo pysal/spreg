@@ -1,0 +1,6 @@
+﻿spreg.log\_likelihood
+=====================
+
+.. currentmodule:: spreg
+
+.. autofunction:: log_likelihood

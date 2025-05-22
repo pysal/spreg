@@ -1,0 +1,6 @@
+﻿spreg.dgp.make\_x
+=================
+
+.. currentmodule:: spreg.dgp
+
+.. autofunction:: make_x
