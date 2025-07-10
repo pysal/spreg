@@ -415,7 +415,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                         name_x + ["lambda"],
                         self.name_w,
                         self.name_regimes,
-                        slx_lags,
+                        #slx_lags,
                     ),
                 )
             else:
@@ -431,7 +431,7 @@ class GM_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
                         name_x + ["lambda"],
                         self.name_w,
                         self.name_regimes,
-                        slx_lags,
+                        #slx_lags,
                     )
                 )
 
