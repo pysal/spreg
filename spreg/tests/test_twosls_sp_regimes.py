@@ -39,7 +39,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.e_pred[0:5], e_5,RTOL)
         h_0 = np.array([[  0.       ,   0.       ,   0.       ,   1.       ,  19.531    ,
          80.467003 ,   0.       ,   0.       ,  18.594    ,  35.4585005]])
-        np.testing.assert_allclose(reg.h[0]*np.eye(10), h_0)
+        np.testing.assert_allclose(reg.h[0] @ np.eye(10), h_0)
         self.assertEqual(reg.k, 7)
         self.assertEqual(reg.kstar, 1)
         np.testing.assert_allclose(reg.mean_y, 35.128823897959187,RTOL)
@@ -62,7 +62,7 @@ class TestGMLag_Regimes(unittest.TestCase):
        [ 45.4790797 ]])
         np.testing.assert_allclose(reg.predy_e[0:5], predy_e_5,RTOL)
         q_5 = np.array([[  0.       ,   0.       ,  18.594    ,  35.4585005]])
-        np.testing.assert_allclose(reg.q[0]*np.eye(4), q_5, RTOL)
+        np.testing.assert_allclose(reg.q[0] @ np.eye(4), q_5, RTOL)
         self.assertEqual(reg.robust, 'unadjusted')
         np.testing.assert_allclose(reg.sig2n_k, 109.76462904625834,RTOL)
         np.testing.assert_allclose(reg.sig2n, 94.08396775393571,RTOL)
@@ -85,7 +85,7 @@ class TestGMLag_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.vm[0], vm,RTOL)
         x_0 = np.array([[  0.      ,   0.      ,   0.      ,   1.      ,  19.531   ,
          80.467003]])
-        np.testing.assert_allclose(reg.x[0]*np.eye(6), x_0,RTOL)
+        np.testing.assert_allclose(reg.x[0] @ np.eye(6), x_0,RTOL)
         y_5 = np.array([[ 15.72598 ],
        [ 18.801754],
        [ 30.626781],
@@ -97,10 +97,10 @@ class TestGMLag_Regimes(unittest.TestCase):
        [ 29.411751  ],
        [ 34.64647575],
        [ 40.4653275 ]])
-        np.testing.assert_allclose(reg.yend[0:5]*np.array([[1]]), yend_5,RTOL)
+        np.testing.assert_allclose(reg.yend[0:5] @ np.array([[1]]), yend_5,RTOL)
         z_0 = np.array([[  0.       ,   0.       ,   0.       ,   1.       ,  19.531    ,
          80.467003 ,  24.7142675]]) 
-        np.testing.assert_allclose(reg.z[0]*np.eye(7), z_0,RTOL)
+        np.testing.assert_allclose(reg.z[0] @ np.eye(7), z_0,RTOL)
         zthhthi = np.array([  1.00000000e+00,  -2.35922393e-16,   5.55111512e-17,
          0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
         -4.44089210e-16,   2.22044605e-16,   0.00000000e+00,

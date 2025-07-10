@@ -162,7 +162,7 @@ class BaseGM_Error_Hom(RegressionPropsY):
         # Output
         self.betas = np.vstack((ols_s.betas, lambda2))
         self.vm, self.sig2 = get_omega_hom_ols(w, wA1, wA2, self, lambda2, moments[0])
-        self.e_filtered = self.u - lambda2 * w * self.u
+        self.e_filtered = self.u - lambda2 * w @ self.u
         self._cache = {}
 
 
@@ -594,7 +594,7 @@ class BaseGM_Endog_Error_Hom(RegressionPropsY):
         # Output
         self.betas = np.vstack((tsls_s.betas, lambda2))
         self.vm, self.sig2 = get_omega_hom(w, wA1, wA2, self, lambda2, moments[0])
-        self.e_filtered = self.u - lambda2 * w * self.u
+        self.e_filtered = self.u - lambda2 * w @ self.u
         self._cache = {}
 
 
@@ -1526,18 +1526,18 @@ def moments_hom(w, wA1, wA2, u):
 
     """
     n = w.shape[0]
-    A1u = wA1 * u
-    A2u = wA2 * u
-    wu = w * u
+    A1u = wA1 @ u
+    A2u = wA2 @ u
+    wu = w @ u
 
     g1 = np.dot(u.T, A1u)
     g2 = np.dot(u.T, A2u)
     g = np.array([[g1][0][0], [g2][0][0]]) / n
 
-    G11 = 2 * np.dot(wu.T * wA1, u)
-    G12 = -np.dot(wu.T * wA1, wu)
-    G21 = 2 * np.dot(wu.T * wA2, u)
-    G22 = -np.dot(wu.T * wA2, wu)
+    G11 = 2 * np.dot(wu.T @ wA1, u)
+    G12 = -np.dot(wu.T @ wA1, wu)
+    G21 = 2 * np.dot(wu.T @ wA2, u)
+    G22 = -np.dot(wu.T @ wA2, wu)
     G = np.array([[G11[0][0], G12[0][0]], [G21[0][0], G22[0][0]]]) / n
     return [G, g]
 
@@ -1582,11 +1582,11 @@ def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
     mu3 = np.sum(u_s**3) / n
     mu4 = np.sum(u_s**4) / n
 
-    tr11 = wA1 * wA1
+    tr11 = wA1 @ wA1
     tr11 = np.sum(tr11.diagonal())
-    tr12 = wA1 * (wA2 * 2)
+    tr12 = wA1 @ (wA2 * 2)
     tr12 = np.sum(tr12.diagonal())
-    tr22 = wA2 * wA2 * 2
+    tr22 = wA2 @ wA2 * 2
     tr22 = np.sum(tr22.diagonal())
     vecd1 = np.array([wA1.diagonal()]).T
 
@@ -1605,8 +1605,8 @@ def get_vc_hom(w, wA1, wA2, reg, lambdapar, z_s=None, for_omegaOLS=False):
         or issubclass(type(z_s), SP.csr.csr_matrix)
         or issubclass(type(z_s), SP.csc.csc_matrix)
     ):
-        alpha1 = (-2 / n) * spdot(z_s.T, wA1 * u_s)
-        alpha2 = (-2 / n) * spdot(z_s.T, wA2 * u_s)
+        alpha1 = (-2 / n) * spdot(z_s.T, wA1 @ u_s)
+        alpha2 = (-2 / n) * spdot(z_s.T, wA2 @ u_s)
 
         hth = spdot(reg.h.T, reg.h)
         hthni = la.inv(hth / n)

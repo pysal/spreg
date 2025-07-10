@@ -218,6 +218,10 @@ class Skater_reg(object):
             data = np.ones((W.n, 1))
         else:
             attribute_kernel = self.metric(data)
+
+        if data.shape[0] <= n_clusters*quorum:
+            raise ValueError("The number of observations is less than the number of clusters times the quorum.")
+        
         W.transform = "b"
         W = W.sparse
         start = time.time()

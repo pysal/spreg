@@ -214,9 +214,8 @@ def get_A1_het(S):
                       A1 matrix in scipy sparse format
 
     """
-    StS = S.T * S
-    d = SP.spdiags([StS.diagonal()], [0], S.get_shape()[0], S.get_shape()[1])
-    d = d.asformat("csr")
+    StS = S.T @ S
+    d = SP.dia_matrix(([StS.diagonal()], [0]), shape=S.shape).tocsr()
     return StS - d
 
 
@@ -247,7 +246,7 @@ def get_A1_hom(s, scalarKP=False):
                       A1 matrix in scipy sparse format
     """
     n = float(s.shape[0])
-    wpw = s.T * s
+    wpw = s.T @ s
     twpw = np.sum(wpw.diagonal())
     e = SP.eye(n, n, format="csr")
     e.data = np.ones(int(n)) * (twpw / n)
@@ -311,16 +310,16 @@ def _moments2eqs(A1, s, u):
 
     """
     n = float(s.shape[0])
-    A1u = A1 * u
-    wu = s * u
+    A1u = A1 @ u
+    wu = s @ u
     g1 = np.dot(u.T, A1u)
     g2 = np.dot(u.T, wu)
     g = np.array([[g1][0][0], [g2][0][0]]) / n
 
-    G11 = np.dot(u.T, ((A1 + A1.T) * wu))
-    G12 = -np.dot((wu.T * A1), wu)
-    G21 = np.dot(u.T, ((s + s.T) * wu))
-    G22 = -np.dot(wu.T, (s * wu))
+    G11 = np.dot(u.T, ((A1 + A1.T) @ wu))
+    G12 = -np.dot((wu.T @ A1), wu)
+    G21 = np.dot(u.T, ((s + s.T) @ wu))
+    G22 = -np.dot(wu.T, (s @ wu))
     G = np.array([[G11[0][0], G12[0][0]], [G21[0][0], G22[0][0]]]) / n
     return [G, g]
 
@@ -468,7 +467,7 @@ def get_spFilter(w, lamb, sf):
         ws = w
     T = sf.shape[0] // ws.shape[0]
     if T == 1:
-        result = sf - lamb * (ws * sf)
+        result = sf - lamb * (ws @ sf)
     else:
         result = sf - lamb * SP.kron(SP.identity(T), ws).dot(sf)
     return result
@@ -659,9 +658,9 @@ def power_expansion(
         max_iterations = 10000000
     while test > threshold and count <= max_iterations:
         if post_multiply:
-            increment = increment * ws * scalar
+            increment = increment @ ws * scalar
         else:
-            increment = ws * increment * scalar
+            increment = ws @ increment * scalar
         running_total += increment
         test_old = test
         test = la.norm(increment)
@@ -673,7 +672,7 @@ def power_expansion(
     return running_total
 
 
-def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
+def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="all"):
     # Create spatial lag of y
     yl = lag_spatial(w, y)
     # spatial and non-spatial instruments
@@ -705,7 +704,7 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0,slx_vars="All"):
             if len(slx_vars) != x.shape[1] :
                 raise Exception("slx_vars incompatible with x column dimensions")
             else:  # use slx_vars to extract proper columns
-                vv = slx_vars * slx_lags
+                vv = slx_vars @ slx_lags
                 lag_x = lag_x[:,vv]
             return yend, q, lag_x
         else:  # slx_vars is "All"
@@ -717,22 +716,22 @@ def set_endog_sparse(y, x, w, yend, q, w_lags, lag_q):
     """
     Same as set_endog, but with a sparse object passed as weights instead of W object.
     """
-    yl = w * y
+    yl = w @ y
     # spatial and non-spatial instruments
     if issubclass(type(yend), np.ndarray):
         if lag_q:
             lag_vars = sphstack(x, q)
         else:
             lag_vars = x
-        spatial_inst = w * lag_vars
+        spatial_inst = w @ lag_vars
         for i in range(w_lags - 1):
-            spatial_inst = sphstack(spatial_inst, w * spatial_inst)
+            spatial_inst = sphstack(spatial_inst, w @ spatial_inst)
         q = sphstack(q, spatial_inst)
         yend = sphstack(yend, yl)
     elif yend == None:  # spatial instruments only
-        q = w * x
+        q = w @ x
         for i in range(w_lags - 1):
-            q = sphstack(q, w * q)
+            q = sphstack(q, w @ q)
         yend = yl
     else:
         raise Exception("invalid value passed to yend")
