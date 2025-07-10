@@ -100,6 +100,66 @@ class TestGM_Error_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.chow.regi, chow_r, RTOL)
         chow_j = 0.81985446000130979
         np.testing.assert_allclose(reg.chow.joint[0], chow_j, RTOL)
+    
+    def teste_model_slx(self):
+        reg = SP.GM_Error_Regimes(self.y, self.X, self.regimes, self.w, slx_lags=1)
+        betas = np.array([
+                    [81.52150852],
+                    [-0.13555178],
+                    [-1.51660154],
+                    [0.33159891],
+                    [-1.88989597],
+                    [68.76353402],
+                    [-0.28052211],
+                    [-0.96302502],
+                    [0.21438560],
+                    [-1.28101731],
+                    [0.34676832]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([4.56150554])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([11.16447446])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        k = 10
+        np.testing.assert_allclose(reg.k, k, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        x = np.array([[0.00000000, 0.00000000, 0.00000000,
+                       0.00000000, 0.00000000, 1.00000000,
+                       80.46700300, 19.53100000, 35.45850050, 
+                       18.59400000 ]])
+        np.testing.assert_allclose(reg.x[0].toarray(), x, RTOL)
+        e_filtered = np.array([7.50323326])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 148.34560113, -0.30813759, -0.71768406,
+                        -1.80329540, -2.85215453, 0.00000000, 
+                        0.00000000, 0.00000000, 0.00000000,
+                        0.00000000 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+        sig2 = 91.65279833
+        np.testing.assert_allclose(reg.sig2, sig2, RTOL)
+        pr2 = 0.62579728
+        np.testing.assert_allclose(reg.pr2, pr2, RTOL)
+        std_err = np.array([ 12.17972090, 0.21106390, 0.57174395, 
+                            0.51968679, 1.12246122, 11.98889457,
+                            0.10978796, 0.54508806, 0.24453164,
+                            0.93883245 ])
+        np.testing.assert_allclose(reg.std_err, std_err, RTOL)
+        chow_r = np.array([
+            [0.55726637, 0.45536376],
+            [0.37130546, 0.54229354],
+            [0.49109136, 0.48344088],
+            [0.04164961, 0.83828913],
+            [0.17313258, 0.67734266]])
+        np.testing.assert_allclose(reg.chow.regi, chow_r, RTOL)
+        chow_j = 1.82626123
+        np.testing.assert_allclose(reg.chow.joint[0], chow_j, RTOL)
 
     """
     def test_model_regi_error(self):
