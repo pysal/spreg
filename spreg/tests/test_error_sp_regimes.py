@@ -100,6 +100,94 @@ class TestGM_Error_Regimes(unittest.TestCase):
         np.testing.assert_allclose(reg.chow.regi, chow_r, RTOL)
         chow_j = 0.81985446000130979
         np.testing.assert_allclose(reg.chow.joint[0], chow_j, RTOL)
+    
+    def teste_model_slx(self):
+        reg = SP.GM_Error_Regimes(self.y, self.X, self.regimes, self.w, slx_lags=1)
+        betas = np.array([
+                    [81.52150852],
+                    [-0.13555178],
+                    [-1.51660154],
+                    [0.33159891],
+                    [-1.88989597],
+                    [68.76353402],
+                    [-0.28052211],
+                    [-0.96302502],
+                    [0.21438560],
+                    [-1.28101731],
+                    [0.34676832]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([4.56150554])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([11.16447446])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        k = 10
+        np.testing.assert_allclose(reg.k, k, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        x = np.array([[0.00000000, 0.00000000, 0.00000000,
+                       0.00000000, 0.00000000, 1.00000000,
+                       80.46700300, 19.53100000, 35.45850050, 
+                       18.59400000 ]])
+        np.testing.assert_allclose(reg.x[0].toarray(), x, RTOL)
+        e_filtered = np.array([7.50323326])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 148.34560113, -0.30813759, -0.71768406,
+                        -1.80329540, -2.85215453, 0.00000000, 
+                        0.00000000, 0.00000000, 0.00000000,
+                        0.00000000 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+        sig2 = 91.65279833
+        np.testing.assert_allclose(reg.sig2, sig2, RTOL)
+        pr2 = 0.62579728
+        np.testing.assert_allclose(reg.pr2, pr2, RTOL)
+        std_err = np.array([ 12.17972090, 0.21106390, 0.57174395, 
+                            0.51968679, 1.12246122, 11.98889457,
+                            0.10978796, 0.54508806, 0.24453164,
+                            0.93883245 ])
+        np.testing.assert_allclose(reg.std_err, std_err, RTOL)
+        chow_r = np.array([
+            [0.55726637, 0.45536376],
+            [0.37130546, 0.54229354],
+            [0.49109136, 0.48344088],
+            [0.04164961, 0.83828913],
+            [0.17313258, 0.67734266]])
+        np.testing.assert_allclose(reg.chow.regi, chow_r, RTOL)
+        chow_j = 1.82626123
+        np.testing.assert_allclose(reg.chow.joint[0], chow_j, RTOL)
+    
+    def teste_model_1 (self):
+        reg = SP.GM_Error_Regimes(self.y, self.X, self.regimes, self.w, regime_err_sep=True)
+        betas = np.array([[ 60.45730439],
+                          [ -0.17732134],
+                          [ -1.30936328],
+                          [  0.51314713],
+                          [ 66.5487126 ],
+                          [ -0.31845995],
+                          [ -1.29047149],
+                          [  0.08092997]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([0.00698340])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([15.71899660])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([0.53685671])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)      
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 39.33653719, -0.08420816, -1.50351108, 0.00000000, 0.00000000, 0.00000000 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
 
     """
     def test_model_regi_error(self):
@@ -429,6 +517,272 @@ class TestGM_Error_Regimes(unittest.TestCase):
         np.testing.assert_allclose(model.betas, tbetas)
         vm = np.hstack((model1.vm.diagonal(), model2.vm.diagonal()))
 
+class GMM_Error_Regimes(unittest.TestCase):
+    def setUp(self):
+        db = libpysal.io.open(libpysal.examples.get_path("columbus.dbf"), "r")
+        y = np.array(db.by_col("CRIME"))
+        self.y = np.reshape(y, (49, 1))
+        X = []
+        X.append(db.by_col("INC"))
+        self.X = np.array(X).T
+        self.w = libpysal.weights.Queen.from_shapefile(
+            libpysal.examples.get_path("columbus.shp")
+        )
+        self.w.transform = "r"
+        self.r_var = "NSA"
+        self.regimes = db.by_col(self.r_var)
+        X1 = []
+        X1.append(db.by_col("INC"))
+        self.X1 = np.array(X1).T
+        yd = []
+        yd.append(db.by_col("HOVAL"))
+        self.yd = np.array(yd).T
+        q = []
+        q.append(db.by_col("DISCBD"))
+        self.q = np.array(q).T
 
+    def test_model_kp98(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='kp98')
+        betas = np.array([
+             [64.03361891],
+             [-1.91909793],
+             [55.92223354],
+             [-1.50076966],
+             [0.30990527]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([-10.88472129])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([26.61070129])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([-9.86121112])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 57.51790950, -2.81322652, 0.00000000, 0.00000000 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+    
+    def test_model_kp98_1(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='kp98', add_wy=True)
+        betas = np.array([
+            [39.83761587],
+            [-1.54921000],
+            [33.12940644],
+            [-1.35443333],
+            [0.56243800],
+            [-0.28535967]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([-4.85023212])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([20.57621212])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([-4.53150217])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 143.74766140, -4.70373507, 125.67978801, -3.67903682, -2.03871945 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+
+    def test_model_kp98_2(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='kp98', yend=self.yd, q=self.q)
+        betas = np.array([
+            [77.48388286],
+            [4.52987507],
+            [78.93213633],
+            [0.42186355],
+            [-3.23824313],
+            [-1.14757886],
+            [0.20221915]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([20.89665796])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([-5.17067796])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([25.21819730])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 390.88287241, 52.25937018, 0.00000000, 0.00000000, -32.64281528, 0.00000000 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+
+    def test_model_hom(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='hom', A1='hom_sc')
+        betas = np.array([
+            [64.01695738],
+            [-1.91795762],
+            [55.89797832],
+            [-1.49907653],
+            [0.43140730]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([-10.89353465])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([26.61951465])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([-9.46562746])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 55.70247014, -2.65868760, 3.13170131, -0.05525004, 0.02766334 ])
+    
+    def test_model_hom_1(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='hom', A1='hom_sc', add_wy=True)
+        betas = np.array([
+            [39.82877996],
+            [-1.54899235],
+            [33.09477734],
+            [-1.35278327],
+            [0.56271272],
+            [-0.17744710]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([-4.85461996])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([20.58059996])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([-4.65707811])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 141.65497781, -4.63063015, 115.94973717, -2.99053918, -2.00152072, 2.64688262 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+    
+    def test_model_hom_2(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='hom', yend=self.yd, q=self.q,A1='hom_sc')
+        betas = np.array([
+            [77.47719809],
+            [4.52771077],
+            [78.92179930],
+            [0.42163460],
+            [-3.23712142],
+            [-1.14724621],
+            [0.24175655]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([20.88469996])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([-5.15871996])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([26.05049963])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 419.87276353, 72.19591647, 22.43805910, 4.10700927, -42.04775263, -1.87819164, -1.60508208 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+    
+    def test_model_het(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='het',step1c=True)
+        betas = np.array([
+            [63.64307764],
+            [-1.89224844],
+            [55.35522507],
+            [-1.46141834],
+            [0.46917553]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([-11.08628356])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([26.81226356])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([-9.45949012])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 33.89701616, -1.33058462, 8.10836078, -0.39660087, 0.00000000 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+    
+    def test_model_1(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='het',step1c=True, add_wy=True)
+        betas = np.array([
+            [39.72414325],
+            [-1.54645065],
+            [32.64933929],
+            [-1.33142873],
+            [0.56616310],
+            [-0.09895070]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([-4.91153115])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([20.63751115])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([-4.80608992])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 82.54351678, -2.81786650, 52.57090657, -0.85398469, -1.18612006, 1.09531546 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+    
+    def test_model_2(self):
+        reg = SP.GMM_Error_Regimes(self.y, self.X, self.regimes, self.w, estimator='het', yend=self.yd, q=self.q, step1c=True)
+        betas = np.array([
+            [77.26679984],
+            [4.45992905],
+            [78.59534391],
+            [0.41432319],
+            [-3.20196287],
+            [-1.13672283],
+            [0.21835250]])
+        np.testing.assert_allclose(reg.betas, betas, RTOL)
+        u = np.array([20.50716918])
+        np.testing.assert_allclose(reg.u[0], u, RTOL)
+        predy = np.array([-4.78118918])
+        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+        n = 49
+        np.testing.assert_allclose(reg.n, n, RTOL)
+        y = np.array([15.72598000])
+        np.testing.assert_allclose(reg.y[0], y, RTOL)
+        e_filtered = np.array([25.15338615])
+        np.testing.assert_allclose(reg.e_filtered[0], e_filtered, RTOL)
+        mean_y = 35.12882390
+        np.testing.assert_allclose(reg.mean_y, mean_y, RTOL)
+        std_y = 16.73209209
+        np.testing.assert_allclose(reg.std_y, std_y, RTOL)
+        vm = np.array([ 509.97341730, 150.74634158, 9.66536908, 5.57390017, -81.03896450, -2.26333955, -3.23574832 ])
+        np.testing.assert_allclose(reg.vm[0], vm, RTOL)
+
+    
 if __name__ == "__main__":
     unittest.main()

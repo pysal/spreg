@@ -3,6 +3,7 @@ import numpy as np
 import libpysal
 import spreg.diagnostics as D
 from spreg.twosls_sp import BaseGM_Lag, GM_Lag
+from spreg.sputils import i_multipliers
 from libpysal.common import RTOL
 
 class TestBaseGMLag(unittest.TestCase):
@@ -178,7 +179,7 @@ class TestGMLag(unittest.TestCase):
         X.append(self.db.by_col("INC"))
         X.append(self.db.by_col("CRIME"))
         self.X = np.array(X).T
-        reg = GM_Lag(self.y, self.X, w=self.w, w_lags=2)
+        reg = GM_Lag(self.y, self.X, w=self.w, w_lags=2, spat_impacts='all')
         betas = np.array([[  4.53017056e+01], [  6.20888617e-01], [ -4.80723451e-01], [  2.83622122e-02]])
         np.testing.assert_allclose(reg.betas, betas,RTOL)
         e_5 = np.array( [[ 29.28976367], [ -6.07439501], [-15.30080685], [ -0.41773375], [ -5.67197968]])
@@ -242,7 +243,24 @@ class TestGMLag(unittest.TestCase):
                              [ -8.31133940e+00, -3.76104678e-01, -2.07028208e-01 , 1.32618931e+00,
                                -8.04284562e-01,  1.30527047e+00,  1.39136816e+00]])
         # np.testing.assert_allclose(reg.zthhthi, zthhthi RTOL) #another issue with rtol
-        np.testing.assert_array_almost_equal(reg.zthhthi, zthhthi, 7)
+        np.testing.assert_array_almost_equal(reg.zthhthi, zthhthi, 7)        
+        sp_multipliers = np.array([[1.       , 0.0291901, 1.0291901],
+       [1.0001996, 0.0289905, 1.0291901],
+       [1.0001996, 0.0289905, 1.0291901]])
+        reg_mult =  np.vstack([reg.sp_multipliers['simple'], reg.sp_multipliers['full'], reg.sp_multipliers['power']])
+        np.testing.assert_array_almost_equal(reg_mult, sp_multipliers, 7)
+
+        i_mult_b = np.array([[0.       , 1.0002366, 0.0289535, 0.0168358],
+       [1.       , 1.0002711, 0.028919 , 0.0287793],
+       [2.       , 1.00025  , 0.0289401, 0.0354569]])
+        i_mult_a = i_multipliers(self.w,coef=reg.rho,model='lag')[0:3].to_numpy()
+        np.testing.assert_array_almost_equal(i_mult_a, i_mult_b, 7)
+
+        i_mult_b = np.array([[0.       , 0.       , 1.       , 0.5833333],
+       [1.       , 0.       , 1.       , 1.       ],
+       [2.       , 0.       , 1.       , 1.2261905]])
+        i_mult_a = i_multipliers(self.w,coef=reg.rho,model='slx')[0:3].to_numpy()
+        np.testing.assert_array_almost_equal(i_mult_a, i_mult_b, 7)
 
     def test_init_white_(self):
         X = []

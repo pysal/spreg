@@ -100,37 +100,37 @@ class Test_Panel_RE_Error(unittest.TestCase):
             subid,
         ]
 
-#    def test_Panel(self):
-#        reg = Panel_RE_Error(
-#            self.y,
-#            self.x,
-#            w=self.w,
-#            name_y=self.y_name,
-#            name_x=self.x_names,
-#            name_ds=self.ds_name,
-#        )
-#        betas = np.array(
-#            [[5.87893756], [3.23269025], [2.62996804], [0.34042682], [4.9782446]]
-#        )
-#        np.testing.assert_allclose(reg.betas, betas, RTOL)
-#        u = np.array([-0.2372652])
-#        np.testing.assert_allclose(reg.u[0], u, RTOL)
-#        predy = np.array([4.27277771])
-#        np.testing.assert_allclose(reg.predy[0], predy, RTOL)
-#        vm = np.array([0.05163595, 0.05453637, 0.06134783, 0.00025012, 0.0030366])
-#        np.testing.assert_allclose(reg.vm.diagonal(), vm, RTOL)
-#        sig2 = np.array([[16.10231419]])
-#        np.testing.assert_allclose(reg.sig2, sig2, RTOL)
-#        pr2 = 0.3256008995950422
-#        np.testing.assert_allclose(reg.pr2, pr2, RTOL)
-#        std_err = np.array([0.22723545, 0.23353024, 0.24768493, 0.01581518, 0.05510535])
-#        np.testing.assert_allclose(reg.std_err, std_err, RTOL)
-#        logll = -7183.836220934392
-#        np.testing.assert_allclose(reg.logll, logll, RTOL)
-#        aic = 14373.672441868785
-#        np.testing.assert_allclose(reg.aic, aic, RTOL)
-#        schwarz = 14388.724960297608
-#        np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
+    def test_Panel(self):
+       reg = Panel_RE_Error(
+           self.y,
+           self.x,
+           w=self.w,
+           name_y=self.y_name,
+           name_x=self.x_names,
+           name_ds=self.ds_name,
+       )
+       betas = np.array(
+           [[5.87893756], [3.23269025], [2.62996804], [0.34042682], [4.9782446]]
+       )
+       np.testing.assert_allclose(reg.betas, betas, RTOL)
+       u = np.array([-0.2372652])
+       np.testing.assert_allclose(reg.u[0], u, RTOL)
+       predy = np.array([4.27277771])
+       np.testing.assert_allclose(reg.predy[0], predy, RTOL)
+       vm = np.array([0.05163595, 0.05453637, 0.06134783, 0.00025012, 0.0030366])
+       np.testing.assert_allclose(reg.vm.diagonal(), vm, RTOL)
+       sig2 = np.array([[16.10231419]])
+       np.testing.assert_allclose(reg.sig2, sig2, RTOL)
+       pr2 = 0.3256008995950422
+       np.testing.assert_allclose(reg.pr2, pr2, RTOL)
+       std_err = np.array([0.22723545, 0.23353024, 0.24768493, 0.01581518, 0.05510535])
+       np.testing.assert_allclose(reg.std_err, std_err, RTOL)
+       logll = -7183.836220934392
+       np.testing.assert_allclose(reg.logll, logll, RTOL)
+       aic = 14373.672441868785
+       np.testing.assert_allclose(reg.aic, aic, RTOL)
+       schwarz = 14388.724960297608
+       np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
 
 if __name__ == "__main__":
