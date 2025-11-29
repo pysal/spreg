@@ -34,12 +34,24 @@
            - ci/312-latest.yaml
            - ci/313-latest.yaml
            - ci/313-dev.yaml
+           - ci/314-latest.yaml
+           - ci/314-numba-latest.yaml
+           - ci/314-dev.yaml
+           - ci/314-numba-dev.yaml
          include:
+           # Python 3.13 + optional numba
            - environment-file: ci/313-latest.yaml
              os: macos-15-intel # Intel
            - environment-file: ci/313-latest.yaml
              os: macos-latest # Apple Silicon
            - environment-file: ci/313-latest.yaml
+             os: windows-latest
+           # Python 3.14 WITHOUT optional numba
+           - environment-file: ci/314-latest.yaml
+             os: macos-15-intel # Intel
+           - environment-file: ci/314-latest.yaml
+             os: macos-latest # Apple Silicon
+           - environment-file: ci/314-latest.yaml
              os: windows-latest
        fail-fast: false
 
