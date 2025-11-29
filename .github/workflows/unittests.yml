@@ -50,7 +50,7 @@
      steps:
      
        - name: checkout repo
-         uses: actions/checkout@v4
+         uses: actions/checkout@v6
          with:
            fetch-depth: 0 # Fetch all history for all branches and tags.
        
@@ -64,7 +64,7 @@
          run: ${{ env.RUN_TEST }}
        
        - name: codecov
-         uses: codecov/codecov-action@v4
+         uses: codecov/codecov-action@v5
          with:
            token: ${{ secrets.CODECOV_TOKEN }}
            file: ./coverage.xml
