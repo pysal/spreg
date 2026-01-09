@@ -697,19 +697,22 @@ def set_endog(y, x, w, yend, q, w_lags, lag_q, slx_lags=0, slx_vars="all"):
         yend = yl
     else:
         raise Exception("invalid value passed to yend")
+    
     if slx_lags == 0:
         return yend, q
-    else:  # ajdust returned lag_x here using slx_vars
-        if (isinstance(slx_vars,list)):     # slx_vars has True,False
-            if len(slx_vars) != x.shape[1] :
+    else:
+        if isinstance(slx_vars, str) and slx_vars.lower() == "all":
+            return yend, q, lag_x
+        else: 
+            if isinstance(slx_vars, str):
+                raise ValueError(f"Invalid string input: '{slx_vars}'. Did you mean 'all'?")
+            
+            slx_vars = np.array(slx_vars)
+            if slx_vars.shape[0] != x.shape[1]:
                 raise Exception("slx_vars incompatible with x column dimensions")
-            else:  # use slx_vars to extract proper columns
-                vv = slx_vars @ slx_lags
-                lag_x = lag_x[:,vv]
+            
+            lag_x = lag_x[:, slx_vars]
             return yend, q, lag_x
-        else:  # slx_vars is "All"
-            return yend, q, lag_x
-
 
 
 def set_endog_sparse(y, x, w, yend, q, w_lags, lag_q):
