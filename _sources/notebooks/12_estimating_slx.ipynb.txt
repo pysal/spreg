@@ -1,0 +1,864 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7b8975c4",
+   "metadata": {},
+   "source": [
+    "# Estimating SLX Models\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### (revised 09/17/2024)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4cfd0985",
+   "metadata": {},
+   "source": [
+    "## Preliminaries\n",
+    "\n",
+    "In this notebook, a closer look is taken at the estimation of SLX models, both the traditional linear specification as well as more recently introduced nonlinear forms. \n",
+    "\n",
+    "The `spreg` package implements the inclusion of spatially lagged explanatory variables in any specification by means of a non-zero `slx_lags` argument. This allows for the estimation of non-spatial linear models by means of OLS, as well as spatial Durbin and SLX-Error models by means of specialized methods. In addition, as of Version 1.7, the `NSLX` module introduces the estimation of nonlinear SLX models, such as a negative exponential distance function and an inverse distance power transformation. The `NSLX` module is still somewhat experimental and under active development, but the current version is stable.\n",
+    "\n",
+    "### Prerequisites\n",
+    "\n",
+    "Familiarity with the basic setup of regressions in *spreg* as well as essentials of *numpy*, *pandas*, *geopandas*, and *libpysal* is assumed. In addition, it is assumed that the **chicagoSDOH** PySAL sample data set has been installed (for specific instructions, refer to the *sample data notebook*)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8a50738",
+   "metadata": {},
+   "source": [
+    "### Modules Needed\n",
+    "\n",
+    "The main modules needed are `spreg.OLS` and `spreg.NLSX`. In addition, *libpysal* is needed for data import and spatial weights construction, and *geopandas* for data input from a shape file. This notebook is based on version 1.7 of *spreg*. \n",
+    "\n",
+    "As before, only the needed functions from *libpysal* are imported, specifically, `get_path` from `libpysal.examples`, and `libpysal.weights` as `weights`. \n",
+    "\n",
+    "Some additional imports are included to avoid excessive warning messages. With later versions of PySAL, these may not be needed. As before, the `set_printoptions` is used for *numpy* 2.0 and later."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e398e42f",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "import os\n",
+    "os.environ['USE_PYGEOS'] = '0'\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import geopandas as gpd\n",
+    "from libpysal.examples import get_path\n",
+    "import libpysal.weights as weights\n",
+    "from spreg import OLS, NSLX\n",
+    "np.set_printoptions(legacy=\"1.25\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ac85fb3",
+   "metadata": {},
+   "source": [
+    "### Functionality Used\n",
+    "\n",
+    "- from geopandas:\n",
+    "  - read_file\n",
+    "  \n",
+    "- from libpysal:\n",
+    "  - examples.get_path\n",
+    "  - weights.Queen.from_dataframe\n",
+    "  - weights.Kernel\n",
+    "  \n",
+    "- from spreg:\n",
+    "  - OLS\n",
+    "  - NSLX"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b34442e2",
+   "metadata": {},
+   "source": [
+    "### Data, Weights and Variables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "effd05a4",
+   "metadata": {},
+   "source": [
+    "As in the previous notebooks, all data sets, weights files and variables are specified at the top, so that they can be easily changed to other examples.\n",
+    "\n",
+    "The data set is from the **chicagoSDOH** sample data set:\n",
+    "\n",
+    "- **Chi-SDOH.shp,shx,dbf,prj**: socio-economic indicators of health for 2014 in 791 Chicago tracts\n",
+    "\n",
+    "Contiguity weights and kernel weights are constructed by means of the `libpysal.weights` functionality. In addition to queen contiguity, adaptive bandwidth triangular kernel weights and adaptive bandwidth quadratic kernel weights are constructed with k=10. The contiguity weight is used in row-standardized form, the kernel weights are kept as is.\n",
+    "\n",
+    "The model specification is purely to illustrate the various estimation methods and relates the variable **HIS_ct** (economic hardship index) to **Blk14P** (percentage Black households), **Hisp14P** (percentage Hispanic households), and **EP_NOHSDP** (percentage households without high school education).\n",
+    "\n",
+    "The centroid coordinates **COORD_X** and **COORD_Y** are used to construct kernel weights.\n",
+    "\n",
+    "The various initializations are carried out in two steps:\n",
+    "\n",
+    "- first, all file names and variable names are defined\n",
+    "- second, the files are read, the variables extracted, and the spatial weights constructed\n",
+    "\n",
+    "The first step allows for customization to other examples, the second step is agnostic to the actual files and variables that were specified. To keep the code simple, there are no error checks for missing files or mismatches in the variable names."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "829cca11",
+   "metadata": {},
+   "source": [
+    "#### Specify file and variable names"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "fc2dba41",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "infileshp = get_path(\"Chi-SDOH.shp\")            # input shape file with data\n",
+    "y_name = 'HIS_ct'\n",
+    "x_names = ['Blk14P','Hisp14P','EP_NOHSDP']\n",
+    "ds_name = 'Chi-SDOH'\n",
+    "wq_name = 'Chi-SDOH_q'\n",
+    "wk10_name = 'Chi-SDOH_tri10'\n",
+    "wkq10_name = 'Chi-SDOH_quad10'\n",
+    "coordname = [\"COORD_X\",\"COORD_Y\"]\n",
+    "idvar = \"ID\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "91648058",
+   "metadata": {},
+   "source": [
+    "#### Read files and extract variables"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "4103013d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfs = gpd.read_file(infileshp)\n",
+    "wq = weights. Queen.from_dataframe(dfs,ids=idvar)\n",
+    "wq.transform = 'r'    # row-transform the weights\n",
+    "y = dfs[y_name]\n",
+    "x = dfs[x_names]\n",
+    "crdnts = dfs[coordname]\n",
+    "wk10 = weights.Kernel(np.array(crdnts),k=10,fixed=False,diagonal=True)\n",
+    "wkq10 = weights.Kernel(np.array(crdnts),k=10,function=\"quadratic\",fixed=False,diagonal=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dd54d5c2",
+   "metadata": {},
+   "source": [
+    "## Estimating SLX Models\n",
+    "\n",
+    "As of Version 1.7 of *spreg*, several options to estimate the SLX model are available that go beyond the simple inclusion of spatially lagged explanatory variables by means of a non-zero `slx_vars` argument. A distinction is made between a linear model and a nonlinear model. In the linear model, both the usual row-standardized spatial weights are supported, as well as kernel weights (not row-standardized). The kernel weights can be conceived as introducing a form of nonlinearity, albeit in the weights and not in the coefficients. In contrast to other usage of the kernel weights (e.g., for HAC standard errors), in the SLX estimation, the diagonal elements are set to zero (and not kept as 1.0).\n",
+    "\n",
+    "The nonlinear estimation is implemented for a negative exponential distance function and an inverse distance power function. Instead of using the actual distance between observations, which is dependent on the scale of the metric chosen (e.g., meters vs. miles), the actual distance within a given bandwidth (either fixed or adaptive) is converted to a fraction of the bandwidth distance, ensuring that its range is between 0 and 1. More precisely, the distance is converted to a fraction of the distance to the nearest neighbor within the bandwidth (for fixed bandwidth) that is farthest away. For an adaptive bandwidth, this is always the k-nearest neighbor, for a fixed bandwidth, it is typically to a nearest neighbor for less than k.\n",
+    "\n",
+    "The exponential model transformation is based on $e^{-\\alpha z_{ij}}$, where $z_{ij} = d_{ij}/bw$, for $d_{ij} \\le bw$, and zero otherwise. Note that the estimate for $\\alpha$ should be positive and larger than one. The negative exponential transformation is built-in, so that the estimate for $\\alpha$ should be a positive value. The current implementation in *spreg* has a different $\\alpha$ parameter for each explanatory variable. \n",
+    "\n",
+    "For the power model, the transformation is $z_{ij}^\\alpha$ with $z_{ij} = 1 - d_{ij}/bw$, for $d_{ij} \\le bw$, and zero otherwise. In this context, the estimate for $\\alpha$ should be positive and larger than one. Note that since $z_{ij} \\lt 1$, the power $z_{ij}^\\alpha$ quickly becomes negligible (i.e., basically zero) for larger values of $\\alpha$. Here too, a different parameter is estimated for each explanatory variable.\n",
+    "\n",
+    "The estimation of the NSLX model uses a nonlinear optimization routine that is quite sensitive to the model specification. In ill-behaved specifications, nonsensical parameter estimates may result. In some instances, the model may fail to optimize altogether, yielding a `nan` for the objective function. Such cases should be taken as an indication of a poor specification and alternatives should be considered. In addition, one should keep in mind that the estimated coefficients should be small. Large coefficients are applied to the transformed distance, which is a fraction less than one. For example, a coefficient of 10 in a power function applied to a z-distance of 0.2 results in a weight of 0.00000001, essentially zeroing out the lagged variable. Such large values can also easily result in singular covariance matrices.\n",
+    "\n",
+    "The parameter estimates are also very sensitive to the choice of the bandwidth, a common attribute of kernel estimation methods. Since these are distance decay functions, larger values for the $\\alpha$ parameters imply a steeper decline with distance. Everything else being the same, the same actual distance decay will tend to yield larger parameter values for a larger bandwidth, and vice versa. Unlike what holds in the linear model, the actual parameter values are not easy to interpret in an absolute sense. However, their effect on the multipliers can be assessed by means of the methods covered in an earlier notebook.\n",
+    "\n",
+    "For all models, there is the flexibility to only lag some of the explanatory variables. In addition, for the nonlinear models, it is possible to apply a different transformation to each variable. Unless there is a good theoretical reason to do so, this is generally not recommended.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "59b80d13",
+   "metadata": {},
+   "source": [
+    "## Linear SLX"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c5c09d3d",
+   "metadata": {},
+   "source": [
+    "### Spatial Weights"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "942c1d1e",
+   "metadata": {},
+   "source": [
+    "#### OLS"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3d8d40ea",
+   "metadata": {},
+   "source": [
+    "As a point of reference, the first estimation is for a classic regression by means of OLS. Spatial diagnostics are included as well."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "61174574",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ols1 = OLS(y,x,w=wq,spat_diag=True,\n",
+    "                 name_w=wq_name,name_ds=ds_name)\n",
+    "print(ols1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "560f607a",
+   "metadata": {},
+   "source": [
+    "The three regression coefficients are positive and highly significant. The overall fit is quite good, with an adjusted $R^2$ of 0.82 and associated sum of squared residuals of 26,459.9. Nevertheless, all the spatial diagnostics and their robust forms are highly significant, pointing to the presence of spatial effects. Specifically, the LM test for WX and its robust form are both significant as well, although it would seem that a lag model and/or a spatial Durbin specification may be most appropriate as the alternative.\n",
+    "\n",
+    "Importantly, the values of the robust statistics are all smaller than the original statistic, suggesting the appropriateness of the alternatives considered. In other words, all spatial models considered could be viable alternatives."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7079f324",
+   "metadata": {},
+   "source": [
+    "#### SLX "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ac32507d",
+   "metadata": {},
+   "source": [
+    "The linear SLX model with queen contiguity weights is invoked by means of `OLS` with the usual arguments, and with `slx_lags=1`. Spatial diagnostics are included as well (`spat_diag=True`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8c368c21",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxw1 = OLS(y,x,w=wq,slx_lags=1,\n",
+    "                 spat_diag=True,\n",
+    "                 name_w=wq_name,name_ds=ds_name)\n",
+    "print(slxw1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "12455b27",
+   "metadata": {},
+   "source": [
+    "The overall fit of the model improves only slightly, to an adjusted $R^2$ of 0.84, with a sum of squared residuals of 23,475.4. All lag terms are highly significant, but two of them are negative (**W_Blk14P** and **W_Hisp14P**), while the third one (**W_EP_NOHSDP**) is positive. The interpretation of negative coefficients for the spatial lags is difficult, so this may point to a misspecification. While significant, the coefficient of **W_EP_NOHSDP** is slightly larger than that of the coefficient itself, which runs counter to Tobler's law.\n",
+    "\n",
+    "The inclusion of the SLX terms changes the spatial diagnostics. The original LM-Lag and LM-Error tests are still (very) significant, but their robust forms are not."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8d7b8d45",
+   "metadata": {},
+   "source": [
+    "#### Higher order lags"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8d3f4bfb",
+   "metadata": {},
+   "source": [
+    "Higher order lags are obtained by setting `slx_lags` to a value larger than one. However, this very quickly leads to problems with multicollinearity. To illustrate this property, the option `vif` is set to `True`. With `slx_lags = 2`, the other arguments are as before."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1821f3e7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxw2 = OLS(y,x,w=wq,slx_lags=2,\n",
+    "                 spat_diag=True,vif=True,\n",
+    "                 name_w=wq_name,name_ds=ds_name)\n",
+    "print(slxw2.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9fe8f86a",
+   "metadata": {},
+   "source": [
+    "The inclusion of the second order lags results in all lag terms but the first order lag of **EP_NOHSDP** to become non-significant. In addition, the multicollinearity is very problematic. The condition number is 89, well above the usual acceptable range. The VIF statistics show the problem with the spatially lagged variables, with a VIF value of almost 157 for **W2_Blk14P**. The effect on the spatial diagnostics is the same as with the first order lags: both LM-Lag and LM-Error tests are significant, but their robust versions are not.\n",
+    "\n",
+    "Clearly, in this example, nothing is gained by including the higher order lags."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "621ff764",
+   "metadata": {},
+   "source": [
+    "#### Selective lagged variables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "73523ef9",
+   "metadata": {},
+   "source": [
+    "Since the coefficient of **W_EP_NOHSDP** was least problematic in the first order model, `slx_vars` is used to remove the other lag terms. To this effect, it is set to the list `[False,False,True]` (the default is otherwise `slx_vars=\"All\"`), which will eliminate **W_Blk14P** and **W_Hisp14P** from the regression specification. All the other arguments are as before."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2b600025",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxw3 = OLS(y,x,w=wq,slx_lags=1,slx_vars=[False,False,True],\n",
+    "                 spat_diag=True,\n",
+    "                 name_w=wq_name,name_ds=ds_name)\n",
+    "print(slxw3.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af11582b",
+   "metadata": {},
+   "source": [
+    "The inclusion of the spatial lag for just **EP_NOHSDP** makes the coefficient of **Hisp14P** not significant. On the other hand, the coefficient of the lag term is now smaller than that of the non-lagged variable, conforming to Tobler's law. The fit still gives an adjusted $R^2$ of 0.84, with a residual sum of squares of 24,117.4.\n",
+    "\n",
+    "The spatial diagnostics seem to point to potential spatial error dependence, with both the LM test and its robust form highly significant."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a7d520a1",
+   "metadata": {},
+   "source": [
+    "### Kernel Weights"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ecc2d5e4",
+   "metadata": {},
+   "source": [
+    "Kernel weights can be passed to an estimation routine in the same way as other weights, but only for `slx_lags = 1`. If a higher order lag is specified, `spreg` will raise an `Exception`. Also, the interpretation of the results is different from the standard linear case. While the diagonal elements as set to zero, just as for other spatial weights, kernel weights are *not* row-standardized. As a result, the magnitude of the associated coefficients is not directly comparable to the non-lagged counterparts. A detailed look at the implied multiplier effects can be gained by means of the `i_multiplier` function, as illustrated in a previous notebook.\n",
+    "\n",
+    "Also, importantly, the results of the diagnostics for spatial effects are not valid for kernel weights without adjustments, so they cannot be activated.\n",
+    "\n",
+    "In all other respects, the command is identical to the standard case."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1bc3787c",
+   "metadata": {},
+   "source": [
+    "#### Triangular kernel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6853b6d6",
+   "metadata": {},
+   "source": [
+    "The first example is for adaptive bandwidth triangular kernel weights with k=10, contained in **wk10**. Note that `spat_diag=True` is specified, even though this option is not available for kernel weights. As a result, the output will include a warning."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0a7eb79a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxk1 = OLS(y,x,w=wk10,slx_lags=1,spat_diag=True,\n",
+    "                 name_w=wk10_name,name_ds=ds_name)\n",
+    "print(slxk1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e92d1ebd",
+   "metadata": {},
+   "source": [
+    "As in the linear case, all lag coefficient are significant, with negative signs for **W_Blk14P** and **W_Hisp14P**. In contrast to the linear case, the magnitude of the coefficients of the lag terms is not directly comparable to the original coefficient.\n",
+    "\n",
+    "In terms of fit, the results are similar to that of the linear model, with an adjusted $R^2$ around 0.84 and a sum of squared residuals of 23,811.7 (compared to 23,475.4 for queen contiguity).\n",
+    "\n",
+    "The results for the reduced model follow."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8c9bbb74",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxk2 = OLS(y,x,w=wk10,slx_lags=1,spat_diag=True,\n",
+    "                 slx_vars=[False,False,True],\n",
+    "                 name_w=wk10_name,name_ds=ds_name)\n",
+    "print(slxk2.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d737d812",
+   "metadata": {},
+   "source": [
+    "The same effect as in the linear model is observed, with **Hisp14P** becoming non-significant. The model fit is barely affected, with a sum of squared residuals of 24,602.7."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ed9bfa72",
+   "metadata": {},
+   "source": [
+    "#### Quadratic kernel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e20b5236",
+   "metadata": {},
+   "source": [
+    "An alternative kernel function is the adaptive bandwidth quadratic function with k=10, given by **wkq10**. This second specification is considered next, first for all three variables, then for just **W_NOHSDP**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "df24025f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxk3 = OLS(y,x,w=wkq10,slx_lags=1,\n",
+    "                 slx_vars = \"All\",\n",
+    "                 name_w=wkq10_name,name_ds=ds_name)\n",
+    "print(slxk3.summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7d0d3bd4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slxk4 = OLS(y,x,w=wkq10,slx_lags=1,\n",
+    "                 slx_vars = [False,False,True],\n",
+    "                 name_w=wkq10_name,name_ds=ds_name)\n",
+    "print(slxk4.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "afbb1cbb",
+   "metadata": {},
+   "source": [
+    "The same pattern is observed as for the other weights. With the full model, all coefficients are highly significant, but **W_Blk14P** and **W_Hisp14P** have negative signs. When just **W_EP_NOHSDP** is included, **Hisp14P** becomes insignificant.\n",
+    "\n",
+    "The fit of the three specifications considered so far is very similar. Comparing the sum of squared residuals (the criterion of fit also used for the nonlinear models) for the reduced model, the linear SLX model achieves 24,117.4, the triangular kernel 24,602.7, and the quadratic kernel 24,535.3. In this example, there is very little difference between the three models."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "248cca95",
+   "metadata": {},
+   "source": [
+    "## Estimating Nonlinear SLX Models"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6a89d6dd",
+   "metadata": {},
+   "source": [
+    "As mentioned, estimating nonlinear models can be quite tricky. The optimization routines are sensitive to model (mis)specifications and various numerical approximations can yield nonsensical results. So far, the `NSLX` module implements two specifications, a negative exponential distance function and an inverse distance power function. \n",
+    "\n",
+    "`NSLX` uses the `minimize` routine from `scipy.optimize` as the nonlinear optimizer. The default method is `BFGS` (Broyden, Fletcher, Goldfard and Shanno), a quasi-Newton method that uses a numerical approximation for the first derivatives. Starting values for the parameters are the OLS regression estimates for the $\\beta$ coefficients and 1.0 for the $\\alpha$ coefficients (this is currently hard-coded). The optimization method also returns an approximation of the inverse Hessian, which can be used to compute asymptotic standard errors. However, as documented online in various forums, depending on the model, the approximation can be quite crude.\n",
+    "\n",
+    "Since the nonlinear SLX model consists of both a linear and a nonlinear part that are unrelated, the associated variance-covariance matrix is block-diagonal. The block for the linear part is the familiar $\\sigma^2 (X'X)^{-1}$, which is easy to compute. The block for the nonlinear part is $\\sigma^2 (\\hat{X}'\\hat{X})^{-1}$, where $\\hat{X}$ consists of vectors of partial derivatives with respect to the nonlinear parameters, with their final values substituted. Both blocks are relatively straightforward to compute analytically. Specifically, the expressions for the partial derivatives with respect to $\\alpha$ are $- e^{-\\alpha.z}.ln(\\alpha.z).z$ for the exponential model, and $z^\\alpha.ln(z)$ for the power model.\n",
+    "\n",
+    "The nonlinear part is notoriously ill-behaved, especially for the power model when the parameter estimates are much larger than one. In such instances, the model should be viewed with suspicion, given the problems with such powers, even though the numerical approximation may yield what looks like a valid variance-covariance function.\n",
+    "\n",
+    "The `NSLX` class takes a set of arguments that is slightly different from that for the other regression functions. As usual, `y` and `x` are required, but instead of passing spatial weights, a dataframe or numpy array with point coordinates is required as the `coords` argument. The coordinate values are used to build the scaled distance weights. The parameters for those weights are passed as `params`, which is a list of tuples consisting of three elements: the number of nearest neighbors (`k`), the bandwidth (`distance_upper_bound`), and the transformation. In the most typical application, the same parameters will be used for all the lagged variables so that only a single tuple needs to be specified in the `params` list. However, there is the flexibility to apply a separate set of parameters (and thus a different transformation) to each variable. The sequence of tuples in the list must match the sequence of variable names.\n",
+    "\n",
+    "The number of nearest neighbors is used to build the underlying KDTree, and also serves to derive the bandwidth. With the second item as `np.inf`, the bandwidth is adaptive and determined by the distance to the farthest k-nearest neighbor for each observation. For a fixed bandwidth, a distance upper bound must be specified. This is not trivial and depends on the scale of the coordinates (e.g., whether the distance will be in meters or kilometers). \n",
+    "\n",
+    "When a distance_upper_bound is set that is larger than the largest k-nearest neighbor distance, there is no effect. In order to be effective, the distance_upper_bound must be less than the maximum k-nearest neighbor distance for a given point. In this instance, it has the effect of imposing a fixed bandwidth, and it truncates the number of nearest neighbors to those within the bandwidth. As a result, the number of neighbors will be less than k. When a strict fixed bandwidth needs to be imposed, k should be set large enough (and `distance_upper_bound` small enough) so that the bandwidth is effective for every observation.\n",
+    "\n",
+    "The third argument is the transformation, either `\"exponential\"` or `\"power\"`. In contrast to the other SLX models, `slx_lags` is *not* an argument, but `slx_vars` remains available to impose selective lag transformations.\n",
+    "\n",
+    "Other arguments include a flag for the type of variance computed, with `var_flag = 1` (the default) for an analytical computation, and `var_flag = 0` for the inverse Hessian approximation. There is also a flag for a listing of a summary of convergence conditions, with `conv_flag = 1` for such a listing (`conv_flag=0` is the default). Finally, there is a `verbose` flag which lists the intermediate results for all iterations (`verbose = False` is the default to avoid sometimes very long listings), and an option to include `minimize`-specific options, as `options`, a dictionary with specific solver options (see the `scipy.optimize` documentation at https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html).\n",
+    "\n",
+    "A final remark is that the results of nonlinear optimization may vary by hardware, operating system and software versions. As a consequence, slight differences in the parameter estimates may occur."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fe64c5ad",
+   "metadata": {},
+   "source": [
+    "## Negative Exponential Distance"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "743c3800",
+   "metadata": {},
+   "source": [
+    "#### Adaptive bandwidth"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "39812a09",
+   "metadata": {},
+   "source": [
+    "The first two examples use an adaptive bandwidth with, respectively, 6 (**parme1**) and 10 (**parme2**) k-nearest neighbors. The adaptive bandwidth is given by `np.inf` and the transformation as `\"exponential\"`. The coordinates for the weights computation are contained in the numpy array **crdnts**, and **y** and **x** are as before. In the first example, all explanatory variables are lagged, with `slx_vars = \"All\"`. This is the default, so it does not need to be specified as an argument. It is included here for clarity.\n",
+    "\n",
+    "Analytical standard errors are obtained with `var_flag = 1` and a summary of the convergence properties is given with `conv_flag = 1`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "be589711",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "parme1 = [(6,np.inf,\"exponential\")]\n",
+    "parme2 = [(10,np.inf,\"exponential\")]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fd0f2cb8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxe1 = NSLX(y=y,x=x,coords=crdnts,params=parme1,slx_vars=\"All\",\n",
+    "              var_flag=1,conv_flag=1,\n",
+    "              name_ds=ds_name,verbose=False)\n",
+    "print(nslxe1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6019b93c",
+   "metadata": {},
+   "source": [
+    "Even though the optimization process yields estimates, they are clearly suspect, given the associated (analytical) standard errors. The problems seem to be associated with **We_Blk14P** and **We_Hisp14P**, whereas the estimate for **We_EP_NOHSDP** seems more reasonable. The remainder of this example will proceed with just the latter.\n",
+    "\n",
+    "Parenthetically, the convergence summary indicates that 95 iterations were used, but gives a success rate of **False**. In this example, this is likely due to some rounding issues and can be ignored. Note that the message states \"not necessarily achieved\". A good indication of the extent to which the optimization worked is to compare the sum of squared residuals to that achieved by the other models. At a value of 25,873.8, this is somewhat worse than for the other models, but in the same general ballpark.\n",
+    "\n",
+    "The next model is for the restricted specification."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8bcac6eb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxe2 = NSLX(y=y,x=x,coords=crdnts,params=parme1,slx_vars=[False,False,True],\n",
+    "              var_flag=1,conv_flag=1,\n",
+    "              name_ds=ds_name,verbose=False)\n",
+    "print(nslxe2.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4131ac5c",
+   "metadata": {},
+   "source": [
+    "The estimated coefficients are identical to those in the full model, and so is the model fit. The only slight difference is in the analytical standard errors for the coefficient of **We_EP_NOHSDP** (0.18474 vs. 0.18572). Also, the number of iterations to convergence is quite a bit smaller than in the previous example (32 vs. 95).\n",
+    "\n",
+    "To illustrate the effect of the variance computation, the model is rerun with `var_flag = 0` for a numerical approximation using the inverse Hessian."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "aa9ec229",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxe3 = NSLX(y=y,x=x,coords=crdnts,params=parme1,slx_vars=[False,False,True],\n",
+    "              var_flag=0,conv_flag=1,\n",
+    "              name_ds=ds_name,verbose=False)\n",
+    "print(nslxe3.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0c8e82a8",
+   "metadata": {},
+   "source": [
+    "The estimates are again identical, but the associated standard errors are quite different. The analytical derivation for the regression coefficients can be used as a standard for comparison, since it should be $\\sigma^2 (X'X)^{-1}$. Clearly, this is not the case for the numerical approximation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f51b395f",
+   "metadata": {},
+   "source": [
+    "The effect of the bandwidth is explored by setting `k = 10`, as in **parme2**. Only the restricted model is considered, with analytical standard errors."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "45c8e55b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxe4 = NSLX(y=y,x=x,coords=crdnts,params=parme2,slx_vars=[False,False,True],\n",
+    "              var_flag=1,conv_flag=1,\n",
+    "              name_ds=ds_name,verbose=False)\n",
+    "print(nslxe4.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0931a3cd",
+   "metadata": {},
+   "source": [
+    "The regression coefficients are essentially the same as for the model with `k = 6`, but the lag coefficient is larger. Intuitively, this makes sense if the true range of interaction is less than suggested by the bandwidth of `k = 10`. As a consequence, the distance decay should be steeper, implied by the larger coefficient. Otherwise, the fit is marginally better, with a sum of squared residuals of 25,594.8 (compared to 25,873.8)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8017b798",
+   "metadata": {},
+   "source": [
+    "#### Fixed bandwidth"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d7979aed",
+   "metadata": {},
+   "source": [
+    "Two upper distance bounds are specified to assess the role of a fixed bandwidth, i.e., 20.0 and 6.0, with `k = 6`. This is specified in the parameter lists **parme3** and **parme4**. Only the restricted model is considered.\n",
+    "\n",
+    "To provide some context, for the Chicago SDOH data set, a distance band that ensures that each observation has at least one neighbor (the max-min nearest neighbor distance) is 8.99. For a bandwidth distance of 20, the number of neighbors ranges from 11 to 268, with a median of 153! For a bandwidth distance of 6, there are four observations that become isolates. The number of neighbors ranges from 0 to 40, with 17 as the median."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "d6390fd8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "parme3 = [(6,20.0,\"exponential\")]\n",
+    "parme4 = [(6,6.0,\"exponential\")]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c57157a0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxe5 = NSLX(y=y,x=x,coords=crdnts,params=parme3,slx_vars=[False,False,True],\n",
+    "              var_flag=1,conv_flag=1,\n",
+    "              name_ds=ds_name,verbose=False)\n",
+    "print(nslxe5.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5785f701",
+   "metadata": {},
+   "source": [
+    "The result is identical to the case with an adaptive bandwidth. Even though the listing mentions an upper bound distance of 20, this is ineffective and the k-nearest neighbor criterion dominates.\n",
+    "\n",
+    "With an upper bound distance of 6 (**parme4**), the results for the coefficient estimates and model fit are slightly different (the latter is slightly worse, with a sum of squared residuals of 26,000.7).\n",
+    "\n",
+    "In general, unless there are good theoretical reasons, an adaptive bandwidth is preferred, since it ensures that there is an equal number of neighbors to each observation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "00e8b2a6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxe6 = NSLX(y=y,x=x,coords=crdnts,params=parme4,slx_vars=[False,False,True],\n",
+    "              var_flag=1,conv_flag=1,\n",
+    "              name_ds=ds_name,verbose=False)\n",
+    "print(nslxe6.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e0e451ee",
+   "metadata": {},
+   "source": [
+    "## Inverse Distance Power"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "78fbd3c7",
+   "metadata": {},
+   "source": [
+    "#### Adaptive bandwidth"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7c062181",
+   "metadata": {},
+   "source": [
+    "In contrast to the exponential, case, where the effect of bandwidth was explored, here only one case is considered, for an adaptive bandwidth with 6 k-nearest neighbors (**parmp1**). The adaptive bandwidth is given by `np.inf` and the transformation as `\"power\"`. The coordinates for the weights computation are contained in the numpy array **crdnts**, and **y** and **x** are as before. In the first example, all explanatory variables are lagged, with `slx_vars = \"All\"`. This is the default, so it does not need to be specified as an argument. As before, it is included here for clarity.\n",
+    "\n",
+    "Analytical standard errors are obtained with `var_flag = 1` and a summary of the convergence properties is given with `conv_flag = 1`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1697b09f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "parmp1 = [(10,np.inf,\"power\")]\n",
+    "nslxp1 = NSLX(y=y,x=x,coords=crdnts,params=parmp1,slx_vars=\"All\",\n",
+    "              var_flag=1,conv_flag=1,verbose=False,\n",
+    "              name_ds=ds_name)\n",
+    "print(nslxp1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3d1fcd4e",
+   "metadata": {},
+   "source": [
+    "What happened? The routine produces coefficient estimates, but no standard error or p-values. Closer examination of the results reveals that the **Sum squared residual** has a value of **nan**. The sum of squared residuals is the objective function that is minimized by the nonlinear optimization routine. The result of **nan** indicates a lack of convergence. Also, only two iterations were performed.\n",
+    "\n",
+    "This is not a surprise given the very large values for the lag (and other) coefficients. The regression coefficients in particular should be similar to those obtained in OLS and the linear models, which is clearly not the case.\n",
+    "\n",
+    "In an attempt to remedy this, the same approach is used as before. The estimation is carried out with the lags for **Blk14P** and **Hisp14P** excluded, using `slx_vars = [False,False,True]`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8a2bf9ab",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxp2 = NSLX(y=y,x=x,coords=crdnts,params=parmp1,slx_vars=[False,False,True],\n",
+    "              var_flag=1,conv_flag=1, verbose=False,\n",
+    "              name_ds=ds_name)\n",
+    "print(nslxp2.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ad182dcb",
+   "metadata": {},
+   "source": [
+    "Now, the model seems to converge and yields a parameter value for **Wp_EP_NOHSDP** of 6.30, but no standard errors. The standard errors for the regression coefficients are not affected, but the value for $\\alpha$ causes the matrix product $(\\hat{X}'\\hat{X})$ to be singular. \n",
+    "\n",
+    "The numerical approximation for the inverse Hessian does yield approximate standard errors, but these should be viewed with caution. This is accomplished by setting `var_flag = 0`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6089ca55",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nslxp3 = NSLX(y=y,x=x,coords=crdnts,params=parmp1,slx_vars=[False,False,True],\n",
+    "              name_ds=ds_name,\n",
+    "              var_flag=0,conv_flag=1)\n",
+    "print(nslxp3.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2728f7be",
+   "metadata": {},
+   "source": [
+    "The approximation suggests the coefficient is significant. Of all the SLX models, the power function achieves the worst fit (but only marginally so), with a sum of squared residuals of 25,742.3 (compared to 25,594.8 for a similar exponential model).\n",
+    "\n",
+    "Clearly, in the current example, there is little gain in going with the nonlinear specification over the linear one. Of all the models, the best fit is achieved by the linear SLX specification based on queen contiguity weights, with a sum of squared residuals of 24,117. However, given the sensitivity of the results to the choice of weights, bandwidth and functional specification, further experimentation would be warranted."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "65aadbff",
+   "metadata": {},
+   "source": [
+    "## Practice\n",
+    "\n",
+    "The SLX model provides the opportunity to compare a wide range of specifications, using different weights and assessing the possible contribution of nonlinear specifications. Try this out for your own baseline model. However, if the diagnostics for spatial dependence in the OLS estimation do not show a significant value for LM-WX statistic, you may need to try a different base specification to obtain meaningful results. Pay particular attention to the interpretation of the coefficients of the lag terms in relation to Tobler's law and the sensitivity of the estimates to the choice of a bandwidth."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
