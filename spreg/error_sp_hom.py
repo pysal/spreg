@@ -1671,7 +1671,7 @@ def get_omega_hom(w, wA1, wA2, reg, lamb, G):
 
     o_upper = np.hstack((oDD, oDL))
     o_lower = np.hstack((oDL.T, oLL))
-    return np.vstack((o_upper, o_lower)), float(sig2)
+    return np.vstack((o_upper, o_lower)), sig2.item()
 
 
 def get_omega_hom_ols(w, wA1, wA2, reg, lamb, G):
