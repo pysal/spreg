@@ -788,7 +788,7 @@ def _probit_out(reg, spat_diag=False, sptests_only=False):
             strSummary_mid += "%20s    %12.5f    %12.5f    %12.5f    %12.5f\n" % (
                 reg.name_x[i + 1],
                 reg.slopes[i][0],
-                reg.slopes_std_err[i],
+                reg.slopes_std_err[i][0],
                 reg.slopes_z_stat[i][0],
                 reg.slopes_z_stat[i][1],
             )

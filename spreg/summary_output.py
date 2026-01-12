@@ -1383,7 +1383,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
             try:
                 strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n" % (
                     "lambda_" + str(eq + 1),
-                    reg.lamsur[pos],
+                    reg.lamsur[pos].item(),
                     reg.lamsetp[0][pos][0],
                     reg.lamsetp[1][pos][0],
                     reg.lamsetp[2][pos][0],
@@ -1391,7 +1391,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
             except:
                 strSummary += "%20s    %12.7f    \n" % (
                     "lambda_" + str(eq + 1),
-                    reg.lamsur[pos],
+                    reg.lamsur[pos].item(),
                 )
 
         reg.__summary[eq]["summary_coefs"] = strSummary
