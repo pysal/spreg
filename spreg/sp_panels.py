@@ -82,7 +82,7 @@ class BaseGM_KKP(RegressionPropsY):
         ub = Tw.dot(ols.u)
         ulu = ols.u - lambda1 * ub
         Q1 = SP.kron(np.ones((T, T)) / T, SP.identity(N))
-        sig_1 = float(np.dot(ulu.T, Q1.dot(ulu)) / N)
+        sig_1 = (np.dot(ulu.T, Q1.dot(ulu)) / N).item()
         # print('initial_lamb_sig:',lambda1,sig_v,sig_1)
         # print('theta:', 1 - np.sqrt(sig_v)/ np.sqrt(sig_1))
         Xi_a = SP.diags([(sig_v * sig_v) / (T - 1), sig_1 * sig_1])
@@ -413,12 +413,12 @@ def _moments_kkp(ws, u, i, trace_w2=None):
     Qu = Q.dot(u)
     Qub = Q.dot(ub)
     Qubb = Q.dot(ubb)
-    G11 = float(2 * np.dot(u.T, Qub))
-    G12 = float(-np.dot(ub.T, Qub))
-    G21 = float(2 * np.dot(ubb.T, Qub))
-    G22 = float(-np.dot(ubb.T, Qubb))
-    G31 = float(np.dot(u.T, Qubb) + np.dot(ub.T, Qub))
-    G32 = float(-np.dot(ub.T, Qubb))
+    G11 = (2 * np.dot(u.T, Qub)).item()
+    G12 = -(np.dot(ub.T, Qub)).item()
+    G21 = (2 * np.dot(ubb.T, Qub)).item()
+    G22 = -(np.dot(ubb.T, Qubb)).item()
+    G31 = (np.dot(u.T, Qubb) + np.dot(ub.T, Qub)).item()
+    G32 = -(np.dot(ub.T, Qubb)).item()
     if trace_w2 == None:
         trace_w2 = (ws.power(2)).sum()
     G23 = ((T - 1) ** (1 - i)) * trace_w2
@@ -434,9 +434,9 @@ def _moments_kkp(ws, u, i, trace_w2=None):
                 [G31, G32, 0, 0],
             ]
         ) / (N * (T - 1) ** (1 - i))
-    g1 = float(np.dot(u.T, Qu))
-    g2 = float(np.dot(ub.T, Qub))
-    g3 = float(np.dot(u.T, Qub))
+    g1 = np.dot(u.T, Qu).item()
+    g2 = np.dot(ub.T, Qub).item()
+    g3 = np.dot(u.T, Qub).item()
     g = np.array([[g1, g2, g3]]).T / (N * (T - 1) ** (1 - i))
     return [G, g], trace_w2
 

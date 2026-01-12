@@ -344,7 +344,7 @@ def ML_Error_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=Fal
         )
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "S.E of regression",
-            np.sqrt(mreg.sig2),
+            np.sqrt(mreg.sig2).item(),
             "Akaike info criterion",
             mreg.aic.item(),
         )
@@ -908,7 +908,7 @@ def Panel_FE_Error(reg, w, vm, regimes=False):
     )
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "S.E of regression",
-        np.sqrt(reg.sig2),
+        np.sqrt(reg.sig2).item(),
         "Akaike info criterion",
         reg.aic.item(),
     )
@@ -1281,7 +1281,7 @@ def summary_intro(reg, short, sur=False):  # extra space d
 def summary_sur_mid(reg, eq):
     strSummary = "SUMMARY OF EQUATION " + str(eq + 1) + "\n"
     strSummary += "-" * (len(strSummary) - 1) + "\n"
-    n_var = int(reg.bigK[list(reg.name_bigy.keys()).index(eq)])
+    n_var = int(reg.bigK[list(reg.name_bigy.keys()).index(eq)].item())
     strSummary += "%-20s:%12s                %-22s:%12d\n" % (
         "Dependent Variable",
         reg.name_bigy[eq],
