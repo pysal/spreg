@@ -227,7 +227,7 @@ def ML_Lag(reg, w, vm, spat_diag, regimes=False):  # extra space d
     beta_diag_lag(reg, robust=None, error=False)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
         reg.logll,
     )
@@ -261,7 +261,7 @@ def ML_Lag_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False
         beta_diag_lag(mreg, robust=None, error=False)
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            mreg.sig2,
+            mreg.sig2.item(),
             "Log likelihood",
             mreg.logll,
         )
@@ -304,7 +304,7 @@ def ML_Error(reg, w, vm, spat_diag, regimes=False):  # extra space d
     beta_diag(reg, robust=None)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
         reg.logll,
     )
@@ -338,7 +338,7 @@ def ML_Error_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=Fal
         beta_diag(mreg, robust=None)
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            mreg.sig2,
+            mreg.sig2.item(),
             "Log likelihood",
             mreg.logll,
         )
@@ -873,7 +873,7 @@ def Panel_FE_Lag(reg, w, vm):
     beta_diag_lag(reg, robust=None, error=False)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
         reg.logll,
     )
@@ -902,7 +902,7 @@ def Panel_FE_Error(reg, w, vm, regimes=False):
     beta_diag(reg, robust=None)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
         reg.logll,
     )

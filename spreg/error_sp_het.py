@@ -1715,10 +1715,10 @@ def get_vc_het_tsls(
     a1, a2 = get_a1a2(w, wA1, reg, lambdapar, P, zs, inv_method, filt)
     a1s = a1.T @ sigma
     a2s = a2.T @ sigma
-    psi11 = float(np.dot(a1s, a1))
-    psi12 = float(np.dot(a1s, a2))
-    psi21 = float(np.dot(a2s, a1))
-    psi22 = float(np.dot(a2s, a2))
+    psi11 = np.dot(a1s, a1).item()
+    psi12 = np.dot(a1s, a2).item()
+    psi21 = np.dot(a2s, a1).item()
+    psi22 = np.dot(a2s, a2).item()
     psi0 = np.array([[psi11, psi12], [psi21, psi22]]) / w.shape[0]
     if save_a1a2:
         psi = (vc1 + psi0, a1, a2)

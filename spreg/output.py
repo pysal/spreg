@@ -428,7 +428,7 @@ def _nonspat_top(reg, ml=False):
             "Sum squared residual", reg.utu, "F-statistic", reg.f_stat[0],)
         strSummary += "%-20s:%12.3f                %-22s:%12.4g\n" % (
             "Sigma-square",
-            reg.sig2,
+            reg.sig2.item(),
             "Prob(F-statistic)",
             reg.f_stat[1],
         )
@@ -457,7 +457,7 @@ def _nonspat_top(reg, ml=False):
         )
         strSummary += "%-20s:%12.4f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            reg.sig2,
+            reg.sig2.item(),
             "Akaike info criterion",
             reg.aic,
         )
