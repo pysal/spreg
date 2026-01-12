@@ -720,8 +720,8 @@ def _get_weighted_var(regimes, regimes_set, sig2n_k, u, y, x, yend=None, q=None)
     sig_vec = np.zeros(y.shape, float)
     y2 = np.zeros(y.shape, float)
     for r in regimes_set:
-        sig_vec[regi_ids[r]] = 1 / float(np.sqrt(sig[r]))
-        y2[regi_ids[r]] = y[regi_ids[r]] / float(np.sqrt(sig[r]))
+        sig_vec[regi_ids[r]] = 1 / np.sqrt(sig[r]).item()
+        y2[regi_ids[r]] = y[regi_ids[r]] / np.sqrt(sig[r]).item()
     x2 = spbroadcast(x, sig_vec)
     if yend != None:
         yend2 = spbroadcast(yend, sig_vec)

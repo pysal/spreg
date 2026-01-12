@@ -116,7 +116,7 @@ class BaseProbit():
         par_est, self.warning = self.par_est()
         self.betas = par_est[0].reshape(-1,1)
 
-        self.logl = -float(par_est[1])
+        self.logl = -par_est[1].item()
         H = self.hessian(self.betas)
         self.vm = - la.inv(H)
 
