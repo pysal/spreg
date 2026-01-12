@@ -414,6 +414,20 @@ class TestGMLag(unittest.TestCase):
         cfh_test = np.array([0.10818 , 0.947347])
         np.testing.assert_allclose(reg.cfh_test, cfh_test,RTOL)
 
+        reg2 = GM_Lag(self.y, self.X, slx_lags=1, slx_vars=[False, True], spat_diag=True, w=self.w2)
+        print(reg2.betas)
+        print(reg2.vm[0])
+
+        betas = np.array([[ 47.5145963],
+                [ 0.777552788],
+                [-0.577775013],
+                [ 0.0356029868],
+                [-0.0361304556]])
+        np.testing.assert_allclose(reg2.betas, betas,RTOL)
+        vm = np.array([ 182.846791, -5.60029829, -2.10057337,  0.0715597853,
+ -0.207433690])
+        np.testing.assert_allclose(reg2.vm[0], vm,RTOL)        
+
     def test_graph(self):
         X = []
         X.append(self.db.by_col("INC"))
