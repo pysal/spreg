@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PySAL Sample Data Sets &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Input/Output" href="2_data_input_output.html" />
+    <link rel="prev" title="Tutorials" href="../tutorials.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">PySAL Sample Data Sets</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/06/2024)">(revised 09/06/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functionality-Used">Functionality Used</a></li>
+<li><a class="reference internal" href="#Input-Files">Input Files</a><ul>
+<li><a class="reference internal" href="#Accessing-a-PySAL-Remote-Sample-Data-Set">Accessing a PySAL Remote Sample Data Set</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Installing-a-remote-sample-data-set">Installing a remote sample data set</a></li>
+<li><a class="reference internal" href="#Reading-Input-Files-from-the-Example-Data-Set">Reading Input Files from the Example Data Set</a></li>
+<li><a class="reference internal" href="#Removing-an-Installed-Remote-Sample-Data-Set">Removing an Installed Remote Sample Data Set</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/1_sample_data.ipynb">notebooks/1_sample_data.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/1_sample_data.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="PySAL-Sample-Data-Sets">
+<h1>PySAL Sample Data Sets<a class="headerlink" href="#PySAL-Sample-Data-Sets" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/06/2024)">
+<h2>(revised 09/06/2024)<a class="headerlink" href="#(revised-09/06/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, the installation and input of PySAL sample data sets is reviewed.</p>
+<p>A video recording is available from the GeoDa Center YouTube channel playlist <em>Applied Spatial Regression - Notebooks</em>, at <a class="reference external" href="https://www.youtube.com/watch?v=qwnLkUFiSzY&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6">https://www.youtube.com/watch?v=qwnLkUFiSzY&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6</a>.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Very little is assumed in terms of prerequisites. Sample data files are examined and loaded with <em>libpysal</em> and <em>geopandas</em> is used to read the data.</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The three modules needed to work with sample data are <em>libpysal</em>, <em>pandas</em> and <em>geopandas</em>.</p>
+<p>Some additional imports are included to avoid excessive warning messages. With later versions of PySAL, these may not be needed.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import pandas as pd
+import geopandas as gpd
+import libpysal
+</pre></div>
+</div>
+</div>
+<p>In order to have some more flexibility when listing the contents of data frames, the <code class="docutils literal notranslate"><span class="pre">display.max_rows</span></code> option is set to 100 (this step can easily be skipped, but then the listing of example data sets below will be incomplete).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pd.options.display.max_rows = 100
+pd.options.display.max_rows
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functionality-Used">
+<h2>Functionality Used<a class="headerlink" href="#Functionality-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>examples.available</p></li>
+<li><p>examples.explain</p></li>
+<li><p>examples.load_example</p></li>
+<li><p>examples.get_path</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Input-Files">
+<h2>Input Files<a class="headerlink" href="#Input-Files" title="Link to this heading">¶</a></h2>
+<p>All notebooks used for this course are organized such that the relevant filenames and variables names are listed at the top, so that they can be easily adjusted for use with your own data sets and variables. In this notebook, the use of PySAL sample data sets is illustrated. For other data sets, the general approach is the same, except that either the files must be present in the current working directory, or the full pathname must be specified. In later notebooks, only sample data sets will be
+used.</p>
+<p>Here, the <strong>Chi-SDOH</strong> sample shape file is illustrated. The specific file names are:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: a shape file (four files!) with socio-economic determinants of health for 2014 in 791 Chicago tracts</p></li>
+</ul>
+<p>In the other <em>spreg</em> notebooks, it is assumed that will you have installed the relevant example data sets using functionality from the <em>libpysal.examples</em> module. This is illustrated in detail here, but will not be repeated in the other notebooks. If the files are not loaded using the <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code> functionality, they can be downloaded as individual files from <a class="reference external" href="https://github.com/lanselin/spreg_sample_data/">https://github.com/lanselin/spreg_sample_data/</a> or <a class="reference external" href="https://geodacenter.github.io/data-and-lab/">https://geodacenter.github.io/data-and-lab/</a>. You must then pass the full path
+to <strong>infileshp</strong> used as arguments in the corresponding <code class="docutils literal notranslate"><span class="pre">geopandas.read_file</span></code> command.</p>
+<p>The input file is specified generically as <strong>infileshp</strong> (for the shape file).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = &quot;Chi-SDOH.shp&quot;            # input shape file with data
+</pre></div>
+</div>
+</div>
+<section id="Accessing-a-PySAL-Remote-Sample-Data-Set">
+<h3>Accessing a PySAL Remote Sample Data Set<a class="headerlink" href="#Accessing-a-PySAL-Remote-Sample-Data-Set" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Installing-a-remote-sample-data-set">
+<h2>Installing a remote sample data set<a class="headerlink" href="#Installing-a-remote-sample-data-set" title="Link to this heading">¶</a></h2>
+<p>All the needed files associated with a remote data set must be installed locally. The list of available remote data sets is shown by means of <code class="docutils literal notranslate"><span class="pre">libpysal.examples.available()</span></code>. When the file is also installed, the matching item in the <strong>Installed</strong> column will be given as <strong>True</strong>.</p>
+<p>If the sample data set has not yet been installed, <strong>Installed</strong> is initially set to <strong>False</strong>. For example, if the <strong>chicagoSDOH</strong> data set is not installed, item <strong>79</strong> in the list (<strong>chicagoSDOH</strong>), is given as <strong>False</strong>. Once the example data set is loaded, this will be changed to <strong>True</strong>.</p>
+<p>The example data set only needs to be loaded once. After that, it will be available for all future use in <em>PySAL</em> (not just in the current notebook), using the standard <code class="docutils literal notranslate"><span class="pre">get_path</span></code> functionality of <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>libpysal.examples.available()
+</pre></div>
+</div>
+</div>
+<p>The contents of any <code class="docutils literal notranslate"><span class="pre">PySAL</span></code> example data set can be shown by means of <code class="docutils literal notranslate"><span class="pre">libpysal.examples.explain</span></code>. Note that this does <strong>not</strong> load the data set, but it accesses the contents remotely (you will need an internet connection). As listed, the data set is for 791 census tracts in Chicago and it contains 65 variables.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>libpysal.examples.explain(&quot;chicagoSDOH&quot;)
+</pre></div>
+</div>
+</div>
+<p>The example data set is installed locally by means of <code class="docutils literal notranslate"><span class="pre">libpysal.examples.load_example</span></code> and passing the name of the remote example. Note the specific path to which the data sets are downloaded, you will need that if you ever want to remove the data set.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>libpysal.examples.load_example(&quot;chicagoSDOH&quot;)
+</pre></div>
+</div>
+</div>
+<p>At this point, when checking <code class="docutils literal notranslate"><span class="pre">available</span></code>, the data set is listed as <strong>True</strong> under <strong>Installed</strong>. As mentioned, the installation only needs to be carried out once.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>libpysal.examples.available()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Reading-Input-Files-from-the-Example-Data-Set">
+<h2>Reading Input Files from the Example Data Set<a class="headerlink" href="#Reading-Input-Files-from-the-Example-Data-Set" title="Link to this heading">¶</a></h2>
+<p>The actual path to the files contained in the local copy of the remote data set is found by means of <code class="docutils literal notranslate"><span class="pre">libpysal.examples.get_path</span></code>. This is then passed to the <em>geopandas</em> <code class="docutils literal notranslate"><span class="pre">read_file</span></code> function in the usual way. Here, this is a bit cumbersome, but the command can be simplified by specific statements in the module import, such as <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">libpysal.examples</span> <span class="pre">import</span> <span class="pre">get_path</span></code>. The latter approach will be used in later notebooks, but here the full command is used.</p>
+<p>For example, the path to the input shape file is (this may be differ somewhat depending on how and where PySAL is installed):</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>libpysal.examples.get_path(infileshp)
+</pre></div>
+</div>
+</div>
+<p>As mentioned earlier, if the example data are not installed locally by means of <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code>, the <code class="docutils literal notranslate"><span class="pre">get_path</span></code> command must be replaced by an explicit reference to the correct file path name. This is easiest if the files are in the current working directory, in which case just specifying the file names in <strong>infileshp</strong> etc. is sufficient.</p>
+<p>The shape file is read by means of the <em>geopandas</em> <code class="docutils literal notranslate"><span class="pre">read_file</span></code> command, to which the full file pathname is passed obtained from <code class="docutils literal notranslate"><span class="pre">libpysal.examples.get_path(infileshp)</span></code>. To check if all is right, the shape of the data set (number of observations, number of variables) is printed (using the standard <code class="docutils literal notranslate"><span class="pre">print(</span> <span class="pre">)</span></code> command), as well as the list of variable names (columns in <em>pandas</em> speak). Details on dealing with <em>pandas</em> and <em>geopandas</em> data frames are covered in a later notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = libpysal.examples.get_path(infileshp)
+dfs = gpd.read_file(inpath)
+print(dfs.shape)
+print(dfs.columns)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Removing-an-Installed-Remote-Sample-Data-Set">
+<h2>Removing an Installed Remote Sample Data Set<a class="headerlink" href="#Removing-an-Installed-Remote-Sample-Data-Set" title="Link to this heading">¶</a></h2>
+<p>In case that for some reason the installed remote <strong>chicagoSDOH</strong> data set is no longer needed, it can be removed by means of standard linux commands (or equivalent, for other operating systems). For example, on a Mac or Linux-based system, one first moves to the directory where the files were copied to. This is the same path that was shown when <code class="docutils literal notranslate"><span class="pre">load_example</span></code> was executed. In the example for a Mac OS operating system, this was shown in <strong>Downloading chicagoSDOH to
+/Users/luc/Library/Application Support/pysal/chicagoSDOH</strong>.</p>
+<p>So, in a terminal window, one first moves to /Users/your_user_name/Library/’Application Support’/pysal (don’t forget the quotes) on a Mac system (and equivalent for other operating systems). There, the <strong>chicagoSDOH</strong> directory will be present. It is removed by means of:</p>
+<p><code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-r</span> <span class="pre">chicagoSDOH</span></code></p>
+<p>Of course, once removed, it will have to be reinstalled if needed in the future.</p>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>If you want to use other PySAL data sets to practice the spatial regression functionality in <em>spreg</em>, make sure to install them using the instructions given in this notebook. For example, load the <strong>Police</strong> data set (item 52 in the list), which will be used as an example in later notebooks.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/1_sample_data.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

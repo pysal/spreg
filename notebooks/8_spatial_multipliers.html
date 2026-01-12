@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spatial Multipliers &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Specification Tests" href="9_specification_tests.html" />
+    <link rel="prev" title="Spatial Model Specifications" href="7_spatial_models.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Spatial Multipliers</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/17/2024)">(revised 09/17/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functionality-Used">Functionality Used</a></li>
+<li><a class="reference internal" href="#Helper-Functions">Helper Functions</a></li>
+<li><a class="reference internal" href="#Data-Input">Data Input</a></li>
+<li><a class="reference internal" href="#Coordinates">Coordinates</a><ul>
+<li><a class="reference internal" href="#Spatial-Weights-Characteristics">Spatial Weights Characteristics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Queen-Contiguity-Weights">Queen Contiguity Weights</a></li>
+<li><a class="reference internal" href="#K-Nearest-Neighbor-Weights">K-Nearest Neighbor Weights</a></li>
+<li><a class="reference internal" href="#Kernel-Weights">Kernel Weights</a><ul>
+<li><a class="reference internal" href="#Spatial-Lag">Spatial Lag</a></li>
+<li><a class="reference internal" href="#Negative-Exponential-Distance-Function">Negative Exponential Distance Function</a></li>
+<li><a class="reference internal" href="#Inverse-Distance-Power-Function">Inverse Distance Power Function</a></li>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/8_spatial_multipliers.ipynb">notebooks/8_spatial_multipliers.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/8_spatial_multipliers.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Spatial-Multipliers">
+<h1>Spatial Multipliers<a class="headerlink" href="#Spatial-Multipliers" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/17/2024)">
+<h2>(revised 09/17/2024)<a class="headerlink" href="#(revised-09/17/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>This notebook takes a closer look at the spatial pattern induced by spatial lag terms in a regression specification. The usual notion of <em>average</em> impacts is disassembled into its individual components, with a particular focus on its spatial distribution. Three broad types of models are considered: a linear SLX model, a model with a spatially lagged dependent variable (Wy), and nonlinear SLX models.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>This notebook includes material that relies more on familiarity with Python than the previous notebooks, specifically the manipulation of pandas data frames and geopandas geo data frames, as well as the interpretation of the helper functions. In addition, spatial weights functionality and choropleth mapping are used extensively. Both were covered in previous notebooks. Two specialized routines are included from <code class="docutils literal notranslate"><span class="pre">spreg</span></code>, i.e., <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code> (to compute the individual multipliers) and
+<code class="docutils literal notranslate"><span class="pre">make_wnslx</span></code> (to create the lag operator in nonlinear SLX models). It is also assumed that the sample data set <strong>Police</strong> is installed (if not, execute <code class="docutils literal notranslate"><span class="pre">libpysal.examples.load_example(&quot;Police&quot;)</span></code> first, with the module <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code> imported).</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The usual imports include numpy, pandas, geopandas and matplotlib (for mapping). More specialized imports consist of <code class="docutils literal notranslate"><span class="pre">examples.get_path</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code> from <code class="docutils literal notranslate"><span class="pre">libpysal</span></code>, as well as <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code> (from <code class="docutils literal notranslate"><span class="pre">spreg.sputils</span></code>) and <code class="docutils literal notranslate"><span class="pre">make_wnslx</span></code> (from <code class="docutils literal notranslate"><span class="pre">spreg.utils</span></code>). To allow the complete set of observations (n=82) to be listed in the notebook, the <code class="docutils literal notranslate"><span class="pre">pd.options.display.max_rows</span></code> should be set to a value larger than 82. Also, as usual, numpy <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code> should be set to
+<code class="docutils literal notranslate"><span class="pre">legacy=&quot;1.25&quot;</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from libpysal.examples import get_path
+import libpysal.weights as weights
+from spreg.sputils import i_multipliers
+from spreg.utils import make_wnslx
+np.set_printoptions(legacy=&quot;1.25&quot;)
+pd.options.display.max_rows = 100
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functionality-Used">
+<h2>Functionality Used<a class="headerlink" href="#Functionality-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>array</p></li>
+</ul>
+</li>
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>idxmax, idxmin</p></li>
+<li><p>iloc</p></li>
+<li><p>plot</p></li>
+<li><p>concat</p></li>
+<li><p>read_file</p></li>
+<li><p>centroid</p></li>
+<li><p>describe</p></li>
+</ul>
+</li>
+<li><p>from libpysal.examples:</p>
+<ul>
+<li><p>get_path</p></li>
+</ul>
+</li>
+<li><p>from libpysal.weights:</p>
+<ul>
+<li><p>Queen.from_dataframe</p></li>
+<li><p>neighbors</p></li>
+<li><p>cardinalities</p></li>
+<li><p>KNN.from_dataframe</p></li>
+<li><p>Kernel.from_dataframe</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>sputils.i_multipliers</p></li>
+<li><p>utils.make_wnslx</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Helper-Functions">
+<h2>Helper Functions<a class="headerlink" href="#Helper-Functions" title="Link to this heading">¶</a></h2>
+<p>Since many operations will be repeated almost verbatim for the different types of weights and multipliers, two helper functions are used. One, <code class="docutils literal notranslate"><span class="pre">multmap</span></code>, simplifies the mapping, with (very) limited customization. If additional customization is desired, it must be made in the function itself. The function is essentially a wrapper around the commands to make a quantile choropleth map for a geo data frame.</p>
+<p>The second function, <code class="docutils literal notranslate"><span class="pre">nbreffect</span></code>, finds the minimum and maximum locations for a given type of multiplier effect and then calls <code class="docutils literal notranslate"><span class="pre">multmap</span></code> to create the associated map.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def multmap(dfm,column=&#39;EonNbrs&#39;,model=&#39;slx&#39;):
+    &quot;&quot;&quot;
+    Creates a quintile map (k=5) for the multipliers computed by means
+    of i_multiplier
+
+    Arguments
+    ---------
+    dfm       : merged geo data frame with original data and spatial multiplier
+                data frame
+    column    : type of multiplier to be mapped, default is EonNbrs
+    model     : spatial model, default is slx (i.e., only weights matrix)
+
+    Returns
+    -------
+    Draws map
+
+    &quot;&quot;&quot;
+    ax = dfm.plot(
+            column = column,
+            scheme = &#39;Quantiles&#39;,
+            k = 5,
+            cmap = &#39;YlOrRd&#39;,
+            edgecolor = &quot;Black&quot;,
+            linewidth = 0.2,
+            figsize = (6,6),
+            legend = True,
+            legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: column}
+    )
+    newtitle = &quot;Spatial Multipliers for &quot; + model
+    ax.set_title(newtitle)
+    ax.set_axis_off()
+    plt.show()
+    return
+
+
+def nbreffect(dfs,dfm,oid,mult=&#39;EonNbrs&#39;,model=&#39;slx&#39;):
+    &quot;&quot;&quot;
+    Computes the minimum and maximum value and location for a given type of multiplier
+    and calls multmap to create a quintile map
+
+    Arguments
+    ---------
+    dfs       : initial geo data frame
+    dfm       : data frame with multipliers
+    oid       : pandas series with ID variable
+    multi     : type of multiplier, default is EonNbrs
+    model     : spatial model, default is slx
+
+    &quot;&quot;&quot;
+    if mult == &#39;Direct&#39;:
+        coli = 1
+    elif mult == &#39;EofNbrs&#39;:
+        coli = 2
+    elif mult == &#39;EonNbrs&#39;:
+        coli = 3
+    else:
+        raise Exception(&quot;Invalid column&quot;)
+    imax = int(dfm[[mult]].idxmax())
+    print(f&quot;The maximum is {dfm.iloc[imax,coli]:0.3f} with id {int(oid.iloc[imax])}&quot;)
+    imin = int(dfm[[mult]].idxmin())
+    print(f&quot;The minimum is {dfm.iloc[imin,coli]:0.3f} with id {int(oid.iloc[imin])}&quot;)
+    dfmap = pd.concat([dfs,dfm],axis=1)
+    multmap(dfmap,column=mult,model=model)
+    return
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Data-Input">
+<h2>Data Input<a class="headerlink" href="#Data-Input" title="Link to this heading">¶</a></h2>
+<p>The different multipliers are illustrated with the <strong>Police</strong> sample data set. A geo data frame is created which is used in the remainder to construct the spatial weights. The only input is the shape file:</p>
+<ul class="simple">
+<li><p>police.shp (shx,dbf): police expenditure data for 82 Mississippi counties</p></li>
+</ul>
+<p>The variable <code class="docutils literal notranslate"><span class="pre">FIPSNO</span></code> is taken as the id variable and turned into a pandas Series <code class="docutils literal notranslate"><span class="pre">fipsid</span></code>. The variable itself is set to <code class="docutils literal notranslate"><span class="pre">idvar</span></code>. This makes it easy to use the same code for other data sets (replace infileshp, fipsid and idvar by the appropriate file name/variable name).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = &quot;police.shp&quot;   # input shape file
+inpath = get_path(infileshp)
+dfs = gpd.read_file(inpath)
+print(dfs.columns)
+fipsid = dfs[[&quot;FIPSNO&quot;]]
+idvar = &quot;FIPSNO&quot;
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Coordinates">
+<h2>Coordinates<a class="headerlink" href="#Coordinates" title="Link to this heading">¶</a></h2>
+<p>The construction of the sparse weights for the nonlinear SLX power and exponential functions requires a numpy array of X and Y coordinates as input. The <strong>Police</strong> data set does not include those variables explicitly, but they can be computed as the centroids of the polygons, using the <code class="docutils literal notranslate"><span class="pre">centroid</span></code> attribute of the geopandas data frame.</p>
+<p>However, the <code class="docutils literal notranslate"><span class="pre">make_wnslx</span></code> function needs the coordinates as a numpy array, whereas the result of the <code class="docutils literal notranslate"><span class="pre">centroid</span></code> attribute is a geopandas geoseries with <code class="docutils literal notranslate"><span class="pre">POINT</span></code> geometries. This is turned into a numpy array by extracting the x and y coordinates and passing these to <code class="docutils literal notranslate"><span class="pre">np.array</span></code>. As it turns out, the result must be transposed, since as is, it becomes a 2 by 82 matrix and not the desired 82 by 2 matrix.</p>
+<p>Note that the coordinates are decimal degrees (longitude-latitude), which will require the argument <code class="docutils literal notranslate"><span class="pre">distance_metric</span> <span class="pre">=</span> <span class="pre">&quot;Arc&quot;</span></code> in the <code class="docutils literal notranslate"><span class="pre">make_wnslx</span></code> function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gcent = dfs.centroid
+print(type(gcent))
+print(gcent.head())
+coords = np.array((gcent.x,gcent.y)).T
+print(coords.shape)
+coords[0:5,:]
+</pre></div>
+</div>
+</div>
+<section id="Spatial-Weights-Characteristics">
+<h3>Spatial Weights Characteristics<a class="headerlink" href="#Spatial-Weights-Characteristics" title="Link to this heading">¶</a></h3>
+<p>The simplest calculations are for the linear SLX model, where the spatial spillovers are limited to the neighbors as specified in the spatial weights matrix. With row-standardization, the effect <strong>of</strong> the neighbors always sums to one, so by constructions it is the same (=1) for all observations. Similarly, because the spatial weights have zero on the diagonal, there is no direct effect other than that already captured by coefficients of the X-variables. However, because the row-standardization
+introduces an asymmetry in the weights (but not in the contiguity structure), the effect <strong>on</strong> the neighbors of a change in X in a given location is <strong>not constant</strong> across all observations. This effect is the sum of the column elements associated with each observation. Whereas the mean of these sums is the same as the mean of the row sums and equals one, there remains considerable variation among the contributions of changes in a variable at a location on its neighbors. This is masked by using
+average effects.</p>
+<p>The following three examples show the spatial distribution of the individual multipliers for queen contiguity, k-nearest neighbors and kernel weights. Queen contiguity is intrinsically symmetric, but becomes asymmetric after row-standardization. K-nearest neighbor weights tend not to be symmetric to begin with (k-nearest neighbor is not a symmetric relationship). Kernel weights that are based on a fixed distance band are symmetric. Since they are not row-standardized, the effect <strong>of</strong> the
+neighbors and effect <strong>on</strong> the neighbors is the same. However, when kernel weights are based on an adaptive bandwidth (such as k-nearest neighbors), they will be intrinsically asymmetric and the row and column elements for an observation will differ. In all cases, the average masks sometimes substantial spatial variation among observations.</p>
+</section>
+</section>
+<section id="Queen-Contiguity-Weights">
+<h2>Queen Contiguity Weights<a class="headerlink" href="#Queen-Contiguity-Weights" title="Link to this heading">¶</a></h2>
+<p>As covered in a previous notebook, queen contiguity weights are constructed from the geo data frame by means of <code class="docutils literal notranslate"><span class="pre">weights.Queen.from_dataframe</span></code>, here using <code class="docutils literal notranslate"><span class="pre">ids=idvar</span></code> for the id-variable (which is <code class="docutils literal notranslate"><span class="pre">&quot;FIPSNO&quot;</span></code> in this notebook). The weights are row-standardized and then the individual multipliers are calculated using <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code> with <code class="docutils literal notranslate"><span class="pre">model=&quot;slx&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">id=fipsid</span></code> (the pandas Series with FIPSNO created above). There is no need to specify a spatial coefficient since the default is
+<code class="docutils literal notranslate"><span class="pre">coef=0.0</span></code>. Some descriptive statistics are provided by <code class="docutils literal notranslate"><span class="pre">describe()</span></code>.</p>
+<p>The first column gives the ID-variable that was used and is not very meaningful. The second column describes the <strong>Direct</strong> effects, which are zero by construction. The last two columns pertain to the <strong>effect of neighbors</strong> (row sum, <strong>EofNbrs</strong>) and the <strong>effect on neighbors</strong> (column sum, <strong>EonNbrs</strong>).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq = weights.Queen.from_dataframe(dfs,ids=idvar)
+wq.transform = &#39;r&#39;
+queen = i_multipliers(wq,model=&#39;slx&#39;,id=fipsid)
+queen.describe()
+</pre></div>
+</div>
+</div>
+<p>As expected, the <strong>mean</strong> of both effect of neighbors and effect on neighbors is the same and equals one. However, there is quite a bit of variation in the effect <strong>on</strong> neighbors, with a range from 0.560 to 1.667 and a standard deviation of 0.25. The full range of variability can be seen by printing out the complete data frame (to see all the rows, the pandas <code class="docutils literal notranslate"><span class="pre">options.display.max_rows</span></code> must be set to more than 82).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(queen)
+</pre></div>
+</div>
+</div>
+<p>The position and ID of the largest and smallest effects on neighbors can be found by means of <code class="docutils literal notranslate"><span class="pre">idxmax</span></code> and <code class="docutils literal notranslate"><span class="pre">idxmin</span></code> applied to the <code class="docutils literal notranslate"><span class="pre">EonNbrs</span></code> data series. This yields the county with FIPS 28131 (Stone) for the maximum and the county with FIPS 28045 (Hancock) for the minimum. The spatial variation (and location of minimum and maximum) is directly related to the graph-theoretic structure of the spatial weights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>imax = int(queen[[&#39;EonNbrs&#39;]].idxmax())
+print(f&#39;The maximum is {queen.iloc[imax,3]:0.3f} with id {int(fipsid.iloc[imax])}&#39;)
+imin = int(queen[[&#39;EonNbrs&#39;]].idxmin())
+print(f&#39;The minimum is {queen.iloc[imin,3]:0.3f} with id {int(fipsid.iloc[imin])}&#39;)
+</pre></div>
+</div>
+</div>
+<p>To get a better insight into the effect of the asymmetry introduced by the row-standardization, the following lines of code extract the list of neighbors for county 28131, then checks their respective cardinalities from <code class="docutils literal notranslate"><span class="pre">wq.cardinalities</span></code> and computes the cumulative sum of the corresponding weights (the inverse of the cardinalities). Because many of the neighbors have themselves (much) fewer than seven neighbors, their contribution to the cumulative sum is more than 1/7, yielding an overall
+multiplier effect that can become larger than one. The opposite case is where the neighbors have more neighbors themselves, yielding a spatial weight less than 1/7 which contributes to a multiplier effect that can be smaller than one.</p>
+<p>As an exercise, repeat this analysis for the county with the minimum multiplier of 0.560 by entering its fips code in <code class="docutils literal notranslate"><span class="pre">wq.neighbors</span></code> (county 28045 - this county only has three neighbors).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>nbrs = wq.neighbors[28131]
+print(&quot;neighbor list &quot;,nbrs)
+cards = wq.cardinalities
+j = 0
+for i in nbrs:
+    u = cards[i]
+    print(f&quot;for {i}, the number of neighbors is {u}, with weight {1.0/u:0.3f}&quot;)
+    j += 1.0/u
+print(f&quot;total effect on neighbors: {j:0.3f}&quot;)
+</pre></div>
+</div>
+</div>
+<p>The spatial distribution of the multiplier effects can be mapped. This functionality is wrapped in the functions listed at the top of the notebook, but first each step is spelled out in detail here. To begin, <code class="docutils literal notranslate"><span class="pre">pd.concat</span></code> is used to add the new dataframe to the existing spatial data frame. Because this operation will be repeated for each type of multiplier, the merged data frame is given a new name (otherwise, <code class="docutils literal notranslate"><span class="pre">dfs</span></code> would be accumulating all the multiplier effecs that have the same name). The
+multipliers are visualized in a quintile map (k=5) using a common set of customizations as covered in the mapping notebook.</p>
+<p>The resulting map reveals considerable variation in the spatial pattern. From a policy perspective, the darkest counties are the ones with the most impact on their neighbors and thus they could be targeted for maximum effect place-based policies.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfq = pd.concat([dfs,queen],axis=1)
+ax = dfq.plot(
+    column = &#39;EonNbrs&#39;,
+    scheme = &#39;Quantiles&#39;,
+    k = 5,
+    cmap = &#39;YlOrRd&#39;,
+    edgecolor = &quot;Black&quot;,
+    linewidth = 0.2,
+    figsize = (6,6),
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;EonNbrs&#39;}
+)
+ax.set_title(&quot;Spatial Multipliers&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>Since the mapping will be repeated for each multiplier, the various settings are encapsulated in the <code class="docutils literal notranslate"><span class="pre">multmap</span></code> helper function listed at the top of the notebook. As a result, the map can now be obtained with a single line command.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>multmap(dfq)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="K-Nearest-Neighbor-Weights">
+<h2>K-Nearest Neighbor Weights<a class="headerlink" href="#K-Nearest-Neighbor-Weights" title="Link to this heading">¶</a></h2>
+<p>K-nearest neighbor weights are constructed from the geo data frame by means of <code class="docutils literal notranslate"><span class="pre">weights.KNN.from_dataframe</span></code>. Since the median number of neighbors for queen contiguity was 5, k is set to 5 as well, to keep some degree of comparability. The multipliers are again obtained with <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code> passing the row-standardized weights, the model (<code class="docutils literal notranslate"><span class="pre">slx</span></code>) and the identifiers (<code class="docutils literal notranslate"><span class="pre">idvar</span></code>).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk = weights.KNN.from_dataframe(dfs,k=5,ids=idvar)
+wk.transform = &#39;r&#39;
+knn = i_multipliers(wk,model=&#39;slx&#39;,id=fipsid)
+knn.describe()
+</pre></div>
+</div>
+</div>
+<p>Again, by construction, the direct effects are zero and the effect of the neighbors is 1, due to row-standardization. However, there is considerable variation in the effect <strong>on</strong> neighbors, again due to the asymmetry of the weights. The multipliers range from 0.4 to 1.8, a wider range than for queen contiguity.</p>
+<p>Further insight into the spatial pattern of the multipliers is obtained by means of the helper function <code class="docutils literal notranslate"><span class="pre">nbreffect</span></code>, which combines identifying maximum and miminum with the mapping of <code class="docutils literal notranslate"><span class="pre">multmap</span></code>. The arguments are the original data frame, <code class="docutils literal notranslate"><span class="pre">dfs</span></code>, the multiplier data frame for k-nearest neighbor weights, <code class="docutils literal notranslate"><span class="pre">knn</span></code>, the id variable, <code class="docutils literal notranslate"><span class="pre">fipsid</span></code>, the type of multiplier, <code class="docutils literal notranslate"><span class="pre">EonNbrs</span></code>, and the model, <code class="docutils literal notranslate"><span class="pre">slx</span></code>. This gives all the desired results with a one line command.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>nbreffect(dfs,knn,fipsid,mult=&#39;EonNbrs&#39;,model=&#39;slx&#39;)
+</pre></div>
+</div>
+</div>
+<p>The spatial pattern shows quite a few differences with that for the queen weights, highlighting the importance of the structure of the spatial weights. The maximum location is now county 28081 (Lee) and the minimum is county 28157 (Wilkinson). More specialized map comparison techniques (such as a co-location map) can be used to compare the two patterns, but this is not further pursued here.</p>
+<p>Note how the quantile map for knn only shows four categories, even though k was set to 5. This is due to the large number of ties, which results in the two bottom categories being collapsed. This is a common problem for quantile maps when there is insufficient variation in the variable considered (here, all multiples of 0.2).</p>
+</section>
+<section id="Kernel-Weights">
+<h2>Kernel Weights<a class="headerlink" href="#Kernel-Weights" title="Link to this heading">¶</a></h2>
+<p>Kernel weights are illustrated for a <code class="docutils literal notranslate"><span class="pre">triangular</span></code> function (the default) computed for a variable bandwidth (<code class="docutils literal notranslate"><span class="pre">fixed=False</span></code>) determined by the 10 k-nearest neighbors. With <code class="docutils literal notranslate"><span class="pre">diagonal=True</span></code>, the diagonal elements all equal one. The function <code class="docutils literal notranslate"><span class="pre">i_multiplier</span></code> is called with the kernel weights (<code class="docutils literal notranslate"><span class="pre">wkern</span></code>), <code class="docutils literal notranslate"><span class="pre">model=&quot;kernel&quot;</span></code> and the same id (<code class="docutils literal notranslate"><span class="pre">fipsid</span></code>) as before.</p>
+<p>The result data frame is <code class="docutils literal notranslate"><span class="pre">kern</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wkern = weights.Kernel.from_dataframe(dfs,k=10,ids=idvar,fixed=False,diagonal=True)
+kern = i_multipliers(wkern,model=&#39;kernel&#39;,id=fipsid)
+kern.describe()
+</pre></div>
+</div>
+</div>
+<p>The direct effects are all equal to one by construction. Both the effect of the neighbors (row sum - without the diagonal) and effect on the neighbors (column sum - without the diagonal) show substantial variation, even though their means are the same. The effect of the neighbors ranges from 1.789 to 3.833, whereas the effect on the neighbors goes from 1.562 to 3.890, a slightly larger range.</p>
+<p>The location of the extrema and the map for the individual multipliers can again be obtained by means of <code class="docutils literal notranslate"><span class="pre">nbreffect</span></code>. Since this now has to be done for <code class="docutils literal notranslate"><span class="pre">EofNbrs</span></code> as well as <code class="docutils literal notranslate"><span class="pre">EonNbrs</span></code>, both are put in a list and the results are produced by a simple loop, minimizing code repetition.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,kern,fipsid,mult=eff,model=&#39;kernel&#39;)
+</pre></div>
+</div>
+</div>
+<p>The resulting respective maximum and minimum locations are quite distinct, as are the associated spatial patterns. A closer examination of the spatial (mis)match is left as an exercise.</p>
+<section id="Spatial-Lag">
+<h3>Spatial Lag<a class="headerlink" href="#Spatial-Lag" title="Link to this heading">¶</a></h3>
+<p>The spatial spillovers in a model that includes a spatially lagged dependent variable Wy are determined by the structure of the inverse matrix <span class="math notranslate nohighlight">\((I - \rho W)^{-1}\)</span>. This is illustrated here for the queen contiguity weights. Similar results can be obtained for the k-nearest neighbor weights.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code> function needs as arguments the spatial weights (<code class="docutils literal notranslate"><span class="pre">wq</span></code>), a value for the spatial autoregressive coefficient (<code class="docutils literal notranslate"><span class="pre">coef=0.5</span></code>), the model type (<code class="docutils literal notranslate"><span class="pre">lag</span></code>) and the <code class="docutils literal notranslate"><span class="pre">id</span></code>. Descriptive statistics are provided by <code class="docutils literal notranslate"><span class="pre">describe</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag5 = i_multipliers(wq,coef=0.5,model=&#39;lag&#39;,id=fipsid)
+lag5.describe()
+</pre></div>
+</div>
+</div>
+<p>The mean of <strong>Direct</strong>, 1.066, is what is typically referred to as <strong>ADI</strong> or average direct impact, whereas the mean of either <strong>EofNbrs</strong> or <strong>EonNbrs</strong>, 0.934, is the <strong>AII</strong> or average indirect impact. Since <span class="math notranslate nohighlight">\(\rho = 0.5\)</span>, the average total impact (<strong>ATI</strong>) is <span class="math notranslate nohighlight">\(1.0 / (1.0 - \rho)\)</span>, or 2.0. Clearly this equals the sum of 1.066 and 0.934.</p>
+<p>The averages mask considerable individual variation. The range of variation is fairly small for the direct effects - from 1.046 to 1.096 - and the effect of neighbors - from 0.904 to 0.954 -, but is quite substantial for the effect on neighbors - from 0.532 to 1.482.</p>
+<p>Details are again provided by means of the <code class="docutils literal notranslate"><span class="pre">nbreffects</span></code> function, now with <code class="docutils literal notranslate"><span class="pre">model</span> <span class="pre">=</span> <span class="pre">&quot;lag&quot;</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;Direct&#39;,&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,lag5,fipsid,mult=eff,model=&#39;lag&#39;)
+</pre></div>
+</div>
+</div>
+<p>The spatial pattern of the direct effects and effects from neighbors are the exact opposite. This reflects how the total effect is split between these two parts: larger direct effects imply smaller indirect effects and vice versa. On the other hand, the spatial pattern for the effect on neighbors is quite distinct. It shows great similarity (but is not identical) to the spatial pattern for the queen weights as such (SLX).</p>
+<p>Interestingly, the magnitude of the spatial autoregressive coefficient, while it affects the mean impact measures, does not affect the spatial pattern of the multipliers, which remains exactly the same. This is because the spatial pattern is determined by the network structure in the weights and the coefficient is just a scaling factor.</p>
+<p>This is illustrated by using 0.3 as the spatial autoregressive coefficient.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag3 = i_multipliers(wq,coef=0.3,model=&#39;lag&#39;,id=fipsid)
+lag3.describe()
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;Direct&#39;,&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,lag3,fipsid,mult=eff,model=&#39;lag&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Negative-Exponential-Distance-Function">
+<h3>Negative Exponential Distance Function<a class="headerlink" href="#Negative-Exponential-Distance-Function" title="Link to this heading">¶</a></h3>
+<p>The multiplier effects for a nonlinear SLX model can be computed in the same way as before, from the diagonals, row sums and column sums of the parameterized weights matrix <span class="math notranslate nohighlight">\(W(\alpha)\)</span>. Two cases are considered: a negative exponential distance transformation and an inverse power distance transformation. The input for the estimation of this model, in <code class="docutils literal notranslate"><span class="pre">spreg.NSLX</span></code>, is a sparse CSR matrix of distance measures that are standardized with respect to the bandwidth for each observation (fixed or
+variable). This ensures a well-behaved distance metric and a distance decay process.</p>
+<p>For the negative exponential transformation in the nonlinear SLX model, the transformation is <span class="math notranslate nohighlight">\(e^{-\alpha z_{ij}}\)</span>, where <span class="math notranslate nohighlight">\(z_{ij} = d_{ij} / d_{bw}\)</span> for <span class="math notranslate nohighlight">\(d_{ij} \le d_{bw}\)</span>, and 0 otherwise, with <span class="math notranslate nohighlight">\(d_{bw}\)</span> as the bandwidth.</p>
+<p>The input is a sparse CSR matrix, constructed by means of <code class="docutils literal notranslate"><span class="pre">make_wnslx</span></code> with the parameter <code class="docutils literal notranslate"><span class="pre">exponential</span></code>. As input it takes a numpy array of coordinates (see above), a tuple of parameters setting the number of nearest neighbors (here 10), whether the bandwidth is adaptive (<code class="docutils literal notranslate"><span class="pre">np.inf</span></code>) or fixed (a value), and the type of transformation (<code class="docutils literal notranslate"><span class="pre">exponential</span></code>). Since the coordinates are lat-lon decimal degrees, <code class="docutils literal notranslate"><span class="pre">distance_metric</span> <span class="pre">=</span> <span class="pre">&quot;Arc&quot;</span></code> to compute great circle distances. The result is a sparse CSR
+matrix. Its contents can be shown by means of <code class="docutils literal notranslate"><span class="pre">toarray</span></code>, which turns it into a regular (full) numpy array. This is just a view of the array and does not affect its sparse representation.</p>
+<p>Since the transformed distance input is the fraction of the bandwidth, it results in smaller values closer to the origin and a value of 1.0 for the farthest nearest neighbor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wexp = make_wnslx(coords,params=(10,np.inf,&quot;exponential&quot;),leafsize=30,distance_metric=&#39;Arc&#39;)
+print(type(wexp))
+wexp.toarray()[0:1,:]
+</pre></div>
+</div>
+</div>
+<p>Some descriptive statistics and the spatial pattern are obtained in the same way as before, using <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code> and <code class="docutils literal notranslate"><span class="pre">nbreffect</span></code>. The parameter is set to <code class="docutils literal notranslate"><span class="pre">coef</span> <span class="pre">=</span> <span class="pre">2.0</span></code> and the model is <code class="docutils literal notranslate"><span class="pre">exponential</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>exp2 = i_multipliers(wexp,coef=2.0,model=&#39;exponential&#39;,id=fipsid)
+exp2.describe()
+</pre></div>
+</div>
+</div>
+<p>The mean multiplier of 2.648 ranges from 2.117 to 3.315 for the effect of neighbors, and from 1.368 to 3.871 for the effect on neighbors. The spatial distribution of the multipliers is again distinct.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,exp2,fipsid,mult=eff,model=&#39;exponential&#39;)
+</pre></div>
+</div>
+</div>
+<p>Again, a different value of the coefficient affects the mean multiplier, but the spatial distribution remains the same. For example, with <code class="docutils literal notranslate"><span class="pre">coef</span> <span class="pre">=</span> <span class="pre">1.5</span></code>, the mean multiplier becomes 3.636, reflecting the less steep distance decay that results from the smaller parameter.</p>
+<p>This is important for the interpretation of the model. Unlike the other spatial models, a larger value of the coefficient in the nonlinear SLX models results in a <em>smaller multiplier</em>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>exp15 = i_multipliers(wexp,coef=1.5,model=&#39;exponential&#39;,id=fipsid)
+exp15.describe()
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,exp15,fipsid,mult=eff,model=&#39;exponential&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Inverse-Distance-Power-Function">
+<h3>Inverse Distance Power Function<a class="headerlink" href="#Inverse-Distance-Power-Function" title="Link to this heading">¶</a></h3>
+<p>For the inverse distance power function, the transformation is <span class="math notranslate nohighlight">\(1.0 / d_{ij}^{\alpha}\)</span>. This is implemented as <span class="math notranslate nohighlight">\(z_{ij}^{\alpha}\)</span>, where <span class="math notranslate nohighlight">\(z_{ij}\)</span> is guaranteed to be less than one, as <span class="math notranslate nohighlight">\(z_{ij} = 1 - d_{ij}/d_{bw}\)</span> for <span class="math notranslate nohighlight">\(d_{ij} \le d_{bw}\)</span>, and zero otherwise. Hence, the distance measure for this transformation corresponds to a triangular kernel for the given bandwidth, with the diagonals zeroed out. The fraction of the bandwidth decreases as the distance increases,
+eventually yielding zero for the value of k.</p>
+<p>Again, the corresponding weights are computed by means of the <code class="docutils literal notranslate"><span class="pre">make_wnslx</span></code> function (from <code class="docutils literal notranslate"><span class="pre">spreg.utils</span></code>). As input it takes a numpy array of coordinates (see above), a tuple of parameters setting the number of nearest neighbors (here 10), whether the bandwidth is variable (<code class="docutils literal notranslate"><span class="pre">np.inf</span></code>) or fixed (a value), and the type of transformation (<code class="docutils literal notranslate"><span class="pre">power</span></code>). Since the coordinates are lat-lon decimal degrees, <code class="docutils literal notranslate"><span class="pre">distance_metric</span> <span class="pre">=</span> <span class="pre">&quot;Arc&quot;</span></code> to compute great circle distances. The result is a sparse CSR
+matrix. Its contents can be shown by means of <code class="docutils literal notranslate"><span class="pre">toarray</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>winv = make_wnslx(coords,params=(10,np.inf,&quot;power&quot;),distance_metric=&#39;Arc&#39;)
+print(type(winv))
+winv.toarray()[0:1,:]
+</pre></div>
+</div>
+</div>
+<p>The sparse array <code class="docutils literal notranslate"><span class="pre">winv</span></code> is the spatial weights argument to the function <code class="docutils literal notranslate"><span class="pre">i_multipliers</span></code>. A coefficient of 2.0 is used as <code class="docutils literal notranslate"><span class="pre">coef</span></code> and the model is specified as <code class="docutils literal notranslate"><span class="pre">power</span></code>. The id is the same as before. Some summary characteristics are shown by means of <code class="docutils literal notranslate"><span class="pre">describe</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pow2 = i_multipliers(winv,coef=2.0,model=&#39;power&#39;,id=fipsid)
+pow2.describe()
+</pre></div>
+</div>
+</div>
+<p>The mean multiplier effect is 1.279, but it ranges from 0.628 to 2.124 for the effect of neighbors and from 0.709 to 1.917 for the effect on neighbors. Again, the mean masks considerable spatial variation. The direct effects are zero by construction.</p>
+<p>The spatial pattern of the individual multipliers can be investigated in the same way as for the other multipliers by means of the <code class="docutils literal notranslate"><span class="pre">nbreffects</span></code> function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,pow2,fipsid,mult=eff,model=&#39;power&#39;)
+</pre></div>
+</div>
+</div>
+<p>Again, the spatial pattern of multipliers is not affected by the spatial parameter, but solely determined by the graph structure implied by the spatial weights before applying the transformation. This is illustrated with <code class="docutils literal notranslate"><span class="pre">coef</span> <span class="pre">=</span> <span class="pre">1.5</span></code>. The mean effect of 1.902 is different and larger than for <code class="docutils literal notranslate"><span class="pre">coef=2.0</span></code>. This is due to the slower distance decay with the smaller coefficient, which gives larger weight to neighbors further away. The spatial pattern is unchanged.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pow15 = i_multipliers(winv,coef=1.5,model=&#39;power&#39;,id=fipsid)
+pow15.describe()
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>effects = [&#39;EofNbrs&#39;,&#39;EonNbrs&#39;]
+for eff in effects:
+    nbreffect(dfs,pow15,fipsid,mult=eff,model=&#39;power&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>The similarities and differences between the different spatial layouts can be investigated more closely. In addition, the correlation between the multiplier vectors, respective locations of extrema and other characteristics can be examined. Of course, the same type of analysis can be investigated for other spatial weights and/or another data set.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/8_spatial_multipliers.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

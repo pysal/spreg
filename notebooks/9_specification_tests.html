@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Specification Tests &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Specification Tests - Properties" href="10_specification_tests_properties.html" />
+    <link rel="prev" title="Spatial Multipliers" href="8_spatial_multipliers.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Specification Tests</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/11/2024)">(revised 09/11/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functionality-Used">Functionality Used</a></li>
+<li><a class="reference internal" href="#Data,-Weights-and-Variables">Data, Weights and Variables</a><ul>
+<li><a class="reference internal" href="#id2">Specification Tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Moran's-I">Moran’s I</a></li>
+<li><a class="reference internal" href="#LM-Statistics-for-Spatial-Lag-and-Spatial-Error">LM Statistics for Spatial Lag and Spatial Error</a></li>
+<li><a class="reference internal" href="#LM-Statistics-for-Spatial-Durbin-Model">LM Statistics for Spatial Durbin Model</a></li>
+<li><a class="reference internal" href="#Diagnostics-in-a-2SLS-Regression">Diagnostics in a 2SLS Regression</a><ul>
+<li><a class="reference internal" href="#Spatial-Diagnostics-in-OLS-Regression">Spatial Diagnostics in OLS Regression</a><ul>
+<li><a class="reference internal" href="#Two-explanatory-variables">Two explanatory variables</a></li>
+<li><a class="reference internal" href="#Three-explanatory-variables">Three explanatory variables</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Spatial-Diagnostics-in-SLX-Regression">Spatial Diagnostics in SLX Regression</a></li>
+<li><a class="reference internal" href="#Spatial-Diagnostics-in-2SLS-Regression">Spatial Diagnostics in 2SLS Regression</a></li>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/9_specification_tests.ipynb">notebooks/9_specification_tests.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/9_specification_tests.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Specification-Tests">
+<h1>Specification Tests<a class="headerlink" href="#Specification-Tests" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/11/2024)">
+<h2>(revised 09/11/2024)<a class="headerlink" href="#(revised-09/11/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, the basic regression diagnostics for spatial autocorrelation are introduced. These include the classic Moran’s I test, as well as the Lagrange Multiplier/Rao Score tests for lag and error dependence developed during the 1980s and 1990s. In addition, the recent tests for the Spatial Durbin specification developed by Koley and Bera are covered as well. The tests are detailed in Anselin and Rey (2014), <em>Modern Spatial Econometrics in Practice</em> and in Anselin, Serenini and Amaral
+(2024). <em>Spatial Econometric Model Specification Search: Another Look</em> (DOI: 10.13140/RG.2.2.10650.86721), as well as in the references therein.</p>
+<p>In addition to the classic case with OLS estimates, a test for spatial correlation is covered for models with endogenous variables, estimated by means of 2SLS.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Familiarity with OLS and 2SLS estimation in <em>spreg</em> is assumed, as covered in the respective notebooks, as well as basics of <em>numpy</em>, <em>pandas</em>, <em>geopandas</em>, and <em>libpysal</em>. In addition, it is assumed that the <strong>chicagoSDOH</strong> PySAL sample data set has been installed (for specific instructions, refer to the <em>sample data notebook</em>).</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main module for spatial regression in PySAL is <em>spreg</em>. In addition <em>libpysal</em> is needed for data import and spatial weights manipulation, and <em>geopandas</em> for data input from a shape file. This notebook is based on version 1.7 of <em>spreg</em>.</p>
+<p>As before, only the needed functions from <em>libpysal</em> are imported, i.e., <code class="docutils literal notranslate"><span class="pre">libpysal.io.open</span></code> as <code class="docutils literal notranslate"><span class="pre">open</span></code>, <code class="docutils literal notranslate"><span class="pre">libpysal.examples.get_path</span></code> as <code class="docutils literal notranslate"><span class="pre">get_path</span></code>, and <code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code> as <code class="docutils literal notranslate"><span class="pre">weights</span></code>. The <code class="docutils literal notranslate"><span class="pre">OLS</span></code> and <code class="docutils literal notranslate"><span class="pre">TSLS</span></code> estimation routines are imported from <code class="docutils literal notranslate"><span class="pre">spreg</span></code>.</p>
+<p>Some additional imports are included to avoid excessive warning messages. With later versions of PySAL, these may not be needed. As before, the <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code> is used for <em>numpy</em> 2.0 and later.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+from libpysal.io import open
+from libpysal.examples import get_path
+import libpysal.weights as weights
+from spreg import OLS, TSLS
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functionality-Used">
+<h2>Functionality Used<a class="headerlink" href="#Functionality-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>examples.get_path</p></li>
+<li><p>io.open</p></li>
+<li><p>weights.transform</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>OLS</p></li>
+<li><p>TSLS</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Data,-Weights-and-Variables">
+<h2>Data, Weights and Variables<a class="headerlink" href="#Data,-Weights-and-Variables" title="Link to this heading">¶</a></h2>
+<p>As in the previous notebooks, all data sets, weights files and variables are specified at the top, so that they can be easily changed to other examples.</p>
+<p>Date sets and weights are from the <strong>chicagoSDOH</strong> sample data set:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic indicators of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_q.gal</strong>: queen contiguity spatial weights created with <em>GeoDa</em></p></li>
+</ul>
+<p>The weights are used in row-standardized form.</p>
+<p>For the OLS case, the same model specification is used as before, with <strong>YPLL_rate</strong> (an index measuring premature mortality, i.e., higher values are worse health outcomes) as the dependent variable, and <strong>HIS_ct</strong> (economic hardship index), <strong>Blk14P</strong> (percent Black population), and <strong>Hisp14P</strong> (percent Hispanic population) as the explanatory variables. These are specified in the <strong>y_name</strong> etc. variables, which are then used to create the corresponding <em>numpy</em> vectors and matrices for use as
+<strong>y</strong>, <strong>x</strong>, etc. in the regression specification.</p>
+<p>For the 2SLS case, the variable <strong>HIS_ct</strong> is considered to be endogenous, with <strong>COORD_X</strong> and <strong>COORD_Y</strong> (the tract centroids) as instruments, as in the 2SLS notebook.</p>
+<p>The various initializations are carried out in two steps:</p>
+<ul class="simple">
+<li><p>first, all file names and variable names are defined</p></li>
+<li><p>second, the files are read and variable vectors/matrices constructed</p></li>
+</ul>
+<p>The first step allows for customization to other examples, the second step is agnostic to the actual files and variables that were specified. To keep the code simple, there are no error checks for missing files or mismatches in the variable names.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = get_path(&quot;Chi-SDOH.shp&quot;)            # input shape file with data
+infileq = get_path(&quot;Chi-SDOH_q.gal&quot;)            # queen contiguity weights from GeoDa
+y_name = &#39;YPLL_rate&#39;
+x_names1 = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;]
+x_names2 = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;,&#39;HIS_ct&#39;]
+yend_names = [&#39;HIS_ct&#39;]
+q_names = [&#39;COORD_X&#39;, &#39;COORD_Y&#39;]
+ds_name = &#39;Chi-SDOH&#39;
+w_name = &#39;Chi-SDOH_q&#39;
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = gpd.read_file(infileshp)
+wq =  open(infileq).read()    # queen contiguity weights
+wq.transform = &#39;r&#39;    # row-transform the weights
+y = dfs[y_name]
+x1 = dfs[x_names1]
+x2 = dfs[x_names2]
+yend = dfs[yend_names]
+q = dfs[q_names]
+</pre></div>
+</div>
+</div>
+<section id="id2">
+<h3>Specification Tests<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p>The specification tests for spatial autocorrelation in regression residuals are invoked by setting the argument <code class="docutils literal notranslate"><span class="pre">spat_diag</span> <span class="pre">=</span> <span class="pre">True</span></code> in the OLS call and passing a spatial weights object. This will result in the LM tests being added to the result output. In order to also list Moran’s I, the argument <code class="docutils literal notranslate"><span class="pre">moran</span> <span class="pre">=</span> <span class="pre">True</span></code> is required as well. Since this test statistic involves more computation, it is not included in the default <code class="docutils literal notranslate"><span class="pre">spat_diag</span></code> listing.</p>
+<p>Before considering the implementation of these tests in <code class="docutils literal notranslate"><span class="pre">spreg</span></code>, their formal expressions are briefly summarized.</p>
+</section>
+</section>
+<section id="Moran's-I">
+<h2>Moran’s I<a class="headerlink" href="#Moran's-I" title="Link to this heading">¶</a></h2>
+<p>Formally,the Moran’s I test statistic is:</p>
+<p><span class="math">\begin{equation*}
+I = \frac{e'We / S_0}{e'e / n}.
+\end{equation*}</span></p>
+<p>In this expression, <span class="math notranslate nohighlight">\(S_0 = \sum_i \sum_j w_{ij}\)</span> is the sum of the weights in matrix <span class="math notranslate nohighlight">\(W\)</span>, and <span class="math notranslate nohighlight">\(e\)</span> are the residuals.</p>
+<p>Inference for Moran’s I is based on an asymptotic standard normal approximation. The statistic itself is first converted into a standardized or z-value by subtracting the mean and dividing by the standard deviation. Those two moments are obtained under the null hypothesis of no spatial autocorrelation.</p>
+<p>The moments of Moran’s I for regression residuals, under the null of no spatial autocorrelation (for the regression error terms) were derived by Cliff and Ord (1972) (Testing for spatial autocorrelation among regression residuals, <em>Geographical Analysis</em> 4, 267-284).</p>
+<p>The mean is:</p>
+<p><span class="math">\begin{equation*}
+E[ I ] = \frac{tr(MW)}{(n - k)},
+\end{equation*}</span></p>
+<p>where the matrix <span class="math notranslate nohighlight">\(M\)</span> in the trace expression follows the conventional notation as <span class="math notranslate nohighlight">\(M = I - X(X'X)^{-1}X'\)</span>, a <span class="math notranslate nohighlight">\(n \times n\)</span> projection matrix.</p>
+<p>The variance of Moran’s I is:</p>
+<p>:nbsphinx-math:<a href="#id3"><span class="problematic" id="id4">`</span></a>begin{equation*}
+Var[I] = frac{ tr(MWMW’) + tr(MWMW) + (tr(MW))^2}</p>
+<blockquote>
+<div><p>{(n - k)(n - k + 2)} - ( E[I])^2.</p>
+</div></blockquote>
+<p>end{equation*}`</p>
+<p>The so-called z-value is then obtained in the usual fashion, as:</p>
+<p><span class="math">\begin{equation*}
+I_z = \frac{I - E[I]}{\sqrt{Var[I]}} \sim \  N(0, 1).
+\end{equation*}</span></p>
+<p>The <span class="math notranslate nohighlight">\(I_z\)</span> statistic has an asymptotic distribution that is approximated by the standard normal.</p>
+<p>Moran’s I is a very powerful misspecification test. While designed to detect spatial error autocorrelation, it also has power against a range of other misspecifications, including heteroskedasticity and non-normality. Hence, when the null is <em>not</em> rejected, one can be fairly confident that none of these misspecifications are present. On the other hand, when the null is rejected, it is not always clear what the next step should be, other than maybe implement HAC standard errors. In contrast, the
+LM statistics are so-called focused tests against spatial autocorrelation that consider a specific alternative (lag or error).</p>
+</section>
+<section id="LM-Statistics-for-Spatial-Lag-and-Spatial-Error">
+<h2>LM Statistics for Spatial Lag and Spatial Error<a class="headerlink" href="#LM-Statistics-for-Spatial-Lag-and-Spatial-Error" title="Link to this heading">¶</a></h2>
+<p>Technical details pertaining to these tests are given in Chapter 5 of Anselin and Rey (2014). The original results are from Burridge (1980) (On the Cliff-Ord test for spatial autocorrelation, <em>Journal of the Royal Statistical Society B</em>, 42, 107-108) for the LM-Error test, Anselin (1988) (Lagrange Multiplier test diagnostics for spatial dependence and spatial heterogeneity, <em>Geographical Analysis</em> 20, 1-17), for the LM-Lag test, and Anselin, Bera, Florax, Yoon (1996) (Simple diagnostic tests for
+spatial dependence, <em>Regional Science and Urban Economics</em> 26, 77-104) for their robust forms.</p>
+<p>The LM test for spatial lag is:</p>
+<p><span class="math">\begin{equation*}
+LM_{\rho} = \frac{d_{\rho}^2}{D} \sim \chi^2(1),
+\end{equation*}</span></p>
+<p>with <span class="math notranslate nohighlight">\(d_{\rho} = e'Wy / \hat{\sigma}^2\)</span> as the score for <span class="math notranslate nohighlight">\(\rho\)</span>, and <span class="math notranslate nohighlight">\(D = (WX\hat{\beta})' M (WX \hat{\beta}) / \hat{\sigma}^2 + T\)</span>, where <span class="math notranslate nohighlight">\(M = I - X(X'X)^{-1}X'\)</span>, <span class="math notranslate nohighlight">\(T = tr(WW + W'W)\)</span> (with tr as the trace of a matrix), <span class="math notranslate nohighlight">\(e\)</span> is the OLS residual vector and <span class="math notranslate nohighlight">\(\hat{\beta}\)</span> are the OLS regression coefficients (so, <span class="math notranslate nohighlight">\(X \hat{\beta}\)</span> is the vector of predicted values).</p>
+<p>The LM test for spatial error is:</p>
+<p><span class="math">\begin{equation*}
+LM_{\lambda} = \frac{d_{\lambda}^2}{T} \sim \chi^2(1),
+\end{equation*}</span></p>
+<p>where <span class="math notranslate nohighlight">\(d_{\lambda} = (e'We) /\hat{\sigma}^2\)</span> is the score for <span class="math notranslate nohighlight">\(\lambda\)</span> and <span class="math notranslate nohighlight">\(T\)</span> is as before.</p>
+<p>The LM test for lag robust to the presence of error is:</p>
+<p><span class="math">\begin{equation*}
+LM_{\rho}^* = \frac{(d_{\rho} - d_{\lambda} )^2}{( D - T)} \sim \chi^2(1),
+\end{equation*}</span></p>
+<p>The LM test for error robust to the presence of lag is:</p>
+<p><span class="math">\begin{equation*}
+LM_{\lambda}^* = \frac{(d_{\lambda} - TD^{-1}d_{\rho} )^2}{[T (1 - TD) ] } \sim \chi^2(1),
+\end{equation*}</span></p>
+<p>in the same notation.</p>
+</section>
+<section id="LM-Statistics-for-Spatial-Durbin-Model">
+<h2>LM Statistics for Spatial Durbin Model<a class="headerlink" href="#LM-Statistics-for-Spatial-Durbin-Model" title="Link to this heading">¶</a></h2>
+<p>In Koley and Bera (2024) (To use or not to use the spatial Durbin model? - that is the question. <em>Spatial Economic Analysis</em> 19, 30-56), robust LM tests are derived for <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> in the spatial Durbin model. Again, the point of departure is an OLS regression of the classic non-spatial specification.</p>
+<p>LM test for <span class="math notranslate nohighlight">\(\gamma\)</span>:</p>
+<p><span class="math">\begin{equation*}
+LM_{\gamma} = \frac{(e'(WX_0))[(WX_0)'M(WX_0)]^{-1}((WX_0)'e)}{\hat{\sigma}^2}  \sim \chi^2(h),
+\end{equation*}</span></p>
+<p>where <span class="math notranslate nohighlight">\(h = k-1\)</span> (i.e., not counting the constant term), and <span class="math notranslate nohighlight">\(X_0\)</span> is the <span class="math notranslate nohighlight">\(X\)</span> matrix without the constant column. The expression for the <span class="math notranslate nohighlight">\(LM_{\rho}\)</span> test is the same as before.</p>
+<p>Also, the joint LM test on <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> is:</p>
+<p><span class="math">\begin{equation*}
+LM_{\rho\gamma} =
+\begin{bmatrix}
+(Wy)'e / \hat{\sigma}^2 & e'(WX_0) / \hat{\sigma}^2
+\end{bmatrix}
+\begin{bmatrix}
+(WX\beta)'M(WX\hat{\beta}) + T & (WX\hat{\beta})'M(WX_0) \\
+(WX_0)'M(WX\hat{\beta}) & (WX_0)'M(WX_0)
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+(Wy)'e / \hat{\sigma}^2 \\
+(WX_0)'e / \hat{\sigma}^2
+\end{bmatrix} \sim \chi^2(k)
+\end{equation*}</span></p>
+<p>In these expressions, <span class="math notranslate nohighlight">\(T\)</span> and <span class="math notranslate nohighlight">\(M\)</span> are as before.</p>
+<p>The robust forms of the <span class="math notranslate nohighlight">\(LM_{\rho}\)</span> and <span class="math notranslate nohighlight">\(LM_{\gamma}\)</span> tests can be obtained from the result of the joint test and the expressions for <span class="math notranslate nohighlight">\(LM_{\rho}\)</span> and <span class="math notranslate nohighlight">\(LM_{\gamma}\)</span>, since the following equality holds:</p>
+<p><span class="math">\begin{equation*}
+LM_{\rho\gamma} = LM_{\rho} + LM_{\gamma}^* = LM_{\rho}^* + LM_{\gamma}.
+\end{equation*}</span></p>
+</section>
+<section id="Diagnostics-in-a-2SLS-Regression">
+<h2>Diagnostics in a 2SLS Regression<a class="headerlink" href="#Diagnostics-in-a-2SLS-Regression" title="Link to this heading">¶</a></h2>
+<p>As in the classic OLS estimation, the residuals from 2SLS estimation can be assessed for spatial autocorrelation. Specifically, the so-called <span class="math notranslate nohighlight">\(AK\)</span> test extends the principle behind the Moran’s I statistic to residuals from a 2SLS estimation (Anselin and Kelejian 1997. Testing for spatial error autocorrelation in the presence of endogenous regressors. <em>International Regional Science Review</em> 20, 153-182).</p>
+<p>The statistic reduces to the same expression as the Lagrange Multiplier test for error spatial autocorrelation, but using the residuals from the 2SLS regression. Formally: <span class="math">\begin{equation*}
+AK = \frac{[ (e'We)/e'e/n)  ]^2}{tr(WW + W'W)} \sim \chi^2(1)
+\end{equation*}</span> where <span class="math notranslate nohighlight">\(e\)</span> is a vector of 2SLS residuals, <span class="math notranslate nohighlight">\(W\)</span> is the spatial weights matrix, and and <span class="math notranslate nohighlight">\(tr\)</span> stands for a matrix trace expression. The statistic is distributed asymptotically as Chi-squared with one degree of freedom.</p>
+<p>Some caution is needed in the interpretation of the results of the <span class="math notranslate nohighlight">\(AK\)</span> test. Even though it takes the form of an <span class="math notranslate nohighlight">\(LM\)</span> test, the statistic is really a generalization of Moran’s I and therefore not actually a Lagrange Multiplier test. Since estimation is based on 2SLS, there is no assumption of normality and thus also no likelihood function (on which the <span class="math notranslate nohighlight">\(LM\)</span> statistic is based). Therefore, the <span class="math notranslate nohighlight">\(AK\)</span> test needs to be interpreted as a diffuse test rather than as a focused
+test (e.g., in the standard <span class="math notranslate nohighlight">\(LM\)</span> case). In other words, the rejection of the null of no spatial autocorrelation does not point to either a lag or an error specification as the proper alternative. As is the case for Moran’s I in a classic regression, rejection of the null points to the absence of independence, but not to a particular specification that may be the reason for the spatial correlation.</p>
+<section id="Spatial-Diagnostics-in-OLS-Regression">
+<h3>Spatial Diagnostics in OLS Regression<a class="headerlink" href="#Spatial-Diagnostics-in-OLS-Regression" title="Link to this heading">¶</a></h3>
+<p>To obtain the spatial diagnostics, the argument <code class="docutils literal notranslate"><span class="pre">spat_diag</span> <span class="pre">=</span> <span class="pre">True</span></code> must be set, with, in addition, <code class="docutils literal notranslate"><span class="pre">moran</span> <span class="pre">=</span> <span class="pre">True</span></code> if Moran’s I is desired. Also, a spatial weights matrix must be specified as the <code class="docutils literal notranslate"><span class="pre">w</span></code> argument (optionally with its name in <code class="docutils literal notranslate"><span class="pre">name_w</span></code>).</p>
+<section id="Two-explanatory-variables">
+<h4>Two explanatory variables<a class="headerlink" href="#Two-explanatory-variables" title="Link to this heading">¶</a></h4>
+<p>First, this is illustrated for the immigrant paradox regression with just two explanatory variables, i.e., with the arguments <strong>y</strong> and <strong>x1</strong>. The call to <code class="docutils literal notranslate"><span class="pre">OLS</span></code> is the same as in the earlier notebook, but now with the arguments for the spatial diagnostics included.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1 = OLS(y,x1,w=wq,spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(ols1.summary)
+</pre></div>
+</div>
+</div>
+<p>The regression output is augmented with a section at the bottom, entitled DIAGNOSTICS FOR SPATIAL DEPENDENCE. It is organized into two parts, one dealing the SAR-Error model as the alternative specification, the other with the Spatial Durbin specification (SDM).</p>
+<p>In the SAR-Error part, the first result (if <code class="docutils literal notranslate"><span class="pre">moran=True</span></code>) is for Moran’s I. The value of the Moran’s I is listed under MI/DF, here 0.1271, with the associated z-value under VALUE, as 6.521. Finally, in the PROB column, the associated p-value is given. In this example, Moran’s I is highly significant, suggesting a misspecification problem. However, since the test is not focused on a specific alternative, it is not clear what the next step would be. Also, there is very strong evidence of
+heteroskedasticity, against which Moran’s I has power as well.</p>
+<p>The next set of tests are the LM tests and their associated robust forms, first for Lag and then for Error. The LM-Lag test (26.211) is highly significant, but its robust form (0.258) is not. In contrast, both LM-Error (39.569) and the associated robust form (13.615) are highly significant, suggesting an Error alternative. Finally, the joint test for Lag and Error is highly significant as well. This test is not always indicative of the need for a higher order alternative, since it has high power
+against the single alternatives as well.</p>
+<p>The upshot of these statistics is strong evidence towards a spatial error alternative.</p>
+<p>The final set of tests are the LM tests in a Spatial Durbin context. The LM test for the coefficients of WX is given first, with its robust counterpart. The degrees of freedom (DF, 2) match the number of explanatory variables (not counting the constant term). It this example, the LM test of 0.836 is not significant, but its robust counterpart of 14.193 is (robust to the presence of a spatial lag). The LM test for Lag has the same value as in the SAR-Error context (26.211), but its robust form
+(39.569) is now robust to the presence of an SLX term and is highly significant. The joint test for Spatial Durbin (40.404) has degrees of freedom equal to the number of explanatory variables + 1, or 3 in this case. It is highly significant.</p>
+<p>Koley and Bera (2024) suggest the following interpretation of these results. First, consider whether the joint test is significant, which it clearly is. Then consider each of the robust forms of the test statistic, which are also both highly significant in this example. This would point to a Spatial Durbin alternative. However, there may be some other misspecifications going on here, since the values of the robust tests are <em>larger</em> than their original counterparts, which is not standard
+behavior. In a strict sense, the robust tests are robust to <em>small</em> departures from the null and they should be <em>smaller</em> than the original test, since they <em>correct</em> for the ignored misspecification. When this inequality does not hold, there is an indication that the misspecification is more major than the correction is able to accommodate.</p>
+<p>Clearly, the recommendations given by the SAR-Error and the Spatial Durbin contexts are at odds. This is further explored in the notebook on specification searches.</p>
+</section>
+<section id="Three-explanatory-variables">
+<h4>Three explanatory variables<a class="headerlink" href="#Three-explanatory-variables" title="Link to this heading">¶</a></h4>
+<p>With the hardship indicator (<strong>HIS_ct</strong>) included in the regression, the call uses <strong>x2</strong>, but is otherwise identical to the previous one.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols2 = OLS(y,x2,w=wq,spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(ols2.summary)
+</pre></div>
+</div>
+</div>
+<p>The inclusion of the hardship indication in the regression specification changes not only the interpretation of the regression coefficients, but also greatly affects the results for the spatial diagnostics. In the SAR-Error context, the LM-Lag statistic is still significant, but its robust form is not. There is now only the weakest of evidence for the Error case (5.705 with a p-value of 0.02). Neither of the robust tests are significant. The joint LM test (7.329) only achieves a p-value of
+0.0256, which provides very weak evidence. On the other hand, Moran’s I remains significant, but much less so than before (z-value of 2.619 with p=0.0088).</p>
+<p>The situation is completely different on the Spatial Durbin front. Now, the values for the robust forms of the tests are smaller than the original counterparts, as they should be. There is strong evidence for an SLX alternative. Following the Koley-Bera (2024) recommendations, interest focuses on the robust forms of the one-directional tests, since the joint test is highly significant. The robust Lag test (5.705) is no longer significant for a p-value of 0.01 (p=0169), whereas the robust WX test
+(17.742) is still highly significant (p=0.0005). This would suggest an SLX alternative, or possibly, with a lower standard for significance (e.g., p=0.05), a Spatial Durbin model.</p>
+<p>Since it is straightforward to estimate an SLX model by means of OLS, the effect of this specification on the spatial diagnostics is examined next. A full consideration of the estimation of various SLX models is considered in a separate notebook.</p>
+</section>
+</section>
+<section id="Spatial-Diagnostics-in-SLX-Regression">
+<h3>Spatial Diagnostics in SLX Regression<a class="headerlink" href="#Spatial-Diagnostics-in-SLX-Regression" title="Link to this heading">¶</a></h3>
+<p>The call for the estimation of an SLX specification is the same as for any other OLS estimation, except that an additional argument <code class="docutils literal notranslate"><span class="pre">slx_lags=1</span></code> must be included. If higher order lags are desired, the argument to <code class="docutils literal notranslate"><span class="pre">slx_lags</span></code> must be adjusted accordingly.</p>
+<p>The results for the full regression (with <strong>x2</strong>) is:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>slx = OLS(y,x2,w=wq,slx_lags=1,
+                 spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(slx.summary)
+</pre></div>
+</div>
+</div>
+<p>The inclusion of the three SLX terms changes the estimates and significance of the other coefficients considerably. The <strong>Hisp14P</strong> variable is no longer significant, but its spatial lag is, with a large negative coefficient. All three SLX coefficients are significant. However, their magnitude and sign raise some concerns. It is very difficult to interpret a case where the coefficient of the neighbor’s influence has a different sign from the original coefficient, as is the case for <strong>Blk14P</strong>
+and <strong>W_Blk14P</strong>. This suggests negative spatial autocorrelation, which is rare, but not impossible, although it runs counter to Tobler’s first law of geography.</p>
+<p>Similarly, obtaining a coefficient for WX that is larger than the corresponding coefficient for X suggests a stronger effect of the neighbors than for the location itself, which runs counter to the distance decay implied by Tobler’s law. While this does not make the SLX specification invalid as such, it does require a careful consideration of the interpretation of the coefficients.</p>
+<p>Diagnostics are only reported for the SAR-Error alternatives, since the WX term is already included in the model. This inclusion seems to have eliminated most evidence for remaining spatial autocorrelation. While Moran’s I and the LM tests are weakly significant (but <em>not</em> for a p-value of p=0.01), the robust LM tests are not, and neither is the joint LM test.</p>
+<p>This would suggest that the inclusion of the SLX terms has taken care of the spatial autocorrelation <em>problem</em>. However, as mentioned, the signs and magnitudes of the coefficients are difficult to interpret and would demand closer scrutiny.</p>
+</section>
+<section id="Spatial-Diagnostics-in-2SLS-Regression">
+<h3>Spatial Diagnostics in 2SLS Regression<a class="headerlink" href="#Spatial-Diagnostics-in-2SLS-Regression" title="Link to this heading">¶</a></h3>
+<p>The AK test is included in the output of a 2SLS regression when <code class="docutils literal notranslate"><span class="pre">spat_diag=True</span></code> and spatial weights are specified. In all other respects, the call is the same as reviewed in a previous notebook, with <strong>x1</strong> as the exogenous explanatory variables, <strong>yend</strong> as the endogenous variable and <strong>q</strong> as the instruments.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls1 = TSLS(y,x=x1,yend=yend,q=q,w=wq,spat_diag = True,
+             name_w=w_name,name_ds=ds_name)
+print(tsls1.summary)
+</pre></div>
+</div>
+</div>
+<p>In contrast to what was found with Moran’s I for the OLS case, there is no evidence for residual spatial autocorrelation when the variable <strong>HIS_CT</strong> is treated as being endogenous.</p>
+</section>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>At this point, it would most effective if you could continue with your baseline regression, assess whether there is any evidence of spatial autocorrelation and what type of alternative suggests itself. If warranted, check the effect of including SLX terms or correcting for endogeneity on the regression coefficients and spatial diagnostics. Consider using a number of different spatial weights to assess the robustness of your findings.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/9_specification_tests.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

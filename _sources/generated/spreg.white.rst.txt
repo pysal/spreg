@@ -1,0 +1,6 @@
+﻿spreg.white
+===========
+
+.. currentmodule:: spreg
+
+.. autofunction:: white

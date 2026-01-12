@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.diagnostics &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.diagnostics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Diagnostics for regression estimations. </span>
+<span class="sd">        </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu &quot;</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">pi</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">libpysal.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">MISSINGVALUE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ols</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseOLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">spmultiply</span><span class="p">,</span> <span class="n">sphstack</span><span class="p">,</span> <span class="n">spmin</span><span class="p">,</span> <span class="n">spmax</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;f_stat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;t_stat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;r2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ar2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;se_betas&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;log_likelihood&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;akaike&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;schwarz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;condition_index&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jarque_bera&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;breusch_pagan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;koenker_bassett&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vif&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;likratiotest&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;constant_check&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dwh&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="f_stat">
+<a class="viewcode-back" href="../../generated/spreg.f_stat.html#spreg.f_stat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">f_stat</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the f-statistic and associated p-value for multiple</span>
+<span class="sd">    coefficient constraints :cite:`Greene2003`.</span>
+<span class="sd">    (For two stage least squares see f_stat_tsls)</span>
+<span class="sd">    (default is F statistic for regression)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+<span class="sd">    df              : number of coefficient constraints </span>
+<span class="sd">                      (zero constraint for last df coefficients in betas)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs_result       : tuple</span>
+<span class="sd">                      includes value of F statistic and associated p-value</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the F-statistic for the regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.f_stat(reg)</span>
+
+<span class="sd">    Print the results tuple, including the statistic and its significance.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%testresult[0],&quot;%12.12f&quot;%testresult[1])</span>
+<span class="sd">    28.385629224695 0.000000009341</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>  <span class="c1"># (scalar) number of ind. vars (includes constant)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">utu</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>  <span class="c1"># (scalar) residual sum of squares</span>
+    <span class="c1"># default case, all coefficients</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">k</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">predy</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">predy</span>  <span class="c1"># (array) vector of predicted values (n x 1)</span>
+        <span class="n">mean_y</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">mean_y</span>  <span class="c1"># (scalar) mean of dependent observations</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">predy</span> <span class="o">-</span> <span class="n">mean_y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>     <span class="c1"># F test on last df coefficients</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">[:,:</span><span class="o">-</span><span class="n">r</span><span class="p">]</span>
+        <span class="n">olsr</span> <span class="o">=</span> <span class="n">BaseOLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x0</span><span class="p">)</span>  <span class="c1"># constrained regression</span>
+        <span class="n">rtr</span> <span class="o">=</span> <span class="n">olsr</span><span class="o">.</span><span class="n">utu</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">rtr</span> <span class="o">-</span> <span class="n">utu</span>
+    <span class="n">fStat</span> <span class="o">=</span> <span class="p">(</span><span class="n">U</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">utu</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span>
+    <span class="n">pValue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">fStat</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">fs_result</span> <span class="o">=</span> <span class="p">(</span><span class="n">fStat</span><span class="p">,</span> <span class="n">pValue</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fs_result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">t_stat</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">z_stat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the t-statistics (or z-statistics) and associated</span>
+<span class="sd">    p-values. :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+<span class="sd">    z_stat          : boolean</span>
+<span class="sd">                      If True run z-stat instead of t-stat</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ts_result       : list of tuples</span>
+<span class="sd">                      each tuple includes value of t statistic (or z</span>
+<span class="sd">                      statistic) and associated p-value</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate t-statistics for the regression coefficients.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.t_stat(reg)</span>
+
+<span class="sd">    Print the tuples that contain the t-statistics and their significances.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%testresult[0][0], &quot;%12.12f&quot;%testresult[0][1], &quot;%12.12f&quot;%testresult[1][0], &quot;%12.12f&quot;%testresult[1][1], &quot;%12.12f&quot;%testresult[2][0], &quot;%12.12f&quot;%testresult[2][1])</span>
+<span class="sd">    14.490373143689 0.000000000000 -4.780496191297 0.000018289595 -2.654408642718 0.010874504910</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>  <span class="c1"># (scalar) number of ind. vars (includes constant)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">vm</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">vm</span>  <span class="c1"># (array) coefficients of variance matrix (k x k)</span>
+    <span class="n">betas</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span>  <span class="c1"># (array) coefficients of the regressors (1 x k)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+    <span class="n">tStat</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vm</span><span class="p">)))]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">vm</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+    <span class="n">ts_result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tStat</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">z_stat</span><span class="p">:</span>
+            <span class="n">ts_result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ts_result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ts_result</span>
+
+
+<div class="viewcode-block" id="r2">
+<a class="viewcode-back" href="../../generated/spreg.r2.html#spreg.r2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">r2</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the R^2 value for the regression. :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r2_result       : float</span>
+<span class="sd">                      value of the coefficient of determination for the</span>
+<span class="sd">                      regression</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the R^2 value for the regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.r2(reg)</span>
+
+<span class="sd">    Print the result.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.8f&quot;%testresult)</span>
+<span class="sd">    0.55240404</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">y</span>  <span class="c1"># (array) vector of dep observations (n x 1)</span>
+    <span class="n">mean_y</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">mean_y</span>  <span class="c1"># (scalar) mean of dep observations</span>
+    <span class="n">utu</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>  <span class="c1"># (scalar) residual sum of squares</span>
+    <span class="n">ss_tot</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">mean_y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">utu</span> <span class="o">/</span> <span class="n">ss_tot</span>
+    <span class="n">r2_result</span> <span class="o">=</span> <span class="n">r2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">r2_result</span></div>
+
+
+
+<div class="viewcode-block" id="ar2">
+<a class="viewcode-back" href="../../generated/spreg.ar2.html#spreg.ar2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ar2</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the adjusted R^2 value for the regression. :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ar2_result      : float</span>
+<span class="sd">                      value of R^2 adjusted for the number of explanatory</span>
+<span class="sd">                      variables.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the adjusted R^2 value for the regression.</span>
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.ar2(reg)</span>
+
+<span class="sd">    Print the result.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.8f&quot;%testresult)</span>
+<span class="sd">    0.53294335</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>  <span class="c1"># (scalar) number of ind. variables (includes constant)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">ar2_result</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2</span><span class="p">(</span><span class="n">reg</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ar2_result</span></div>
+
+
+
+<div class="viewcode-block" id="se_betas">
+<a class="viewcode-back" href="../../generated/spreg.se_betas.html#spreg.se_betas">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">se_betas</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the standard error of the regression coefficients. :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    se_result       : array</span>
+<span class="sd">                      includes standard errors of each coefficient (1 x k)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the standard errors of the regression coefficients.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.se_betas(reg)</span>
+
+<span class="sd">    Print the vector of standard errors.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult</span>
+<span class="sd">    array([4.73548613, 0.33413076, 0.10319868])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vm</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">vm</span>  <span class="c1"># (array) coefficients of variance matrix (k x k)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+    <span class="n">se_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">se_result</span></div>
+
+
+
+<div class="viewcode-block" id="log_likelihood">
+<a class="viewcode-back" href="../../generated/spreg.log_likelihood.html#spreg.log_likelihood">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the log-likelihood value for the regression. :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ll_result       : float</span>
+<span class="sd">                      value for the log-likelihood of the regression.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the log-likelihood for the regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.log_likelihood(reg)</span>
+
+<span class="sd">    Print the result.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult</span>
+<span class="sd">    -187.3772388121491</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">utu</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>  <span class="c1"># (scalar) residual sum of squares</span>
+    <span class="n">ll_result</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">))</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">utu</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">utu</span> <span class="o">/</span> <span class="p">(</span><span class="n">utu</span> <span class="o">/</span> <span class="n">n</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">ll_result</span></div>
+
+
+
+<div class="viewcode-block" id="akaike">
+<a class="viewcode-back" href="../../generated/spreg.akaike.html#spreg.akaike">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">akaike</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Akaike Information Criterion. :cite:`Akaike1974`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    aic_result      : scalar</span>
+<span class="sd">                      value for Akaike Information Criterion of the</span>
+<span class="sd">                      regression.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the Akaike Information Criterion (AIC).</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.akaike(reg)</span>
+
+<span class="sd">    Print the result.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult</span>
+<span class="sd">    380.7544776242982</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>  <span class="c1"># (scalar) number of explanatory vars (including constant)</span>
+    <span class="k">try</span><span class="p">:</span>  <span class="c1"># ML estimation, logll already exists</span>
+        <span class="c1"># spatial coefficient included in k</span>
+        <span class="n">aic_result</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">k</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">logll</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># OLS case</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+        <span class="n">utu</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>  <span class="c1"># (scalar) residual sum of squares</span>
+        <span class="n">aic_result</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">utu</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aic_result</span></div>
+
+
+
+<div class="viewcode-block" id="schwarz">
+<a class="viewcode-back" href="../../generated/spreg.schwarz.html#spreg.schwarz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">schwarz</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Schwarz Information Criterion. :cite:`Schwarz1978`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bic_result      : scalar</span>
+<span class="sd">                      value for Schwarz (Bayesian) Information Criterion of</span>
+<span class="sd">                      the regression.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the Schwarz Information Criterion.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.schwarz(reg)</span>
+
+<span class="sd">    Print the results.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.round(testresult, 5)</span>
+<span class="sd">    386.42994</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>  <span class="c1"># (scalar) number of ind. variables (including constant)</span>
+    <span class="k">try</span><span class="p">:</span>  <span class="c1"># ML case logll already computed</span>
+        <span class="c1"># spatial coeff included in k</span>
+        <span class="n">sc_result</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">logll</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># OLS case</span>
+        <span class="n">utu</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>  <span class="c1"># (scalar) residual sum of squares</span>
+        <span class="n">sc_result</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">utu</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sc_result</span></div>
+
+
+
+<div class="viewcode-block" id="condition_index">
+<a class="viewcode-back" href="../../generated/spreg.condition_index.html#spreg.condition_index">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">condition_index</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the multicollinearity condition index according to Belsey,</span>
+<span class="sd">    Kuh and Welsh (1980) :cite:`Belsley1980`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ci_result       : float</span>
+<span class="sd">                      scalar value for the multicollinearity condition</span>
+<span class="sd">                      index.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the condition index to check for multicollinearity.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.condition_index(reg)</span>
+
+<span class="sd">    Print the result.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.3f&quot;%testresult)</span>
+<span class="sd">    6.542</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s2">&quot;xtx&quot;</span><span class="p">):</span>
+        <span class="n">xtx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">xtx</span>  <span class="c1"># (array) k x k projection matrix (includes constant)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s2">&quot;hth&quot;</span><span class="p">):</span>
+        <span class="n">xtx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">hth</span>  <span class="c1"># (array) k x k projection matrix (includes constant)</span>
+    <span class="n">diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">xtx</span><span class="p">)</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">xtx</span> <span class="o">/</span> <span class="n">diag</span>
+    <span class="n">eigval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">max_eigval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">eigval</span><span class="p">)</span>
+    <span class="n">min_eigval</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">eigval</span><span class="p">)</span>
+    <span class="n">ci_result</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">max_eigval</span> <span class="o">/</span> <span class="n">min_eigval</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ci_result</span></div>
+
+
+
+<div class="viewcode-block" id="jarque_bera">
+<a class="viewcode-back" href="../../generated/spreg.jarque_bera.html#spreg.jarque_bera">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">jarque_bera</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Jarque-Bera test for normality in the residuals. :cite:`Jarque1980`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    jb_result       : dictionary</span>
+<span class="sd">                      contains the statistic (jb) for the Jarque-Bera test</span>
+<span class="sd">                      and the associated p-value (p-value)</span>
+<span class="sd">    df              : integer</span>
+<span class="sd">                      degrees of freedom for the test (always 2)</span>
+<span class="sd">    jb              : float</span>
+<span class="sd">                      value of the test statistic</span>
+<span class="sd">    pvalue          : float</span>
+<span class="sd">                      p-value associated with the statistic (chi^2</span>
+<span class="sd">                      distributed with 2 df)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the Jarque-Bera test for normality of residuals.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.jarque_bera(reg)</span>
+
+<span class="sd">    Print the degrees of freedom for the test.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult[&#39;df&#39;]</span>
+<span class="sd">    2</span>
+
+<span class="sd">    Print the test statistic.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.3f&quot;%testresult[&#39;jb&#39;])</span>
+<span class="sd">    1.836</span>
+
+<span class="sd">    Print the associated p-value.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.4f&quot;%testresult[&#39;pvalue&#39;])</span>
+<span class="sd">    0.3994</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span>  <span class="c1"># (array) residuals from regression</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">u3</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">3</span>
+    <span class="n">u4</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">4</span>
+    <span class="n">mu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">u2</span><span class="p">)</span>
+    <span class="n">mu3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">u3</span><span class="p">)</span>
+    <span class="n">mu4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">u4</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">mu3</span> <span class="o">/</span> <span class="p">(</span><span class="n">mu2</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">))</span>  <span class="c1"># skewness measure</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">mu4</span> <span class="o">/</span> <span class="p">(</span><span class="n">mu2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># kurtosis measure</span>
+    <span class="n">jb</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(((</span><span class="n">S</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">K</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">24</span><span class="p">)</span>
+    <span class="n">pvalue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chisqprob</span><span class="p">(</span><span class="n">jb</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">jb_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;jb&quot;</span><span class="p">:</span> <span class="n">jb</span><span class="p">,</span> <span class="s2">&quot;pvalue&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">jb_result</span></div>
+
+
+
+<div class="viewcode-block" id="breusch_pagan">
+<a class="viewcode-back" href="../../generated/spreg.breusch_pagan.html#spreg.breusch_pagan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">breusch_pagan</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Breusch-Pagan test statistic to check for</span>
+<span class="sd">    heteroscedasticity. :cite:`Breusch1979`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+<span class="sd">    z               : array</span>
+<span class="sd">                      optional input for specifying an alternative set of</span>
+<span class="sd">                      variables (Z) to explain the observed variance. By</span>
+<span class="sd">                      default this is a matrix of the squared explanatory</span>
+<span class="sd">                      variables (X**2) with a constant added to the first</span>
+<span class="sd">                      column if not already present. In the default case,</span>
+<span class="sd">                      the explanatory variables are squared to eliminate</span>
+<span class="sd">                      negative values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bp_result       : dictionary</span>
+<span class="sd">                      contains the statistic (bp) for the test and the</span>
+<span class="sd">                      associated p-value (p-value)</span>
+<span class="sd">    bp              : float</span>
+<span class="sd">                      scalar value for the Breusch-Pagan test statistic</span>
+<span class="sd">    df              : integer</span>
+<span class="sd">                      degrees of freedom associated with the test (k)</span>
+<span class="sd">    pvalue          : float</span>
+<span class="sd">                      p-value associated with the statistic (chi^2</span>
+<span class="sd">                      distributed with k df)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    x attribute in the reg object must have a constant term included. This is</span>
+<span class="sd">    standard for spreg.OLS so no testing done to confirm constant.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the Breusch-Pagan test for heteroscedasticity.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.breusch_pagan(reg)</span>
+
+<span class="sd">    Print the degrees of freedom for the test.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult[&#39;df&#39;]</span>
+<span class="sd">    2</span>
+
+<span class="sd">    Print the test statistic.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.3f&quot;%testresult[&#39;bp&#39;])</span>
+<span class="sd">    7.900</span>
+
+<span class="sd">    Print the associated p-value.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.4f&quot;%testresult[&#39;pvalue&#39;])</span>
+<span class="sd">    0.0193</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">e2</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>
+    <span class="n">ete</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>
+
+    <span class="n">den</span> <span class="o">=</span> <span class="n">ete</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">den</span> <span class="o">-</span> <span class="mf">1.0</span>
+
+    <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+        <span class="c1"># constant = constant_check(x)</span>
+        <span class="c1"># if constant == False:</span>
+        <span class="c1">#    z = np.hstack((np.ones((n,1)),x))**2</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#    z = x**2</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">spmultiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># constant = constant_check(z)</span>
+        <span class="c1"># if constant == False:</span>
+        <span class="c1">#    z = np.hstack((np.ones((n,1)),z))</span>
+        <span class="k">pass</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Check to identify any duplicate columns in Z</span>
+    <span class="n">omitcolumn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="n">check</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current</span> <span class="o">-</span> <span class="n">check</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+
+    <span class="n">uniqueomit</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">omitcolumn</span><span class="p">)</span>
+    <span class="n">omitcolumn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">uniqueomit</span><span class="p">)</span>
+
+    <span class="c1"># Now the identified columns must be removed (done in reverse to</span>
+    <span class="c1"># prevent renumbering)</span>
+    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">omitcolumn</span><span class="p">:</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># Now that the variables are prepared, we calculate the statistic</span>
+    <span class="n">zt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">gt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">gtz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">ztg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">zt</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">ztz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">zt</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">ztzi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">ztz</span><span class="p">)</span>
+
+    <span class="n">part1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gtz</span><span class="p">,</span> <span class="n">ztzi</span><span class="p">)</span>
+    <span class="n">part2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="n">ztg</span><span class="p">)</span>
+    <span class="n">bp_array</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">part2</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">bp_array</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">pvalue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chisqprob</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">bp_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">,</span> <span class="s2">&quot;bp&quot;</span><span class="p">:</span> <span class="n">bp</span><span class="p">,</span> <span class="s2">&quot;pvalue&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">bp_result</span></div>
+
+
+
+<div class="viewcode-block" id="white">
+<a class="viewcode-back" href="../../generated/spreg.white.html#spreg.white">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">white</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the White test to check for heteroscedasticity. :cite:`White1980`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    white_result    : dictionary</span>
+<span class="sd">                      contains the statistic (white), degrees of freedom</span>
+<span class="sd">                      (df) and the associated p-value (pvalue) for the</span>
+<span class="sd">                      White test.</span>
+<span class="sd">    white           : float</span>
+<span class="sd">                      scalar value for the White test statistic.</span>
+<span class="sd">    df              : integer</span>
+<span class="sd">                      degrees of freedom associated with the test</span>
+<span class="sd">    pvalue          : float</span>
+<span class="sd">                      p-value associated with the statistic (chi^2</span>
+<span class="sd">                      distributed with k df)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    x attribute in the reg object must have a constant term included. This is</span>
+<span class="sd">    standard for spreg.OLS so no testing done to confirm constant.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the White test for heteroscedasticity.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.white(reg)</span>
+
+<span class="sd">    Print the degrees of freedom for the test.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(testresult[&#39;df&#39;])</span>
+<span class="sd">    5</span>
+
+<span class="sd">    Print the test statistic.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.3f&quot;%testresult[&#39;wh&#39;])</span>
+<span class="sd">    19.946</span>
+
+<span class="sd">    Print the associated p-value.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.4f&quot;%testresult[&#39;pvalue&#39;])</span>
+<span class="sd">    0.0013</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+    <span class="c1"># constant = constant_check(X)</span>
+
+    <span class="c1"># Check for constant, if none add one, see Greene 2003, pg. 222</span>
+    <span class="c1"># if constant == False:</span>
+    <span class="c1">#    X = np.hstack((np.ones((n,1)),X))</span>
+
+    <span class="c1"># Check for multicollinearity in the X matrix</span>
+    <span class="n">ci</span> <span class="o">=</span> <span class="n">condition_index</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ci</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+        <span class="n">white_result</span> <span class="o">=</span> <span class="s2">&quot;Not computed due to multicollinearity.&quot;</span>
+        <span class="k">return</span> <span class="n">white_result</span>
+
+    <span class="c1"># Compute cross-products and squares of the regression variables</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+        <span class="c1"># this is probably inefficient</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">SP</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unknown X type, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">spmultiply</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">A</span><span class="p">[:,</span> <span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Append the original variables</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">sphstack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>  <span class="c1"># note: this also converts a LIL to CSR</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Check to identify any duplicate or constant columns in A</span>
+    <span class="n">omitcolumn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="c1"># remove all constant terms (will add a constant back later)</span>
+        <span class="k">if</span> <span class="n">spmax</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">==</span> <span class="n">spmin</span><span class="p">(</span><span class="n">current</span><span class="p">):</span>
+            <span class="n">omitcolumn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="c1"># do not allow duplicates</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">check</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current</span> <span class="o">-</span> <span class="n">check</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">uniqueomit</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">omitcolumn</span><span class="p">)</span>
+    <span class="n">omitcolumn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">uniqueomit</span><span class="p">)</span>
+
+    <span class="c1"># Now the identified columns must be removed</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">omitcolumn</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+        <span class="c1"># this is probably inefficient</span>
+        <span class="n">keepcolumn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">omitcolumn</span><span class="p">:</span>
+            <span class="n">keepcolumn</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">keepcolumn</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unknown A type, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">sphstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">A</span><span class="p">)</span>  <span class="c1"># add a constant back in</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Conduct the auxiliary regression and calculate the statistic</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">ols</span> <span class="k">as</span> <span class="n">OLS</span>
+
+    <span class="n">aux_reg</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">BaseOLS</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+    <span class="n">aux_r2</span> <span class="o">=</span> <span class="n">r2</span><span class="p">(</span><span class="n">aux_reg</span><span class="p">)</span>
+    <span class="n">wh</span> <span class="o">=</span> <span class="n">aux_r2</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">pvalue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chisqprob</span><span class="p">(</span><span class="n">wh</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">white_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">,</span> <span class="s2">&quot;wh&quot;</span><span class="p">:</span> <span class="n">wh</span><span class="p">,</span> <span class="s2">&quot;pvalue&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">white_result</span></div>
+
+
+
+<div class="viewcode-block" id="koenker_bassett">
+<a class="viewcode-back" href="../../generated/spreg.koenker_bassett.html#spreg.koenker_bassett">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">koenker_bassett</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Koenker-Bassett test statistic to check for</span>
+<span class="sd">    heteroscedasticity. :cite:`Koenker1982,Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression output</span>
+<span class="sd">                      output from an instance of a regression class</span>
+<span class="sd">    z               : array</span>
+<span class="sd">                      optional input for specifying an alternative set of</span>
+<span class="sd">                      variables (Z) to explain the observed variance. By</span>
+<span class="sd">                      default this is a matrix of the squared explanatory</span>
+<span class="sd">                      variables (X**2) with a constant added to the first</span>
+<span class="sd">                      column if not already present. In the default case,</span>
+<span class="sd">                      the explanatory variables are squared to eliminate</span>
+<span class="sd">                      negative values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kb_result       : dictionary</span>
+<span class="sd">                      contains the statistic (kb), degrees of freedom (df)</span>
+<span class="sd">                      and the associated p-value (pvalue) for the test.</span>
+<span class="sd">    kb              : float</span>
+<span class="sd">                      scalar value for the Koenker-Bassett test statistic.</span>
+<span class="sd">    df              : integer</span>
+<span class="sd">                      degrees of freedom associated with the test</span>
+<span class="sd">    pvalue          : float</span>
+<span class="sd">                      p-value associated with the statistic (chi^2</span>
+<span class="sd">                      distributed)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    x attribute in the reg object must have a constant term included. This is</span>
+<span class="sd">    standard for spreg.OLS so no testing done to confirm constant.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the Koenker-Bassett test for heteroscedasticity.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.koenker_bassett(reg)</span>
+
+<span class="sd">    Print the degrees of freedom for the test.</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult[&#39;df&#39;]</span>
+<span class="sd">    2</span>
+
+<span class="sd">    Print the test statistic.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.3f&quot;%testresult[&#39;kb&#39;])</span>
+<span class="sd">    5.694</span>
+
+<span class="sd">    Print the associated p-value.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.4f&quot;%testresult[&#39;pvalue&#39;])</span>
+<span class="sd">    0.0580</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The notation here matches that of Greene (2003).</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">ete</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span>
+    <span class="c1"># constant = constant_check(x)</span>
+
+    <span class="n">ubar</span> <span class="o">=</span> <span class="n">ete</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="n">ubari</span> <span class="o">=</span> <span class="n">ubar</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">u</span> <span class="o">-</span> <span class="n">ubari</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">u</span> <span class="o">-</span> <span class="n">ubar</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+        <span class="c1"># constant = constant_check(x)</span>
+        <span class="c1"># if constant == False:</span>
+        <span class="c1">#    z = np.hstack((np.ones((n,1)),x))**2</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#    z = x**2</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">spmultiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># constant = constant_check(z)</span>
+        <span class="c1"># if constant == False:</span>
+        <span class="c1">#    z = np.hstack((np.ones((n,1)),z))</span>
+        <span class="k">pass</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Check to identify any duplicate columns in Z</span>
+    <span class="n">omitcolumn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="n">check</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current</span> <span class="o">-</span> <span class="n">check</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+
+    <span class="n">uniqueomit</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">omitcolumn</span><span class="p">)</span>
+    <span class="n">omitcolumn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">uniqueomit</span><span class="p">)</span>
+
+    <span class="c1"># Now the identified columns must be removed (done in reverse to</span>
+    <span class="c1"># prevent renumbering)</span>
+    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">omitcolumn</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">omitcolumn</span><span class="p">:</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># Conduct the auxiliary regression.</span>
+    <span class="n">zt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">gt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">gtz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">ztg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">zt</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">ztz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">zt</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">ztzi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">ztz</span><span class="p">)</span>
+
+    <span class="n">part1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gtz</span><span class="p">,</span> <span class="n">ztzi</span><span class="p">)</span>
+    <span class="n">part2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="n">ztg</span><span class="p">)</span>
+    <span class="n">kb_array</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">part2</span>
+    <span class="n">kb</span> <span class="o">=</span> <span class="n">kb_array</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">pvalue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chisqprob</span><span class="p">(</span><span class="n">kb</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">kb_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;kb&quot;</span><span class="p">:</span> <span class="n">kb</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">,</span> <span class="s2">&quot;pvalue&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">kb_result</span></div>
+
+
+
+<div class="viewcode-block" id="vif">
+<a class="viewcode-back" href="../../generated/spreg.vif.html#spreg.vif">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">vif</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the variance inflation factor for each independent variable.</span>
+<span class="sd">    For the ease of indexing the results, the constant is currently</span>
+<span class="sd">    included. This should be omitted when reporting the results to the</span>
+<span class="sd">    output text. :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vif_result      : list of tuples</span>
+<span class="sd">                      each tuple includes the vif and the tolerance, the</span>
+<span class="sd">                      order of the variables corresponds to their order in</span>
+<span class="sd">                      the reg.x matrix</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Read the DBF associated with the Columbus data.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+
+<span class="sd">    Create the dependent variable vector.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Create the matrix of independent variables.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Calculate the variance inflation factor (VIF).</span>
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.vif(reg)</span>
+
+<span class="sd">    Select the tuple for the income variable.</span>
+
+<span class="sd">    &gt;&gt;&gt; incvif = testresult[1]</span>
+
+<span class="sd">    Print the VIF for income.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%incvif[0])</span>
+<span class="sd">    1.333117497189</span>
+
+<span class="sd">    Print the tolerance for income.</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%incvif[1])</span>
+<span class="sd">    0.750121427487</span>
+
+<span class="sd">    Repeat for the home value variable.</span>
+
+<span class="sd">    &gt;&gt;&gt; hovalvif = testresult[2]</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%hovalvif[0])</span>
+<span class="sd">    1.333117497189</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%hovalvif[1])</span>
+<span class="sd">    0.750121427487</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">vif_result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">ols</span> <span class="k">as</span> <span class="n">OLS</span>
+
+        <span class="n">aux</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">BaseOLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+        <span class="n">mean_y</span> <span class="o">=</span> <span class="n">aux</span><span class="o">.</span><span class="n">mean_y</span>
+        <span class="n">utu</span> <span class="o">=</span> <span class="n">aux</span><span class="o">.</span><span class="n">utu</span>
+        <span class="n">ss_tot</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">mean_y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ss_tot</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">resj</span> <span class="o">=</span> <span class="n">MISSINGVALUE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r2aux</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">utu</span> <span class="o">/</span> <span class="n">ss_tot</span>
+            <span class="n">tolj</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">r2aux</span>
+            <span class="n">vifj</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">tolj</span>
+            <span class="n">resj</span> <span class="o">=</span> <span class="p">(</span><span class="n">vifj</span><span class="p">,</span> <span class="n">tolj</span><span class="p">)</span>
+        <span class="n">vif_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vif_result</span></div>
+
+
+
+<div class="viewcode-block" id="constant_check">
+<a class="viewcode-back" href="../../generated/spreg.constant_check.html#spreg.constant_check">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">constant_check</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks to see numpy array includes a constant.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array           : array</span>
+<span class="sd">                      an array of variables to be inspected</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    constant        : boolean</span>
+<span class="sd">                      true signifies the presence of a constant</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&quot;r&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+<span class="sd">    &gt;&gt;&gt; spreg.constant_check(reg.x)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">constant</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="n">array</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">varmin</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">varmax</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">varmin</span> <span class="o">==</span> <span class="n">varmax</span><span class="p">:</span>
+            <span class="n">constant</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">constant</span></div>
+
+
+
+<div class="viewcode-block" id="likratiotest">
+<a class="viewcode-back" href="../../generated/spreg.likratiotest.html#spreg.likratiotest">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">likratiotest</span><span class="p">(</span><span class="n">reg0</span><span class="p">,</span> <span class="n">reg1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Likelihood ratio test statistic :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg0         : regression object</span>
+<span class="sd">                   for constrained model (H0)</span>
+<span class="sd">    reg1         : regression object</span>
+<span class="sd">                   for unconstrained model (H1)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    likratio     : dictionary</span>
+<span class="sd">                   contains the statistic (likr), the degrees of</span>
+<span class="sd">                   freedom (df) and the p-value (pvalue)</span>
+<span class="sd">    likr         : float</span>
+<span class="sd">                   likelihood ratio statistic</span>
+<span class="sd">    df           : integer</span>
+<span class="sd">                   degrees of freedom</span>
+<span class="sd">    p-value      : float</span>
+<span class="sd">                   p-value</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import scipy.stats as stats</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import ML_Lag, OLS</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import likratiotest</span>
+
+<span class="sd">    Use the baltim sample data set</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;baltim.dbf&quot;),&#39;r&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y_name = &quot;PRICE&quot;</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(y_name)).T</span>
+<span class="sd">    &gt;&gt;&gt; y.shape = (len(y),1)</span>
+<span class="sd">    &gt;&gt;&gt; x_names = [&quot;NROOM&quot;,&quot;NBATH&quot;,&quot;PATIO&quot;,&quot;FIREPL&quot;,&quot;AC&quot;,&quot;GAR&quot;,&quot;AGE&quot;,&quot;LOTSZ&quot;,&quot;SQFT&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([db.by_col(var) for var in x_names]).T</span>
+<span class="sd">    &gt;&gt;&gt; ww = libpysal.io.open(examples.get_path(&quot;baltim_q.gal&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w = ww.read()</span>
+<span class="sd">    &gt;&gt;&gt; ww.close()</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &#39;r&#39;</span>
+
+<span class="sd">    OLS regression</span>
+
+<span class="sd">    &gt;&gt;&gt; ols1 = OLS(y,x)</span>
+
+<span class="sd">    ML Lag regression</span>
+
+<span class="sd">    &gt;&gt;&gt; mllag1 = ML_Lag(y,x,w)</span>
+
+<span class="sd">    &gt;&gt;&gt; lr = likratiotest(ols1,mllag1)</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&quot;Likelihood Ratio Test: {0:.4f}       df: {1}        p-value: {2:.4f}&quot;.format(lr[&quot;likr&quot;],lr[&quot;df&quot;],lr[&quot;p-value&quot;]))</span>
+<span class="sd">    Likelihood Ratio Test: 44.5721       df: 1        p-value: 0.0000</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">likratio</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">likr</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">reg1</span><span class="o">.</span><span class="n">logll</span> <span class="o">-</span> <span class="n">reg0</span><span class="o">.</span><span class="n">logll</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing or improper log-likelihoods in regression objects&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">likr</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>  <span class="c1"># always enforces positive likelihood ratio</span>
+        <span class="n">likr</span> <span class="o">=</span> <span class="o">-</span><span class="n">likr</span>
+
+    <span class="c1"># generalize to multiple parameters, e.g., spatial Durbin</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">reg1</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="n">reg0</span><span class="o">.</span><span class="n">k</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">df</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1">#pvalue = stats.chisqprob(likr, 1)</span>
+    <span class="n">pvalue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chisqprob</span><span class="p">(</span><span class="n">likr</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="c1">#likratio = {&quot;likr&quot;: likr, &quot;df&quot;: 1, &quot;p-value&quot;: pvalue}</span>
+    <span class="n">likratio</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;likr&quot;</span><span class="p">:</span> <span class="n">likr</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">,</span> <span class="s2">&quot;p-value&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">likratio</span></div>
+
+
+<div class="viewcode-block" id="dwh">
+<a class="viewcode-back" href="../../generated/spreg.dwh.html#spreg.dwh">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dwh</span><span class="p">(</span><span class="n">reg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Durbin-Wu-Hausman test on endogeneity of variables</span>
+
+<span class="sd">    A significant test statistic points to endogeneity</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dwh       : tuple with value of F-statistic in augmented regression</span>
+<span class="sd">                and associated p-value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">yend</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># number of endogenous variables</span>
+    <span class="n">qq</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">h</span>  <span class="c1"># all exogenous and instruments</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">z</span>  <span class="c1"># all exogenous and endogenous</span>
+    <span class="c1"># get predicted values for endogenous variables on all instruments</span>
+    <span class="n">py</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">ny</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">yend</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ols1</span> <span class="o">=</span> <span class="n">BaseOLS</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">yy</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="n">qq</span><span class="p">)</span>
+        <span class="n">yp</span> <span class="o">=</span> <span class="n">ols1</span><span class="o">.</span><span class="n">predy</span>
+        <span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">yp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">nxq</span> <span class="o">=</span> <span class="n">sphstack</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span>
+    <span class="c1"># F-test in augmented regression</span>
+    <span class="n">ols2</span> <span class="o">=</span> <span class="n">BaseOLS</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">reg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">nxq</span><span class="p">)</span>
+    <span class="n">dwh</span> <span class="o">=</span> <span class="n">f_stat</span><span class="p">(</span><span class="n">ols2</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dwh</span> </div>
+
+    
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Basic Ordinary Least Squares Regression (OLS) &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Two Stage Least Squares Regression (2SLS)" href="6_TWOSLS.html" />
+    <link rel="prev" title="Spatial Weights" href="4_spatial_weights.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Basic Ordinary Least Squares Regression (OLS)</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/08/2024)">(revised 09/08/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functionality-Used">Functionality Used</a></li>
+<li><a class="reference internal" href="#Input-Files">Input Files</a></li>
+<li><a class="reference internal" href="#Variable-Names">Variable Names</a></li>
+<li><a class="reference internal" href="#Reading-Input-Files-from-the-Example-Data-Set">Reading Input Files from the Example Data Set</a></li>
+<li><a class="reference internal" href="#Reading-Weights">Reading Weights</a></li>
+<li><a class="reference internal" href="#Setting-up-the-Variables">Setting up the Variables</a><ul>
+<li><a class="reference internal" href="#OLS-Regression">OLS Regression</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Alternative-way-to-pass-arguments">Alternative way to pass arguments</a></li>
+<li><a class="reference internal" href="#Immigrant-paradox">Immigrant paradox</a></li>
+<li><a class="reference internal" href="#Predicted-Values-and-Residuals">Predicted Values and Residuals</a></li>
+<li><a class="reference internal" href="#Latex-Table-Output">Latex Table Output</a><ul>
+<li><a class="reference internal" href="#Non-Spatial-Diagnostics">Non-Spatial Diagnostics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#White-test">White test</a></li>
+<li><a class="reference internal" href="#Variance-Inflation-Factor-(VIF)">Variance Inflation Factor (VIF)</a></li>
+<li><a class="reference internal" href="#F-Test-on-joint-significance-of-coefficients">F-Test on joint significance of coefficients</a></li>
+<li><a class="reference internal" href="#Wald-test-on-joint-significance-of-coefficients">Wald test on joint significance of coefficients</a><ul>
+<li><a class="reference internal" href="#Robust-Standard-Errors">Robust Standard Errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#White-Standard-Errors">White Standard Errors</a></li>
+<li><a class="reference internal" href="#HAC-Standard-Errors">HAC Standard Errors</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/5_OLS.ipynb">notebooks/5_OLS.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/5_OLS.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Basic-Ordinary-Least-Squares-Regression-(OLS)">
+<h1>Basic Ordinary Least Squares Regression (OLS)<a class="headerlink" href="#Basic-Ordinary-Least-Squares-Regression-(OLS)" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/08/2024)">
+<h2>(revised 09/08/2024)<a class="headerlink" href="#(revised-09/08/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, the basic OLS regression and elementary regression diagnostics are reviewed. In addition, a number of concepts related to robust standard errors are covered.</p>
+<p>Technical details are treated in Chapter 5 in Anselin and Rey (2014). <em>Modern Spatial Econometrics in Practice</em>.</p>
+<p>Video recordings of the basics and non-spatial diagnostics are available from the GeoDa Center YouTube channel playlist <em>Applied Spatial Regression - Notebooks</em>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=x63dL2M5x_0&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=5">https://www.youtube.com/watch?v=x63dL2M5x_0&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=5</a></p></li>
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=pimNfZyOyKk&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=6">https://www.youtube.com/watch?v=pimNfZyOyKk&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=6</a></p></li>
+</ul>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Familiarity with <em>pandas</em>, <em>geopandas</em> and <em>libpysal</em> is assumed to read data files and manipulate spatial weights. In addition, the sample data set <strong>chicagoSDOH</strong> should be installed.</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main module for spatial regression in PySAL is <em>spreg</em>. In addition <em>libpysal</em> is needed to handle the example data sets and spatial weights, and <em>pandas</em> and <em>geopandas</em> for data input and output. This notebook is based on version 1.7 of <em>spreg</em>. In order to make the graphs a bit nicer looking, <em>matplotlib.pyplot</em> is imported as well, although this is not strictly needed since it is behind the plotting functionality of <em>pandas</em> and <em>geopandas</em>. Importing <em>matplotlib.pyplot</em> also allows for
+some further customization of the plots and maps, but that is not pursued in detail here.</p>
+<p>Some additional imports are included to avoid excessive warning messages. With later versions of PySAL, these may not be needed. As before, in order to avoid some arguably obnoxious new features of <em>numpy</em> 2.0, it is necessary to include the <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code> command if you are using a Python 3.12 environment with numpy 2.0 or greater.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from libpysal.io import open
+from libpysal.examples import get_path
+import libpysal.weights as weights
+from spreg import OLS, f_stat, wald_test
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functionality-Used">
+<h2>Functionality Used<a class="headerlink" href="#Functionality-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>array</p></li>
+<li><p>hstack</p></li>
+<li><p>identity</p></li>
+<li><p>zeros</p></li>
+</ul>
+</li>
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+<li><p>DataFrame</p></li>
+<li><p>concat</p></li>
+<li><p>to_file</p></li>
+<li><p>plot</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>examples.get_path</p></li>
+<li><p>io.open</p></li>
+<li><p>weights.distance.Kernel</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>OLS</p></li>
+<li><p>f_stat</p></li>
+<li><p>wald_test</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Input-Files">
+<h2>Input Files<a class="headerlink" href="#Input-Files" title="Link to this heading">¶</a></h2>
+<p>All notebooks are organized such that the relevant filenames and variables names are listed at the top, so that they can be easily adjusted for use with your own data sets and variables.</p>
+<p>In the examples, the <strong>Chi-SDOH</strong> sample shape file is used, with associated kernel weights (for HAC standard errors). The specific file names are:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic determinants of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_k10tri.kwt</strong>: triangular kernel weights based on a variable bandwidth with 10 nearest neighbors from <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code></p></li>
+</ul>
+<p>In this and the other <em>spreg</em> related notebooks, it is assumed that you have installed the <strong>chicagoSDOH</strong> example data set using <code class="docutils literal notranslate"><span class="pre">libpysal.examples.load_example(&quot;chicagoSDOH&quot;)</span></code>.</p>
+<p>The input files are specified generically as <strong>infileshp</strong> (for the shape file) and <strong>infilek</strong> (for the kernel weights). In addition, optionally, an output file is specified to add predicted values and residuals to a shape file as <strong>outfileshp</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = get_path(&quot;Chi-SDOH.shp&quot;)            # input shape file with data
+infilek = get_path(&quot;Chi-SDOH_k10tri.kwt&quot;)       # triangular kernel weights from GeoDa
+outfileshp = &quot;./testols.shp&quot;                    # output shape file with predicted values and residuals
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Variable-Names">
+<h2>Variable Names<a class="headerlink" href="#Variable-Names" title="Link to this heading">¶</a></h2>
+<p>In this notebook, the regression model is illustrated in the context of the <em>immigrant paradox</em>. This is based on four variables from the SDOH data set: <strong>YPLL_rate</strong> (an index measuring premature mortality, i.e., higher values are worse health outcomes), <strong>HIS_ct</strong> (economic hardship index), <strong>Blk14P</strong> (percent Black population), and <strong>Hisp14P</strong> (percent Hispanic population).</p>
+<p>The easiest way to specify a generic regression model is to first create lists with the variable names for the dependent variable (<strong>y_name</strong>), the explanatory variables (<strong>x_names1</strong> and <strong>x_names2</strong>), the data set name (optional, as <strong>ds_name</strong>), the name of the contiguity weights (optional, as <strong>w_name</strong>, but not needed in this notebook), and the file name for the kernel weights (optional, as <strong>gwk_name</strong>). In this way, all the regression commands pertain to these generic variable names and
+do not need to be adjusted for different specifications and/or data sets.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>y_name = &#39;YPLL_rate&#39;
+x_names1 = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;]
+x_names2 = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;,&#39;HIS_ct&#39;]
+ds_name = &#39;Chi-SDOH&#39;
+gwk_name = &#39;Chi-SDOH_k10tri&#39;
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Reading-Input-Files-from-the-Example-Data-Set">
+<h2>Reading Input Files from the Example Data Set<a class="headerlink" href="#Reading-Input-Files-from-the-Example-Data-Set" title="Link to this heading">¶</a></h2>
+<p>The actual path to the files contained in the local copy of the remote data set was found above by means of the <em>libpysal</em> <code class="docutils literal notranslate"><span class="pre">get_path</span></code> command. This is then passed to the <em>geopandas</em> <code class="docutils literal notranslate"><span class="pre">read_file</span></code> function in the usual way.</p>
+<p>As mentioned earlier, if the example data are not installed locally by means of <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code>, the <code class="docutils literal notranslate"><span class="pre">get_path</span></code> command must be replaced by an explicit reference to the correct file path name. This is easiest if the files are in the current working directory, in which case just specifying the file names in <strong>infileshp</strong> etc. is sufficient.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = gpd.read_file(infileshp)
+print(dfs.shape)
+print(dfs.columns)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Reading-Weights">
+<h2>Reading Weights<a class="headerlink" href="#Reading-Weights" title="Link to this heading">¶</a></h2>
+<p>The weights are read by means of the <code class="docutils literal notranslate"><span class="pre">libpysal.io.open</span></code> command which was imported with a <code class="docutils literal notranslate"><span class="pre">open</span></code> alias. In the example, the kernel weights are loaded from a file created with <em>GeoDa</em>, and the full path was specified above using <code class="docutils literal notranslate"><span class="pre">get_path</span></code>. After reading the weights, their <code class="docutils literal notranslate"><span class="pre">class</span></code> is adjusted to avoid raising an exception in the computation of HAC standard errors as illustrated in the spatial weights ntoebook (note that <code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code> was imported as <code class="docutils literal notranslate"><span class="pre">weights</span></code>).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk = open(infilek).read()
+print(&quot;dimension &quot;,wk.n)
+wk.__class__ = weights.distance.Kernel
+print(&quot;type of wk &quot;,wk.__class__)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Setting-up-the-Variables">
+<h2>Setting up the Variables<a class="headerlink" href="#Setting-up-the-Variables" title="Link to this heading">¶</a></h2>
+<p>In legacy <em>spreg</em>, variables were typically read from a <em>dBase</em> data file (associated with a shape file). This required a multi-step process to extract the variables and then turn them into <em>numpy</em> arrays. With the more recent support for <em>pandas</em> and <em>geopandas</em>, this process has become greatly simplified. The variables can be loaded directly from the <em>pandas</em> or <em>geopandas</em> data frame. As a side effect, this no longer requires the <code class="docutils literal notranslate"><span class="pre">name_y</span></code> and <code class="docutils literal notranslate"><span class="pre">name_x</span></code> arguments to be set explicitly in the
+OLS call.</p>
+<p>The setup uses the variable names specified in the respective <strong>y_name</strong>, <strong>x_names</strong>, etc. lists.</p>
+<p>Note that there is no constant term in the x matrices. A constant vector is included by default in the <code class="docutils literal notranslate"><span class="pre">spreg.OLS</span></code> routine.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>y = dfs[y_name]
+x1 = dfs[x_names1]
+x2 = dfs[x_names2]
+</pre></div>
+</div>
+</div>
+<section id="OLS-Regression">
+<h3>OLS Regression<a class="headerlink" href="#OLS-Regression" title="Link to this heading">¶</a></h3>
+<p>A first illustration uses the simplest of OLS regressions, where only y and X are specified as arguments in the <code class="docutils literal notranslate"><span class="pre">spreg.OLS</span></code> command. Since <code class="docutils literal notranslate"><span class="pre">OLS</span></code> was imported explicitly, the <code class="docutils literal notranslate"><span class="pre">spreg</span></code> part is omitted in what follows.</p>
+<p>The resulting OLS object has many attributes. An easy (the easiest) way to list the results is to print the <code class="docutils literal notranslate"><span class="pre">summary</span></code> attribute.</p>
+<p>First, the regression with the two ethnicity explanatory variables is considered. The dependent variable is <strong>y</strong> and the explanatory variables are contained in <strong>x1</strong>.</p>
+<p>The option <code class="docutils literal notranslate"><span class="pre">nonspat_diag=False</span></code> must be set, since the default will provide the diagnostics, which are considered in more detail below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1 = OLS(y,x1,nonspat_diag=False)
+</pre></div>
+</div>
+</div>
+<p>The basic result of this operation is to create an OLS object. The range of attributes and methods included can be readily viewed by means of the <code class="docutils literal notranslate"><span class="pre">dir</span></code> command.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(dir(ols1))
+</pre></div>
+</div>
+</div>
+<p>The regression coefficients are in <code class="docutils literal notranslate"><span class="pre">betas</span></code>, the predicted values in <code class="docutils literal notranslate"><span class="pre">predy</span></code>, residuals in <code class="docutils literal notranslate"><span class="pre">u</span></code>, the coefficient variance-covariance matrix in <code class="docutils literal notranslate"><span class="pre">vm</span></code>, and the <span class="math notranslate nohighlight">\(R^2\)</span> measure of fit in <code class="docutils literal notranslate"><span class="pre">r2</span></code>. The <code class="docutils literal notranslate"><span class="pre">summary</span></code> method provides a nice looking output listing.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(ols1.summary)
+</pre></div>
+</div>
+</div>
+<p>As is, the output does not list any information on the data set. The variable names were extracted directly from the data frame. In order to have a more informative output, <code class="docutils literal notranslate"><span class="pre">name_ds</span></code> should be specified in the arguments, as illustrated below. Since no spatial diagnostics are specified so far, the <strong>Weights matrix</strong> is listed as <strong>None</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1a = OLS(y,x1,nonspat_diag=False,
+                  name_ds=ds_name)
+print(ols1a.summary)
+</pre></div>
+</div>
+</div>
+<p>This bare bones regression output lists the variables and data set involved. In addition to the coefficient estimates, standard errors, t-statistics and p-values, it includes the <span class="math notranslate nohighlight">\(R^2\)</span> and adjusted <span class="math notranslate nohighlight">\(R^2\)</span> as measures of fit. The mean and standard deviation of the dependent variable are given as well.</p>
+<p>The overall fit of about 0.60 is reasonable and both slope coefficients are positive and highly significant.</p>
+</section>
+</section>
+<section id="Alternative-way-to-pass-arguments">
+<h2>Alternative way to pass arguments<a class="headerlink" href="#Alternative-way-to-pass-arguments" title="Link to this heading">¶</a></h2>
+<p>The approach taken in the example, whereby <strong>y</strong> and <strong>x1</strong> as passed is mostly for convenience. In practice, one can specify the dependent and explanatory variables directly as subsets from a data frame. For example, one could use <code class="docutils literal notranslate"><span class="pre">dfs[&quot;YPLL_rate&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">dfs[[&quot;Blk14P&quot;,&quot;Hisp14P&quot;]]</span></code> directly as arguments instead of taking the extra step to define <strong>y</strong> and <strong>x1</strong> separately. The results are identical. Which approach one takes is a matter of preference.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1b = OLS(dfs[&quot;YPLL_rate&quot;],dfs[[&quot;Blk14P&quot;,&quot;Hisp14P&quot;]],nonspat_diag=False,
+                  name_ds=ds_name)
+print(ols1b.summary)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Immigrant-paradox">
+<h2>Immigrant paradox<a class="headerlink" href="#Immigrant-paradox" title="Link to this heading">¶</a></h2>
+<p>As it turns out, the initial regression result is somewhat misleading, which is revealed when the economic hardship variable is included. This is implemented by specifying <strong>x2</strong> as the x-variable argument.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols2 = OLS(y,x2,nonspat_diag=False,
+                 name_ds=ds_name)
+print(ols2.summary)
+</pre></div>
+</div>
+</div>
+<p>The inclusion of economic hardship turned the coefficient of the Hispanic share from positive to negative. This is the so-called <em>immigrant paradox</em>. All coefficients are highly significant, with an adjusted <span class="math notranslate nohighlight">\(R^2\)</span> of 0.6316.</p>
+</section>
+<section id="Predicted-Values-and-Residuals">
+<h2>Predicted Values and Residuals<a class="headerlink" href="#Predicted-Values-and-Residuals" title="Link to this heading">¶</a></h2>
+<p>Two important attributes of the regression object are the predicted values and residuals. Unlike many of the other attributes, these are full-length column vectors of size n x 1. They can be extracted as the <code class="docutils literal notranslate"><span class="pre">predy</span></code> and <code class="docutils literal notranslate"><span class="pre">u</span></code> attributes. A quick check is included to make sure the dimensions are correct.</p>
+<p>For the residuals, the <code class="docutils literal notranslate"><span class="pre">mean()</span></code> is computed to confirm that it is zero.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>yp = ols2.predy
+yp.shape
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>resid = ols2.u
+print(resid.mean())
+resid.shape
+</pre></div>
+</div>
+</div>
+<p>The most useful application of the predicted values and residuals in a diagnostic sense is to plot and map them. Before briefly illustrating this, it is shown how the two vectors can be added to the data frame and then optionally written out to a new shape file. This uses the <code class="docutils literal notranslate"><span class="pre">Dataframe</span></code> functionality from <em>pandas</em> and horizontal vector stacking (<code class="docutils literal notranslate"><span class="pre">hstack</span></code>) from <em>numpy</em>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>preds = pd.DataFrame(np.hstack((yp,resid)),columns=[&#39;ypred&#39;,&#39;resid&#39;])
+preds.head()
+</pre></div>
+</div>
+</div>
+<p>The data frame with the predicted values and residuals is then concatenated (<code class="docutils literal notranslate"><span class="pre">pandas.concat</span></code>) with the current shape file and can be written to the output file <strong>outfileshp</strong> using the <code class="docutils literal notranslate"><span class="pre">to_file</span></code> function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = pd.concat([dfs,preds],axis=1)
+dfs.to_file(outfileshp,mode=&#39;w&#39;)
+</pre></div>
+</div>
+</div>
+<p>A common residual diagnostic plot is a scatter plot of the residuals against the predicted values. If the error variance is constant (homoskedasticity) the point cloud should be more or less parallel around the value of zero (the mean of the residuals). On the other hand, a fan-like shape or clearly different spreads for different ranges of the predicted values would suggest heteroskedasticity.</p>
+<p>The <em>pandas</em> <code class="docutils literal notranslate"><span class="pre">plot</span></code> functionality can be used to make a simple scatter plot of residuals against predicted values. In the example, <strong>ypred</strong> is used as the <code class="docutils literal notranslate"><span class="pre">x</span></code> argument, <strong>resid</strong> as the <code class="docutils literal notranslate"><span class="pre">y</span></code> argument, with <code class="docutils literal notranslate"><span class="pre">kind</span> <span class="pre">=</span> <span class="pre">&quot;scatter&quot;</span></code>. With <em>matplotlib.pyplot</em> imported, <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> will produce a clean graph. Alternatively, one can set the plot object to <code class="docutils literal notranslate"><span class="pre">ax</span></code>, as illustrated in the mapping notebook. This can be useful for further customization, but is not pursued here.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs.plot(x=&quot;ypred&quot;,y=&quot;resid&quot;,kind=&#39;scatter&#39;,title=&#39;Diagnostic plot&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The slight fan-like shape of the residuals with values further away from zero for increasing predicted values is a <em>visual</em> diagnostic suggesting heteroskedasticity. However, since this is purely visual, it remains only suggestive. More formal tests againsts heteroskedasticity are considered below.</p>
+<p>Some insight into possible spatial patterns among the residuals can be gained from a residual map, i.e., a choropleth map of the residuals. This is readily implemented by means of the <code class="docutils literal notranslate"><span class="pre">plot</span></code> functionality of a <em>geopandas</em> object. The most useful classification in this respect is a <em>standard deviational</em> map, for which the bins in the classification are based on standard deviational units. This has two advantages: (1) it clearly shows the positive and negative residuals; and (2) it highlights
+<em>outliers</em> as residuals that are more than two standard deviational units away from zero.</p>
+<p>As covered in a previous notebook, a standard deviational map is obtained by setting the argument <code class="docutils literal notranslate"><span class="pre">scheme</span> <span class="pre">=</span> <span class="pre">std_mean</span></code> in the <em>geopandas</em> <code class="docutils literal notranslate"><span class="pre">plot</span></code> function. This relies on the PySAL <em>mapclassify</em> package under the hood, but the latter does not need to be imported separately. As pointed out in the mapping notebook, in <em>mapclassify</em>, the convention is to merge all observations that are within one standard deviation below and above the mean into a single category. This may not be optimal for all
+types of maps (it can be customized by means of <code class="docutils literal notranslate"><span class="pre">anchor</span></code>), but it is useful for a residual map. Specifically, all observations that have residuals within one standard deviation from the mean (zero) are shown in the same color (here, white). To highlight the difference between negative and positive residuals, the color map <code class="docutils literal notranslate"><span class="pre">cmap=&quot;bwr&quot;</span></code>is chosen. In this scheme, the negative residuals are shades of blue (overprediction), whereas the positive residuals are shades of red (underprediction). The
+middle category is white.</p>
+<p>In order to make sure that the polygon boundaries are shown as well, <code class="docutils literal notranslate"><span class="pre">edgecolor</span> <span class="pre">=</span> <span class="pre">&quot;black&quot;</span></code> is set as an additional argument (otherwise all the census tracts in the middle category will not be able to be distinguished). The <code class="docutils literal notranslate"><span class="pre">linewidth</span></code> is adjusted somewhat to improve legibility. A legend is set in the usual way.</p>
+<p>Finally, to remove the default axes and to add a title, the <code class="docutils literal notranslate"><span class="pre">set_axis_off</span></code> and <code class="docutils literal notranslate"><span class="pre">set_title</span></code> methods are applied to the plot object. Further customization can always be carried out using more advanced features of <em>matplotlib</em>. For some examples, see the mapping notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+        column = &#39;resid&#39;,
+        figsize=(8,8),
+        cmap=&#39;bwr&#39;,
+        scheme=&#39;std_mean&#39;,
+        edgecolor=&#39;black&#39;,
+        linewidth = 0.3,
+        legend=True,
+        legend_kwds={&#39;loc&#39;:&#39;center left&#39;,&#39;bbox_to_anchor&#39;:(1,0.5), &#39;title&#39;: &quot;Residuals&quot;})
+ax.set_axis_off()
+ax.set_title(&#39;Residual Standard Deviational Plot&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The residual map seems to suggest some spatial patterning among the residuals, but such a visual impression can be misleading. More formal approaches are considered in the notebook that deals with Specification Tests.</p>
+</section>
+<section id="Latex-Table-Output">
+<h2>Latex Table Output<a class="headerlink" href="#Latex-Table-Output" title="Link to this heading">¶</a></h2>
+<p>In addition to the standard regression output shown so far, it is also possible to generate a latex-formatted table for the main coefficient results. This makes it easier to incorporate the regression results into reports or papers. It is accomplished by setting the <code class="docutils literal notranslate"><span class="pre">latex</span></code> option to <code class="docutils literal notranslate"><span class="pre">True</span></code> (the default is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+<p>Note that only the table with the estimated coefficients, standard errors, etc. is in latex format. The other items (various headings and diagnostics) remain simple text.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols2lat = OLS(y,x2,nonspat_diag=False,
+                 name_ds=ds_name,
+                 latex=True)
+print(ols2lat.summary)
+</pre></div>
+</div>
+</div>
+<section id="Non-Spatial-Diagnostics">
+<h3>Non-Spatial Diagnostics<a class="headerlink" href="#Non-Spatial-Diagnostics" title="Link to this heading">¶</a></h3>
+<p>The default setting for OLS regression is to always include the non-spatial diagnostics, with <code class="docutils literal notranslate"><span class="pre">nonspat_diag=True</span></code>. Since this is the default, this argument does not have to be set. The default output with diagnostics will be as follows.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols2a = OLS(y,x2,
+                 name_ds=ds_name)
+print(ols2a.summary)
+</pre></div>
+</div>
+</div>
+<p>The previous listing is now agumented with several additional measures of fit (shown above the coefficients) as well as diagnostics for multicollinearity, non-normality and heteroskedasticity (listed below the coefficients).</p>
+<p>The measures of fit on the left-hand column are all related to the sum of squared residuals. This is listed, as well as two measures of <span class="math notranslate nohighlight">\(\sigma^2\)</span> (one from division by the degrees of freedom, the other - ML - from division by the number of observations) and their square roots, the S.E. of regression.</p>
+<p>On the right-hand side are the results of an F-statistic for the joint significance of the coefficients and its associated p-value, the log-likelihood <span class="math notranslate nohighlight">\(L\)</span> (under the assumption of normality) for use in comparisions with spatial models, and two adjustments of the log-likelihood for the number of variables in the model, the <span class="math notranslate nohighlight">\(AIC\)</span> and <span class="math notranslate nohighlight">\(SC\)</span>, with <span class="math notranslate nohighlight">\(AIC = -2L + 2k\)</span> and <span class="math notranslate nohighlight">\(SC = -2L + k.ln(n)\)</span> (<span class="math notranslate nohighlight">\(SC\)</span> is sometimes referred to as <span class="math notranslate nohighlight">\(BIC\)</span>). Whereas a better fit is
+reflected in a higher log-likelihood, it is the reverse for AIC and SC (lower is better).</p>
+<p>Below the listing of coefficients are the multicollinearity condition number, the Jarque-Bera test on normality of the errors and two tests for heteroskedasticity (random coefficients): the Breusch-Pagan LM test and the more robust (against non-normality) Koenker-Bassett test.</p>
+<p>There is no evidence of a problem with multicollinearity (typically associated with values larger than 30), but a strong indication of both non-normality and heteroskedasticity.</p>
+</section>
+</section>
+<section id="White-test">
+<h2>White test<a class="headerlink" href="#White-test" title="Link to this heading">¶</a></h2>
+<p>Because it requires additional computation, the White test against heteroskedasticity is not included by default. To include it, the argument <code class="docutils literal notranslate"><span class="pre">white_test=True</span></code> must be set.</p>
+<p>All the output is the same as before, except for the addition of the test results, which again strongly indicate the presence of heteroskedasticity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols2b = OLS(y,x2,white_test=True,
+                 name_ds=ds_name)
+print(ols2b.summary)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Variance-Inflation-Factor-(VIF)">
+<h2>Variance Inflation Factor (VIF)<a class="headerlink" href="#Variance-Inflation-Factor-(VIF)" title="Link to this heading">¶</a></h2>
+<p>The Variance Inflation Factor or VIF is an alternative to the multicollinearity condition number to assess the sensitivity of the regression results to the presence of multicollinearity. The condition number is a measure computed for all variables jointly and is a measure of the degree of linear dependence among all the columns of <span class="math notranslate nohighlight">\(X\)</span>. Instead, the VIF is computed for each variable separately.</p>
+<p>The VIF depends on the fit of a regression of the variable in question on all other x-variables, e.g., <span class="math notranslate nohighlight">\(R^2_k\)</span> for <span class="math notranslate nohighlight">\(x_k\)</span>. <span class="math notranslate nohighlight">\(1 - R^2_k\)</span> is called the <em>tolerance</em> (where <span class="math notranslate nohighlight">\(R^2_k\)</span> is the unadjusted <span class="math notranslate nohighlight">\(R^2\)</span>). The more collinear <span class="math notranslate nohighlight">\(x_k\)</span> is with the other variables, the larger <span class="math notranslate nohighlight">\(R^2_k\)</span> and thus the lower the tolerance. The VIF is then the inverse of the tolerance.</p>
+<p>The VIF is not reported as part of the standard regression output, since it requires considerable additional computation, but is available by setting the argument <code class="docutils literal notranslate"><span class="pre">vif</span> <span class="pre">=</span> <span class="pre">True</span></code> (the default setting is <code class="docutils literal notranslate"><span class="pre">vif</span> <span class="pre">=</span> <span class="pre">False</span></code>). The output is augmented with a listing of the VIF and corresponding tolerance (its inverse) for each coefficient.</p>
+<p>While there is no indication of a multicollinearity problem in the current set of results, it may still be informative to check which variables are the most correlated with the others.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols2c = OLS(y,x2,vif=True,
+                 name_ds=ds_name)
+print(ols2c.summary)
+</pre></div>
+</div>
+</div>
+<p>In this result, <strong>Blk14P</strong> has the highest VIF at 4.323. However, this is not very high. When there are more serious multicollinearity problems, this value can be much higher. For example, with <span class="math notranslate nohighlight">\(R^2_k = 0.95\)</span>, the VIF would be 20, and with <span class="math notranslate nohighlight">\(R^2_k = 0.99\)</span>, it would be 100.</p>
+<p>In the example, the corresponding tolerance is 0.231. In other words, a regression of <strong>Blk4P</strong> on the other two variables would have an (unadjusted) <span class="math notranslate nohighlight">\(R^2\)</span> of 0.769. This can be readily verified in a simple regression by specifying the respective subsets of the <strong>dfs</strong> data frame.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>regv = OLS(dfs[&quot;Blk14P&quot;],dfs[[&quot;Hisp14P&quot;,&quot;HIS_ct&quot;]],nonspat_diag = False)
+print(regv.summary)
+</pre></div>
+</div>
+</div>
+<p>The unadjusted <span class="math notranslate nohighlight">\(R^2\)</span> in this regression is indeed 0.769.</p>
+</section>
+<section id="F-Test-on-joint-significance-of-coefficients">
+<h2>F-Test on joint significance of coefficients<a class="headerlink" href="#F-Test-on-joint-significance-of-coefficients" title="Link to this heading">¶</a></h2>
+<p>The F-test reported as part of the regression output listing is a joint test on all slope coefficients. It is also possible to test the joint significance of a subset of coefficients. In order to carry this out, the variables of interest must be the <em>last</em> variables. In other words, the test is on the joint significance of the <strong>last df</strong> coefficients in <strong>betas</strong>, where <strong>df</strong> is passed as the second argument to <code class="docutils literal notranslate"><span class="pre">spreg.f_stat</span></code> (because of the way the <code class="docutils literal notranslate"><span class="pre">import</span></code> statement was phrased, here
+available as just <code class="docutils literal notranslate"><span class="pre">f_stat</span></code>). The first argument is a regression object. One can apply this to one or more variables.</p>
+<p>For example, to test the significance of <strong>HIS_ct</strong> in the last regression, the F-test would have <code class="docutils literal notranslate"><span class="pre">df=1</span></code>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>f_hisct = f_stat(ols2a,df=1)
+print(f_hisct)
+</pre></div>
+</div>
+</div>
+<p>The result is an F-statistic with 1, 787 degress of freedom, 1 for the numerator (<strong>df</strong>) and 787 (<span class="math notranslate nohighlight">\(n - k\)</span>) for the denominator. The value of 65.796 is clearly significant, confirming the indication given by the t-test. Since the first degree of freedom of the F-statistic is 1, its value is exactly the square of the t-test in the regression, i.e., <span class="math notranslate nohighlight">\(8.11149^2 = 65.796\)</span>.</p>
+<p>To replicate the result of the F test that is listed in the regression output, two different approaches are valid. In one, the degrees of freedom is set to 3 (the last three coefficients), in the other it is not specified. The default of <code class="docutils literal notranslate"><span class="pre">f_stat</span></code> is to carry out an F test on all slope coefficients. The results for the two approaches are identical and match the regression output.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>f_all1 = f_stat(ols2a,df=3)
+print(f_all1)
+f_all2 = f_stat(ols2a)
+print(f_all2)
+</pre></div>
+</div>
+</div>
+<p>Finally, to test the joint significance of Hisp14P and His_ct, <strong>df</strong> is set to 2.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>f_two = f_stat(ols2a,df=2)
+print(f_two)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Wald-test-on-joint-significance-of-coefficients">
+<h2>Wald test on joint significance of coefficients<a class="headerlink" href="#Wald-test-on-joint-significance-of-coefficients" title="Link to this heading">¶</a></h2>
+<p>The F-test as currently implemented is a bit awkward in that the joint test only applies to the last <strong>df</strong> coefficients. A more flexible approach is based on the textbook Wald test for linear restrictions on the regression coefficients (for example, as explained in Greene, 2012, p. 117-118). A set of linear constraints on the coefficients can be expressed as:</p>
+<p><span class="math">\begin{equation*}
+R \beta = q,
+\end{equation*}</span></p>
+<p>where <span class="math notranslate nohighlight">\(R\)</span> is a <span class="math notranslate nohighlight">\(J \times k\)</span> matrix of constants, for <span class="math notranslate nohighlight">\(J\)</span> constraints and <span class="math notranslate nohighlight">\(k\)</span> total parameters, <span class="math notranslate nohighlight">\(\beta\)</span> is the column vector with all the model coefficients (i.e., including both the intercept and slopes), and <span class="math notranslate nohighlight">\(q\)</span> is a <span class="math notranslate nohighlight">\(J \times 1\)</span> column vector of zeros. In the case of a test on the joint significance of coefficients, the matrix <span class="math notranslate nohighlight">\(R\)</span> is a truncated identity matrix, with only the rows selected that pertain to the coefficients of interest. This will
+be illustrated in more detail below.</p>
+<p>The test statistic takes the form of a general Wald statistic, or: <span class="math">\begin{equation*}
+(R \hat{\beta})' [ R V R' ]^{-1} (R \hat{\beta}) \sim \chi^2(J),
+\end{equation*}</span></p>
+<p>i.e., following a chi-squared distribution with <span class="math notranslate nohighlight">\(J\)</span> degrees of freedom, and where <span class="math notranslate nohighlight">\(V\)</span> is the estimated variance-covariance matrix for the coefficients, a <span class="math notranslate nohighlight">\(k \times k\)</span> matrix.</p>
+<p>The Wald test is available from <code class="docutils literal notranslate"><span class="pre">spreg.regimes.wald_test</span></code> (imported as just <code class="docutils literal notranslate"><span class="pre">wald_test</span></code> in this notebook). The arguments are <code class="docutils literal notranslate"><span class="pre">betas</span></code>, the vector with regression coefficients, <code class="docutils literal notranslate"><span class="pre">r</span></code>, the matrix <span class="math notranslate nohighlight">\(R\)</span>, <code class="docutils literal notranslate"><span class="pre">q</span></code>, the vector <span class="math notranslate nohighlight">\(q\)</span>, and <code class="docutils literal notranslate"><span class="pre">vm</span></code>, the estimated variance-covariance matrix for the regression. The result is a tuple with the test statistic and associated p-value.</p>
+<p>For example, taking the results from <strong>ols2</strong>, the regression coefficients would be in <strong>ols2.betas</strong> with associated variance-covariance matrix in <strong>ols2.vm</strong>. For a test on the joint significance of the coefficients of <strong>Blk14P</strong> and <strong>HIS_ct</strong>, <code class="docutils literal notranslate"><span class="pre">r</span></code> would be a <span class="math notranslate nohighlight">\(2 \times 4\)</span> matrix, with a 1 in position [0,1] and [1,3] (keep in mind that the count starts at 0). <code class="docutils literal notranslate"><span class="pre">q</span></code> would then be a <span class="math notranslate nohighlight">\(2 \times 1\)</span> column vector of zeros.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rr = np.identity(ols2.k)
+r = rr[(1,3),:]
+r
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>j = 2  # number of constraints
+q = np.zeros((j,1))
+q
+</pre></div>
+</div>
+</div>
+<p>The Wald statistic then follows as:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wald_test(ols2.betas,r,q,ols2.vm)
+</pre></div>
+</div>
+</div>
+<p>The two coefficients are clearly jointly significant (one doesn’t actually need a test to see that).</p>
+<p>A final example illustrates the equivalence of the Wald test, the t-test and the F-test when testing a single coefficient. For the last coefficient, of <strong>HIS_ct</strong>, <code class="docutils literal notranslate"><span class="pre">q</span></code> equals 0 and <code class="docutils literal notranslate"><span class="pre">r</span></code> is a row vector with all zeros except for the last element, which is 1.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>r = rr[3,:].reshape(1,-1)
+q = 0
+wald_test(ols2.betas,r,q,ols2.vm)
+</pre></div>
+</div>
+</div>
+<p>The value of the statistic is the square of the t-statistic and the same as the F-test given above.</p>
+<section id="Robust-Standard-Errors">
+<h3>Robust Standard Errors<a class="headerlink" href="#Robust-Standard-Errors" title="Link to this heading">¶</a></h3>
+<p>The classical regression coefficient standard errors tend not to be very robust to deviations from the regularity conditions such as i.i.d. In cross-sectional data, it is rather unrealistic to assume the absence of heteroskedasticity. In fact, in the example used here, there is strong evidence of the presence of heteroskedasticity indicated by all three diagnostics.</p>
+<p>The so-called <em>White</em> standard errors (also known as Huber sandwich standard errors) correct for the presence of unspecified heteroskedasticity. They are almost always (but not always) larger than the classical standard errors, leading to a bit more conservative inference.</p>
+<p>A more recent development are the so-called <em>HAC</em> standard errors introduced by Kelejian and Prucha (2007)(“HAC estimation in a spatial framework,” <em>Journal of Econometrics</em> 140, 131-154), where HAC stands for heteroskedastic and autocorrelation consistent standard errors. The computations use a kernel logic to obtain standard errors that correct for <em>both</em> heteroskedasticity and the possible presence of spatial autocorrelation of unspecified form. Typically (but again not always) these are the
+largest standard errors.</p>
+<p>The robust standard errors are invoked with the option <code class="docutils literal notranslate"><span class="pre">robust</span></code> in <code class="docutils literal notranslate"><span class="pre">spreg.OLS</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, for classical standard errors.</p>
+</section>
+</section>
+<section id="White-Standard-Errors">
+<h2>White Standard Errors<a class="headerlink" href="#White-Standard-Errors" title="Link to this heading">¶</a></h2>
+<p>White standard errors are obtained by setting <code class="docutils literal notranslate"><span class="pre">robust='white'</span></code>. Except for the standard errors, the regression output remains exactly the same.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols3 = OLS(y,x2,robust=&#39;white&#39;,
+                 name_ds=ds_name)
+print(ols3.summary)
+</pre></div>
+</div>
+</div>
+<p>In the example, the standard errors increase for all coefficients except for Blk14P (3.39 vs 3.49). However, the impact on inference is negligible, with all coefficients still significant at p &lt; 0.003.</p>
+</section>
+<section id="HAC-Standard-Errors">
+<h2>HAC Standard Errors<a class="headerlink" href="#HAC-Standard-Errors" title="Link to this heading">¶</a></h2>
+<p>HAC standard errors are obtained with <code class="docutils literal notranslate"><span class="pre">robust='hac'</span></code>. In addition, a kernel weights object must be passed (<code class="docutils literal notranslate"><span class="pre">gwk</span></code>), and optionally, its name (<code class="docutils literal notranslate"><span class="pre">name_gwk</span></code>). Again, except for the standard errors, the output is the same as before. One slight difference is that no diagnostics for spatial dependence are implemented when the HAC option is used. In the example, the triangular kernel weights contained in <strong>wk</strong> are used. Several other kernel functions (and different bandwidths) can be used to
+create kernel weights through <em>libpysal.weights</em>. In practice, some experimentation is advised.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols4 = OLS(y,x2,robust=&#39;hac&#39;,
+                 gwk=wk,name_gwk=gwk_name,
+                 name_ds=ds_name)
+print(ols4.summary)
+</pre></div>
+</div>
+</div>
+<p>In the example, the HAC standard errors are slightly larger than in the White case, but again not sufficient to affect inference.</p>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>At this point, it would be useful to set up your own baseline regression model, with a continuous dependent variable and at least two or three explanatory variables. You can pick any set of variables from the Chicago data set, from one of the PySAL sample data sets or your own data, but of course, make sure that your research question makes sense. Create some kernel weights (use <code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code>) to check out the HAC estimation.</p>
+<p>Assess the extent to which your initial specification may suffer from some forms of misspecification, as well as the sensitivity of your results to different measures of standard errors. In addition, test some linear restrictions on the coefficients.</p>
+<p>You may also want to experiment with the plotting and mapping functionality contained in <em>geopandas</em> to create plots and maps of the predicted values and/or residuals.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/5_OLS.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

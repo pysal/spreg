@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spatial 2SLS &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Spatial 2SLS</a><ul>
+<li><a class="reference internal" href="#Data">Data</a></li>
+<li><a class="reference internal" href="#Basic-Spatial-2SLS">Basic Spatial 2SLS</a></li>
+<li><a class="reference internal" href="#Second-order-spatial-lags">Second order spatial lags</a></li>
+<li><a class="reference internal" href="#Spatial-Diagnostics">Spatial Diagnostics</a></li>
+<li><a class="reference internal" href="#White-Standard-Errors">White Standard Errors</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/GM_Lag_example.ipynb">notebooks/GM_Lag_example.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/GM_Lag_example.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<hr class="docutils" />
+<section id="Spatial-2SLS">
+<h1>Spatial 2SLS<a class="headerlink" href="#Spatial-2SLS" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><strong>This notebook contains the PySAL/spreg code for Chapter 7 - Spatial 2SLS</strong></p>
+<ul>
+<li><p><em>in: Modern Spatial Econometrics in Practice: A Guide to GeoDa, GeoDaSpace and PySAL.</em></p></li>
+<li><p><em>by: Luc Anselin and Sergio J. Rey.</em></p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%load_ext watermark
+%watermark
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Last updated: 2021-01-03T11:26:48.607797-05:00
+
+Python implementation: CPython
+Python version       : 3.8.6
+IPython version      : 7.19.0
+
+Compiler    : Clang 11.0.0
+OS          : Darwin
+Release     : 20.2.0
+Machine     : x86_64
+Processor   : i386
+CPU cores   : 8
+Architecture: 64bit
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy
+import libpysal
+import spreg
+
+%watermark -w
+%watermark -iv
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Watermark: 2.1.0
+
+spreg   : 1.2.0.post1
+libpysal: 4.3.0
+numpy   : 1.19.4
+
+</pre></div></div>
+</div>
+<section id="Data">
+<h2>Data<a class="headerlink" href="#Data" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>libpysal.examples.explain(&quot;baltim&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+baltim
+======
+
+Baltimore house sales prices and hedonics, 1978.
+----------------------------------------------------------------
+
+* baltim.dbf: attribute data. (k=17)
+* baltim.shp: Point shapefile. (n=211)
+* baltim.shx: spatial index.
+* baltim.tri.k12.kwt: kernel weights using a triangular kernel with 12 nearest neighbors in KWT format.
+* baltim_k4.gwt: nearest neighbor weights (4nn) in GWT format.
+* baltim_q.gal: queen contiguity weights in GAL format.
+* baltimore.geojson: spatial weights in geojson format.
+
+Source: Dubin, Robin A. (1992). Spatial autocorrelation and neighborhood quality. Regional Science and Urban Economics 22(3), 433-452.
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Read Baltimore data
+db = libpysal.io.open(libpysal.examples.get_path(&quot;baltim.dbf&quot;), &quot;r&quot;)
+ds_name = &quot;baltim.dbf&quot;
+
+# Read dependent variable
+y_name = &quot;PRICE&quot;
+y = numpy.array(db.by_col(y_name)).T
+y = y[:, numpy.newaxis]
+
+# Read exogenous variables
+x_names = [&quot;NROOM&quot;, &quot;NBATH&quot;, &quot;PATIO&quot;, &quot;FIREPL&quot;, &quot;AC&quot;, &quot;GAR&quot;, &quot;AGE&quot;, &quot;LOTSZ&quot;, &quot;SQFT&quot;]
+x = numpy.array([db.by_col(var) for var in x_names]).T
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Read spatial data
+ww = libpysal.io.open(libpysal.examples.get_path(&quot;baltim_q.gal&quot;))
+w = ww.read()
+ww.close()
+w_name = &quot;baltim_q.gal&quot;
+w.transform = &quot;r&quot;
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Basic-Spatial-2SLS">
+<h2>Basic Spatial 2SLS<a class="headerlink" href="#Basic-Spatial-2SLS" title="Link to this heading">¶</a></h2>
+<p>The model to estimate is:</p>
+<div class="math notranslate nohighlight">
+\[y = \rho Wy + X \beta + \epsilon\]</div>
+<p>where you use <span class="math notranslate nohighlight">\(WX\)</span> as instruments of <span class="math notranslate nohighlight">\(Wy\)</span>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>model = spreg.GM_Lag(
+    y,
+    x,
+    w=w,
+    name_y=y_name,
+    name_x=x_names,
+    name_w=&quot;baltim_q&quot;,
+    name_ds=&quot;baltim&quot;
+)
+print(model.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: SPATIAL TWO STAGE LEAST SQUARES
+--------------------------------------------------
+Data set            :      baltim
+Weights matrix      :    baltim_q
+Dependent Variable  :       PRICE                Number of Observations:         211
+Mean dependent var  :     44.3072                Number of Variables   :          11
+S.D. dependent var  :     23.6061                Degrees of Freedom    :         200
+Pseudo R-squared    :      0.7278
+Spatial Pseudo R-squared:  0.6928
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT      -2.5762742       5.5210355      -0.4666288       0.6407655
+               NROOM       0.9440746       1.0609697       0.8898224       0.3735612
+               NBATH       5.5981348       1.7376725       3.2216283       0.0012746
+               PATIO       5.8424768       2.7435166       2.1295577       0.0332081
+              FIREPL       6.4579185       2.4238370       2.6643369       0.0077140
+                  AC       5.4871926       2.3450930       2.3398614       0.0192909
+                 GAR       4.3565951       1.6955478       2.5694321       0.0101865
+                 AGE      -0.0730060       0.0523546      -1.3944510       0.1631814
+               LOTSZ       0.0579765       0.0149534       3.8771359       0.0001057
+                SQFT       0.0395330       0.1638055       0.2413409       0.8092909
+             W_PRICE       0.5823313       0.0721387       8.0723813       0.0000000
+------------------------------------------------------------------------------------
+Instrumented: W_PRICE
+Instruments: W_AC, W_AGE, W_FIREPL, W_GAR, W_LOTSZ, W_NBATH, W_NROOM,
+             W_PATIO, W_SQFT
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Second-order-spatial-lags">
+<h2>Second order spatial lags<a class="headerlink" href="#Second-order-spatial-lags" title="Link to this heading">¶</a></h2>
+<p>You can also use <span class="math notranslate nohighlight">\([WX, W^2X]\)</span> as instruments of <span class="math notranslate nohighlight">\(Wy\)</span>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># using second order spatial lags for the instruments, set w_lags = 2
+model2 = spreg.GM_Lag(
+    y,
+    x,
+    w=w,
+    w_lags=2,
+    name_y=y_name,
+    name_x=x_names,
+    name_w=&quot;baltim_q&quot;,
+    name_ds=&quot;baltim&quot;
+)
+print(model2.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: SPATIAL TWO STAGE LEAST SQUARES
+--------------------------------------------------
+Data set            :      baltim
+Weights matrix      :    baltim_q
+Dependent Variable  :       PRICE                Number of Observations:         211
+Mean dependent var  :     44.3072                Number of Variables   :          11
+S.D. dependent var  :     23.6061                Degrees of Freedom    :         200
+Pseudo R-squared    :      0.7276
+Spatial Pseudo R-squared:  0.6915
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT      -2.8867580       5.4563344      -0.5290654       0.5967601
+               NROOM       0.9527428       1.0613055       0.8977083       0.3693411
+               NBATH       5.5975309       1.7386698       3.2194330       0.0012844
+               PATIO       5.7884989       2.7409866       2.1118304       0.0347010
+              FIREPL       6.4012808       2.4201110       2.6450360       0.0081682
+                  AC       5.4587589       2.3451078       2.3277220       0.0199269
+                 GAR       4.3440361       1.6961624       2.5610969       0.0104342
+                 AGE      -0.0713188       0.0521742      -1.3669353       0.1716456
+               LOTSZ       0.0575329       0.0149111       3.8583943       0.0001141
+                SQFT       0.0377524       0.1638248       0.2304438       0.8177470
+             W_PRICE       0.5893267       0.0695101       8.4782886       0.0000000
+------------------------------------------------------------------------------------
+Instrumented: W_PRICE
+Instruments: W2_AC, W2_AGE, W2_FIREPL, W2_GAR, W2_LOTSZ, W2_NBATH, W2_NROOM,
+             W2_PATIO, W2_SQFT, W_AC, W_AGE, W_FIREPL, W_GAR, W_LOTSZ,
+             W_NBATH, W_NROOM, W_PATIO, W_SQFT
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Spatial-Diagnostics">
+<h2>Spatial Diagnostics<a class="headerlink" href="#Spatial-Diagnostics" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>model = spreg.GM_Lag(
+    y,
+    x,
+    w=w,
+    spat_diag=True,
+    name_y=y_name,
+    name_x=x_names,
+    name_w=&quot;baltim_q&quot;,
+    name_ds=&quot;baltim&quot;
+)
+print(model.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: SPATIAL TWO STAGE LEAST SQUARES
+--------------------------------------------------
+Data set            :      baltim
+Weights matrix      :    baltim_q
+Dependent Variable  :       PRICE                Number of Observations:         211
+Mean dependent var  :     44.3072                Number of Variables   :          11
+S.D. dependent var  :     23.6061                Degrees of Freedom    :         200
+Pseudo R-squared    :      0.7278
+Spatial Pseudo R-squared:  0.6928
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT      -2.5762742       5.5210355      -0.4666288       0.6407655
+               NROOM       0.9440746       1.0609697       0.8898224       0.3735612
+               NBATH       5.5981348       1.7376725       3.2216283       0.0012746
+               PATIO       5.8424768       2.7435166       2.1295577       0.0332081
+              FIREPL       6.4579185       2.4238370       2.6643369       0.0077140
+                  AC       5.4871926       2.3450930       2.3398614       0.0192909
+                 GAR       4.3565951       1.6955478       2.5694321       0.0101865
+                 AGE      -0.0730060       0.0523546      -1.3944510       0.1631814
+               LOTSZ       0.0579765       0.0149534       3.8771359       0.0001057
+                SQFT       0.0395330       0.1638055       0.2413409       0.8092909
+             W_PRICE       0.5823313       0.0721387       8.0723813       0.0000000
+------------------------------------------------------------------------------------
+Instrumented: W_PRICE
+Instruments: W_AC, W_AGE, W_FIREPL, W_GAR, W_LOTSZ, W_NBATH, W_NROOM,
+             W_PATIO, W_SQFT
+
+DIAGNOSTICS FOR SPATIAL DEPENDENCE
+TEST                           MI/DF       VALUE           PROB
+Anselin-Kelejian Test             1           5.234          0.0221
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="White-Standard-Errors">
+<h2>White Standard Errors<a class="headerlink" href="#White-Standard-Errors" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>model = spreg.GM_Lag(
+    y,
+    x,
+    w=w,
+    robust=&quot;white&quot;,
+    spat_diag=True,
+    name_y=y_name,
+    name_x=x_names,
+    name_w=&quot;baltim_q&quot;,
+    name_ds=&quot;baltim&quot;
+)
+print(model.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: SPATIAL TWO STAGE LEAST SQUARES
+--------------------------------------------------
+Data set            :      baltim
+Weights matrix      :    baltim_q
+Dependent Variable  :       PRICE                Number of Observations:         211
+Mean dependent var  :     44.3072                Number of Variables   :          11
+S.D. dependent var  :     23.6061                Degrees of Freedom    :         200
+Pseudo R-squared    :      0.7278
+Spatial Pseudo R-squared:  0.6928
+
+White Standard Errors
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT      -2.5762742       7.0147591      -0.3672648       0.7134215
+               NROOM       0.9440746       1.4002856       0.6742015       0.5001832
+               NBATH       5.5981348       2.1605285       2.5910951       0.0095671
+               PATIO       5.8424768       2.9445656       1.9841558       0.0472385
+              FIREPL       6.4579185       2.4500195       2.6358641       0.0083923
+                  AC       5.4871926       2.6021469       2.1087175       0.0349690
+                 GAR       4.3565951       2.2070747       1.9739228       0.0483905
+                 AGE      -0.0730060       0.0976079      -0.7479516       0.4544894
+               LOTSZ       0.0579765       0.0237454       2.4415887       0.0146228
+                SQFT       0.0395330       0.2355809       0.1678105       0.8667323
+             W_PRICE       0.5823313       0.1325884       4.3920220       0.0000112
+------------------------------------------------------------------------------------
+Instrumented: W_PRICE
+Instruments: W_AC, W_AGE, W_FIREPL, W_GAR, W_LOTSZ, W_NBATH, W_NROOM,
+             W_PATIO, W_SQFT
+
+DIAGNOSTICS FOR SPATIAL DEPENDENCE
+TEST                           MI/DF       VALUE           PROB
+Anselin-Kelejian Test             1           5.234          0.0221
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/GM_Lag_example.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

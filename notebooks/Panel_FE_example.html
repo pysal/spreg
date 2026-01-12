@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spatial Panel Models with Fixed Effects &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Skater Regression" href="skater_reg.html" />
+    <link rel="prev" title="GMM Estimation - Higher Order Models" href="17_GMM_higher_order.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Spatial Panel Models with Fixed Effects</a><ul>
+<li><a class="reference internal" href="#Spatial-Lag-model">Spatial Lag model</a><ul>
+<li><a class="reference internal" href="#Data-can-also-be-in-'long'-format:">Data can also be in ‘long’ format:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Spatial-Error-model">Spatial Error model</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/Panel_FE_example.ipynb">notebooks/Panel_FE_example.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/Panel_FE_example.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<hr class="docutils" />
+<section id="Spatial-Panel-Models-with-Fixed-Effects">
+<h1>Spatial Panel Models with Fixed Effects<a class="headerlink" href="#Spatial-Panel-Models-with-Fixed-Effects" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><strong>This notebook uses the</strong> <a class="reference external" href="https://pysal.org/spreg/generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag">Panel_FE_Lag</a> <strong>and</strong> <a class="reference external" href="https://pysal.org/spreg/generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error">Panel_FE_Error</a> <strong>classes.</strong></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy
+import libpysal
+import spreg
+</pre></div>
+</div>
+</div>
+<p><strong>Open data on NCOVR US County Homicides (3085 areas).</strong></p>
+<ul class="simple">
+<li><p>First, extract the HR (homicide rates) data in the 70’s, 80’s and 90’s as the dependent variable.</p></li>
+<li><p>Data can also be passed in the long format instead of wide format.</p>
+<ul>
+<li><p>i.e. a vector with <span class="math notranslate nohighlight">\(n \times t\)</span> rows and a single column for the dependent variable, and</p></li>
+<li><p>a matrix of dimension <span class="math notranslate nohighlight">\(n \times (t \ast k)\)</span> for the independent variables</p></li>
+</ul>
+</li>
+<li><p>Then, extract RD and PS as independent variables in the regression.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Open data on NCOVR US County Homicides (3085 areas).
+nat = libpysal.examples.load_example(&quot;NCOVR&quot;)
+db = libpysal.io.open(nat.get_path(&quot;NAT.dbf&quot;), &quot;r&quot;)
+
+# Create spatial weight matrix
+nat_shp = libpysal.examples.get_path(&quot;NAT.shp&quot;)
+w = libpysal.weights.Queen.from_shapefile(nat_shp)
+w.transform = &#39;r&#39;
+
+# Define dependent variable
+name_y = [&quot;HR70&quot;, &quot;HR80&quot;, &quot;HR90&quot;]
+y = numpy.array([db.by_col(name) for name in name_y]).T
+
+# Define independent variables
+name_x = [&quot;RD70&quot;, &quot;RD80&quot;, &quot;RD90&quot;, &quot;PS70&quot;, &quot;PS80&quot;, &quot;PS90&quot;]
+x = numpy.array([db.by_col(name) for name in name_x]).T
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<section id="Spatial-Lag-model">
+<h2>Spatial Lag model<a class="headerlink" href="#Spatial-Lag-model" title="Link to this heading">¶</a></h2>
+<p>Let’s estimate a spatial lag panel model with fixed effects:</p>
+<div class="math notranslate nohighlight">
+\[y = \rho Wy + X\beta + \mu_i + e\]</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fe_lag = spreg.Panel_FE_Lag(y, x, w, name_y=name_y, name_x=name_x, name_ds=&quot;NAT&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(fe_lag.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: MAXIMUM LIKELIHOOD SPATIAL LAG PANEL - FIXED EFFECTS
+-----------------------------------------------------------------------
+Data set            :         NAT
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        9255
+Mean dependent var  :      0.0000                Number of Variables   :           3
+S.D. dependent var  :      3.9228                Degrees of Freedom    :        9252
+Pseudo R-squared    :      0.0319
+Spatial Pseudo R-squared:  0.0079
+Sigma-square ML     :      14.935                Log likelihood        :  -67936.533
+S.E of regression   :       3.865                Akaike info criterion :  135879.066
+                                                 Schwarz criterion     :  135900.465
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+                  RD       0.8005886       0.1614474       4.9588189       0.0000007
+                  PS      -2.6003523       0.4935486      -5.2686851       0.0000001
+                W_HR       0.1903043       0.0159991      11.8947008       0.0000000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>numpy.around(fe_lag.betas, decimals=4)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[ 0.8006],
+       [-2.6004],
+       [ 0.1903]])
+</pre></div></div>
+</div>
+<section id="Data-can-also-be-in-'long'-format:">
+<h3>Data can also be in ‘long’ format:<a class="headerlink" href="#Data-can-also-be-in-'long'-format:" title="Link to this heading">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>y_long = y.reshape((y.shape[0]*y.shape[1],1), order=&#39;F&#39;)
+x_long = x.reshape((x.shape[0]*3,2), order=&#39;F&#39;)
+
+fe_lag_long = spreg.Panel_FE_Lag(y_long, x_long, w, name_y=name_y, name_x=name_x, name_ds=&quot;NAT&quot;)
+print(fe_lag_long.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: MAXIMUM LIKELIHOOD SPATIAL LAG PANEL - FIXED EFFECTS
+-----------------------------------------------------------------------
+Data set            :         NAT
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        9255
+Mean dependent var  :      0.0000                Number of Variables   :           3
+S.D. dependent var  :      3.9228                Degrees of Freedom    :        9252
+Pseudo R-squared    :      0.0319
+Spatial Pseudo R-squared:  0.0079
+Sigma-square ML     :      14.935                Log likelihood        :  -67936.533
+S.E of regression   :       3.865                Akaike info criterion :  135879.066
+                                                 Schwarz criterion     :  135900.465
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+                  RD       0.8005886       0.1614474       4.9588189       0.0000007
+                  PS      -2.6003523       0.4935486      -5.2686851       0.0000001
+                W_HR       0.1903043       0.0159991      11.8947008       0.0000000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in long format.
+y[0:N] refers to T0, y[N+1:2N] refers to T1, etc.
+x[0:N] refers to T0, x[N+1:2N] refers to T1, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="Spatial-Error-model">
+<h2>Spatial Error model<a class="headerlink" href="#Spatial-Error-model" title="Link to this heading">¶</a></h2>
+<p>Now, let’s estimate a spatial error panel model with fixed effects:</p>
+<div class="math notranslate nohighlight">
+\[y = X\beta + \mu_i + v\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[v = \lambda W v + e\]</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fe_error = spreg.Panel_FE_Error(
+    y, x, w, name_y=name_y, name_x=name_x, name_ds=&quot;NAT&quot;
+)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(fe_error.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+SUMMARY OF OUTPUT: MAXIMUM LIKELIHOOD SPATIAL ERROR PANEL - FIXED EFFECTS
+-------------------------------------------------------------------------
+Data set            :         NAT
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        9255
+Mean dependent var  :      0.0000                Number of Variables   :           2
+S.D. dependent var  :      3.9228                Degrees of Freedom    :        9253
+Pseudo R-squared    :      0.0084
+Sigma-square ML     :      14.923                Log likelihood        :  -67934.005
+S.E of regression   :       3.863                Akaike info criterion :  135872.010
+                                                 Schwarz criterion     :  135886.276
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+                  RD       0.8697923       0.1718029       5.0627323       0.0000004
+                  PS      -2.9660674       0.5444783      -5.4475397       0.0000001
+              lambda       0.1943460       0.0160253      12.1274197       0.0000000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>numpy.around(fe_error.betas, decimals=4)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[ 0.8698],
+       [-2.9661],
+       [ 0.1943]])
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/Panel_FE_example.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

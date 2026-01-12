@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Specification Tests - Properties &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Distance Decay" href="11_distance_decay.html" />
+    <link rel="prev" title="Specification Tests" href="9_specification_tests.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Specification Tests - Properties</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/11/2024)">(revised 09/11/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Files-and-Variables">Files and Variables</a><ul>
+<li><a class="reference internal" href="#Model-Parameters-and-Variables">Model Parameters and Variables</a></li>
+<li><a class="reference internal" href="#Distribution-Under-the-Null">Distribution Under the Null</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Moran's-I">Moran’s I</a></li>
+<li><a class="reference internal" href="#LM-Lag-and-LM-Error">LM-Lag and LM-Error</a></li>
+<li><a class="reference internal" href="#LM-SARERROR">LM-SARERROR</a></li>
+<li><a class="reference internal" href="#LM-WX">LM-WX</a></li>
+<li><a class="reference internal" href="#LM-Spatial-Durbin">LM-Spatial Durbin</a><ul>
+<li><a class="reference internal" href="#Power-Functions---Lag-Alternative">Power Functions - Lag Alternative</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Single-alternative-tests-for-Lag-and-Error">Single alternative tests for Lag and Error</a></li>
+<li><a class="reference internal" href="#Lag-tests-and-test-against-WX">Lag tests and test against WX</a></li>
+<li><a class="reference internal" href="#Lag-tests-and-higher-order-tests">Lag tests and higher order tests</a><ul>
+<li><a class="reference internal" href="#Power-Functions---Error-Alternative">Power Functions - Error Alternative</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">Single alternative tests for Lag and Error</a></li>
+<li><a class="reference internal" href="#Error-tests-and-test-against-WX">Error tests and test against WX</a></li>
+<li><a class="reference internal" href="#Error-tests-and-higher-order-tests">Error tests and higher order tests</a><ul>
+<li><a class="reference internal" href="#Power-Functions---SLX-Alternative">Power Functions - SLX Alternative</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SLX-tests-and-Moran's-I">SLX tests and Moran’s I</a></li>
+<li><a class="reference internal" href="#SLX-tests-and-Error-tests">SLX tests and Error tests</a></li>
+<li><a class="reference internal" href="#SLX-tests-and-Lag-tests">SLX tests and Lag tests</a></li>
+<li><a class="reference internal" href="#SLX-tests-and-higher-error-tests">SLX tests and higher error tests</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/10_specification_tests_properties.ipynb">notebooks/10_specification_tests_properties.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/10_specification_tests_properties.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Specification-Tests---Properties">
+<h1>Specification Tests - Properties<a class="headerlink" href="#Specification-Tests---Properties" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/11/2024)">
+<h2>(revised 09/11/2024)<a class="headerlink" href="#(revised-09/11/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, a closer look is taken at the properties of the various specification tests for spatial effects. This is carried out by means of a series of simulation experiments on data generated under the null hypothesis of no spatial effects as well as under various alternatives. This provides insight into the distribution of the test statistics under the null and their relative power against various alternatives.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Familiarity with OLS estimation in <em>spreg</em> is assumed, as covered in the <em>OLS notebook</em> and the <em>Specification Tests</em> notebook. For the graphs, it may be useful to have some familiarity with <em>matplotlib</em> and the <code class="docutils literal notranslate"><span class="pre">plot</span></code> functionality of <em>pandas</em>, although to just replicate the graphs used here, that is not really needed.</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main module for spatial regression in PySAL is <em>spreg</em>. In addition, <em>libpysal</em> is needed for spatial weights manipulation, and <em>pandas</em> for data frame manipulation. In these exercises, <em>geopandas</em> is not needed. In order to get nicer looking graphs, <em>matplotlib.pyplot</em> is imported as well, although this is not critical. In addition, the module <em>time</em> is used for timing experiments (optional).</p>
+<p>As before, only the relevant parts of <em>libpysal</em> and <em>spreg</em> are imported.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import time
+import libpysal.weights as weights
+from spreg import OLS, make_x, make_xb, make_wx, make_wxg, \
+    make_error, dgp_ols, dgp_lag, dgp_sperror, dgp_slx
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>random.default_rng</p></li>
+<li><p>rng.chisquare</p></li>
+<li><p>zeros</p></li>
+<li><p>array</p></li>
+<li><p>reshape</p></li>
+<li><p>hstack</p></li>
+</ul>
+</li>
+<li><p>from pandas:</p>
+<ul>
+<li><p>DataFrame</p></li>
+<li><p>describe</p></li>
+<li><p>plot</p></li>
+</ul>
+</li>
+<li><p>from matplotlib.pyplot:</p>
+<ul>
+<li><p>show</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>weights.lat2W</p></li>
+<li><p>w.transform</p></li>
+<li><p>w.n</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>OLS</p></li>
+<li><p>make_x</p></li>
+<li><p>make_xb</p></li>
+<li><p>make_wx</p></li>
+<li><p>make_wxg</p></li>
+<li><p>make_error</p></li>
+<li><p>dgp_ols</p></li>
+<li><p>dgp_lag</p></li>
+<li><p>dgp_sperror</p></li>
+<li><p>dgp_slx</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Files-and-Variables">
+<h2>Files and Variables<a class="headerlink" href="#Files-and-Variables" title="Link to this heading">¶</a></h2>
+<p>In this notebook, no actual data are used, since the data sets will be created by means of simulation.</p>
+<section id="Model-Parameters-and-Variables">
+<h3>Model Parameters and Variables<a class="headerlink" href="#Model-Parameters-and-Variables" title="Link to this heading">¶</a></h3>
+<p>The various model parameters are set here, so that it is easy to replicate the experiments for different sample sizes and coefficient values.</p>
+<ul class="simple">
+<li><p>gridx: the number of cells in the horizontal dimension of a regular lattice of dimension gridx x gridy</p></li>
+<li><p>gridy: the number of cells in the vertical dimension of a regular lattice of dimension gridx x gridy</p></li>
+<li><p>b1: a list with regression parameters (includes a coefficient for the constant term as the first element)</p></li>
+<li><p>k: length of b1 less one (no constant term counted)</p></li>
+<li><p>rndseed: the random seed to ensure reproducibility</p></li>
+<li><p>reps: the number of replications</p></li>
+<li><p>rhovals: a list with spatial autoregressive coefficients <span class="math notranslate nohighlight">\(\rho\)</span> for the lag variables Wy</p></li>
+<li><p>lamvals: a list with spatial coefficients <span class="math notranslate nohighlight">\(\lambda\)</span> for the error lag variables We</p></li>
+<li><p>gamvals: a list with coefficients for the SLX variables (WX)</p></li>
+<li><p>gamma: coefficient for WX in the Spatial Durbin Model</p></li>
+<li><p>w: queen contiguity spatial weights</p></li>
+<li><p>n: number of observations</p></li>
+<li><p>p_value: critical value to be used for tests</p></li>
+<li><p>x1: x values (not including constant)</p></li>
+<li><p>xb1: <span class="math notranslate nohighlight">\(X \beta\)</span></p></li>
+<li><p>wx1: <span class="math notranslate nohighlight">\(WX\)</span></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># grid layout and weights
+gridx = 20
+gridy = 20
+w = weights.lat2W(gridx,gridy,rook=False)
+w.transform = &#39;r&#39;
+n = w.n
+
+# model coefficient values
+b1 = [1, 1, 1, 1]
+k = len(b1)-1
+rhovals = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
+           0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+lamvals = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
+           0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+gamvals = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
+           0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+gamma = 0.5
+
+# simulation parameters
+rndseed = 123456789
+reps = 1000
+p_value = 0.05
+
+# Create X
+rng=np.random.default_rng(seed=rndseed) # set seed for X
+xx = make_x(rng,n*k,mu=[0],varu=[6],method=&quot;uniform&quot;)
+x1 = np.reshape(xx,(n,k))
+xb1 = make_xb(x1,b1) # no constant in x1, but a coefficient for the constant in b1
+wx1 = make_wx(x1,w) # default first order no constant
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Summary of Simulation Design Parameters&quot;)
+print(&quot;grid size: &quot;,gridx,&quot; x &quot;,gridy)
+print(&quot;n: &quot;,n,&quot; k: &quot;,k)
+print(&quot;betas: &quot;,b1)
+print(&quot;random seed: &quot;,rndseed)
+print(&quot;replications: &quot;,reps)
+print(&quot;p-value: &quot;,p_value)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Distribution-Under-the-Null">
+<h3>Distribution Under the Null<a class="headerlink" href="#Distribution-Under-the-Null" title="Link to this heading">¶</a></h3>
+<p>The distribution under the null is obtained by simulating <strong>reps</strong> data sets under the null of standard normal errors. The reference distributions for Chi-squared are obtained by means of <code class="docutils literal notranslate"><span class="pre">rng.chisquare</span></code> with the appropriate degrees of freedom. For the LMWX and LMSDM tests, these depend on the number of variables in the X matrix (<span class="math notranslate nohighlight">\(k\)</span>).</p>
+<p>The values for the test statistics are taken from the OLS regression object with the arguments <code class="docutils literal notranslate"><span class="pre">spat_diag=True</span></code> and <code class="docutils literal notranslate"><span class="pre">moran=True</span></code>.</p>
+<p>All the results are collected into a <em>pandas</em> dataframe that is then used to compute the descriptive statistics by means of <code class="docutils literal notranslate"><span class="pre">describe</span></code> and to create the various plots.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+
+# all distributions under the null
+alltests = [&quot;N01&quot;,&quot;Chi2-1&quot;,&quot;Chi2-2&quot;,&quot;Chi2-k&quot;,&quot;Chi2-kr&quot;,
+            &quot;Moran&quot;,&quot;LM-Lag&quot;,&quot;LM-Error&quot;,&quot;LMWX&quot;,
+            &quot;LMSARER&quot;,&quot;LMSDM&quot;]
+# initialize
+best = np.zeros((reps,len(alltests)))
+rng=np.random.default_rng(seed=rndseed)
+# reference distributions as random number draws
+# standard normal
+nn = make_error(rng,reps)
+best[:,0] = nn[:,0]
+# chi-squared
+for j in range(2):
+    df = j+1
+    best[:,df] = rng.chisquare(df,reps)
+for dff in [k,k+1]:  # d.f. for LMWX and LMSDM depends on k
+    df = df + 1
+    best[:,df] = rng.chisquare(dff,reps)
+
+# replications
+for i in range(reps):
+    u = make_error(rng,n)
+
+    y = dgp_ols(u,xb1)
+    reg = OLS(y,x1,w=w,spat_diag=True,moran=True)
+    testres = [reg.moran_res[1],reg.lm_lag[0],reg.lm_error[0],reg.lm_wx[0],
+                reg.lm_sarma[0],reg.lm_spdurbin[0]]
+    for jj in range(len(testres)):
+        best[i,jj+5] = testres[jj]
+
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+
+results = pd.DataFrame(best,columns=alltests)
+results.describe()
+</pre></div>
+</div>
+</div>
+<p>The most relevant characteristics are the mean and the standard deviation. For the draws from the theoretical distributions, the means are roughly what would be expected, i.e., around 0 for the standard normal, and around the degrees of freedom for the Chi-squared distributions. The standard deviation for the standard normal should be around 1, whereas for the Chi-squared distributions it should be roughly the square root of twice the degrees of freedom. For example, for 1 degree of freedom, it
+should be around 1.41 (here, 1.26), for two degrees of freedom, around 2 (here, 2.01), etc.</p>
+<p>The mean for the standardized z-value for Moran’s I is -0.015 with a standard deviation of 0.986, close to the moments of a standard normal distribution. The mean of the LM statistics is roughly what would be expected.</p>
+<p>A closer look at the distribution of the test statistics under the null is obtained in a graph.</p>
+</section>
+</section>
+<section id="Moran's-I">
+<h2>Moran’s I<a class="headerlink" href="#Moran's-I" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">plot</span></code> functionality of a <em>pandas</em> dataframe is used to create a density plot for Moran’s I. It is contrasted with a density plot from simulated standard normal variates. The argument <code class="docutils literal notranslate"><span class="pre">kind=&quot;kde&quot;</span></code> is used to obtain a density plot. The columns in the data frame are <strong>N01</strong> and <strong>Moran</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>results.plot(y=[&quot;N01&quot;,&quot;Moran&quot;],kind=&quot;kde&quot;,
+             title=&quot;Distribution under Null&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The result illustrates how Moran’s I standardized z-value closely tracks the standard normal distribution under the null.</p>
+</section>
+<section id="LM-Lag-and-LM-Error">
+<h2>LM-Lag and LM-Error<a class="headerlink" href="#LM-Lag-and-LM-Error" title="Link to this heading">¶</a></h2>
+<p>For LM-Lag and LM-Error, the reference distribution is a Chi-squared distribution with one degree of freedom. Since the <code class="docutils literal notranslate"><span class="pre">kde</span></code> interpolation results in values less than 0, which is impossible for Chi-squared, the graph is truncated at 0 by means of <code class="docutils literal notranslate"><span class="pre">xlim=((0,None))</span></code>. This still results in a slight bump at zero for one degree of freedom, where in the strict sense there should not be one. For the purposes here, this does not matter.</p>
+<p>The columns in the data frame are <strong>Chi2-1</strong>, <strong>LM-Lag</strong> and <strong>LM-Error</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>results.plot(y=[&quot;Chi2-1&quot;,&quot;LM-Lag&quot;,&quot;LM-Error&quot;],kind=&quot;kde&quot;,
+             title=&quot;Distribution under Null&quot;,xlim=((0,None)))
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>In contrast to the results for Moran’s I, the graphs closely follow the pattern for the <span class="math notranslate nohighlight">\(\chi^2(1)\)</span> distribution.</p>
+</section>
+<section id="LM-SARERROR">
+<h2>LM-SARERROR<a class="headerlink" href="#LM-SARERROR" title="Link to this heading">¶</a></h2>
+<p>In the same way, the distribution of LM-SARERROR is compared to a <span class="math notranslate nohighlight">\(\chi^2(2)\)</span> distribution by selecting the proper columns in the data frame, i.e., <strong>Chi2-2</strong> and <strong>LMSARER</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>results.plot(y=[&quot;Chi2-2&quot;,&quot;LMSARER&quot;],kind=&quot;kde&quot;,
+             title=&quot;Distribution under Null&quot;,xlim=((0,None)))
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The two plots track closely.</p>
+</section>
+<section id="LM-WX">
+<h2>LM-WX<a class="headerlink" href="#LM-WX" title="Link to this heading">¶</a></h2>
+<p>The plot for LM-WX is again obtained by selecting the proper columns. The reference distribution is now <span class="math notranslate nohighlight">\(\chi^2(k)\)</span>, where <span class="math notranslate nohighlight">\(k\)</span> is the number of explanatory variables, not counting the constant. In the example, this is 3. The corresponding columns in the data frame are <strong>Chi2-k</strong> and <strong>LMWX</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>results.plot(y=[&quot;Chi2-k&quot;,&quot;LMWX&quot;],kind=&quot;kde&quot;,
+             title=&quot;Distribution under Null&quot;,xlim=((0,None)))
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The mode obtained for the test statistic is somewhat smaller than its expected value, but otherwise the two curves track closely.</p>
+</section>
+<section id="LM-Spatial-Durbin">
+<h2>LM-Spatial Durbin<a class="headerlink" href="#LM-Spatial-Durbin" title="Link to this heading">¶</a></h2>
+<p>For the LM-Spatial Durbin test, the theoretical distribution has <span class="math notranslate nohighlight">\(k+1\)</span> degrees of freedom, which includes a degree for the spatial autoregressive parameter as well as the explanatory variables. The data frame columns are <strong>Chi2-kr</strong> and <strong>LMSDM</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>results.plot(y=[&quot;Chi2-kr&quot;,&quot;LMSDM&quot;],kind=&quot;kde&quot;,
+             title=&quot;Distribution under Null&quot;,xlim=((0,None)))
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The same general pattern is obtained as for LM-WX, i.e., the mode is somewhat lower than the expected theoretical value, but otherwise the two graphs track closely.</p>
+<section id="Power-Functions---Lag-Alternative">
+<h3>Power Functions - Lag Alternative<a class="headerlink" href="#Power-Functions---Lag-Alternative" title="Link to this heading">¶</a></h3>
+<p>Power functions show the rejection percentage of a test statistic for a given p-value at different parameter values for the alternative hypothesis. For the Lag alternative, this is obtained by setting the value for <span class="math notranslate nohighlight">\(\rho\)</span> and generating a vector for <span class="math notranslate nohighlight">\(y\)</span> using <code class="docutils literal notranslate"><span class="pre">dgp_lag</span></code>. This dependent variable is then used in a standard OLS regression. For each replication, the p-values for the various spatial diagnostics are extracted from the regression object and compared to the critical value
+(<strong>p_value</strong>).</p>
+<p>The comparison is turned into a 0-1 variable for each replication. Finally, the <code class="docutils literal notranslate"><span class="pre">mean</span></code> over all replications is the rejection frequency for each test for the given value of <span class="math notranslate nohighlight">\(\rho\)</span>. The resulting array is turned into a <em>pandas</em> data frame to <code class="docutils literal notranslate"><span class="pre">plot</span></code> the corresponding power functions.</p>
+<p>Depending on the hardware, this simulation can take a few minutes.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pvals = [&quot;Moran&quot;,&quot;LM-Lag&quot;,&quot;LM-Error&quot;,&quot;LMWX&quot;,
+         &quot;LMSARER&quot;,&quot;LMSDM&quot;,&quot;RLM-Lag&quot;,&quot;RLM-Error&quot;,&quot;RLMWX&quot;]
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+powvals = np.zeros((len(rhovals),len(pvals)+1))
+powvals[:,0] = rhovals
+for r in range(len(rhovals)):
+    best = np.zeros((reps,len(pvals)))
+    rng=np.random.default_rng(seed=rndseed)
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_lag(u,xb1,w,rho=rhovals[r])
+        reg = OLS(y,x1,w,spat_diag=True,moran=True)
+        testp = [reg.moran_res[2],reg.lm_lag[1],reg.lm_error[1],
+                     reg.lm_wx[1],reg.lm_sarma[1],
+                     reg.lm_spdurbin[1],reg.rlm_lag[1],
+                     reg.rlm_error[1],reg.rlm_wx[1]]
+        best[i,:] = testp
+
+    bestp = (best &lt; p_value) * 1    # significant
+    mm = bestp.mean(axis=0)
+    powvals[r,1:]= mm
+
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+
+powresult = pd.DataFrame(powvals,columns=[&quot;rho&quot;]+pvals)
+
+print(&quot;Test Power for different Rho&quot;)
+print(powresult)
+</pre></div>
+</div>
+</div>
+<p>The results data frame shows how the rejection frequency for the various spatial diagnostics changes with the value of the spatial autoregressive parameter <span class="math notranslate nohighlight">\(\rho\)</span>.</p>
+<p>The relative shape of the associated power curves can be compared by means of the <code class="docutils literal notranslate"><span class="pre">plot</span></code> functionality of the <em>pandas</em> data frame. For the current purposes, only a rudimentary graph is shown. Fancier versions can be obtained by means of the full functionality of <em>matplotlib</em>.</p>
+</section>
+</section>
+<section id="Single-alternative-tests-for-Lag-and-Error">
+<h2>Single alternative tests for Lag and Error<a class="headerlink" href="#Single-alternative-tests-for-Lag-and-Error" title="Link to this heading">¶</a></h2>
+<p>The first comparison is between the traditional LM-Lag and LM-Error tests, their robust forms and Moran’s I.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LM-Lag&quot;,&quot;RLM-Lag&quot;,&quot;Moran&quot;,&quot;LM-Error&quot;,&quot;RLM-Error&quot;]
+powresult.plot(x=&quot;rho&quot;,y=testnames,
+               title=&quot; Lag Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The power functions for LM-Lag and its robust form are the two left-most curves. They track each other very closely and achieve a 100% rejection rate for values of <span class="math notranslate nohighlight">\(\rho\)</span> as low as 0.2. Next most powerful are LM-Error and Moran’s I, which achieve almost identical power with 100% rejection for <span class="math notranslate nohighlight">\(\rho = 0.3\)</span>. Finally, while the robust form of LM-Error provides an effective correction for small values of <span class="math notranslate nohighlight">\(\rho\)</span>, it too achieves 100% rejection rate, but for <span class="math notranslate nohighlight">\(\rho = 0.4\)</span>. This
+illustrates the difficulty of identifying the proper alternative when the spatial autoregressive parameter is large.</p>
+</section>
+<section id="Lag-tests-and-test-against-WX">
+<h2>Lag tests and test against WX<a class="headerlink" href="#Lag-tests-and-test-against-WX" title="Link to this heading">¶</a></h2>
+<p>A second comparison is between the LM-Lag test and its robust form and the LM test on WX and its robust form (robust to the presence of a spatial lag term).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LM-Lag&quot;,&quot;RLM-Lag&quot;,&quot;LMWX&quot;,&quot;RLMWX&quot;]
+powresult.plot(x=&quot;rho&quot;,y=testnames,
+               title=&quot; Lag Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The power of the LM-WX test tracks that for LM-Lag and Robust LM-Lag very closely, with only slightly less power for the smallest values of <span class="math notranslate nohighlight">\(\rho\)</span>. However, just as the for Lag tests, it reaches 100% rejection for <span class="math notranslate nohighlight">\(\rho = 0.2\)</span>. In contrast, the robust form of the LM-WX test has much less power and only reaches the 100% rejection rate for <span class="math notranslate nohighlight">\(\rho = 0.45\)</span>. This illustrates the effectiveness of the correction for small values of <span class="math notranslate nohighlight">\(\rho\)</span>, i.e., for <em>local</em> alternatives.</p>
+</section>
+<section id="Lag-tests-and-higher-order-tests">
+<h2>Lag tests and higher order tests<a class="headerlink" href="#Lag-tests-and-higher-order-tests" title="Link to this heading">¶</a></h2>
+<p>A final comparison is between the Lag tests and the higher order diagnostics, i.e., LM-SAR-Error and LM-SDM.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LM-Lag&quot;,&quot;RLM-Lag&quot;,&quot;LMSARER&quot;,&quot;LMSDM&quot;]
+powresult.plot(x=&quot;rho&quot;,y=testnames,
+               title=&quot; Lag Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The results clearly illustrate the unfortunate property of the higher order tests to have strong power against the single parameter Lag alternative. Both LM-SARER and LM-SDM reach 100% rejection for <span class="math notranslate nohighlight">\(\rho = 0.2\)</span> and they have only slightly less power than the Lag tests for smaller values of <span class="math notranslate nohighlight">\(\rho\)</span>.</p>
+<section id="Power-Functions---Error-Alternative">
+<h3>Power Functions - Error Alternative<a class="headerlink" href="#Power-Functions---Error-Alternative" title="Link to this heading">¶</a></h3>
+<p>The same approach can be taken to assess the relative power of the spatial diagnostics against an error alternative. The code is essentially the same as before, except that <strong>lamvals</strong> is used for the spatial parameter and <code class="docutils literal notranslate"><span class="pre">dgp_sperror</span></code> is used for the data generating process.</p>
+<p>A more pythonic solution would be to put all these operations in a function and pass the dgp as a function object to that function, but the current structure of the <code class="docutils literal notranslate"><span class="pre">dgp</span></code> module makes that difficult to generalize.</p>
+<p>The same spatial diagnostics as before are considered. The simulation can take quite a bit longer than for the Lag case.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pvals = [&quot;Moran&quot;,&quot;LM-Lag&quot;,&quot;LM-Error&quot;,&quot;LMWX&quot;,&quot;LMSARER&quot;,&quot;LMSDM&quot;,
+         &quot;RLM-Lag&quot;,&quot;RLM-Error&quot;,&quot;RLMWX&quot;]
+t0 = time.time()
+powvals = np.zeros((len(lamvals),len(pvals)+1))
+powvals[:,0] = lamvals
+for r in range(len(lamvals)):
+    best = np.zeros((reps,len(pvals)))
+    rng=np.random.default_rng(seed=rndseed)
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_sperror(u,xb1,w,lam=lamvals[r])
+        reg = OLS(y,x1,w,spat_diag=True,moran=True)
+        testp = [reg.moran_res[2],reg.lm_lag[1],reg.lm_error[1],
+                     reg.lm_wx[1],reg.lm_sarma[1],
+                     reg.lm_spdurbin[1],reg.rlm_lag[1],
+                     reg.rlm_error[1],reg.rlm_wx[1]]
+        best[i,:] = testp
+    bestp = (best &lt; p_value) * 1    # significant
+    mm = bestp.mean(axis=0)
+    powvals[r,1:]= mm
+
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+
+powresult = pd.DataFrame(powvals,columns=[&quot;lam&quot;]+pvals)
+
+print(&quot;Test Power for different Lambda&quot;)
+print(powresult)
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="id2">
+<h2>Single alternative tests for Lag and Error<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>As in the case of the Lag DGP, the first comparison is between the LM tests, their robust versions and Moran’s I.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LM-Lag&quot;,&quot;RLM-Lag&quot;,&quot;Moran&quot;,
+             &quot;LM-Error&quot;,&quot;RLM-Error&quot;]
+powresult.plot(x=&quot;lam&quot;,y=testnames,
+               title=&quot; Error Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The left-most power curves are for Moran’s I, LM-Error and Robust LM-Error, which a slight edge for Moran’s I for the smaller values of <span class="math notranslate nohighlight">\(\lambda\)</span>. Unlike the patterns observed for the Lag alternative, the 100% rejection rate is not reached until <span class="math notranslate nohighlight">\(\lambda = 0.45\)</span> for Moran’s I and LM-Error, and <span class="math notranslate nohighlight">\(\lambda = 0.5\)</span> for Robust LM-Error, illustrating an overall lower power of these tests against the error alternative relative to the lag alternative. Also, LM-Lag has much less power
+against this alternative than LM-Error did against the Lag alternative. Its curve is well to the right of that for the specific error tests and only reaches the 100% rejection rate for <span class="math notranslate nohighlight">\(\lambda = 0.85\)</span>. The Robust LM-Lag test has negligible power against the error alternative. Even for <span class="math notranslate nohighlight">\(\lambda = 0.9\)</span>, its rejection rate is only 34%.</p>
+</section>
+<section id="Error-tests-and-test-against-WX">
+<h2>Error tests and test against WX<a class="headerlink" href="#Error-tests-and-test-against-WX" title="Link to this heading">¶</a></h2>
+<p>A second comparison is between the two LM tests against error and LM-WX and its robust form (robust against lag).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LM-Error&quot;,&quot;RLM-Error&quot;,&quot;LMWX&quot;,
+             &quot;RLMWX&quot;]
+powresult.plot(x=&quot;lam&quot;,y=testnames,
+               title=&quot; Error Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>As is to be expected, the LM-Error and Robust LM-Error have the highest power, but surprisingly, the Robust LM-WX has much higher power than LM-WX itself. Its power curve is consistently above that of LM-WX which contradicts the theoretical requirement that the robust form of a test should be smaller than its original value.</p>
+<p>The LM-WX test only reaches a 60.6% rejection rate for <span class="math notranslate nohighlight">\(\lambda = 0.9\)</span>, whereas Robust LM-WX has a 100% rejection rate for <span class="math notranslate nohighlight">\(\lambda = 0.5\)</span>, essentially the same as Robust LM-Error, although it remains below the two LM curves for all smaller values of <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+<p>This phenomenon illustrates the <em>two out of three</em> problem associated with the robust LM-tests, namely that they are constructed to take into account only one of potentially two types of misspecification. In this case, the correction of LM-WX is for the presence of a spatial Lag term, but the actual DGP is a spatial error model, which is no longer a <em>local</em> alternative, hence the strange behavior of the robust test.</p>
+</section>
+<section id="Error-tests-and-higher-order-tests">
+<h2>Error tests and higher order tests<a class="headerlink" href="#Error-tests-and-higher-order-tests" title="Link to this heading">¶</a></h2>
+<p>The final comparison is between LM-Error and its Robust form and the LM-SARER and LM-SDM tests.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LM-Error&quot;,&quot;RLM-Error&quot;,&quot;LMSARER&quot;,
+             &quot;LMSDM&quot;]
+powresult.plot(x=&quot;lam&quot;,y=testnames,
+               title=&quot; Error Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>As was the case for the Lag DGP, the LM-SARER test has strong power against the one-directional error alternative. It reaches 100% rejection rate for <span class="math notranslate nohighlight">\(\lambda = 0.5\)</span>, the same as the robust LM-Error, although for the smaller values of <span class="math notranslate nohighlight">\(\lambda\)</span> its power curve is always slightly below those of the one-directional LM tests.</p>
+<p>More disturbingly are the results for a two-directional test against the spatial Durbin DGP (i.e., both <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> non-zero), which obtains almost the same power as the other tests against the error DGP. In other words, even in the total absence of a SDM model, the LM-SDM test will point to that alternative when the true DGP is an error model. At some level, this may be expected, since SDM is equivalent to an error specification under the spatial common factor coefficient
+constraints. However, in practice, this result may be confusing. One would expect that after estimating a SDM, the common factor test would point to an error specification, but this is not the most efficient approach.</p>
+<section id="Power-Functions---SLX-Alternative">
+<h3>Power Functions - SLX Alternative<a class="headerlink" href="#Power-Functions---SLX-Alternative" title="Link to this heading">¶</a></h3>
+<p>A final analysis of the power of the various spatial diagnostics is when the alternative is an SLX model. The same approach is taken as for the other two cases, but this time the loop is over the values of <span class="math notranslate nohighlight">\(\gamma\)</span>, the coefficients of the WX variables. For the sake of simplicity, these are taken to be the same for each spatially lagged explanatory variable.</p>
+<p>The code is again essentially the same as before, except that now the argument <strong>wxg1</strong> must be calculated for each value of <span class="math notranslate nohighlight">\(\gamma\)</span> and then passed to the <code class="docutils literal notranslate"><span class="pre">dgp_slx</span></code>function for the data generating process. The results are again collected in a data frame for visualization.</p>
+<p>This simulation takes slightly less time than the previous cases.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pvals = [&quot;Moran&quot;,&quot;LM-Lag&quot;,&quot;LM-Error&quot;,&quot;LMWX&quot;,&quot;LMSARER&quot;,
+         &quot;LMSDM&quot;,&quot;RLM-Lag&quot;,&quot;RLM-Error&quot;,&quot;RLMWX&quot;]
+t0 = time.time()
+powvals = np.zeros((len(gamvals),len(pvals)+1))
+powvals[:,0] = gamvals
+for r in range(len(gamvals)):
+    g = gamvals[r]
+    gg = [g for i in b1[0:-1]]    # create list of gamma values of the correct length
+    wxg1 = make_wxg(wx1,gg)
+    best = np.zeros((reps,len(pvals)))
+    rng=np.random.default_rng(seed=rndseed)
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_slx(u,xb1,wxg1)
+        reg = OLS(y,x1,w,spat_diag=True,moran=True)
+        testp = [reg.moran_res[2],reg.lm_lag[1],reg.lm_error[1],reg.lm_wx[1],reg.lm_sarma[1],
+                     reg.lm_spdurbin[1],reg.rlm_lag[1],reg.rlm_error[1],reg.rlm_wx[1]]
+        best[i,:] = testp
+    bestp = (best &lt; p_value) * 1    # significant
+    mm = bestp.mean(axis=0)
+    powvals[r,1:]= mm
+
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+
+powresult = pd.DataFrame(powvals,columns=[&quot;gam&quot;]+pvals)
+
+print(&quot;Test Power for different Gamma&quot;)
+print(powresult)
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="SLX-tests-and-Moran's-I">
+<h2>SLX tests and Moran’s I<a class="headerlink" href="#SLX-tests-and-Moran's-I" title="Link to this heading">¶</a></h2>
+<p>As a first comparison, the power curves of LM-WX and its Robust version are plotted together with the power curve of Moran’s I for this alternative.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LMWX&quot;,&quot;RLMWX&quot;,&quot;Moran&quot;]
+powresult.plot(x=&quot;gam&quot;,y=testnames,
+               title=&quot; SLX Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>Overall, the LM-WX test has good power, achieving a 100% rejection rate for <span class="math notranslate nohighlight">\(\gamma = 0.2\)</span>. Not unsurprisingly, Moran’s I has decent power against this alternative as well, illustrating its usefulness as a misspecification test. Its only starts to gain power around <span class="math notranslate nohighlight">\(\gamma = 0.2\)</span>, but reaches 100% rejection rate for <span class="math notranslate nohighlight">\(\gamma = 0.45\)</span>.</p>
+<p>On the other hand, the shape of the power curve for Robust LM-WS is bizarre. The test has essentially no power at all after correcting for the (inappropriate) presence of a spatial autoregressive term. This again illustrates how the robustness correction is not appropriate when the ignored alternative is not local.</p>
+</section>
+<section id="SLX-tests-and-Error-tests">
+<h2>SLX tests and Error tests<a class="headerlink" href="#SLX-tests-and-Error-tests" title="Link to this heading">¶</a></h2>
+<p>A second comparison rates the power curve for LM-WX against that for the LM-Error test and its robust form.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LMWX&quot;,&quot;RLMWX&quot;,&quot;LM-Error&quot;,&quot;RLM-Error&quot;]
+powresult.plot(x=&quot;gam&quot;,y=testnames,
+               title=&quot; SLX Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>Whereas the LM-Error test has power against the SLX alternative, similar to that of Moran’s I, its robust version does not. Since it corrects for an inappropriate DGP, its behavior is non-standard and it has essentially no power against this alternative. LM-Error has slightly less power than Moran’s I (in the previous graph), but also reaches the 100% rejection rate for <span class="math notranslate nohighlight">\(\gamma = 0.45\)</span>.</p>
+</section>
+<section id="SLX-tests-and-Lag-tests">
+<h2>SLX tests and Lag tests<a class="headerlink" href="#SLX-tests-and-Lag-tests" title="Link to this heading">¶</a></h2>
+<p>Another interesting comparison is between LM-WX and the power curves for LM-Lag and its robust form. In contrast to the LM-Error DGP, which has no commonality with the SLX DGP, the latter can be considered as a truncated form of the Lag DGP. Hence one would expect the Lag tests to have some power against the SLX alternative.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LMWX&quot;,&quot;RLMWX&quot;,&quot;LM-Lag&quot;,&quot;RLM-Lag&quot;]
+powresult.plot(x=&quot;gam&quot;,y=testnames,
+               title=&quot; SLX Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The Lag tests indeed show strong power against the SLX alternative. In fact, for small values of <span class="math notranslate nohighlight">\(\gamma\)</span>, their power slightly exceeds that of LM-WX. In this case as well, the robust form of LM-Lag corrects for the wrong alternative. As a result, it tends to have slightly higher power than LM-Lag itself, which is not the proper behavior. All three tests achieve 100% rejection rate for <span class="math notranslate nohighlight">\(\gamma = 0.2\)</span>. The graph for RLMWX is the same as before.</p>
+</section>
+<section id="SLX-tests-and-higher-error-tests">
+<h2>SLX tests and higher error tests<a class="headerlink" href="#SLX-tests-and-higher-error-tests" title="Link to this heading">¶</a></h2>
+<p>A final comparison is between the LM-WX test and the two higher order tests.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>testnames = [&quot;LMWX&quot;,&quot;RLMWX&quot;,&quot;LMSARER&quot;,&quot;LMSDM&quot;]
+powresult.plot(x=&quot;gam&quot;,y=testnames,
+               title=&quot; SLX Alternative - Power Functions&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>In this case as well, the power curves of the higher order tests closely track that for LM-WX, achieving 100% rejection rate for <span class="math notranslate nohighlight">\(\gamma = 0.2\)</span>. For the smaller values of <span class="math notranslate nohighlight">\(\gamma\)</span>, the power of LM-SARER is slightly higher and that of LM-SDM slightly lower than that of LM-WX.</p>
+<p>This again highlights the caution that is needed when interpreting the results of the higher order tests. Both also have excellent power against one-directional alternatives, which can easily provide misleading guidance in a specification search.</p>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>The range of comparisons can easily be expanded using different spatial layouts and associated sample sizes as well as different DGP, such as a moving average error process, or various higher order DGP.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/10_specification_tests_properties.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

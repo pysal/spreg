@@ -1,0 +1,29 @@
+﻿spreg.GM\_KKP
+=============
+
+.. currentmodule:: spreg
+
+.. autoclass:: GM_KKP
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GM_KKP.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GM_KKP.mean_y
+      ~GM_KKP.std_y
+   
+   

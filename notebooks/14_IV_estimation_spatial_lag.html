@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Instrumental Variables Estimation - Spatial Lag Model &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Maximum Likelihood Estimation - Spatial Error Model" href="15_ML_estimation_spatial_error.html" />
+    <link rel="prev" title="Maximum Likelihood Estimation - Spatial Lag Model" href="13_ML_estimation_spatial_lag.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Instrumental Variables Estimation - Spatial Lag Model</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/19/2024)">(revised 09/19/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Variable-definition-and-data-input">Variable definition and data input</a><ul>
+<li><a class="reference internal" href="#OLS-and-SLX-with-Spatial-Diagnostics">OLS and SLX with Spatial Diagnostics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#OLS">OLS</a></li>
+<li><a class="reference internal" href="#SLX">SLX</a><ul>
+<li><a class="reference internal" href="#IV-Estimation-of-the-Lag-Model">IV Estimation of the Lag Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Principle">Principle</a></li>
+<li><a class="reference internal" href="#Implementation">Implementation</a></li>
+<li><a class="reference internal" href="#Instrument-lag-order">Instrument lag order</a></li>
+<li><a class="reference internal" href="#Predicted-values-and-residuals">Predicted values and residuals</a><ul>
+<li><a class="reference internal" href="#Robust-Standard-Errors">Robust Standard Errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#White-standard-errors">White standard errors</a></li>
+<li><a class="reference internal" href="#HAC-standard-errors">HAC standard errors</a><ul>
+<li><a class="reference internal" href="#Spatial-Multipliers---Impacts">Spatial Multipliers - Impacts</a></li>
+<li><a class="reference internal" href="#Additional-Endogenous-Variables">Additional Endogenous Variables</a></li>
+<li><a class="reference internal" href="#IV-Estimation-of-Spatial-Durbin-Model">IV Estimation of Spatial Durbin Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Spatial-Durbin-model-with-endogenous-variables">Spatial Durbin model with endogenous variables</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/14_IV_estimation_spatial_lag.ipynb">notebooks/14_IV_estimation_spatial_lag.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/14_IV_estimation_spatial_lag.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Instrumental-Variables-Estimation---Spatial-Lag-Model">
+<h1>Instrumental Variables Estimation - Spatial Lag Model<a class="headerlink" href="#Instrumental-Variables-Estimation---Spatial-Lag-Model" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/19/2024)">
+<h2>(revised 09/19/2024)<a class="headerlink" href="#(revised-09/19/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>An alternative to maximum likelihood is to tackle the endogeneity of the spatially lagged dependent variable by means of instrumental variables (IV) estimation. This is implemented in the <code class="docutils literal notranslate"><span class="pre">spreg.GM_Lag</span></code> class. As before, the estimation of the Spatial Durbin model is achieved through the inclusion of the <code class="docutils literal notranslate"><span class="pre">slx_lags</span></code> argument.</p>
+<p>Distinct from what is possible for maximum likelihood, other endogenous variables can be included as well, using the familiar <strong>yend</strong> (for the endogenous variables) and <strong>q</strong> (for the instruments) arguments.</p>
+<p>The treatment in this notebook will focus on the specific properties of the IV estimation. Generic properties of the spatial lag model, such as the different predicted values, residuals, and the impact measures will not be treated in detail again. Technical aspects pertaining to these issues are covered in the maximum likelihood notebook.</p>
+</section>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>As before, the main module is <em>spreg</em> for spatial regression analysis. From this, <code class="docutils literal notranslate"><span class="pre">OLS</span></code> and <code class="docutils literal notranslate"><span class="pre">GM_Lag</span></code> are imported. In addition, the utilities in <em>libpysal</em> (to open spatial weights and access the sample data set), <em>pandas</em> and <em>geopandas</em> are needed. All of these rely on <em>numpy</em> as a dependency.</p>
+<p>The usual <em>numpy</em> <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code> is included as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+from libpysal.io import open
+from libpysal.examples import get_path
+from libpysal import weights
+
+from spreg import OLS, GM_Lag
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>io.open</p></li>
+<li><p>examples.get_path</p></li>
+<li><p>weights.distance.Kernel</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>spreg.OLS</p></li>
+<li><p>spreg.GM_Lag</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Variable-definition-and-data-input">
+<h2>Variable definition and data input<a class="headerlink" href="#Variable-definition-and-data-input" title="Link to this heading">¶</a></h2>
+<p>As in the maximum likelihood notebook, the data set and spatial weights are from the <strong>chicagoSDOH</strong> sample data set:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic indicators of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_q.gal</strong>: queen contiguity weights</p></li>
+<li><p><strong>Chi-SDOH_k10tri.kwt</strong>: triangular kernel weights based on a variable bandwidth with 10 nearest neighbors from <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code></p></li>
+</ul>
+<p>The same descriptive model is used that relates the rate of uninsured households in a tract(for health insurance, <strong>EP_UNINSUR</strong>) to the lack of high school education (<strong>EP_NOHSDP</strong>), the economic deprivation index (<strong>HIS_ct</strong>), limited command of English (<strong>EP_LIMENG</strong>) and the lack of access to a vehicle (<strong>EP_NOVEH</strong>). This is purely illustrative of a spatial lag specification and does not have a particular theoretical or policy motivation.</p>
+<p>In an alternative specification, <strong>HIS_ct</strong> is considered to be endogenous, with, as before, <strong>COORD_X</strong> and <strong>COORD_Y</strong> as instruments.</p>
+<p>The file names and variable names are set in the usual manner. Any customization for different data sets/weights and different variables should be specified in this top cell.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = get_path(&quot;Chi-SDOH.shp&quot;)     # input shape file with data
+infileq = get_path(&quot;Chi-SDOH_q.gal&quot;)     # queen contiguity weights created with GeoDa
+infilek = get_path(&quot;Chi-SDOH_k10tri.kwt&quot;) # triangular kernel weights
+
+y_name = &#39;EP_UNINSUR&#39;
+x_names = [&#39;EP_NOHSDP&#39;,&#39;HIS_ct&#39;,&#39;EP_LIMENG&#39;,&#39;EP_NOVEH&#39;]
+xe_names = [&#39;EP_NOHSDP&#39;,&#39;EP_LIMENG&#39;,&#39;EP_NOVEH&#39;]
+yend_names = [&#39;HIS_ct&#39;]
+q_names = [&#39;COORD_X&#39;,&#39;COORD_Y&#39;]
+ds_name = &#39;Chi-SDOH&#39;
+w_name = &#39;Chi-SDOH_q&#39;
+wk_name = &#39;Chi-SDOH_k10tri&#39;
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">read_file</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span></code> functions are used to access the sample data set and contiguity weights. The contiguity weights are row-standardized, the <code class="docutils literal notranslate"><span class="pre">class</span></code> of the kernel weights adjusted, and the data frames for the dependent and explanatory variables are constructed. As before, this functionality is agnostic to the actual data sets and variables used, since it relies on the specification given in the initial block above.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = gpd.read_file(infileshp)
+wq =  open(infileq).read()
+wq.transform = &#39;r&#39;    # row-transform the weights
+wk = open(infilek).read()
+wk.__class__ = weights.distance.Kernel
+y = dfs[y_name]
+x = dfs[x_names]
+yend = dfs[yend_names]
+xe = dfs[xe_names]
+q = dfs[q_names]
+</pre></div>
+</div>
+</div>
+<section id="OLS-and-SLX-with-Spatial-Diagnostics">
+<h3>OLS and SLX with Spatial Diagnostics<a class="headerlink" href="#OLS-and-SLX-with-Spatial-Diagnostics" title="Link to this heading">¶</a></h3>
+<p>For easy reference, standard OLS and SLX regressions with spatial diagnostics are repeated here to provide a point of reference. The results are identical to those reported in the maximum likelihood notebook</p>
+<p>Refer to the specific OLS notebook for further details.</p>
+</section>
+</section>
+<section id="OLS">
+<h2>OLS<a class="headerlink" href="#OLS" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1 = OLS(y,x,w=wq,spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(ols1.summary)
+</pre></div>
+</div>
+</div>
+<p>The specification achieves an acceptable <span class="math notranslate nohighlight">\(R^2\)</span> of about 0.63 and all coefficients are positive and highly significant.</p>
+<p>The non-spatial diagnostics suggest non-normality as well as a hight degree of heteroskedasticity. There is no problem with multicollinearity.</p>
+<p>The spatial diagnostics against the SARERR alternatives show very significant LM-Lag and LM-Error, but of the two robust tests, only RLM-Lag is highly significant (RLM-Error only at p &lt; 0.03). Hence, there is a strong indication that a Lag rather than an Error alternative may be appropriate. While the joint LM test is also highly significant, this is likely due to a strong one-sided (Lag) alternative.</p>
+<p>Interestingly, the diagnostics against a spatial Durbin alternative strongly support the latter as well. Both LM tests and their robust forms are highly significant, and so is the joint test. Moreover, the value for the robust forms of the test is smaller than the original, which is the expected behavior (although not always reflected in empirical practice).</p>
+<p>In sum, in addition to a spatial Lag model as an alternative, the spatial Durbin specification deserves consideration as well.</p>
+</section>
+<section id="SLX">
+<h2>SLX<a class="headerlink" href="#SLX" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>slx1 = OLS(y,x,w=wq,slx_lags=1,spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(slx1.summary)
+</pre></div>
+</div>
+</div>
+<p>Relative to the classic regression model, the fit improves slightly, but the constant, <strong>EP_NOHSDP</strong> and <strong>HIS_CT</strong> become non-significant at p = 0.01 (they are marginally signifcant at p=0.05). All but one coefficient of the SLX terms are significant (<strong>W_EP_NOVEH</strong> is not). The signs and magnitudes of the SLX coefficients relative to their unlagged counterparts remain a bit confusing. Only for <strong>EP_LIMENG</strong> and <strong>W_EP_LIMENG</strong> are they the same, with the lag coefficient smaller than the
+unlagged one, in accordance with Tobler’s law. The coefficient for <strong>W_HIS_ct</strong> is significant and larger than that of <strong>HIS_ct</strong>, while the latter is not significant at p = 0.01. In other words, the interpretation of these results in terms of distance decay and Tobler’s law may be a bit problematic.</p>
+<p>In terms of diagnostics, there is a slight problem with multicollinearity (often the case in SLX specifications), strong non-normality and evidence of heteroskedasticity. Moran’s I is significant, as are both LM-tests, but neither of the robust forms is significant. Based on the relative magnitudes of the test statistics, there is a slight indication of a possible Lag alternative, i.e., a spatial Durbin specification. However, this indication is not as strong as that provided by the LM-SDM test
+statistics in the classic specification.</p>
+<section id="IV-Estimation-of-the-Lag-Model">
+<h3>IV Estimation of the Lag Model<a class="headerlink" href="#IV-Estimation-of-the-Lag-Model" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Principle">
+<h2>Principle<a class="headerlink" href="#Principle" title="Link to this heading">¶</a></h2>
+<p>The lag model <span class="math notranslate nohighlight">\(y = \rho Wy + X\beta + u\)</span> can also be written as <span class="math notranslate nohighlight">\(y = Z\delta + u\)</span>, where <span class="math notranslate nohighlight">\(Z = [ X, Wy ]\)</span> and the coefficient vector is rearranged as <span class="math notranslate nohighlight">\(\delta = [\beta, \rho ]\)</span>. This setup is the same as that considered in the treatment of endogeneity by means of 2SLS estimation.</p>
+<p>The spatially lagged dependent variable is indeed endogenous. Based on the reduced form,</p>
+<div class="math notranslate nohighlight">
+\[y = (I - \rho W)^{-1} X\beta + (I - \rho W)^{-1}u,\]</div>
+<p><span class="math notranslate nohighlight">\(Wy\)</span> follows as:</p>
+<div class="math notranslate nohighlight">
+\[Wy = W(I - \rho W)^{-1} X\beta + W(I - \rho W)^{-1}u.\]</div>
+<p>As a result, after some algebra, <span class="math notranslate nohighlight">\(E[(Wy)'u] = tr[W(I - \rho W)'^{-1}].E[uu'] \neq 0\)</span>. This follows because of the presence of non-zero diagonal terms in the inverse matrix (see the discussion of impacts in the maximum likelihood notebook). Consequently, one of the fundamental assumptions of OLS estimation is violated, and Wy must be treated as an endogenous variable.</p>
+<p>This is carried out by means of 2SLS estimation, whereby the main question becomes the choice of good (optimal) instruments for Wy. The conditional expectation of Wy, given X, provides the basis for this:</p>
+<div class="math notranslate nohighlight">
+\[E[Wy | X] = W(I - \rho W)^{-1} X\beta = W(I + \rho W + \rho^2 W + \dots) X \beta.\]</div>
+<p>As a result, the spatially lagged explanatory variables <span class="math notranslate nohighlight">\(WX, W^2X, \dots\)</span> suggest themselves as instruments. Since the <span class="math notranslate nohighlight">\(X\)</span> are assumed to be uncorrelated with the error terms, so are the <span class="math notranslate nohighlight">\(WX\)</span>. Also, from the conditional expectation, it follows that they are related to the endogenous Wy, which satisfies a second requirement for instruments. Note that WX is <em>not</em> applied to the constant term, since this would result in perfect multicollinearity.</p>
+<p>Estimation then follows as a straightforward application of 2SLS, referred to as <em>spatial</em> 2SLS, or S2SLS. The estimator, variance-covariance matrix, and robust standard errors are the same as for the classis 2SLS (see the 2SLS notebook for details).</p>
+<p>In a straightforward manner, additional endogenous variables with associated instruments can be incorporated as well. One question remains whether the additional instruments should be lagged or not. In <code class="docutils literal notranslate"><span class="pre">spreg.GM_Lag</span></code>, this is handled by the <code class="docutils literal notranslate"><span class="pre">lag_q</span></code> option (the default is <code class="docutils literal notranslate"><span class="pre">lag_q</span> <span class="pre">=</span> <span class="pre">True</span></code>).</p>
+</section>
+<section id="Implementation">
+<h2>Implementation<a class="headerlink" href="#Implementation" title="Link to this heading">¶</a></h2>
+<p>IV estimation of the spatial lag model is carried out by means of <code class="docutils literal notranslate"><span class="pre">spreg.GM_Lag</span></code>. This is a customized implementation of the two stage least squares estimation, with the instruments for the spatially lagged dependent variable computed internally. As mentioned, additional endogenous variables can be specified as well.</p>
+<p>The default setup requires the dependent variable, <code class="docutils literal notranslate"><span class="pre">y</span></code>, the explanatory variables (without a constant term), <code class="docutils literal notranslate"><span class="pre">x</span></code>, and the spatial weights <code class="docutils literal notranslate"><span class="pre">w</span></code>. The instruments are the spatially lagged explanatory variables, WX. They do not need to be specified separately. The order of spatial weights used as instruments is set by means of <code class="docutils literal notranslate"><span class="pre">w_lags</span></code> (the default is <code class="docutils literal notranslate"><span class="pre">w_lags</span> <span class="pre">=</span> <span class="pre">1</span></code>).</p>
+<p>As is customary, the main results are listed using the <code class="docutils literal notranslate"><span class="pre">summary</span></code> method. For now, no impacts are listed by setting <code class="docutils literal notranslate"><span class="pre">spat_impacts</span> <span class="pre">=</span> <span class="pre">None</span></code> (note that <code class="docutils literal notranslate"><span class="pre">spat_impacts</span> <span class="pre">=</span> <span class="pre">&quot;simple&quot;</span></code> is the default). The AK-test for remaining residual spatial autocorrelation is included by default (i.e., <code class="docutils literal notranslate"><span class="pre">spat_diag</span> <span class="pre">=</span> <span class="pre">True</span></code>).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag1 = GM_Lag(y,x,w=wq,
+              name_w=w_name,name_ds=ds_name,
+              spat_impacts = None)
+print(lag1.summary)
+</pre></div>
+</div>
+</div>
+<p>In this example, the estimates are very similar to the ML results (see the ML notebook). This is not always the case, but it is encouraging when it is (in the sense of not having other misspecification issues). The autoregressive coefficient of 0.377 compares to 0.392 in the ML case and is highly significant. As in the ML case, the coefficients of the constant term and of <strong>EP_NOHSDP</strong> become non-significant. The other regression coefficients are of similar magnitudes as in the ML case and thus
+also generally smaller than the corresponding OLS estimates.</p>
+<p>The results show the <strong>Instrumented</strong> variable as <strong>W_EP_UNINSUR</strong> and the <strong>Instruments</strong> as the spatial lags of the explanatory variables.</p>
+<p>As in the ML case, there are two measures of fit, the <strong>Pseudo R-squared</strong> (based on the <em>naive</em> residuals) and the <strong>Spatial Pseudo R-squared</strong> (based on the predicted values from the reduced form). The results are essentially the same as for the ML estimates, e.g., respectively 0.684 (vs. 0.685) and 0.647 (vs. 0.647). In constrast to the ML results, there is no Likelihood, AIC or SC.</p>
+<p>Note that with S2SLS estimation, it is possible for the spatial autoregressive parameter to take on a value larger than one. Unlike maximum likelihood estimation, where the parameter space is constrained in the optimization routine, there is no such constraint in S2SLS. When the parameter estimate is outside the bounds, a warning is given and any properties based on the reduced form predicted values will not be computed. This includes <strong>predy_e</strong> and <strong>e_pred</strong>, as well as the <strong>Spatial Pseudo
+R-squared</strong> and the spatial impacts (for an example, see below).</p>
+<p>The AK test shows no evidence of remaining residual spatial autocorrelation.</p>
+</section>
+<section id="Instrument-lag-order">
+<h2>Instrument lag order<a class="headerlink" href="#Instrument-lag-order" title="Link to this heading">¶</a></h2>
+<p>The order of the spatial lags used for the instruments is determined by the <code class="docutils literal notranslate"><span class="pre">w_lags</span></code> argument. By default, this is set to 1. The use of higher order lags results in greater precision, but often at the cost of an increase in multicollinearity. In practice, using lags larger than 2 is not recommended.</p>
+<p>The effect of setting <code class="docutils literal notranslate"><span class="pre">w_lags</span> <span class="pre">=</span> <span class="pre">2</span></code> is illustrated next.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag2 = GM_Lag(y,x,w=wq,
+              name_w=w_name,name_ds=ds_name,
+              w_lags = 2,
+              spat_impacts = None)
+print(lag2.summary)
+</pre></div>
+</div>
+</div>
+<p>The additional instruments are listed below the parameter estimates with the prefix <strong>W2</strong>. In this example, the effect of including the second order lags is minimal. The autoregressive coefficient becomes 0.381 (vs. 0.377) and the standard errors are marginally smaller. The fit is unchanged.</p>
+</section>
+<section id="Predicted-values-and-residuals">
+<h2>Predicted values and residuals<a class="headerlink" href="#Predicted-values-and-residuals" title="Link to this heading">¶</a></h2>
+<p>The treatment of predicted values and residuals is the same as for maximum likelihood estimation. The <em>naive</em> results are stored in the regression object attributes <strong>predy</strong> and <strong>u</strong>, and the values that are based on the reduced form prediction are in <strong>predy_e</strong> and <strong>e_pred</strong>.</p>
+<section id="Robust-Standard-Errors">
+<h3>Robust Standard Errors<a class="headerlink" href="#Robust-Standard-Errors" title="Link to this heading">¶</a></h3>
+<p>As in the standard 2SLS estimation, it is possible to obtain robust standard errors by means of the <code class="docutils literal notranslate"><span class="pre">robust</span> <span class="pre">=</span> <span class="pre">&quot;white&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">robust</span> <span class="pre">=</span> <span class="pre">&quot;hac&quot;</span></code> options. Given the common presence of heteroskedastic errors in cross-sectional regression, this is highly recommended. The results are given below. As before, the <code class="docutils literal notranslate"><span class="pre">hac</span></code> option requires that a kernel spatial weights object is specified as the argument <code class="docutils literal notranslate"><span class="pre">gwk</span></code>, with, optionally, <code class="docutils literal notranslate"><span class="pre">name_gwk</span></code>.</p>
+</section>
+</section>
+<section id="White-standard-errors">
+<h2>White standard errors<a class="headerlink" href="#White-standard-errors" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag3 = GM_Lag(y,x,w=wq,
+              name_w=w_name,name_ds=ds_name,
+              robust = &#39;white&#39;,
+              spat_impacts = None)
+print(lag3.summary)
+</pre></div>
+</div>
+</div>
+<p>The estimates are the same as before, but the standard errors are slightly larger. For example, for the spatial autoregressive coefficient, the standard error becomes 0.07377, compared to 0.06455. The overall impact is minimal.</p>
+</section>
+<section id="HAC-standard-errors">
+<h2>HAC standard errors<a class="headerlink" href="#HAC-standard-errors" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag4 = GM_Lag(y,x,w=wq,
+              name_w=w_name,name_ds=ds_name,
+              robust = &#39;hac&#39;,gwk=wk,name_gwk=wk_name,
+              spat_impacts = None)
+print(lag4.summary)
+</pre></div>
+</div>
+</div>
+<p>In this case, the HAC standard errors are very similar to the heteroskedasticity-robust ones, suggesting the main source of misspecification comes from the latter. This is in accordance with the lack of significance of the AK-test. The standard error for the spatial autoregressive coefficient, 0.07238, is even slightly smaller than the White standard error (0.07337).</p>
+<section id="Spatial-Multipliers---Impacts">
+<h3>Spatial Multipliers - Impacts<a class="headerlink" href="#Spatial-Multipliers---Impacts" title="Link to this heading">¶</a></h3>
+<p>Similar to what holds for ML estimation, impact measures are computed for spatial lag models estimated by means of instrumental variables. This is implemented through the <code class="docutils literal notranslate"><span class="pre">spat_impacts</span></code> argument. The default setting is <code class="docutils literal notranslate"><span class="pre">spat_impacts</span> <span class="pre">=</span> <span class="pre">&quot;simple&quot;</span></code> for the Kim et al approach (see the ML notebook for technical details). As before, the other options are <code class="docutils literal notranslate"><span class="pre">full</span></code>, <code class="docutils literal notranslate"><span class="pre">power</span></code>, <code class="docutils literal notranslate"><span class="pre">all</span></code> or `<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>In the example below, the argument is set as <code class="docutils literal notranslate"><span class="pre">spat_impacts</span> <span class="pre">=</span> <span class="pre">[&quot;simple&quot;,&quot;full&quot;]</span></code>. Only classic standard errors are considered. Since the multipliers and impacts only depend on the coefficient estimates, the type of standard error is immaterial.</p>
+<p>Note that the reported impacts are only <em>average</em> effects. See the spatial multipliers notebook for a more extensive analysis of the associated spatial pattern.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag5 = GM_Lag(y,x,w=wq,
+                     name_w=w_name,name_ds=ds_name,
+                     spat_impacts=[&#39;simple&#39;,&#39;full&#39;])
+print(lag5.summary)
+</pre></div>
+</div>
+</div>
+<p>The interpretation of the direct, indirect and total effects is the same as before. Since the coefficient estimates were very similar to the results obtained for ML, the impacts are similar as well.</p>
+</section>
+<section id="Additional-Endogenous-Variables">
+<h3>Additional Endogenous Variables<a class="headerlink" href="#Additional-Endogenous-Variables" title="Link to this heading">¶</a></h3>
+<p>Additional endogenous variables are included by means of the <strong>yend</strong> and <strong>q</strong> arguments, in the same way as for classic 2SLS estimation. The only relevant option in this regard is whether the instruments should be lagged as well. The default is to include their spatial lags, through <code class="docutils literal notranslate"><span class="pre">lag_q</span> <span class="pre">=</span> <span class="pre">True</span></code>. In practice, there is no good reason not to lag them, since they provide additional information. For clarity, the <code class="docutils literal notranslate"><span class="pre">lag_q</span></code> argument is included, even though it is not needed, since it is the
+default.</p>
+<p>Note that here <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">xe</span></code>, which contains only the exogenous variables.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lag6 = GM_Lag(y,x=xe,w=wq,yend=yend,q=q,
+                     lag_q = True,
+                     name_w=w_name,name_ds=ds_name,
+                     spat_impacts=[&#39;simple&#39;,&#39;full&#39;])
+print(lag6.summary)
+</pre></div>
+</div>
+</div>
+<p>The output listing now includes <strong>HIS_ct</strong> as <strong>Instrumented</strong>, and both <strong>COORD_X</strong> and <strong>COORD_Y</strong>, as well as their spatial lags among the <strong>Instruments</strong>.</p>
+<p>The impact on the estimates is relatively minor, although the spatial autoregressive coefficient decreases slightly to 0.32995 (compared to 0.37698). The treatment of <strong>HIS_ct</strong> as endogenous results in its coefficient becoming only marginally significant (p=0.02). The model impacts reflect the slightly different coefficient estimates.</p>
+<p>Note that impacts are only computed for the exogenous variables. In a strict sense, the additional endogenous variables should not be part of the reduced form. Moreover, since they are not determined in a fully simultaneous equation system, there is no practical way to include other exogenous variables from such a system. Therefore, the multiplier effect of additional endogenous variables is not considered.</p>
+</section>
+<section id="IV-Estimation-of-Spatial-Durbin-Model">
+<h3>IV Estimation of Spatial Durbin Model<a class="headerlink" href="#IV-Estimation-of-Spatial-Durbin-Model" title="Link to this heading">¶</a></h3>
+<p>IV estimation of the Spatial Durbin model is a special case of <code class="docutils literal notranslate"><span class="pre">spreg.GM_Lag</span></code>, with the additional argument of <code class="docutils literal notranslate"><span class="pre">slx_lags=1</span></code> (or a larger value). Everything else remains the same.</p>
+<p>In the example, <code class="docutils literal notranslate"><span class="pre">spat_impacts</span></code> is set to <code class="docutils literal notranslate"><span class="pre">[&quot;simple&quot;,&quot;full&quot;]</span></code> (note, the default setting remains <code class="docutils literal notranslate"><span class="pre">spat_impacts</span> <span class="pre">=</span> <span class="pre">&quot;simple&quot;</span></code>).</p>
+<p>Another default setting is <code class="docutils literal notranslate"><span class="pre">spat_diag</span> <span class="pre">=</span> <span class="pre">True</span></code>, which yields the results for the both the AK test and the Common Factor Hypothesis test. To avoid these tests, <code class="docutils literal notranslate"><span class="pre">spat_diag</span></code> must be set to <code class="docutils literal notranslate"><span class="pre">False</span></code>. In the illustration, both arguments are listed explicitly for clarity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spdur1 = GM_Lag(y,x,w=wq,slx_lags=1,
+                    name_w=w_name,name_ds=ds_name,
+                    spat_impacts = [&#39;simple&#39;,&#39;full&#39;],
+                    spat_diag = True)
+print(spdur1.summary)
+</pre></div>
+</div>
+</div>
+<p>Note how the list of <strong>Instruments</strong> now consists of the second order spatial lags, even though <code class="docutils literal notranslate"><span class="pre">w_lags</span> <span class="pre">=</span> <span class="pre">1</span></code>. This is because the spatial Durbin model already includes the first order lags as explanatory variables. Using first order lags as instruments would result in perfect multicollinearity. This is detected internally in <code class="docutils literal notranslate"><span class="pre">GM_Lag</span></code>, so that the computation of the lagged instruments is adjusted accordingly.</p>
+<p>As in the case of ML estimation, the inclusion of the lagged explanatory variables has quite an effect, even though only <strong>W_EP_NOHSDP</strong> turns out to be significant (for ML, <strong>W_HIS_ct</strong> was significant as well). Also, the spatial autoregressive coefficient (0.509) is no longer significant. Three of the four lag coefficients (including the non-significant ones) have a negative sign, the opposite of the original regression coefficients. This raises the suspicion that the proper specification may
+be a spatial error model. The results of the Common Factory Hypothesis Test bear this out. At 4.083, it is <em>not</em> significant, which means that the common factor constraint can <em>not</em> be rejected. This contrasts greatly with the result for ML estimation, where the constraint was strongly rejected. However, given the lack of significance of the spatial lag terms, this needs to be interpreted with caution. A better strategy would be to consider further refinements of the model specification by
+eliminating some lag terms by means of <code class="docutils literal notranslate"><span class="pre">slx_vars</span></code>, as in the SLX model. This is not further pursued here.</p>
+<p>The impacts are computed as before. Also, robust standard errors can be implemented in the usual fashion.</p>
+</section>
+</section>
+<section id="Spatial-Durbin-model-with-endogenous-variables">
+<h2>Spatial Durbin model with endogenous variables<a class="headerlink" href="#Spatial-Durbin-model-with-endogenous-variables" title="Link to this heading">¶</a></h2>
+<p>Additional endogenous variables can be included in a spatial Durbin specification in the same way as in the standard spatial lag model. With <code class="docutils literal notranslate"><span class="pre">spat_diag</span> <span class="pre">=</span> <span class="pre">True</span></code>, the default, only the AK test is produced. Since there is no spatial lag for the endogenous variable, a common factor test is not meaningful.</p>
+<p>The example below uses the same specification as in the spatial lag model.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>spdur2 = GM_Lag(y,x=xe,w=wq,yend=yend,q=q,
+                     lag_q = True,
+                     slx_lags=1,
+                     name_w=w_name,name_ds=ds_name,
+                     spat_impacts=[&#39;simple&#39;,&#39;full&#39;],
+                     spat_diag = True)
+print(spdur2.summary)
+</pre></div>
+</div>
+</div>
+<p>In this example, the estimate for the spatial autoregressive coefficient turns out to be larger than one (1.01654), which is outside the accepted parameter space. This raises a warning and precludes the computation of the spatial pseudo R-squared and the model impacts.</p>
+<p>When this happens, further refinement of the model and/or estimation is required. There are several options, such as using higher lags for the instruments, using different/more instruments for the additional endogenous variable, dropping some lag terms (using <code class="docutils literal notranslate"><span class="pre">slx_vars</span></code>), or changing the original specification altogether. This is left as an exercise.</p>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>IV estimation of the spatial lag model is sensitive to several aspects of the model specification. However, in large(r) samples, it generally yields more robust results than maximum likelihood, especially when using robust standard errors.</p>
+<p>As practice, different model specifications could be considered, including adding additional explanatory variables, selectively removing some lag terms, and using different spatial weights. Make sure to carefully consider the interpretation of the estimated coefficients and associated direct and indirect effects, as well as the robustness of the standard errors.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/14_IV_estimation_spatial_lag.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

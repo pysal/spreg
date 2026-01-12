@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.nslx &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.nslx</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Estimation of Nonlinear SLX Model</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Luc Anselin lanselin@gmail.com, </span><span class="se">\</span>
+<span class="s2">              Pedro V. Amaral pedrovma@gmail.com&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_array</span><span class="p">,</span><span class="n">csr_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">libpysal.cg</span><span class="w"> </span><span class="kn">import</span> <span class="n">KDTree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_output</span> <span class="k">as</span> <span class="n">USER</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_wnslx</span><span class="p">,</span> <span class="n">RegressionPropsY</span><span class="p">,</span> <span class="n">set_warn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.output</span><span class="w"> </span><span class="kn">import</span> <span class="n">output</span><span class="p">,</span> <span class="n">_nslx_out</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.diagnostics</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_likelihood</span><span class="p">,</span><span class="n">akaike</span><span class="p">,</span><span class="n">schwarz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">compress</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NSLX&quot;</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseNSLX</span><span class="p">(</span><span class="n">RegressionPropsY</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Estimation of the nonlinear SLX model (note no consistency</span>
+<span class="sd">    checks, diagnostics or constants added) - inverse distance</span>
+<span class="sd">    power function and negative exponential distance function supported</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y         : n by 1 numpy array with dependent variable</span>
+<span class="sd">    x         : n by k array with explanatory variables, includes constant</span>
+<span class="sd">    xw        : n by h array with selected columns of X that will have the</span>
+<span class="sd">                W(alpha) transformation applied to them</span>
+<span class="sd">    w         : list of sparse CSR arrays to use in lag transformation, if</span>
+<span class="sd">                list has a single element, same weights applied for all</span>
+<span class="sd">    transform : tuple of transformations, either &quot;exponential&quot; or &quot;power&quot;</span>
+<span class="sd">                when same transformation applies to all, tuple is a single</span>
+<span class="sd">                element tuple (default is &quot;power&quot;)</span>
+<span class="sd">    var_flag  : flag for analytical computation of variance-covariance matrix</span>
+<span class="sd">                passed from NSLX</span>
+<span class="sd">    verbose   : option for nonlinear optimization, either False (default) or</span>
+<span class="sd">                True</span>
+<span class="sd">    options   : options specific to scipy minimize, such as {&quot;disp&quot;:True}</span>
+<span class="sd">                (see scipy minimize docs)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y         : n by 1 numpy array with dependent variable</span>
+<span class="sd">    x         : n by k array with explanatory variables, includes constant</span>
+<span class="sd">    xw        : n by h array with selected columns of X that will have the</span>
+<span class="sd">                W(alpha) transformation applied to them</span>
+<span class="sd">    w         : list of sparse CSR arrays to use in lag transformation, if</span>
+<span class="sd">                list has a single element, same weights applied for all</span>
+<span class="sd">    n         : number of observations</span>
+<span class="sd">    k         : number of explanatory variables in X (includes constant)</span>
+<span class="sd">    transform : tuple of transformations, either &quot;power&quot; or &quot;exponential&quot;</span>
+<span class="sd">                when same transformation applies to all, tuple is a single</span>
+<span class="sd">                element tuple (default is &quot;power&quot;)</span>
+<span class="sd">    verbose   : option for nonlinear optimization, either False (default) or</span>
+<span class="sd">                True</span>
+<span class="sd">    options   : options specific to scipy minimize, such as {&quot;disp&quot;:True}</span>
+<span class="sd">                (see scipy minimize docs)</span>
+<span class="sd">    betas     : numpy array with parameter estimates</span>
+<span class="sd">    utu       : sum of squared residuals</span>
+<span class="sd">    ihess     : inverse of Hessian matrix</span>
+<span class="sd">    sign      : estimate of residual variance (divided by n)</span>
+<span class="sd">    sig2      : same as sign</span>
+<span class="sd">    vm      : coefficient variance-covariance matrix (sign x ihess)</span>
+<span class="sd">    predy     : vector of predicted values</span>
+<span class="sd">    u         : vector of residuals</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">var_flag</span><span class="p">,</span><span class="n">verbose</span><span class="p">,</span><span class="n">options</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xw</span> <span class="o">=</span> <span class="n">xw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">kk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">kk</span> <span class="o">+</span> <span class="n">h</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+              
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">xty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">xtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">b0</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">xtx</span><span class="p">,</span><span class="n">xty</span><span class="p">)</span>
+
+        <span class="n">alpha0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">h</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>   <span class="c1"># initial value</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">b0</span><span class="p">,</span><span class="n">alpha0</span><span class="p">))</span> 
+        <span class="n">gamma0</span> <span class="o">=</span> <span class="n">g0</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">gradflag</span><span class="o">=</span><span class="mi">0</span>
+
+        <span class="n">ssmin</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">nslxobj</span><span class="p">,</span><span class="n">gamma0</span><span class="p">,</span>
+                         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xw</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">),</span>
+                         <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>   
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utu</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">fun</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utu</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sig2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sign</span>
+
+        <span class="c1"># convergence criteria</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">success</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nit</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">nit</span>
+
+        <span class="c1"># compute predy</span>
+        <span class="n">b</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">:]</span>
+
+        <span class="n">wx</span> <span class="o">=</span> <span class="n">nlmod</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">gradflag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">wxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">xb</span> <span class="o">=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">predy</span> <span class="o">=</span> <span class="n">xb</span> <span class="o">+</span> <span class="n">wxs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predy</span> <span class="o">=</span> <span class="n">predy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">predy</span>
+
+        <span class="c1"># compute variance from gradients</span>
+        <span class="k">if</span> <span class="n">var_flag</span><span class="p">:</span>
+            <span class="n">vb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">))</span>
+            <span class="n">xtxi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">xtx</span><span class="p">)</span>
+            <span class="n">vb</span><span class="p">[:</span><span class="n">kk</span><span class="p">,:</span><span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">xtxi</span>
+            <span class="n">wax</span> <span class="o">=</span> <span class="n">nlmod</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">gradflag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">waxtwax</span> <span class="o">=</span> <span class="n">wax</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">wax</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">waxtwaxi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">waxtwax</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Singular variance matrix for nonlinear part&quot;</span><span class="p">)</span>
+            <span class="n">vb</span><span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">:,</span><span class="o">-</span><span class="n">h</span><span class="p">:]</span> <span class="o">=</span> <span class="n">waxtwaxi</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vm</span> <span class="o">=</span> <span class="n">vb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sig2</span>
+        <span class="k">elif</span> <span class="n">var_flag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ihess</span> <span class="o">=</span> <span class="n">ssmin</span><span class="o">.</span><span class="n">hess_inv</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">vm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ihess</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sig2</span>
+        
+
+
+
+
+
+<div class="viewcode-block" id="NSLX">
+<a class="viewcode-back" href="../../generated/spreg.NSLX.html#spreg.NSLX">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NSLX</span><span class="p">(</span><span class="n">BaseNSLX</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Estimation of the nonlinear SLX model - inverse distance</span>
+<span class="sd">    power function and negative exponential distance function supported</span>
+<span class="sd">    Includes output of all results.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y              : numpy.ndarray or pandas.Series</span>
+<span class="sd">                     nx1 array for dependent variable</span>
+<span class="sd">    x              : numpy.ndarray or pandas object</span>
+<span class="sd">                     Two dimensional array with n rows and one column for each</span>
+<span class="sd">                     independent (exogenous) variable, excluding the constant</span>
+<span class="sd">    coords         : an n by 2 array or a selection of two columns from a data frame</span>
+<span class="sd">    params         : a list of tuples containing the two parameters for the construction</span>
+<span class="sd">                     of the distance weights and the transformation: </span>
+<span class="sd">                     (k,distance_upper_bound,transformation)</span>
+<span class="sd">                     if the list consists of a single element, the same parameters are</span>
+<span class="sd">                     applied to all transformations</span>
+<span class="sd">                     default is [(10,np.inf,&quot;exponential&quot;)] for 10 knn neighbors, variable</span>
+<span class="sd">                     bandwidth and exponential transformation</span>
+<span class="sd">                     (see make_wnslx in UTILS)</span>
+<span class="sd">    distance_metric: metric for distance computations, either &quot;Euclidean&quot; (default) or &quot;Arc&quot;</span>
+<span class="sd">                     (for decimal lat-lon degrees)</span>
+<span class="sd">    leafsize       : parameter used to creat KDTree, default is 30</span>
+<span class="sd">    slx_vars       : list with True,False for selection of X variables to which SLX should be applied</span>
+<span class="sd">                     default is &quot;All&quot;</span>
+<span class="sd">    var_flag       : flag for variance computation, default = 1 - uses analytical derivation,</span>
+<span class="sd">                     = 0 - uses numerical approximation with inverse hessian</span>
+<span class="sd">    conv_flag      : flag for convergence diagnostics, default = 0 for no diagnostics</span>
+<span class="sd">                     = 1 - prints our minimize convergence summary</span>
+<span class="sd">    verbose        : boolean for intermediate results in nonlinear optimization, default is False</span>
+<span class="sd">    options        : options specific to scipy minimize, such as {&quot;disp&quot;:True}</span>
+<span class="sd">                     (see scipy minimize docs)                   </span>
+<span class="sd">    vm             : boolean</span>
+<span class="sd">                     if True, include variance-covariance matrix in summary</span>
+<span class="sd">                     results</span>
+<span class="sd">    name_y         : string</span>
+<span class="sd">                     Name of dependent variable for use in output</span>
+<span class="sd">    name_x         : list of strings</span>
+<span class="sd">                     Names of independent variables for use in output</span>
+<span class="sd">    name_coords    : list of strings</span>
+<span class="sd">                     Names of coordinate variables used in distance matrix</span>
+<span class="sd">    name_ds        : string</span>
+<span class="sd">                     Name of dataset for use in output</span>
+<span class="sd">    latex          : boolean</span>
+<span class="sd">                     Specifies if summary is to be printed in latex format</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output    : dataframe</span>
+<span class="sd">                regression results pandas dataframe</span>
+<span class="sd">    summary   : string</span>
+<span class="sd">                Summary of regression results and diagnostics (note: use in</span>
+<span class="sd">                conjunction with the print command)</span>
+<span class="sd">    y         : n by 1 numpy array with dependent variable</span>
+<span class="sd">    x         : n by k array with explanatory variables, includes constant</span>
+<span class="sd">    xw        : n by h array with selected columns of X that will have the</span>
+<span class="sd">                W(alpha) transformation applied to them</span>
+<span class="sd">    w         : list of sparse CSR arrays to use in lag transformation, if</span>
+<span class="sd">                list has a single element, same weights applied for all</span>
+<span class="sd">    n         : number of observations</span>
+<span class="sd">    k         : number of explanatory variables in X (includes constant)</span>
+<span class="sd">    transform : tuple of transformations, either &quot;power&quot; or &quot;exponential&quot;</span>
+<span class="sd">                when same transformation applies to all, tuple is a single</span>
+<span class="sd">                element tuple (default is &quot;power&quot;)</span>
+<span class="sd">    verbose   : option for nonlinear optimization, either False (default) or</span>
+<span class="sd">                True</span>
+<span class="sd">    options   : options specific to scipy minimize, such as {&quot;disp&quot;:True}</span>
+<span class="sd">                (see scipy minimize docs)</span>
+<span class="sd">    betas     : numpy array with parameter estimates</span>
+<span class="sd">    utu       : sum of squared residuals</span>
+<span class="sd">    ihess     : inverse of Hessian matrix</span>
+<span class="sd">    sign      : estimate of residual variance (divided by n)</span>
+<span class="sd">    sig2      : same as sign</span>
+<span class="sd">    vm        : coefficient variance-covariance matrix (sign x ihess)</span>
+<span class="sd">    predy     : vector of predicted values</span>
+<span class="sd">    u         : vector of residuals</span>
+<span class="sd">    ll        : float</span>
+<span class="sd">                Log likelihood</span>
+<span class="sd">    aic       : float</span>
+<span class="sd">                Akaike information criterion</span>
+<span class="sd">    schwarz   : float</span>
+<span class="sd">                Schwarz information criterion    </span>
+<span class="sd">    name_x    : variable names for explanatory variables</span>
+<span class="sd">    name_ds   : data set name</span>
+<span class="sd">    name_y    : name of dependent variable</span>
+<span class="sd">    title     : output header</span>
+<span class="sd">    </span>
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import geopandas as gpd</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal.examples import load_example, get_path </span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+
+<span class="sd">    Open data on Chicago census tract SDOH variables from libpysal examples using geopandas.</span>
+<span class="sd">    If you don&#39;t have chicagoSDOH installed, you can do so by running `load_example(&#39;chicagoSDOH&#39;)`. </span>
+
+<span class="sd">    &gt;&gt;&gt; dfs = gpd.read_file(get_path(&#39;Chi-SDOH.shp&#39;))</span>
+
+<span class="sd">    For this example, we will use the &#39;HIS_ct&#39; column (economic hardship index) as the </span>
+<span class="sd">    dependent variable and the &#39;Blk14P&#39;, &#39;Hisp14P&#39;, and &#39;EP_NOHSDP&#39; columns as independent </span>
+<span class="sd">    variables. The coordinates &quot;COORD_X&quot; and &quot;COORD_Y&quot; will be used to construct the</span>
+<span class="sd">    spatial weights matrix.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = dfs[[&#39;HIS_ct&#39;]]</span>
+<span class="sd">    &gt;&gt;&gt; x = dfs[[&#39;Blk14P&#39;,&#39;Hisp14P&#39;,&#39;EP_NOHSDP&#39;]]</span>
+<span class="sd">    &gt;&gt;&gt; coords = dfs[[&quot;COORD_X&quot;,&quot;COORD_Y&quot;]]</span>
+
+<span class="sd">    For the regression, we set var_flag = 1 to obtain the analytical standard errors.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = spreg.NSLX(y, x, coords, var_flag=1)</span>
+<span class="sd">    </span>
+<span class="sd">    We can easily obtain a full summary of all the results nicely formatted and</span>
+<span class="sd">    ready to be printed:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(reg.summary)</span>
+<span class="sd">    REGRESSION RESULTS</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    SUMMARY OF OUTPUT: NONLINEAR SLX</span>
+<span class="sd">    --------------------------------</span>
+<span class="sd">    Data set            :     unknown</span>
+<span class="sd">    Dependent Variable  :      HIS_ct                Number of Observations:         791</span>
+<span class="sd">    Mean dependent var  :     39.7301                Number of Variables   :           7</span>
+<span class="sd">    S.D. dependent var  :     13.8098                Degrees of Freedom    :         784</span>
+<span class="sd">    Sigma-square        :      32.287                Sum squared residual  :     25538.9</span>
+<span class="sd">    S.E. of regression  :       5.682                Log likelihood        :   -2496.609</span>
+<span class="sd">    Schwarz criterion   :    5039.931                Akaike info criterion :    5007.218</span>
+<span class="sd">    Coordinates         : COORD_X, COORD_Y           Distance metric       :   Euclidean</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    ------------------------------------------------------------------------------------</span>
+<span class="sd">                Variable     Coefficient       Std.Error     z-Statistic     Probability</span>
+<span class="sd">    ------------------------------------------------------------------------------------</span>
+<span class="sd">                CONSTANT        17.90865         0.43461        41.20635         0.00000</span>
+<span class="sd">                  Blk14P         0.17910         0.00806        22.21475         0.00000</span>
+<span class="sd">                 Hisp14P         0.05818         0.01525         3.81435         0.00014</span>
+<span class="sd">               EP_NOHSDP         0.65462         0.02750        23.80062         0.00000</span>
+<span class="sd">               We_Blk14P        17.16669         1.70331        10.07841         0.00000</span>
+<span class="sd">              We_Hisp14P        88.30447     81337.66263         0.00109         0.99913</span>
+<span class="sd">            We_EP_NOHSDP        10.02114         0.36436        27.50353         0.00000</span>
+<span class="sd">    ------------------------------------------------------------------------------------</span>
+<span class="sd">    Transformation: exponential</span>
+<span class="sd">    KNN: 10</span>
+<span class="sd">    Distance upper bound: inf</span>
+<span class="sd">    ================================ END OF REPORT =====================================</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+<div class="viewcode-block" id="NSLX.__init__">
+<a class="viewcode-back" href="../../generated/spreg.NSLX.html#spreg.NSLX.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">coords</span><span class="p">,</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">10</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span><span class="s2">&quot;exponential&quot;</span><span class="p">)],</span>
+        <span class="n">distance_metric</span> <span class="o">=</span> <span class="s2">&quot;Euclidean&quot;</span><span class="p">,</span>
+        <span class="n">leafsize</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="n">slx_vars</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
+        <span class="n">var_flag</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">conv_flag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">vm</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">name_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_ds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_coords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        
+        <span class="n">n</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_arrays</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">name_y</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_y</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">name_y</span><span class="p">)</span>
+        
+        <span class="n">coords</span><span class="p">,</span><span class="n">name_coords</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_coords</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">name_coords</span><span class="p">)</span>
+        <span class="n">x_constant</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+        
+        <span class="n">name_x</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_x</span><span class="p">(</span><span class="n">name_x</span><span class="p">,</span> <span class="n">x_constant</span><span class="p">)</span> <span class="c1"># needs to be initialized for none, now with constant</span>
+        <span class="n">set_warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="n">transform</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span> <span class="p">]</span>
+        
+        <span class="n">xw</span> <span class="o">=</span> <span class="n">x_constant</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span>
+        
+        <span class="n">xw_name</span> <span class="o">=</span> <span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slx_vars</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>   <span class="c1"># not W(a)X for all X</span>
+
+            <span class="n">xw</span> <span class="o">=</span> <span class="n">xw</span><span class="p">[:,</span><span class="n">slx_vars</span><span class="p">]</span>
+            <span class="n">xw_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">compress</span><span class="p">(</span><span class="n">xw_name</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">g</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">g</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">slx_vars</span><span class="p">):</span>  <span class="c1"># params does not have correct form</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">compress</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">))</span>
+                    <span class="n">transform</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">compress</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">g</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xw_name</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Mismatch dimension params and slx_vars&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">g</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">cp</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">xw_name</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;W&quot;</span><span class="o">+</span> <span class="n">cp</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span><span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xw_name</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xw_name</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Dimension mismatch&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xw_name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;W&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">j</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span><span class="n">xw_name</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_x</span> <span class="o">=</span> <span class="n">name_x</span> <span class="o">+</span> <span class="n">xw_name</span>
+
+        <span class="c1"># build up w list</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)):</span>
+            <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_wnslx</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">leafsize</span><span class="o">=</span><span class="n">leafsize</span><span class="p">,</span><span class="n">distance_metric</span><span class="o">=</span><span class="n">distance_metric</span><span class="p">)</span>
+
+        <span class="n">BaseNSLX</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="n">x_constant</span><span class="p">,</span><span class="n">xw</span><span class="o">=</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+                          <span class="n">var_flag</span><span class="o">=</span><span class="n">var_flag</span><span class="p">,</span>
+                          <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">conv_flag</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Convergence Characteristics&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success      :&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Status       :&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Message      :&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iterations   :&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ll</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aic</span> <span class="o">=</span> <span class="n">akaike</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schwarz</span> <span class="o">=</span> <span class="n">schwarz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_metric</span> <span class="o">=</span> <span class="n">distance_metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knn</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_upper_bound</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_ds</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_ds</span><span class="p">(</span><span class="n">name_ds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_y</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_y</span><span class="p">(</span><span class="n">name_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_coords</span> <span class="o">=</span> <span class="n">name_coords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;NONLINEAR SLX&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;var_names&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;var_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;wx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">xw_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;regime&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;equation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other_top</span> <span class="o">=</span> <span class="n">_nslx_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other_mid</span> <span class="o">=</span> <span class="n">_nslx_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;mid&quot;</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">(</span><span class="n">reg</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">vm</span><span class="o">=</span><span class="n">vm</span><span class="p">,</span> <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">)</span></div>
+</div>
+
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nslxobj</span><span class="p">(</span><span class="n">gamma0</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">verbose</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Objective function for minimize call, computes the sum of squared residuals in</span>
+<span class="sd">    the nonlinear SLX model. Note that all parameters other than gamma0 are passed</span>
+<span class="sd">    in an arg parameter to the minimize function</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gamma0      : current parameter estimates, consists of beta (for X) and alpha (for WX)</span>
+<span class="sd">                  needs to be a flattened array</span>
+<span class="sd">    y           : n by 1 vector with observations on the dependent variable</span>
+<span class="sd">    x           : n by k matrix with observations on X, must include constant vector</span>
+<span class="sd">    xw          : n by h matrix with columns of X that will be spatially lagged</span>
+<span class="sd">    w           : list of sparse CSR weights for the X column transformations; if same weights</span>
+<span class="sd">                  are used for all columns, must be a single element list</span>
+<span class="sd">    transform   : list of transformations (either &quot;power&quot; or &quot;exponential&quot;) to be applied to each</span>
+<span class="sd">                  column of xw; if same transformation is applied to all, must be a single element</span>
+<span class="sd">                  list</span>
+<span class="sd">    verbose     : verbose option, whether or not the intermediate parameter values and residual sum</span>
+<span class="sd">                  of squares are printed out</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res2        : sum of squared residuals</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">xw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">xw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;gamma0&quot;</span><span class="p">,</span><span class="n">gamma0</span><span class="p">)</span>
+    <span class="n">b0</span> <span class="o">=</span> <span class="n">gamma0</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+    <span class="n">alpha0</span> <span class="o">=</span> <span class="n">gamma0</span><span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">:]</span>
+    <span class="c1"># create WX</span>
+    <span class="n">wx</span> <span class="o">=</span> <span class="n">nlmod</span><span class="p">(</span><span class="n">alpha0</span><span class="p">,</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">gradflag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">wxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wx</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">xb</span> <span class="o">=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">b0</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">xb</span> <span class="o">-</span> <span class="n">wxs</span>
+    <span class="n">res2</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">res</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;res2&quot;</span><span class="p">,</span><span class="n">res2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nlmod</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">xw</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">gradflag</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Constructs the matrix of spatially lagged X variables W(a)X (for gradflag = 0) and </span>
+<span class="sd">    the gradient matrix d(W(x))/d(a) (for gradflag = 1), for possibly different</span>
+<span class="sd">    alpha parameters, different weights and different transformations (the transformations</span>
+<span class="sd">    must match the weights and are not checked for compatibility). Calls nltransform for</span>
+<span class="sd">    each relevant column of X. This allows the possibility that not all columns of X are</span>
+<span class="sd">    used, defined by slx_vars.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha       : array with alpha parameters, same number as relevant columns in X</span>
+<span class="sd">                  must be flattened (not a vector)</span>
+<span class="sd">    xw          : matrix with relevant columns of X to be lagged</span>
+<span class="sd">    w           : a list containing the weights matrix (as sparse CSR) for each column</span>
+<span class="sd">                  if the same weights matrix are used for all columns, w is a single element list,</span>
+<span class="sd">                  otherwise, the number of weights must match the number of relevant columns in X and</span>
+<span class="sd">                  the number of elements in the transform tuple</span>
+<span class="sd">    transform   : a tuple with the transformations for each relevant column in X, either &quot;power&quot; or &quot;exponential&quot;</span>
+<span class="sd">                  if the same transformation is used for all columns, transform is a single element tuple</span>
+<span class="sd">                  (transform,), otherwise, the number of elements in the tuple must match the number of relevant </span>
+<span class="sd">                  columns in X and the number of elements in the weights matrix tuple</span>
+<span class="sd">                  the transformation must match the type of weights, but this is not checked</span>
+<span class="sd">    gradflag    : flag for computation of gradient matrix, = 0 by default (actual function)</span>
+<span class="sd">                  = 1 - computes matrix of first partial derivatives with respect to alpha</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wx          : matrix with spatially lagged X variables</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># alpha must be flattened</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>   <span class="c1"># number of parameters</span>
+    <span class="k">if</span> <span class="n">xw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">h</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Incompatible dimensions&quot;</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>       <span class="c1"># number of weights</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span> <span class="o">!=</span> <span class="n">g</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Incompatible dimensions&quot;</span><span class="p">)</span>
+
+    <span class="c1"># initialize matrix of spatial lags</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">xw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">wx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">h</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="n">g</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">_nltransform</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">transform</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">gradflag</span><span class="o">=</span><span class="n">gradflag</span><span class="p">)</span>   <span class="c1"># element of single element tuple</span>
+        <span class="k">elif</span> <span class="n">g</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">_nltransform</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">transform</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">gradflag</span><span class="o">=</span><span class="n">gradflag</span><span class="p">)</span>    
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Operation not supported&quot;</span><span class="p">)</span>
+        <span class="n">wx</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">walpha</span> <span class="o">@</span> <span class="n">xw</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> 
+    <span class="k">return</span> <span class="n">wx</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_nltransform</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">transform</span><span class="p">,</span><span class="n">gradflag</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Constructs the transformed CSR sparse array for power and exponential transformation</span>
+<span class="sd">    for a given alpha parameter, input array and transformation. Note that the alpha parameters</span>
+<span class="sd">    are positive, but are used as negative powers in the exponential transformation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : alpha coefficient as a (positive) scalar</span>
+<span class="sd">    w           : CSR sparse array with weights</span>
+<span class="sd">    transform   : transformation, either &quot;power&quot; or &quot;exponential&quot;</span>
+<span class="sd">    gradflag    : flag for gradient computation, 0 = function, default</span>
+<span class="sd">                  1 = gradient</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    walpha      : CSR sparse array with transformed weights</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">walpha</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">transform</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;exponential&quot;</span><span class="p">:</span>
+        
+        <span class="n">wdata</span> <span class="o">=</span> <span class="n">walpha</span>
+        <span class="n">awdata</span> <span class="o">=</span> <span class="n">wdata</span> <span class="o">*</span> <span class="n">a</span>
+        
+        <span class="k">if</span> <span class="n">gradflag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        
+            <span class="n">awdata</span> <span class="o">=</span> <span class="o">-</span><span class="n">awdata</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">awdata</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span> <span class="n">awdata</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">awdata</span>
+
+        <span class="k">elif</span> <span class="n">gradflag</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">ww</span> <span class="o">=</span> <span class="o">-</span><span class="n">awdata</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">awdata</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">awdata</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">wln</span> <span class="o">=</span> <span class="n">awdata</span>
+            <span class="n">w1</span> <span class="o">=</span> <span class="n">wln</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">wdata</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ww</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">wgrad</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">w1</span><span class="p">)</span>
+            <span class="n">wgrad</span> <span class="o">=</span> <span class="o">-</span><span class="n">wgrad</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">wgrad</span>
+
+    <span class="k">elif</span> <span class="n">transform</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;power&quot;</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">gradflag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">walpha</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gradflag</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">walpha</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">ww</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">wgrad</span> <span class="o">=</span> <span class="n">walpha</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">ww</span><span class="p">)</span>
+            <span class="n">walpha</span> <span class="o">=</span> <span class="n">wgrad</span>
+            
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Transformation not supported&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">walpha</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="c1"># the following line could be used to define an alternative to the &#39;&lt;BLANKLINE&gt;&#39; flag</span>
+    <span class="c1"># doctest.BLANKLINE_MARKER = &#39;something better than &lt;BLANKLINE&gt;&#39;</span>
+    <span class="n">start_suppress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">get_printoptions</span><span class="p">()[</span><span class="s2">&quot;suppress&quot;</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="n">start_suppress</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">libpysal.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_example</span><span class="p">,</span> <span class="n">get_path</span> 
+    <span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">spreg</span>
+
+    <span class="n">dfs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">load_example</span><span class="p">(</span><span class="s1">&#39;columbus&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.shp&quot;</span><span class="p">))</span>
+    <span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="c1"># Transforming polygons to points</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[[</span><span class="s2">&quot;CRIME&quot;</span><span class="p">]]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[[</span><span class="s2">&quot;INC&quot;</span><span class="p">,</span><span class="s2">&quot;HOVAL&quot;</span><span class="p">,</span><span class="s2">&quot;DISCBD&quot;</span><span class="p">]]</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">NSLX</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

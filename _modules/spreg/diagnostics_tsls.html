@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.diagnostics_tsls &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.diagnostics_tsls</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Diagnostics for two stage least squares regression estimations.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Luc Anselin luc.anselin@asu.edu, Nicholas Malizia nicholas.malizia@asu.edu &quot;</span>
+<span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">pearsonr</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;t_stat&quot;</span><span class="p">,</span> <span class="s2">&quot;pr2_aspatial&quot;</span><span class="p">,</span> <span class="s2">&quot;pr2_spatial&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="t_stat">
+<a class="viewcode-back" href="../../generated/spreg.t_stat.html#spreg.t_stat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">t_stat</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">z_stat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the t-statistics (or z-statistics) and associated p-values.</span>
+<span class="sd">    :cite:`Greene2003`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : regression object</span>
+<span class="sd">                      output instance from a regression model</span>
+<span class="sd">    z_stat          : boolean</span>
+<span class="sd">                      If True run z-stat instead of t-stat</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ts_result       : list of tuples</span>
+<span class="sd">                      each tuple includes value of t statistic (or z</span>
+<span class="sd">                      statistic) and associated p-value</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    We first need to import the needed modules. Numpy is needed to convert the</span>
+<span class="sd">    data we read into arrays that ``spreg`` understands and ``pysal`` to</span>
+<span class="sd">    perform all the analysis. The ``diagnostics`` module is used for the tests</span>
+<span class="sd">    we will show here and the OLS and TSLS are required to run the models on</span>
+<span class="sd">    which we will perform the tests.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+
+<span class="sd">    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().</span>
+<span class="sd">    This is the DBF associated with the Columbus shapefile.  Note that</span>
+<span class="sd">    libpysal.io.open() also reads data in CSV format; since the actual class</span>
+<span class="sd">    requires data to be passed in as numpy arrays, the user can read their</span>
+<span class="sd">    data in using any method.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&#39;r&#39;)</span>
+
+<span class="sd">    Before being able to apply the diagnostics, we have to run a model and,</span>
+<span class="sd">    for that, we need the input variables. Extract the CRIME column (crime</span>
+<span class="sd">    rates) from the DBF file and make it the dependent variable for the</span>
+<span class="sd">    regression. Note that PySAL requires this to be an numpy array of shape</span>
+<span class="sd">    (n, 1) as opposed to the also common shape of (n, ) that other packages</span>
+<span class="sd">    accept.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Extract INC (income) and HOVAL (home value) vector from the DBF to be used as</span>
+<span class="sd">    independent variables in the regression.  Note that PySAL requires this to</span>
+<span class="sd">    be an nxj numpy array, where j is the number of independent variables (not</span>
+<span class="sd">    including a constant). By default this model adds a vector of ones to the</span>
+<span class="sd">    independent variables passed in, but this can be overridden by passing</span>
+<span class="sd">    constant=False.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Run an OLS regression. Since it is a non-spatial model, all we need is the</span>
+<span class="sd">    dependent and the independent variable.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = OLS(y,X)</span>
+
+<span class="sd">    Now we can perform a t-statistic on the model:</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.t_stat(reg)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.12f&quot;%testresult[0][0], &quot;%12.12f&quot;%testresult[0][1], &quot;%12.12f&quot;%testresult[1][0], &quot;%12.12f&quot;%testresult[1][1], &quot;%12.12f&quot;%testresult[2][0], &quot;%12.12f&quot;%testresult[2][1])</span>
+<span class="sd">    14.490373143689 0.000000000000 -4.780496191297 0.000018289595 -2.654408642718 0.010874504910</span>
+
+<span class="sd">    We can also use the z-stat. For that, we re-build the model so we consider</span>
+<span class="sd">    HOVAL as endogenous, instrument for it using DISCBD and carry out two</span>
+<span class="sd">    stage least squares (TSLS) estimation.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+<span class="sd">    &gt;&gt;&gt; yd = []</span>
+<span class="sd">    &gt;&gt;&gt; yd.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.array(yd).T</span>
+<span class="sd">    &gt;&gt;&gt; q = []</span>
+<span class="sd">    &gt;&gt;&gt; q.append(db.by_col(&quot;DISCBD&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.array(q).T</span>
+
+<span class="sd">    Once the variables are read as different objects, we are good to run the</span>
+<span class="sd">    model.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = spreg.TSLS(y, X, yd, q)</span>
+
+<span class="sd">    With the output of the TSLS regression, we can perform a z-statistic:</span>
+
+<span class="sd">    &gt;&gt;&gt; testresult = spreg.t_stat(reg, z_stat=True)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;%12.10f&quot;%testresult[0][0], &quot;%12.10f&quot;%testresult[0][1], &quot;%12.10f&quot;%testresult[1][0], &quot;%12.10f&quot;%testresult[1][1], &quot;%12.10f&quot;%testresult[2][0], &quot;%12.10f&quot;%testresult[2][1])</span>
+<span class="sd">    5.8452644705 0.0000000051 0.3676015668 0.7131703463 -1.9946891308 0.0460767956</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">k</span>  <span class="c1"># (scalar) number of ind. vas (includes constant)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span>  <span class="c1"># (scalar) number of observations</span>
+    <span class="n">vm</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">vm</span>  <span class="c1"># (array) coefficients of variance matrix (k x k)</span>
+    <span class="n">betas</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span>  <span class="c1"># (array) coefficients of the regressors (1 x k)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+    <span class="n">tStat</span> <span class="o">=</span> <span class="n">betas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">betas</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+    <span class="n">ts_result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tStat</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">z_stat</span><span class="p">:</span>
+            <span class="n">ts_result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ts_result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ts_result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">pr2_aspatial</span><span class="p">(</span><span class="n">tslsreg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the pseudo r^2 for the two stage least squares regression.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tslsreg             : two stage least squares regression object</span>
+<span class="sd">                          output instance from a two stage least squares</span>
+<span class="sd">                          regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pr2_result          : float</span>
+<span class="sd">                          value of the squared pearson correlation between</span>
+<span class="sd">                          the y and tsls-predicted y vectors</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    We first need to import the needed modules. Numpy is needed to convert the</span>
+<span class="sd">    data we read into arrays that ``spreg`` understands and ``pysal`` to</span>
+<span class="sd">    perform all the analysis. The TSLS is required to run the model on</span>
+<span class="sd">    which we will perform the tests.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import TSLS, pr2_aspatial</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+
+<span class="sd">    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().</span>
+<span class="sd">    This is the DBF associated with the Columbus shapefile.  Note that</span>
+<span class="sd">    libpysal.io.open() also reads data in CSV format; since the actual class</span>
+<span class="sd">    requires data to be passed in as numpy arrays, the user can read their</span>
+<span class="sd">    data in using any method.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&#39;r&#39;)</span>
+
+<span class="sd">    Before being able to apply the diagnostics, we have to run a model and,</span>
+<span class="sd">    for that, we need the input variables. Extract the CRIME column (crime</span>
+<span class="sd">    rates) from the DBF file and make it the dependent variable for the</span>
+<span class="sd">    regression. Note that PySAL requires this to be an numpy array of shape</span>
+<span class="sd">    (n, 1) as opposed to the also common shape of (n, ) that other packages</span>
+<span class="sd">    accept.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Extract INC (income) vector from the DBF to be used as</span>
+<span class="sd">    independent variables in the regression.  Note that PySAL requires this to</span>
+<span class="sd">    be an nxj numpy array, where j is the number of independent variables (not</span>
+<span class="sd">    including a constant). By default this model adds a vector of ones to the</span>
+<span class="sd">    independent variables passed in, but this can be overridden by passing</span>
+<span class="sd">    constant=False.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    In this case, we consider HOVAL (home value) as an endogenous regressor,</span>
+<span class="sd">    so we acknowledge that by reading it in a different category.</span>
+
+<span class="sd">    &gt;&gt;&gt; yd = []</span>
+<span class="sd">    &gt;&gt;&gt; yd.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.array(yd).T</span>
+
+<span class="sd">    In order to properly account for the endogeneity, we have to pass in the</span>
+<span class="sd">    instruments. Let us consider DISCBD (distance to the CBD) is a good one:</span>
+
+<span class="sd">    &gt;&gt;&gt; q = []</span>
+<span class="sd">    &gt;&gt;&gt; q.append(db.by_col(&quot;DISCBD&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.array(q).T</span>
+
+<span class="sd">    Now we are good to run the model. It is an easy one line task.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = TSLS(y, X, yd, q=q)</span>
+
+<span class="sd">    In order to perform the pseudo R^2, we pass the regression object to the</span>
+<span class="sd">    function and we are done!</span>
+
+<span class="sd">    &gt;&gt;&gt; result = pr2_aspatial(reg)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.6f&quot;%result)</span>
+<span class="sd">    0.279361</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">tslsreg</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">predy</span> <span class="o">=</span> <span class="n">tslsreg</span><span class="o">.</span><span class="n">predy</span>
+    <span class="n">pr</span> <span class="o">=</span> <span class="n">pearsonr</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">predy</span><span class="o">.</span><span class="n">flatten</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pr2_result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pr2_result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">pr2_spatial</span><span class="p">(</span><span class="n">tslsreg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the pseudo r^2 for the spatial two stage least squares</span>
+<span class="sd">    regression.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stslsreg            : spatial two stage least squares regression object</span>
+<span class="sd">                          output instance from a spatial two stage least</span>
+<span class="sd">                          squares regression model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pr2_result          : float</span>
+<span class="sd">                          value of the squared pearson correlation between</span>
+<span class="sd">                          the y and stsls-predicted y vectors</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    We first need to import the needed modules. Numpy is needed to convert the</span>
+<span class="sd">    data we read into arrays that ``spreg`` understands and ``pysal`` to</span>
+<span class="sd">    perform all the analysis. The GM_Lag is required to run the model on</span>
+<span class="sd">    which we will perform the tests and the ``spreg.diagnostics`` module</span>
+<span class="sd">    contains the function with the test.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from libpysal import examples</span>
+<span class="sd">    &gt;&gt;&gt; import spreg as D</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import GM_Lag</span>
+
+<span class="sd">    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().</span>
+<span class="sd">    This is the DBF associated with the Columbus shapefile.  Note that</span>
+<span class="sd">    libpysal.io.open() also reads data in CSV format; since the actual class</span>
+<span class="sd">    requires data to be passed in as numpy arrays, the user can read their</span>
+<span class="sd">    data in using any method.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(examples.get_path(&quot;columbus.dbf&quot;),&#39;r&#39;)</span>
+
+<span class="sd">    Extract the HOVAL column (home value) from the DBF file and make it the</span>
+<span class="sd">    dependent variable for the regression. Note that PySAL requires this to be</span>
+<span class="sd">    an numpy array of shape (n, 1) as opposed to the also common shape of (n, )</span>
+<span class="sd">    that other packages accept.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Extract INC (income) vectors from the DBF to be used as</span>
+<span class="sd">    independent variables in the regression.  Note that PySAL requires this to</span>
+<span class="sd">    be an nxj numpy array, where j is the number of independent variables (not</span>
+<span class="sd">    including a constant). By default this model adds a vector of ones to the</span>
+<span class="sd">    independent variables passed in, but this can be overridden by passing</span>
+<span class="sd">    constant=False.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = np.array(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.reshape(X, (49,1))</span>
+
+<span class="sd">    In this case, we consider CRIME (crime rates) as an endogenous regressor,</span>
+<span class="sd">    so we acknowledge that by reading it in a different category.</span>
+
+<span class="sd">    &gt;&gt;&gt; yd = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.reshape(yd, (49,1))</span>
+
+<span class="sd">    In order to properly account for the endogeneity, we have to pass in the</span>
+<span class="sd">    instruments. Let us consider DISCBD (distance to the CBD) is a good one:</span>
+
+<span class="sd">    &gt;&gt;&gt; q = np.array(db.by_col(&quot;DISCBD&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.reshape(q, (49,1))</span>
+
+<span class="sd">    Since this test has a spatial component, we need to specify the spatial</span>
+<span class="sd">    weights matrix that includes the spatial configuration of the observations</span>
+<span class="sd">    into the error component of the model. To do that, we can open an already</span>
+<span class="sd">    existing gal file or create a new one. In this case, we will create one</span>
+<span class="sd">    from ``columbus.shp``.</span>
+
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(examples.get_path(&quot;columbus.shp&quot;))</span>
+
+<span class="sd">    Unless there is a good reason not to do it, the weights have to be</span>
+<span class="sd">    row-standardized so every row of the matrix sums to one. Among other</span>
+<span class="sd">    things, this allows to interpret the spatial lag of a variable as the</span>
+<span class="sd">    average value of the neighboring observations. In PySAL, this can be</span>
+<span class="sd">    easily performed in the following way:</span>
+
+<span class="sd">    &gt;&gt;&gt; w.transform = &#39;r&#39;</span>
+
+<span class="sd">    Now we are good to run the spatial lag model. Make sure you pass all the</span>
+<span class="sd">    parameters correctly and, if desired, pass the names of the variables as</span>
+<span class="sd">    well so when you print the summary (reg.summary) they are included:</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = GM_Lag(y, X, w=w, yend=yd, q=q, w_lags=2, name_x=[&#39;inc&#39;], name_y=&#39;hoval&#39;, name_yend=[&#39;crime&#39;], name_q=[&#39;discbd&#39;], name_ds=&#39;columbus&#39;)</span>
+
+<span class="sd">    Once we have a regression object, we can perform the spatial version of</span>
+<span class="sd">    the pesudo R^2. It is as simple as one line!</span>
+
+<span class="sd">    &gt;&gt;&gt; result = pr2_spatial(reg)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;%1.6f&quot;%result)</span>
+<span class="sd">    0.299649</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">tslsreg</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">predy_e</span> <span class="o">=</span> <span class="n">tslsreg</span><span class="o">.</span><span class="n">predy_e</span>
+    <span class="n">pr</span> <span class="o">=</span> <span class="n">pearsonr</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">predy_e</span><span class="o">.</span><span class="n">flatten</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pr2_result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pr2_result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

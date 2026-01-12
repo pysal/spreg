@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spatial Model Specifications &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spatial Multipliers" href="8_spatial_multipliers.html" />
+    <link rel="prev" title="Two Stage Least Squares Regression (2SLS)" href="6_TWOSLS.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Spatial Model Specifications</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/07/2024)">(revised 09/07/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Files-and-Variables">Files and Variables</a></li>
+<li><a class="reference internal" href="#Model-Parameters">Model Parameters</a></li>
+<li><a class="reference internal" href="#Spatial-Weights">Spatial Weights</a></li>
+<li><a class="reference internal" href="#X-Matrices">X Matrices</a><ul>
+<li><a class="reference internal" href="#Spatial-Lag-Model">Spatial Lag Model</a><ul>
+<li><a class="reference internal" href="#Initialize-results-matrix">Initialize results matrix</a></li>
+<li><a class="reference internal" href="#Simulation-loop">Simulation loop</a></li>
+<li><a class="reference internal" href="#Results-data-frame">Results data frame</a></li>
+<li><a class="reference internal" href="#Descriptive-statistics">Descriptive statistics</a></li>
+<li><a class="reference internal" href="#Graphing-the-results">Graphing the results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Spatial-Error-Model">Spatial Error Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Moving-Average-Errors">Moving Average Errors</a><ul>
+<li><a class="reference internal" href="#SLX">SLX</a></li>
+<li><a class="reference internal" href="#Spatial-Durbin">Spatial Durbin</a></li>
+<li><a class="reference internal" href="#Other-Options">Other Options</a></li>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/7_spatial_models.ipynb">notebooks/7_spatial_models.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/7_spatial_models.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Spatial-Model-Specifications">
+<h1>Spatial Model Specifications<a class="headerlink" href="#Spatial-Model-Specifications" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/07/2024)">
+<h2>(revised 09/07/2024)<a class="headerlink" href="#(revised-09/07/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, the basic model specifications that include spatial dependence into a linear spatial regression are introduced. This is implemented through the use of a spatially lagged variable. The spatial lag is applied to the dependent variable, as <span class="math notranslate nohighlight">\(Wy\)</span>, to the explanatory variables (excluding the constant term), as <span class="math notranslate nohighlight">\(WX\)</span>, and to the error terms, as <span class="math notranslate nohighlight">\(We\)</span>. For technical details, see the relevant chapters in Anselin and Rey (2014). <em>Modern Spatial Econometrics in Practice</em>.</p>
+<p>As an illustration, the effect of a spatial misspecification will be investigated. Specifically, the impact spatial effects have on the classical OLS estimates will be assessed when they are present in the data generating process (DGP), but ignored in the regression specification. To accomplish this, some simple simulation experiments are carried out.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Familiarity with OLS estimation in <em>spreg</em> is assumed, as covered in the <em>OLS notebook</em>. For the graphs, it may be useful to have some familiarity with <em>matplotlib</em>, although to just replicate the graphs used here, that is not really needed.</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main module for spatial regression in PySAL is <em>spreg</em>. In addition, <em>libpysal</em> is needed for spatial weights manipulation, and <em>pandas</em> for data frame manipulation. In the current illustrations, <em>geopandas</em> is not needed.</p>
+<p>In addition, in order to plot the results of the simulation experiments, <em>seaborn</em> will be used, which in turns relies on <em>matplotlib</em> as a dependency. While under the hood, everything is actually <em>matplotlib</em> code, <em>seaborn</em> is a bit more intuitive and easier to achieve simple results. An in-depth coverage of the <em>seaborn</em> functionality is beyond the current scope, but the illustrations given here should be enough to get some decent graphs. For full details, see <a class="reference external" href="https://seaborn.pydata.org">https://seaborn.pydata.org</a>.</p>
+<p>Finally, the module <em>time</em> is imported to provide some timing results (optional).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+
+import numpy as np
+import pandas as pd
+import time
+import matplotlib.pyplot as plt
+import seaborn as sns
+from libpysal import weights
+from spreg import OLS, make_x, make_xb, make_wx, make_wxg, make_error, \
+    dgp_lag, dgp_sperror, dgp_slx, dgp_spdurbin
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>random.default_rng</p></li>
+<li><p>zeros</p></li>
+</ul>
+</li>
+<li><p>from pandas:</p>
+<ul>
+<li><p>DataFrame</p></li>
+<li><p>describe</p></li>
+<li><p>melt</p></li>
+</ul>
+</li>
+<li><p>from seaborn:</p>
+<ul>
+<li><p>displot</p></li>
+</ul>
+</li>
+<li><p>from matplotlib.pyplot:</p>
+<ul>
+<li><p>show</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>weights.lat2W</p></li>
+<li><p>w.transform</p></li>
+<li><p>w.n</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>OLS</p></li>
+<li><p>make_x</p></li>
+<li><p>make_xb</p></li>
+<li><p>make_wx</p></li>
+<li><p>make_wxg</p></li>
+<li><p>make_error</p></li>
+<li><p>dgp_lag</p></li>
+<li><p>dgp_sperror</p></li>
+<li><p>dgp_slx</p></li>
+<li><p>dgp_spdurbin</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Files-and-Variables">
+<h2>Files and Variables<a class="headerlink" href="#Files-and-Variables" title="Link to this heading">¶</a></h2>
+<p>In this notebook, no actual data are used, but data sets will be created by means of simulation.</p>
+</section>
+<section id="Model-Parameters">
+<h2>Model Parameters<a class="headerlink" href="#Model-Parameters" title="Link to this heading">¶</a></h2>
+<p>The various model parameters are set here, so that it is easy to replicate the experiments for different sample sizes and coefficient values.</p>
+<ul class="simple">
+<li><p>gridx: the number of cells in the horizontal dimension of a regular lattice of dimension gridx x gridy – set to 20</p></li>
+<li><p>gridy: the number of cells in the vertical dimension of a regular lattice of dimension gridx x gridy – set to 20</p></li>
+<li><p>b1: a list with regression parameters (includes a coefficient for the constant term as the first element) – set to 1, 1</p></li>
+<li><p>rndseed: the random seed to ensure reproducibility – set to 123456789</p></li>
+<li><p>reps: the number of replications – set to 1000</p></li>
+<li><p>rhovals: a list with spatial autoregressive coefficients <span class="math notranslate nohighlight">\(\rho\)</span> for the lag variables Wy – set to [0, 0.2, 0.5, 0.7, 0.9]</p></li>
+<li><p>lamvals: a list with spatial coefficients <span class="math notranslate nohighlight">\(\lambda\)</span> for the error lag variables We – set to [0, 0.2, 0.5, 0.7, 0.9]</p></li>
+<li><p>gamvals: a list with coefficients for the SLX variable (WX) – set to [0.1, 0.3, 0.5, 0.7, 0,9]</p></li>
+<li><p>gamma: coefficient for WX in the Spatial Durbin Model - set to 0.5</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gridx = 20
+gridy = 20
+b1 = [1, 1]
+rndseed = 123456789
+reps = 1000
+rhovals = [0, 0.2, 0.5, 0.7, 0.9]
+lamvals = [0, 0.2, 0.5, 0.7, 0.9]
+gamvals = [0.1, 0.3, 0.5, 0.7, 0.9]
+gamma = 0.5
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Spatial-Weights">
+<h2>Spatial Weights<a class="headerlink" href="#Spatial-Weights" title="Link to this heading">¶</a></h2>
+<p>Row-standardized queen contiguity spatial weights are constructed for a regular lattice. The number of observations is the product of row and column dimensions of the grid. The <em>libpysal</em> command <code class="docutils literal notranslate"><span class="pre">weights.lat2W</span></code> with <code class="docutils literal notranslate"><span class="pre">rook=False</span></code> is used to obtain queen weights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>w = weights.lat2W(gridx,gridy,rook=False)
+w.transform = &#39;r&#39;
+n = w.n
+n
+</pre></div>
+</div>
+</div>
+</section>
+<section id="X-Matrices">
+<h2>X Matrices<a class="headerlink" href="#X-Matrices" title="Link to this heading">¶</a></h2>
+<p>The X matrix is constructed using the <code class="docutils literal notranslate"><span class="pre">make_X</span></code> command from the <code class="docutils literal notranslate"><span class="pre">dgp</span></code> module in <code class="docutils literal notranslate"><span class="pre">spreg</span></code>, with the default uniform distribution. Next, <span class="math notranslate nohighlight">\(X\beta\)</span> is computed with <code class="docutils literal notranslate"><span class="pre">make_xb</span></code> and <span class="math notranslate nohighlight">\(WX\)</span> with <code class="docutils literal notranslate"><span class="pre">make_wx</span></code>. This uses the X matrix (without a constant column), the spatial weights and the provided regression parameters as inputs. The resulting matrices will be used as input to create the dependent vector <span class="math notranslate nohighlight">\(y\)</span> for specific data generating processes (DGP). For these DGP, the regression
+coefficients and random seed specified on top are used.</p>
+<p>Note that in this example <code class="docutils literal notranslate"><span class="pre">make_x</span></code> will make a one column vector, since there is only one slope coefficient. In <code class="docutils literal notranslate"><span class="pre">make_xb</span></code>, a constant column is added automatically. So, whereas a constant column is not included in <strong>x1</strong>, the result of <code class="docutils literal notranslate"><span class="pre">make_x</span></code>, its coefficient <strong>must</strong> be included in the coefficient list <strong>b1</strong> to compute <span class="math notranslate nohighlight">\(X \beta\)</span> correctly. The result is a column vector.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Create X
+rng=np.random.default_rng(seed=rndseed) # set seed for X
+x1 = make_x(rng,n,mu=[0],varu=[6],method=&quot;uniform&quot;)
+xb1 = make_xb(x1,b1) # no constant in x1, but a coefficient for the constant in b1
+wx1 = make_wx(x1,w) # default first order no constant
+</pre></div>
+</div>
+</div>
+<section id="Spatial-Lag-Model">
+<h3>Spatial Lag Model<a class="headerlink" href="#Spatial-Lag-Model" title="Link to this heading">¶</a></h3>
+<p>The spatial lag model takes on the form: <span class="math">\begin{equation*}
+y = \rho Wy + X\beta + u,
+\end{equation*}</span> where <span class="math notranslate nohighlight">\(Wy\)</span> is the spatial lag term, <span class="math notranslate nohighlight">\(\rho\)</span> is the spatial autoregressive coefficient, <span class="math notranslate nohighlight">\(\beta\)</span> are the regression coefficients, and <span class="math notranslate nohighlight">\(u\)</span> is an error vector.</p>
+<p>The dependent variable for a spatial lag model is generated by means of <code class="docutils literal notranslate"><span class="pre">spreg.dgp_lag</span></code>. This uses the reduced form for the spatial lag model:</p>
+<p><span class="math">\begin{equation*}
+y = (I - \rho W)^{-1} X\beta + (I - \rho W)^{-1}u.
+\end{equation*}</span></p>
+<p>Interest centers on finding out what happens to the estimated coefficient <span class="math notranslate nohighlight">\(\hat{\beta}\)</span> when the true DGP is the spatial lag model, but the estimation ignores the spatial lag term and uses OLS. In other words, <span class="math notranslate nohighlight">\(\beta\)</span> is estimated in the regression <span class="math notranslate nohighlight">\(y = X\beta + u\)</span>. The properties of the OLS estimates in this misspecified regression are investigated by means of a small simulation.</p>
+<p>The simulation consists of the following steps:</p>
+<ul class="simple">
+<li><p>initialize the result matrix for the estimates of <span class="math notranslate nohighlight">\(\beta\)</span></p></li>
+<li><p>in each step of the replications, generate <span class="math notranslate nohighlight">\(y\)</span> from the DGP and obtain <span class="math notranslate nohighlight">\(\hat{\beta}\)</span> from an OLS estimation</p></li>
+<li><p>run the simulation loop over all replications and spatial parameters and collect the results</p></li>
+<li><p>turn the results matrix into a DataFrame</p></li>
+<li><p>compute descriptive statistics</p></li>
+<li><p>plot the distribution of parameter estimates for different values of the spatial parameter</p></li>
+</ul>
+<p>For greatest efficiency, these steps could all be combined in one big function, but to get a good sense of what is going on in each step, for now they are kept separate.</p>
+<section id="Initialize-results-matrix">
+<h4>Initialize results matrix<a class="headerlink" href="#Initialize-results-matrix" title="Link to this heading">¶</a></h4>
+<p>For each value of <span class="math notranslate nohighlight">\(\rho\)</span> as a column, the results matrix will have the <span class="math notranslate nohighlight">\(\beta\)</span> estimate for each replication in the row. The matrix is thus of dimension <strong>reps</strong> times number of <span class="math notranslate nohighlight">\(\rho\)</span> values.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best = np.zeros((reps,len(rhovals)))
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Simulation-loop">
+<h4>Simulation loop<a class="headerlink" href="#Simulation-loop" title="Link to this heading">¶</a></h4>
+<p>The first step is to initialize the random seed for reproducibility. The function <code class="docutils literal notranslate"><span class="pre">spreg.make_error</span></code> is used to generate a standard normal random error vector. Then, together with the computed <span class="math notranslate nohighlight">\(X\beta\)</span>, the error term is used to generate <span class="math notranslate nohighlight">\(y\)</span> by means of <code class="docutils literal notranslate"><span class="pre">spreg.dgp_lag</span></code>.</p>
+<p>The <span class="math notranslate nohighlight">\(\hat{\beta}\)</span> coefficient is extracted from the regression object as the second element in the <code class="docutils literal notranslate"><span class="pre">betas</span></code> attribute of the regression object obtained from <code class="docutils literal notranslate"><span class="pre">spreg.OLS</span></code>, and then entered in the results matrix. Running 1000 replications may take a minute or so, depending on hardware.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+rng=np.random.default_rng(seed=rndseed)
+for r in range(len(rhovals)):
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_lag(u,xb1,w,rhovals[r])
+        reg = OLS(y,x1,nonspat_diag=False)
+        best[i,r] = reg.betas[1]
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Results-data-frame">
+<h4>Results data frame<a class="headerlink" href="#Results-data-frame" title="Link to this heading">¶</a></h4>
+<p>By means of Python list comprehension, a list of meaningful column headers is created that is related to the spatial parameter values.</p>
+<p>The result array is then converted to a <em>pandas</em> Data Frame using this list as the column names.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>rr = [&quot;rho&quot;+str(r) for r in rhovals]
+results = pd.DataFrame(best,columns=rr)
+results.head()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Descriptive-statistics">
+<h4>Descriptive statistics<a class="headerlink" href="#Descriptive-statistics" title="Link to this heading">¶</a></h4>
+<p>The default descriptive statistics are obtained by means of the <code class="docutils literal notranslate"><span class="pre">describe</span></code> method of the <em>pandas</em> data frame. Of most interest are the <strong>mean</strong> and the standard deviation (<strong>std</strong>). Any difference between the mean and the true value of <span class="math notranslate nohighlight">\(\beta\)</span> indicates <em>bias</em>, whereas changes in the standard deviation suggest a change in precision with values of <span class="math notranslate nohighlight">\(\rho\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>results.describe()
+</pre></div>
+</div>
+</div>
+<p>The descriptive statistics for this example illustrate how the estimate for <span class="math notranslate nohighlight">\(\beta\)</span> becomes more and more biased with increasing values of <span class="math notranslate nohighlight">\(\rho\)</span>, with a mean of 1.002 under the null to a mean of 1.389 for <span class="math notranslate nohighlight">\(\rho = 0.9\)</span>. In addition, the standard deviation of the estimate increases as well, from a value of 0.0198 under the null to 0.0409 for <span class="math notranslate nohighlight">\(\rho = 0.9\)</span>, more than double (which also means that the variance is four times as large).</p>
+</section>
+<section id="Graphing-the-results">
+<h4>Graphing the results<a class="headerlink" href="#Graphing-the-results" title="Link to this heading">¶</a></h4>
+<p>Using <em>seaborn</em>, it is very straightforward to plot the distribution of a column in a data frame by means of the <code class="docutils literal notranslate"><span class="pre">sns.displot</span></code> command, specifying <code class="docutils literal notranslate"><span class="pre">kind=&quot;kde&quot;</span></code>. The other arguments are the name of the data frame (here, <strong>results</strong>) and the x-axis, for example <strong>rho0.5</strong>. The command <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> is included to show the plot.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sns.displot(results, x=&quot;rho0.5&quot;, kind=&quot;kde&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The plot illustrates how the mean is no longer centered on the value of 1.000, but instead on 1.06.</p>
+<p>Plotting the distribution of the estimates for all the spatial parameters on a single plot is a little trickier, and requires the use of the <em>pandas</em> <code class="docutils literal notranslate"><span class="pre">melt</span></code> functionality. As it stands, the data frame <strong>results</strong> is in so-called wide format, with a different column for each value of <span class="math notranslate nohighlight">\(\rho\)</span>. <em>seaborn</em> likes this to be in so-called long format, or <em>tidy</em> (in R terminology), where all the <span class="math notranslate nohighlight">\(\beta\)</span> estimates form one long column with an additional variable that gives the value for
+<span class="math notranslate nohighlight">\(\rho\)</span>. In a sense, each individual estimation result becomes a separate observation, with a value for <span class="math notranslate nohighlight">\(\rho\)</span> and a value for the <span class="math notranslate nohighlight">\(\beta\)</span> estimate.</p>
+<p>To accomplish this, two arguments need to be set, one for the new column that will contain the values of <span class="math notranslate nohighlight">\(\rho\)</span>, <code class="docutils literal notranslate"><span class="pre">var_name</span></code>, the other for the regression coefficient that matches the replication-rho combination, named <code class="docutils literal notranslate"><span class="pre">value_name</span></code> in the <em>pandas</em> terminology. In the example, <code class="docutils literal notranslate"><span class="pre">var_name</span></code> becomes <strong>“rho”</strong>, since each of the columns contains the prefix <strong>rho</strong>, and <code class="docutils literal notranslate"><span class="pre">value_name</span></code> become <strong>“b”</strong>. The result is a long data frame.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reslong = results.melt(var_name=&#39;rho&#39;,value_name=&#39;b&#39;)
+reslong
+</pre></div>
+</div>
+</div>
+<p>At this point, the <code class="docutils literal notranslate"><span class="pre">sns.displot</span></code> command can be applied to the new data frame with <code class="docutils literal notranslate"><span class="pre">x=&quot;b&quot;</span></code> and differentiated by the value of <span class="math notranslate nohighlight">\(\rho\)</span> by specifying the <code class="docutils literal notranslate"><span class="pre">hue=&quot;rho&quot;</span></code>. As before, <code class="docutils literal notranslate"><span class="pre">kind=&quot;kde&quot;</span></code> for a kernel density curve. Other parameters can be set as well, but that’s beyond the current scope.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sns.displot(reslong,x=&quot;b&quot;,hue=&quot;rho&quot;,kind=&quot;kde&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The plots clearly illustrate both the increasing bias as well as the larger variance with growing values of the spatial autoregressive parameter.</p>
+</section>
+</section>
+<section id="Spatial-Error-Model">
+<h3>Spatial Error Model<a class="headerlink" href="#Spatial-Error-Model" title="Link to this heading">¶</a></h3>
+<p>The same exercise is now repeated for a spatial error specification, using <code class="docutils literal notranslate"><span class="pre">spreg.dgp_sperror</span></code>. The error model is:</p>
+<p><span class="math notranslate nohighlight">\(y = X\beta + u\)</span>, with <span class="math notranslate nohighlight">\(u = \lambda Wu + e\)</span>,</p>
+<p>where <span class="math notranslate nohighlight">\(\lambda\)</span> is the spatial autoregressive coefficient for the error vector.</p>
+<p>The values for <span class="math notranslate nohighlight">\(\lambda\)</span> are specified in <strong>lamvals</strong> at the top of the notebook.</p>
+<p>The default for a spatial error vector is an autoregressive process, with <code class="docutils literal notranslate"><span class="pre">model='sar'</span></code> as the option in <code class="docutils literal notranslate"><span class="pre">spreg.dgp_sperror</span></code> (since it is the default, it doesn’t have to be specified, but it is included here for clarity).</p>
+<p>Note how the parameter vectors have been changed to <strong>lamvals</strong> and the column names in the data frame have the <strong>lam</strong> predicate. In all other respects, the logic is the same as for the previous experiment.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+best = np.zeros((reps,len(lamvals)))
+rng=np.random.default_rng(seed=rndseed)
+for r in range(len(lamvals)):
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_sperror(u,xb1,w,lamvals[r],model=&quot;sar&quot;)
+        reg = OLS(y,x1,nonspat_diag=False)
+        best[i,r] = reg.betas[1]
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+rr = [&quot;lam&quot;+str(r) for r in lamvals]
+results = pd.DataFrame(best,columns=rr)
+results.describe()
+</pre></div>
+</div>
+</div>
+<p>In contrast to the spatial lag model, the estimates for <span class="math notranslate nohighlight">\(\beta\)</span> remain unbiased, with the mean centered on the correct value of 1.0. However, as the spatial parameter increases, the standard error goes from 0.0198 under the null to 0.0409 for <span class="math notranslate nohighlight">\(\lambda = 0.9\)</span>, four times as much.</p>
+<p>A graph can be created for all values of <span class="math notranslate nohighlight">\(\lambda\)</span> in the same way as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reslong = results.melt(var_name=&#39;lam&#39;,value_name=&#39;b&#39;)
+sns.displot(reslong,x=&quot;b&quot;,hue=&quot;lam&quot;,kind=&quot;kde&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The pattern is confirmed by the graphs, with a lower curve corresponding to a larger variance. Note how for <span class="math notranslate nohighlight">\(\lambda = 0.2\)</span>, the effect is negligible, with even a slightly smaller standard error. The impact becomes really pronounced for larger values of <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+</section>
+</section>
+<section id="Moving-Average-Errors">
+<h2>Moving Average Errors<a class="headerlink" href="#Moving-Average-Errors" title="Link to this heading">¶</a></h2>
+<p>For comparison, the simulations are also run for a spatial moving average error process. In this model, the error vector is:</p>
+<p><span class="math">\begin{equation*}
+u = \lambda We + e,
+\end{equation*}</span> with <span class="math notranslate nohighlight">\(e\)</span> as a standard normal error vector.</p>
+<p>The commands to carry out the simulation are all the same, except that in <code class="docutils literal notranslate"><span class="pre">spreg.dgp_sperror</span></code>, the <code class="docutils literal notranslate"><span class="pre">model</span></code> argument should be set to <code class="docutils literal notranslate"><span class="pre">&quot;ma&quot;</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+best = np.zeros((reps,len(lamvals)))
+rng=np.random.default_rng(seed=rndseed)
+for r in range(len(lamvals)):
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_sperror(u,xb1,w,lamvals[r],model=&quot;ma&quot;)
+        reg = OLS(y,x1,nonspat_diag=False)
+        best[i,r] = reg.betas[1]
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+rr = [&quot;lam&quot;+str(r) for r in lamvals]
+results = pd.DataFrame(best,columns=rr)
+results.describe()
+</pre></div>
+</div>
+</div>
+<p>Here, the effect on the variance is much less pronounced, going from 0.020 under the null to 0.022 with <span class="math notranslate nohighlight">\(\rho = 0.9\)</span>. The same can be observed in the frequency graphs.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reslong = results.melt(var_name=&#39;lam&#39;,value_name=&#39;b&#39;)
+sns.displot(reslong,x=&quot;b&quot;,hue=&quot;lam&quot;,kind=&quot;kde&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<section id="SLX">
+<h3>SLX<a class="headerlink" href="#SLX" title="Link to this heading">¶</a></h3>
+<p>The same approach is followed to assess the effect of ignoring a spatially lagged explanatory variable (SLX) on the regression slope coefficient. Formally, the SLX specification is:</p>
+<p><span class="math">\begin{equation*}
+y = X \beta + WX \gamma + u,
+\end{equation*}</span></p>
+<p>where <span class="math notranslate nohighlight">\(WX\)</span> does not contain a constant term (the spatial lag of a constant term is the same constant, which would create perfect multicollinearity) and <span class="math notranslate nohighlight">\(\gamma\)</span> is a vector of parameters.</p>
+<p>The DGP for the SLX model is obtained from <code class="docutils literal notranslate"><span class="pre">spreg.dgp_slx</span></code>. Both <strong>xb1</strong> and <strong>wxg1</strong> need to be passed as arguments. The latter is the product <span class="math notranslate nohighlight">\(WX \gamma\)</span>, which must be computed for each different value of <span class="math notranslate nohighlight">\(\gamma\)</span>.</p>
+<p>To investigate a range of values for <span class="math notranslate nohighlight">\(\gamma\)</span>, some slight adjustments to the code are needed. In the simulation loop, <strong>wxg1</strong> must be updated for each new value of <span class="math notranslate nohighlight">\(\gamma\)</span>. Otherwise, the logic remains the same as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+best = np.zeros((reps,len(gamvals)))
+rng=np.random.default_rng(seed=rndseed)
+for r in range(len(gamvals)):
+    wxg1 = make_wxg(wx1,r)
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_slx(u,xb1,wxg1)
+        reg = OLS(y,x1,nonspat_diag=False)
+        best[i,r] = reg.betas[1]
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+rr = [&quot;gam&quot;+str(r) for r in gamvals]
+results = pd.DataFrame(best,columns=rr)
+results.describe()
+</pre></div>
+</div>
+</div>
+<p>This result illustrates the classic <em>omitted variable bias</em> effect, since the ignored WX is nothing but an omitted regressor. The effect is a slight increase in bias of the <span class="math notranslate nohighlight">\(\beta\)</span> estimate, that becomes larger with larger <span class="math notranslate nohighlight">\(\gamma\)</span>. The effect on the variance is minimal.</p>
+<p>This behavior is nicely illustrated by the frequency plots, which show a gradual shift away from the value of 1.0, but in contrast to what happens for the spatial lag model, all the curves have basically the same shape, indicating a minimal effect on the variance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reslong = results.melt(var_name=&#39;gam&#39;,value_name=&#39;b&#39;)
+sns.displot(reslong,x=&quot;b&quot;,hue=&quot;gam&quot;,kind=&quot;kde&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Spatial-Durbin">
+<h3>Spatial Durbin<a class="headerlink" href="#Spatial-Durbin" title="Link to this heading">¶</a></h3>
+<p>The final model illustrated here is a Spatial Durbin model, which includes both a spatially lagged dependent variable, <span class="math notranslate nohighlight">\(Wy\)</span>, and spatially lagged explanatory variables (SLX), <span class="math notranslate nohighlight">\(WX\)</span>:</p>
+<p><span class="math">\begin{equation*}
+y = Wy + X\beta + WX \gamma + u.
+\end{equation*}</span></p>
+<p>The dependent variable is generated by means of the reduced form, similar to what is the case for a spatial lag model, but now including the SLX term as part of the regression:</p>
+<p><span class="math">\begin{equation*}
+y = (I - \rho W)^{-1} (X\beta + WX\gamma) + (I - \rho W)^{-1} u.
+\end{equation*}</span></p>
+<p>The effect of a misspecified spatial Durbin model is illustrated for a range of spatial autoregressive coefficients. For the sake of simplicity, <span class="math notranslate nohighlight">\(\lambda\)</span> is kept fixed, but of course, there could be a double loop over values of both <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\lambda\)</span>. The relevant function is <code class="docutils literal notranslate"><span class="pre">spreg.dgp_spdurbin</span></code>. It takes as arguments and error term, <strong>xb</strong>, <strong>wxg</strong>, the spatial weights <strong>w</strong>, and the spatial parameter <span class="math notranslate nohighlight">\(\rho\)</span> (<span class="math notranslate nohighlight">\(\gamma\)</span> is used in the calculation of <strong>wxg</strong>,
+outside of the loop).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+rng=np.random.default_rng(seed=rndseed)
+wxg1 = dgp.make_wxg(wx1,gamma)
+for r in range(len(rhovals)):
+    for i in range(reps):
+        u = make_error(rng,n)
+        y = dgp_spdurbin(u,xb1,wxg1,w,rhovals[r])
+        reg = OLS(y,x1,nonspat_diag=False)
+        best[i,r] = reg.betas[1]
+t1 = time.time()
+print(&quot;time in minutes: &quot;,(t1-t0)/60.0)
+rr = [&quot;rho&quot;+str(r) for r in rhovals]
+results = pd.DataFrame(best,columns=rr)
+results.describe()
+</pre></div>
+</div>
+</div>
+<p>The effect on the bias of the regression coefficient is similar but greater than for the simple spatial lag model, but the standard error changes in very much the same way, essentially doubling over the range of <span class="math notranslate nohighlight">\(\rho\)</span>.</p>
+<p>This is nicely illustrated by the series of frequency curves, with the right-most curve centered on 1.6.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reslong = results.melt(var_name=&#39;rho&#39;,value_name=&#39;b&#39;)
+sns.displot(reslong,x=&quot;b&quot;,hue=&quot;rho&quot;,kind=&quot;kde&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Other-Options">
+<h3>Other Options<a class="headerlink" href="#Other-Options" title="Link to this heading">¶</a></h3>
+<p>The <em>dgp</em> module contains several other options, such as:</p>
+<ul class="simple">
+<li><p>SLX error model with SAR and MA errors: <code class="docutils literal notranslate"><span class="pre">spreg.dgp_slxerror</span></code></p></li>
+<li><p>SAR-Error model: <code class="docutils literal notranslate"><span class="pre">spreg.dgp_lagerr</span></code></p></li>
+<li><p>SARMA model: <code class="docutils literal notranslate"><span class="pre">spreg.dgp_lagerr</span></code> with <code class="docutils literal notranslate"><span class="pre">model=&quot;ma&quot;</span></code></p></li>
+<li><p>GNS SAR model: <code class="docutils literal notranslate"><span class="pre">spreg.dgp_gns</span></code></p></li>
+<li><p>GNS MA model: <code class="docutils literal notranslate"><span class="pre">spreg.dgp_gns</span></code> with <code class="docutils literal notranslate"><span class="pre">model=&quot;ma&quot;</span></code></p></li>
+</ul>
+<p>In addition, the random errors can be generated for different variance values, and besides the default normal distribution, for a <code class="docutils literal notranslate"><span class="pre">laplace</span></code>, <code class="docutils literal notranslate"><span class="pre">cauchy</span></code> or <code class="docutils literal notranslate"><span class="pre">lognormal</span></code> distribution by specifying the argument <code class="docutils literal notranslate"><span class="pre">method</span></code>.</p>
+<p>Finally, the X matrix can be generated with a uniform distribution (the default), but also for independent normal vectors (<code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">'normal'</span></code>) and bivariate correlated vectors (<code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">'bivnormal'</span></code>). While the latter can only be implemented for two explanatory variables, the number of regressors for the other options is not constrained.</p>
+</section>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>Assess the properties of OLS for different forms of spatial misspecifications. For example, you could examine the effect of negative spatial coefficients, or of multiple spatially lagged regressors, as well as the misspecification caused by the models that were not included in the examples, such as SAR-Error and SLX-Error. You could also experiment with different sample sizes and different spatial weights, especially weights with different connectedness characteristics.</p>
+<p>For now, the treatment of estimation has been limited to classic OLS. Before venturing into the estimation of the spatial models, it is important to have a good sense of the implications of ignoring spatial effects and to what extent they matter.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/7_spatial_models.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

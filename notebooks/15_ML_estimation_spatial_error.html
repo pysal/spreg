@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Maximum Likelihood Estimation - Spatial Error Model &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GMM Estimation - Spatial Error Model" href="16_GMM_estimation_spatial_error.html" />
+    <link rel="prev" title="Instrumental Variables Estimation - Spatial Lag Model" href="14_IV_estimation_spatial_lag.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Maximum Likelihood Estimation - Spatial Error Model</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/21/2024)">(revised 09/21/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Variable-definition-and-data-input">Variable definition and data input</a><ul>
+<li><a class="reference internal" href="#OLS-and-SLX-with-Spatial-Diagnostics">OLS and SLX with Spatial Diagnostics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#OLS">OLS</a></li>
+<li><a class="reference internal" href="#SLX">SLX</a><ul>
+<li><a class="reference internal" href="#ML-Estimation-of-the-Error-Model">ML Estimation of the Error Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Principle">Principle</a></li>
+<li><a class="reference internal" href="#Implementation-methods">Implementation methods</a><ul>
+<li><a class="reference internal" href="#Predicted-Values-and-Residuals">Predicted Values and Residuals</a><ul>
+<li><a class="reference internal" href="#Spatial-pattern-of-residuals">Spatial pattern of residuals</a></li>
+<li><a class="reference internal" href="#Mapping-predicted-values-and-residuals">Mapping predicted values and residuals</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ML-Estimation-of-the-SLX-Error-Model">ML Estimation of the SLX-Error Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Likelihood-Ratio-Tests">Likelihood-Ratio Tests</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/15_ML_estimation_spatial_error.ipynb">notebooks/15_ML_estimation_spatial_error.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/15_ML_estimation_spatial_error.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Maximum-Likelihood-Estimation---Spatial-Error-Model">
+<h1>Maximum Likelihood Estimation - Spatial Error Model<a class="headerlink" href="#Maximum-Likelihood-Estimation---Spatial-Error-Model" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/21/2024)">
+<h2>(revised 09/21/2024)<a class="headerlink" href="#(revised-09/21/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>Similar to the treatment of the spatial lag model, the estimation of the spatial error model is covered in two notebooks. This first one covers Maximum Likelihood estimation. General Method of Moments (GMM) estimation is considered in a separate notebook.</p>
+<p>As mentioned in the spatial lag notebook, it should be kept in mind that the maximum likelihood estimation in <code class="docutils literal notranslate"><span class="pre">spreg</span></code> is primarily included for pedagogical purposes. Generally, the GMM approach is preferred. In addition, an optimal maximum likelihood estimation implementation, based on the Smirnov-Anselin (2001) approximation, is not currently implemented in <code class="docutils literal notranslate"><span class="pre">spreg</span></code>. It is implemented in C++ in <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code>. This is the preferred approach for ML estimation in large(r) data sets.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">spreg</span></code> module implements ML estimation of the spatial error model in the <code class="docutils literal notranslate"><span class="pre">ML_Error</span></code> class. The estimation of the SLX-Error model is implemented through the inclusion of the <code class="docutils literal notranslate"><span class="pre">slx_lags</span></code> argument.</p>
+</section>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>As before, the main module is <em>spreg</em> for spatial regression analysis. From this, <code class="docutils literal notranslate"><span class="pre">OLS</span></code> and <code class="docutils literal notranslate"><span class="pre">ML_Error</span></code> are imported. In addition, the utilities in <em>libpysal</em> (to open spatial weights and access the sample data set), <em>pandas</em> and <em>geopandas</em> are needed, as well as <em>time</em> (for some timing results), <em>matplotlib.pyplot</em> and <em>seaborn</em> for visualization. All of these rely on <em>numpy</em> as a dependency. Finally, in order to carry out the Likelihood Ratio tests, <code class="docutils literal notranslate"><span class="pre">likratiotest</span></code> is imported from
+<code class="docutils literal notranslate"><span class="pre">spreg.diagnostics</span></code>.</p>
+<p>The usual <em>numpy</em> <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code> is included as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import time
+import matplotlib.pyplot as plt
+import seaborn as sns
+from libpysal.io import open
+from libpysal.examples import get_path
+from libpysal.weights import lag_spatial
+
+from spreg import OLS, ML_Error
+from spreg.diagnostics import likratiotest
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+<li><p>DataFrame</p></li>
+<li><p>head</p></li>
+<li><p>describe</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>io.open</p></li>
+<li><p>examples.get_path</p></li>
+<li><p>weights.lag_spatial</p></li>
+</ul>
+</li>
+<li><p>from numpy:</p>
+<ul>
+<li><p>hstack</p></li>
+</ul>
+</li>
+<li><p>from matplotlib/seaborn:</p>
+<ul>
+<li><p>regplot</p></li>
+<li><p>show</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>spreg.OLS</p></li>
+<li><p>spreg.ML_Error</p></li>
+<li><p>spreg.diagnostics.likratiotest</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Variable-definition-and-data-input">
+<h2>Variable definition and data input<a class="headerlink" href="#Variable-definition-and-data-input" title="Link to this heading">¶</a></h2>
+<p>The data set and spatial weights are from the <strong>chicagoSDOH</strong> sample data set:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic indicators of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_q.gal</strong>: queen contiguity weights</p></li>
+</ul>
+<p>To illustrate the methods, the same descriptive model is used that relates the rate of uninsured households in a tract(for health insurance, <strong>EP_UNINSUR</strong>) to the lack of high school education (<strong>EP_NOHSDP</strong>), the economic deprivation index (<strong>HIS_ct</strong>), limited command of English (<strong>EP_LIMENG</strong>) and the lack of access to a vehicle (<strong>EP_NOVEH</strong>). This is purely illustrative of a spatial error specification and does not have a particular theoretical or policy motivation.</p>
+<p>The file names and variable names are set in the usual manner. Any customization for different data sets/weights and different variables should be specified in this top cell.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = get_path(&quot;Chi-SDOH.shp&quot;)     # input shape file with data
+infileq = get_path(&quot;Chi-SDOH_q.gal&quot;)     # queen contiguity weights created with GeoDa
+
+y_name = &#39;EP_UNINSUR&#39;
+x_names = [&#39;EP_NOHSDP&#39;,&#39;HIS_ct&#39;,&#39;EP_LIMENG&#39;,&#39;EP_NOVEH&#39;]
+ds_name = &#39;Chi-SDOH&#39;
+w_name = &#39;Chi-SDOH_q&#39;
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">read_file</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span></code> functions are used to access the sample data set and contiguity weights. The weights are row-standardized and the data frames for the dependent and explanatory variables are constructed. As before, this functionality is agnostic to the actual data sets and variables used, since it relies on the specification given in the initial block above.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = gpd.read_file(infileshp)
+wq =  open(infileq).read()
+wq.transform = &#39;r&#39;    # row-transform the weights
+y = dfs[y_name]
+x = dfs[x_names]
+</pre></div>
+</div>
+</div>
+<section id="OLS-and-SLX-with-Spatial-Diagnostics">
+<h3>OLS and SLX with Spatial Diagnostics<a class="headerlink" href="#OLS-and-SLX-with-Spatial-Diagnostics" title="Link to this heading">¶</a></h3>
+<p>For ease of reference, standard OLS and SLX regressions with spatial diagnostics included in this notebook as well. These results are identical to the ones provided in the spatial lag notebooks.</p>
+</section>
+</section>
+<section id="OLS">
+<h2>OLS<a class="headerlink" href="#OLS" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1 = OLS(y,x,w=wq,spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(ols1.summary)
+</pre></div>
+</div>
+</div>
+<p>The specification achieves an acceptable <span class="math notranslate nohighlight">\(R^2\)</span> of about 0.63 and all coefficients are positive and highly significant.</p>
+<p>The non-spatial diagnostics suggest non-normality as well as a hight degree of heteroskedasticity. There is no problem with multicollinearity.</p>
+<p>The spatial diagnostics against the SARERR alternatives show very significant LM-Lag and LM-Error, but of the two robust tests, only RLM-Lag is highly significant (RLM-Error only at p &lt; 0.03). Hence, there is a strong indication that a Lag rather than an Error alternative may be appropriate. While the joint LM test is also highly significant, this is likely due to a strong one-sided (Lag) alternative.</p>
+<p>Interestingly, the diagnostics against a spatial Durbin alternative strongly support the latter as well. Both LM tests and their robust forms are highly significant, and so is the joint test. Moreover, the value for the robust forms of the test is smaller than the original, which is the expected behavior (although not always reflected in empirical practice).</p>
+<p>In sum, in addition to a spatial Lag model as an alternative, the spatial Durbin specification deserves consideration as well.</p>
+</section>
+<section id="SLX">
+<h2>SLX<a class="headerlink" href="#SLX" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>slx1 = OLS(y,x,w=wq,slx_lags=1,spat_diag=True,moran=True,
+                 name_w=w_name,name_ds=ds_name)
+print(slx1.summary)
+</pre></div>
+</div>
+</div>
+<p>Relative to the classic regression model, the fit improves slightly, but the constant, <strong>EP_NOHSDP</strong> and <strong>HIS_CT</strong> become non-significant at p = 0.01 (they are marginally signifcant at p=0.05). All but one coefficient of the SLX terms are significant (<strong>W_EP_NOVEH</strong> is not). The signs and magnitudes of the SLX coefficients relative to their unlagged counterparts remain a bit confusing. Only for <strong>EP_LIMENG</strong> and <strong>W_EP_LIMENG</strong> are they the same, with the lag coefficient smaller than the
+unlagged one, in accordance with Tobler’s law. The coefficient for <strong>W_HIS_ct</strong> is significant and larger than that of <strong>HIS_ct</strong>, while the latter is not significant at p = 0.01. In other words, the interpretation of these results in terms of distance decay and Tobler’s law may be a bit problematic.</p>
+<p>In terms of diagnostics, there is a slight problem with multicollinearity (often the case in SLX specifications), strong non-normality and evidence of heteroskedasticity. Moran’s I is significant, as are both LM-tests, but neither of the robust forms is significant. Based on the relative magnitudes of the test statistics, there is a slight indication of a possible Lag alternative, i.e., a spatial Durbin specification. However, this indication is not as strong as that provided by the LM-SDM test
+statistics in the classic specification.</p>
+<section id="ML-Estimation-of-the-Error-Model">
+<h3>ML Estimation of the Error Model<a class="headerlink" href="#ML-Estimation-of-the-Error-Model" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Principle">
+<h2>Principle<a class="headerlink" href="#Principle" title="Link to this heading">¶</a></h2>
+<p>The spatial Error model is a regular linear regression model with spatially autoregressive error terms:</p>
+<div class="math notranslate nohighlight">
+\[y = X\beta + u, u = \lambda W + e,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda\)</span> is the spatial autoregressive (error) parameter</p>
+<p>The point of departure of the Maximum Likelihood estimation of this model is again the assumption of joint normality of the error terms. However, the error terms are no longer independent, but they have a covariance matrix that follows from the spatial autoregressive specification. Specifically:</p>
+<div class="math notranslate nohighlight">
+\[E[uu'] = \Sigma = \sigma^2 [(I - \lambda W)'(I - \lambda W)]^{-1},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma^2\)</span> is the variance of the remaining error terms.</p>
+<p>This leads to the log-likelihood function:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\ln L = -(n/2)(\ln 2\pi) - (n/2) \ln \sigma^2 + \ln | I - \lambda W | \\
+           - \frac{1}{2\sigma^2} (y - X \beta)'(I - \lambda W)'(I - \lambda W)(y - X \beta).\end{split}\]</div>
+<p>The last term in this expression is a sum of squared residuals in a regression of <span class="math notranslate nohighlight">\((I - \lambda W)y\)</span> on <span class="math notranslate nohighlight">\((I - \lambda W)X\)</span>, i.e., a standard OLS estimation, but based on the spatially filtered dependent and explanatory variables (of course, this assumes a value for <span class="math notranslate nohighlight">\(\lambda\)</span>). The regression of the spatially filtered variables is referred to as <em>spatially weighted least squares</em> or <em>spatial Cochran-Orcutt</em>, the latter due to its similarity to a familiar time series
+transformation.</p>
+<p>As in ths spatial lag case, maximization of the log-likelihood is simplified since a <em>concentrated</em> likelihood can be derived that is only a function of the single parameter <span class="math notranslate nohighlight">\(\lambda\)</span>. Once an estimate for <span class="math notranslate nohighlight">\(\lambda\)</span> is obtained, the corresponding estimates for <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\sigma^2\)</span> are easily computed. For technical details, see Chapter 10 of Anselin and Rey (2014).</p>
+<p>Inference is again based on an asymptotic variance matrix.</p>
+</section>
+<section id="Implementation-methods">
+<h2>Implementation methods<a class="headerlink" href="#Implementation-methods" title="Link to this heading">¶</a></h2>
+<p>ML estimation of the spatial error model works in the same way as for the lag model. It is implemented by means of <code class="docutils literal notranslate"><span class="pre">spreg.ML_Error</span></code>, with all the standard regression arguments (i.e., at a minimum, <strong>y</strong>, <strong>x</strong> and <strong>w</strong>). Again, three different methods are implemented: <code class="docutils literal notranslate"><span class="pre">full</span></code>, <code class="docutils literal notranslate"><span class="pre">ord</span></code> an <code class="docutils literal notranslate"><span class="pre">LU</span></code>. These differ only in the way the Jacobian term <span class="math notranslate nohighlight">\(\ln | I - \lambda W |\)</span> is computed.</p>
+<p>As in the lag case, the default optimization method is <em>brute force</em>, or <code class="docutils literal notranslate"><span class="pre">method=&quot;full&quot;</span></code>. The other options are the Ord eigenvalue method, <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;ord&quot;</span></code>, and the LU matrix decomposition, <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;LU&quot;</span></code>. Again, the latter is the only reliable method for larger data sets.</p>
+<p>The ML estimation is illustrated for the same specification as before, first using <code class="docutils literal notranslate"><span class="pre">method=&quot;full&quot;</span></code>. Since this is also the default, it is not necessary to explicitly include this argument, but it is listed here for clarity. To compare the relative speed of the different methods, <code class="docutils literal notranslate"><span class="pre">time.time()</span></code> is used.</p>
+<p>Unlike what holds for the spatial lag model, there are no impacts for the spatial error model, since any spillover effects are limited to the error terms. Since the model impacts are based on averages (conditional expectation of y given X), the error terms are immaterial (on average, they are zero).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+err1 = ML_Error(y,x,w=wq,method=&quot;full&quot;,
+                     name_w=w_name,name_ds=ds_name)
+t1 = time.time()
+print(&quot;Time in seconds: &quot;,t1-t0)
+print(err1.summary)
+</pre></div>
+</div>
+</div>
+<p>Even though the LM tests provided only weak evidence of an error alternative, the estimate of <span class="math notranslate nohighlight">\(\lambda\)</span>, 0.451, is highly significant. The other regression coefficients change slightly relative to the OLS estimates, but not nearly as much as was the case for the spatial lag model. In fact, the estimates should <em>not</em> change much, since OLS remains unbiased (but becomes inefficient) in the presence of spatial error autocorrelation.</p>
+<p>The measures of fit include a pseudo <span class="math notranslate nohighlight">\(R^2\)</span>, 0.633 (squared correlation between observed and predicted y), the log-likelihood and the AIC and SC information criteria. Since the lag and error models have the same number of parameters, their log-likelihoods are directly comparable. In the lag model, the result was -2418.99, here it is -2428.85. In other words, the log-likelihood in the lag model is somewhat <em>larger</em> than for the error model, confirming the indication given by the LM test
+statistics (in favor of the lag model).</p>
+<p>As before, important attributes of the results are stored in the regression object. These include the regression coefficients, in <strong>betas</strong>, with the spatial autoregressive coefficient as the last element. The latter is also included separately as <strong>lam</strong>. The standard errors are in <strong>std_err</strong>, z-statistics and p-values in <strong>z_stat</strong>, and the complete variance-covariance matrix is <strong>vm</strong>.</p>
+<p>Since there is no reduced form for the error model, there is only one type of predicted value, contained in <strong>predy</strong>. However, there are two types of residuals, the classic residual, <span class="math notranslate nohighlight">\(u = y - X \hat{\beta}\)</span>, stored in <strong>u</strong>, and the spatially filtered residuals, <span class="math notranslate nohighlight">\(u - \lambda W u\)</span>, stored in <strong>e_filtered</strong>. The estimate for the error variance, <span class="math notranslate nohighlight">\(\sigma^2\)</span>, is based on the latter.</p>
+<p>The contents of the <strong>betas</strong> and <strong>lam</strong> attributes show how the estimate for <span class="math notranslate nohighlight">\(\lambda\)</span> is also the last element in <strong>betas</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;betas &quot;,err1.betas)
+print(f&quot;lambda: {err1.lam:0.3f}&quot;)
+</pre></div>
+</div>
+</div>
+<p>The Ord eigenvalue method is invoked by means of <code class="docutils literal notranslate"><span class="pre">method=&quot;ord&quot;</span></code>. All other attributes are the same as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+err2 = ML_Error(y,x,w=wq,method=&quot;ord&quot;,
+                     name_w=w_name,name_ds=ds_name)
+t1 = time.time()
+print(&quot;Time in seconds: &quot;,t1-t0)
+print(err2.summary)
+</pre></div>
+</div>
+</div>
+<p>The coefficient estimates are identical to those obtained with the <code class="docutils literal notranslate"><span class="pre">full</span></code> method. There are some slight differences in the computed standard errors (and thus also in the z-values and p-values), but the overall effect is minimal.</p>
+<p>Again, all arguments are the same, except for <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;LU&quot;</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+err3 = ML_Error(y,x,w=wq,method=&quot;LU&quot;,
+                     name_w=w_name,name_ds=ds_name)
+t1 = time.time()
+print(&quot;Time in seconds: &quot;,t1-t0)
+print(err3.summary)
+</pre></div>
+</div>
+</div>
+<p>In this case, the estimation results are identical to those for the <code class="docutils literal notranslate"><span class="pre">full</span></code> method.</p>
+<section id="Predicted-Values-and-Residuals">
+<h3>Predicted Values and Residuals<a class="headerlink" href="#Predicted-Values-and-Residuals" title="Link to this heading">¶</a></h3>
+<p>The two types of residuals can be readily turned into a data frame by means of <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code> applied to an array constructed with <code class="docutils literal notranslate"><span class="pre">np.hstack</span></code>, in the same way as was done for the OLS predicted values and residuals. In the example, the associated variable names are <strong>resid</strong> and <strong>filtered</strong>, passed as the <code class="docutils literal notranslate"><span class="pre">columns</span></code> argument.</p>
+<p>Descriptive statistics are obtained with <code class="docutils literal notranslate"><span class="pre">describe()</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>preds = pd.DataFrame(np.hstack((err1.u,err1.e_filtered)),columns=[&#39;resid&#39;,&#39;filtered&#39;])
+preds.describe()
+</pre></div>
+</div>
+</div>
+<p>Note some important differences between the two concepts. The filtered residuals are the proper estimates for the regression error term e (not u). Clearly, it has a mean of zero, which is not quite the case for the unfiltered residuals. Also, the variance for the filtered residual is slightly smaller, but the range is very much smaller.</p>
+<p>The correlation between the two concepts is high, but not perfect, at 0.968.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(f&quot;Correlation between residuals:        {preds[&#39;resid&#39;].corr(preds[&#39;filtered&#39;]):0.3f}&quot;)
+</pre></div>
+</div>
+</div>
+<section id="Spatial-pattern-of-residuals">
+<h4>Spatial pattern of residuals<a class="headerlink" href="#Spatial-pattern-of-residuals" title="Link to this heading">¶</a></h4>
+<p>A final interesting comparison is between the spatial pattern of the two types of residuals. To assess this, a simple Moran scatterplot is constructed, where the spatial lag is computed by means of <code class="docutils literal notranslate"><span class="pre">libpysal.lag_spatial</span></code>. The plot itself is constructed with <code class="docutils literal notranslate"><span class="pre">sns.regplot</span></code>, which superimposes a regression line on the scatter plot of the spatial lag on the original variable. No customization of the graph is carried out.</p>
+<p>For the <em>naive</em> residuals, this yields the following plot.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>werr = lag_spatial(wq,preds[&#39;resid&#39;]).reshape(-1,1)
+sns.regplot(x=preds[&#39;resid&#39;],y=werr)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The regression line shows a strong positive slope, suggesting remaining spatial clustering.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wfor = lag_spatial(wq,preds[&#39;filtered&#39;]).reshape(-1,1)
+sns.regplot(x=preds[&#39;filtered&#39;],y=wfor)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>In contrast, the slope for the filtered residuals is essentially flat, suggesting that the spatial autocorrelation has been removed.</p>
+</section>
+<section id="Mapping-predicted-values-and-residuals">
+<h4>Mapping predicted values and residuals<a class="headerlink" href="#Mapping-predicted-values-and-residuals" title="Link to this heading">¶</a></h4>
+<p>Optionally, the predicted values and residuals can be added to the spatial data frame in order to construct associated maps. However, since these maps create only visual impressions of spatial patterning, this is not further pursued here.</p>
+</section>
+</section>
+<section id="ML-Estimation-of-the-SLX-Error-Model">
+<h3>ML Estimation of the SLX-Error Model<a class="headerlink" href="#ML-Estimation-of-the-SLX-Error-Model" title="Link to this heading">¶</a></h3>
+<p>ML estimation of the SLX-Error model is a special case of <code class="docutils literal notranslate"><span class="pre">spreg.ML_Error</span></code>, with the additional argument of <code class="docutils literal notranslate"><span class="pre">slx_lags=1</span></code> (or a larger value). Everything else remains the same. More specifically, the three methods of <code class="docutils literal notranslate"><span class="pre">full</span></code>, <code class="docutils literal notranslate"><span class="pre">ord</span></code> and <code class="docutils literal notranslate"><span class="pre">LU</span></code> are again available. Only the default <code class="docutils literal notranslate"><span class="pre">full</span></code> is considered here. The results are essentially the same for the other methods.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t0 = time.time()
+slxerr = ML_Error(y,x,w=wq,slx_lags=1,
+                    name_w=w_name,name_ds=ds_name)
+t1 = time.time()
+print(&quot;Time in seconds: &quot;,t1-t0)
+print(slxerr.summary)
+</pre></div>
+</div>
+</div>
+<p>Compared to the OLS SLX estimates, there are some minor changes, but much less so than for the spatial Durbin model. For example, <strong>W_EP_NOHSDP</strong> becomes marginally non-significant (p=0.02), whereas it was significant in OLS. This is the only lag coefficient where the sign differs from that of the original coefficient, which was also the case in OLS. In terms of fit, there is a slight improvement, from an AIC of 4903.5 in OLS to 4841.6 here (smaller is better).</p>
+<p>The spatial autoregressive coefficient, 0.400, is highly significant.</p>
+<p>As in the lag case, further refinements of the model specification can be carried out by eliminating some lag terms by means of <code class="docutils literal notranslate"><span class="pre">slx_vars</span></code>, as in the standard SLX model. This is not further pursued here.</p>
+</section>
+</section>
+<section id="Likelihood-Ratio-Tests">
+<h2>Likelihood-Ratio Tests<a class="headerlink" href="#Likelihood-Ratio-Tests" title="Link to this heading">¶</a></h2>
+<p>A likelihood ratio test is <span class="math notranslate nohighlight">\(LR = 2.0 \times (LogL_1 - LogL_0)\)</span>, where <span class="math notranslate nohighlight">\(LogL_1\)</span> is the log-likelihood for the <em>unrestricted</em> model (i.e., with more non-zero parameters), and <span class="math notranslate nohighlight">\(LogL_0\)</span> is the log-likelihood for the <em>restricted</em> model (i.e., where some parameters, like <span class="math notranslate nohighlight">\(\rho\)</span>, are set to zero). For example, a likelihood ratio test on the coefficient <span class="math notranslate nohighlight">\(\rho\)</span> in the spatial lag model would use the log likelihood in the spatial lag model as <span class="math notranslate nohighlight">\(LogL_1\)</span>, and the
+log-likelihood from the classic regression as <span class="math notranslate nohighlight">\(LogL_0\)</span>.</p>
+<p>The <span class="math notranslate nohighlight">\(LR\)</span> statistic is distributed as a Chi-square random variable with degrees of freedom equal to the number of restrictions, i.e., 1 for the spatial autoregressive coefficient, but more for the SLX and spatial Durbin models, depending on how many explanatory variables are included. The LR tests are an alternative to the Wald tests (asymptotic t-values) on the spatial coefficient and the LM tests for spatial effects considered earlier.</p>
+<p>The same likelihood ratio test as in the lag model can be implemented with <code class="docutils literal notranslate"><span class="pre">spreg.diagnostics.likratiotest</span></code>. Its two arguments are the regression object for the constrained model and the regression object for the unconstrained model. The result is a dictionary with the statistic (<code class="docutils literal notranslate"><span class="pre">likr</span></code>), the degrees of freedom (<code class="docutils literal notranslate"><span class="pre">df</span></code>) and the p-value (<code class="docutils literal notranslate"><span class="pre">p-value</span></code>)</p>
+<p>Four different LR test consider the following constraints:</p>
+<ul class="simple">
+<li><p>Error vs OLS, i.e., <span class="math notranslate nohighlight">\(\lambda = 0\)</span> in the Error model: arguments are <strong>ols1</strong> and <strong>err1</strong></p></li>
+<li><p>SLX-Error vs OLS, i.e., both <span class="math notranslate nohighlight">\(\lambda = 0\)</span> and <span class="math notranslate nohighlight">\(\gamma = 0\)</span> in the SLX-Error model: argumentes are <strong>ols1</strong> and <strong>slxerr</strong></p></li>
+<li><p>SLX-Error model vs Error model, i.e., <span class="math notranslate nohighlight">\(\gamma = 0\)</span> in the SLX-Error model: arguments are <strong>err1</strong> and <strong>slxerr</strong></p></li>
+<li><p>SLX-Error model vs SLX, i.e., <span class="math notranslate nohighlight">\(\lambda = 0\)</span> in the SLX-Error model: arguments are <strong>slx1</strong> and <strong>slxerr</strong></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>LR_Error = likratiotest(ols1,err1)
+LR_SLXO = likratiotest(ols1,slxerr)
+LR_SLXE = likratiotest(err1,slxerr)
+LR_SLXS = likratiotest(slx1,slxerr)
+
+print(f&quot;LR statistic Error-OLS: {LR_Error[&quot;likr&quot;]:0.3f}, d.f. {LR_Error[&quot;df&quot;]:2d}, p-value {LR_Error[&quot;p-value&quot;]:0.4f}&quot;)
+print(f&quot;LR statistic SLX-Err-OLS: {LR_SLXO[&quot;likr&quot;]:0.3f}, d.f. {LR_SLXO[&quot;df&quot;]:2d}, p-value {LR_SLXO[&quot;p-value&quot;]:0.4f}&quot;)
+print(f&quot;LR statistic SLX-Err-Error: {LR_SLXE[&quot;likr&quot;]:0.3f}, d.f. {LR_SLXE[&quot;df&quot;]:2d}, p-value {LR_SLXE[&quot;p-value&quot;]:0.4f}&quot;)
+print(f&quot;LR statistic SLX-Err-SLX: {LR_SLXS[&quot;likr&quot;]:0.3f}, d.f. {LR_SLXS[&quot;df&quot;]:2d}, p-value {LR_SLXS[&quot;p-value&quot;]:0.4f}&quot;)
+</pre></div>
+</div>
+</div>
+<p>In the current example, all null hypotheses are strongly rejected.</p>
+<p>For the error model in this example, the LM-Error test statistic was 88.33, the Wald test was 9.560^2 or 91.38, and the LR test (above) 72.72. Whereas the LR and Wald test follow the prescribed order (LM &lt; LR &lt; W), the LM-Lag test does not, which may point to potential remaining specification problems.</p>
+<p>As mentioned, the model can be refined by selectively setting <code class="docutils literal notranslate"><span class="pre">slx_vars</span></code>, but this is not pursued here.</p>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>As practice, different model specifications could be considered, including adding additional explanatory variables, selectively removing some lag terms, and using different spatial weights.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/15_ML_estimation_spatial_error.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

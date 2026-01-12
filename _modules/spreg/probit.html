@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.probit &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.probit</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Probit regression class and diagnostics.&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Luc Anselin lanselin@gmail.com, Pedro V. Amaral pedrovma@gmail.com&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span><span class="p">,</span> <span class="n">chi2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">libpysal</span><span class="w"> </span><span class="kn">import</span> <span class="n">weights</span>
+<span class="n">chisqprob</span> <span class="o">=</span> <span class="n">chi2</span><span class="o">.</span><span class="n">sf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_output</span> <span class="k">as</span> <span class="n">USER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">diagnostics</span> <span class="k">as</span> <span class="n">DIAGNOSTICS</span>  
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">diagnostics_probit</span> <span class="k">as</span> <span class="n">PROBDIAG</span>   
+<span class="kn">from</span><span class="w"> </span><span class="nn">.output</span><span class="w"> </span><span class="kn">import</span> <span class="n">output</span><span class="p">,</span> <span class="n">_probit_out</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">spdot</span><span class="p">,</span> <span class="n">spbroadcast</span><span class="p">,</span> <span class="n">set_warn</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Probit&quot;</span><span class="p">]</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseProbit</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Probit class to do the core estimation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    x           : array</span>
+<span class="sd">                  nxk array of independent variables (assumed to be aligned with y)</span>
+<span class="sd">    y           : array</span>
+<span class="sd">                  nx1 array of dependent binary variable</span>
+<span class="sd">    optim       : string</span>
+<span class="sd">                  Optimization method.</span>
+<span class="sd">                  Default: &#39;newton&#39; (Newton-Raphson).</span>
+<span class="sd">                  Alternatives: &#39;ncg&#39; (Newton-CG), &#39;bfgs&#39; (BFGS algorithm)</span>
+<span class="sd">    bstart      : list with starting values for betas</span>
+<span class="sd">    maxiter     : int</span>
+<span class="sd">                  Maximum number of iterations until optimizer stops</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x           : array</span>
+<span class="sd">                  Two dimensional array with n rows and one column for each</span>
+<span class="sd">                  independent (exogenous) variable, including the constant</span>
+<span class="sd">    xmean       : array</span>
+<span class="sd">                  kx1 vector with means of explanatory variables</span>
+<span class="sd">                  (for use in slopes)</span>
+<span class="sd">    y           : array</span>
+<span class="sd">                  nx1 array of dependent variable</span>
+<span class="sd">    optim       : string</span>
+<span class="sd">                  optimization method</span>
+<span class="sd">    maxiter     : int</span>
+<span class="sd">                  maximum number of iterations</span>
+<span class="sd">    q           : array</span>
+<span class="sd">                  nx1 array of transformed dependent variable 2*y - 1</span>
+<span class="sd">    betas       : array</span>
+<span class="sd">                  kx1 array with estimated coefficients</span>
+<span class="sd">    bstart      : list with starting values</span>
+<span class="sd">    predy       : array</span>
+<span class="sd">                  nx1 array of predicted y values (probabilities)</span>
+<span class="sd">    n           : int</span>
+<span class="sd">                  Number of observations</span>
+<span class="sd">    k           : int</span>
+<span class="sd">                  Number of variables</span>
+<span class="sd">    vm          : array</span>
+<span class="sd">                  Variance-covariance matrix (kxk)</span>
+<span class="sd">    logl        : float</span>
+<span class="sd">                  Log-Likelihhod of the estimation</span>
+<span class="sd">    xb          : predicted value of linear index</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    predybin    : predicted value as binary</span>
+<span class="sd">                  =1 for predy &gt; 0.5</span>
+<span class="sd">    phiy        : normal density at xb (phi function)</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    u_naive     : naive residuals y - predy</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    u_gen       : generalized residuals</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    warning     : boolean</span>
+<span class="sd">                  if True Maximum number of iterations exceeded or gradient</span>
+<span class="sd">                  and/or function calls not changing.</span>
+
+<span class="sd">    Examples - needs updating</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; np.set_printoptions(suppress=True) #prevent scientific format</span>
+<span class="sd">    &gt;&gt;&gt; dbf = libpysal.io.open(libpysal.examples.get_path(&#39;columbus.dbf&#39;),&#39;r&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([dbf.by_col(&#39;CRIME&#39;)]).T</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([dbf.by_col(&#39;INC&#39;), dbf.by_col(&#39;HOVAL&#39;)]).T</span>
+<span class="sd">    &gt;&gt;&gt; x = np.hstack((np.ones(y.shape),x))</span>
+<span class="sd">    &gt;&gt;&gt; model = spreg.probit.BaseProbit((y&gt;40).astype(float), x)</span>
+<span class="sd">    &gt;&gt;&gt; print(np.around(model.betas, decimals=6))</span>
+<span class="sd">    [[ 3.353811]</span>
+<span class="sd">     [-0.199653]</span>
+<span class="sd">     [-0.029514]]</span>
+
+<span class="sd">    &gt;&gt;&gt; print(np.around(model.vm, decimals=6))</span>
+<span class="sd">    [[ 0.852814 -0.043627 -0.008052]</span>
+<span class="sd">     [-0.043627  0.004114 -0.000193]</span>
+<span class="sd">     [-0.008052 -0.000193  0.00031 ]]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">optim</span><span class="o">=</span><span class="s2">&quot;newton&quot;</span><span class="p">,</span><span class="n">bstart</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmean</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optim</span> <span class="o">=</span> <span class="n">optim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bstart</span> <span class="o">=</span> <span class="n">bstart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
+
+        <span class="n">par_est</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">warning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">par_est</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">=</span> <span class="n">par_est</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logl</span> <span class="o">=</span> <span class="o">-</span><span class="n">par_est</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vm</span> <span class="o">=</span> <span class="o">-</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+
+        <span class="c1"># predicted values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predy</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predybin</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predy</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phiy</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xb</span><span class="p">)</span>
+        
+        <span class="c1"># residuals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u_naive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">predy</span>
+        <span class="n">Phi_prod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predy</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">predy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u_gen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phiy</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_naive</span> <span class="o">/</span> <span class="n">Phi_prod</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">par_est</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bstart</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bstart</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Incompatible number of parameters in starting values&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bstart</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">xty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">xtx</span><span class="p">,</span><span class="n">xty</span><span class="p">)</span>
+
+        <span class="n">flogl</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">par</span><span class="p">:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ll</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optim</span> <span class="o">==</span> <span class="s2">&quot;newton&quot;</span><span class="p">:</span>
+            <span class="n">fgrad</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">par</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+            <span class="n">fhess</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">par</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+            <span class="n">par_hat</span> <span class="o">=</span> <span class="n">newton</span><span class="p">(</span><span class="n">flogl</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">fgrad</span><span class="p">,</span> <span class="n">fhess</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)</span>
+            <span class="n">warn</span> <span class="o">=</span> <span class="n">par_hat</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fgrad</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">par</span><span class="p">:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optim</span> <span class="o">==</span> <span class="s2">&quot;bfgs&quot;</span><span class="p">:</span>
+                <span class="n">par_hat</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">fmin_bfgs</span><span class="p">(</span><span class="n">flogl</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">fgrad</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">warn</span> <span class="o">=</span> <span class="n">par_hat</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optim</span> <span class="o">==</span> <span class="s2">&quot;ncg&quot;</span><span class="p">:</span>
+                <span class="n">fhess</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">par</span><span class="p">:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+                <span class="n">par_hat</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">fmin_ncg</span><span class="p">(</span>
+                    <span class="n">flogl</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">fgrad</span><span class="p">,</span> <span class="n">fhess</span><span class="o">=</span><span class="n">fhess</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="mi">0</span>
+                <span class="p">)</span>
+                <span class="n">warn</span> <span class="o">=</span> <span class="n">par_hat</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">warn</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warn</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">par_hat</span><span class="p">,</span> <span class="n">warn</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">par</span><span class="p">):</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">par</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">qxb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+        <span class="n">ll</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">qxb</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">ll</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">par</span><span class="p">):</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">par</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">qxb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+        <span class="n">lamb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">qxb</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">qxb</span><span class="p">)</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">lamb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">gradient</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">par</span><span class="p">):</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">par</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">xb</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+        <span class="n">qxb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">xb</span>
+        <span class="n">lamb</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">qxb</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">qxb</span><span class="p">)</span>
+        <span class="n">hessian</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spbroadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">lamb</span> <span class="o">*</span> <span class="p">(</span><span class="n">lamb</span> <span class="o">+</span> <span class="n">xb</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">hessian</span>
+
+
+<div class="viewcode-block" id="Probit">
+<a class="viewcode-back" href="../../generated/spreg.Probit.html#spreg.Probit">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Probit</span><span class="p">(</span><span class="n">BaseProbit</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classic non-spatial Probit and spatial diagnostics. The class includes a</span>
+<span class="sd">    printout that formats all the results and tests in a nice format.</span>
+
+<span class="sd">    The diagnostics for spatial dependence currently implemented are:</span>
+
+<span class="sd">    * Pinkse Error :cite:`Pinkse2004`</span>
+
+<span class="sd">    * Kelejian and Prucha Moran&#39;s I :cite:`Kelejian2001`</span>
+
+<span class="sd">    * Pinkse &amp; Slade Error :cite:`Pinkse1998`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    x           : numpy.ndarray or pandas object</span>
+<span class="sd">                  nxk array of independent variables (assumed to be aligned with y)</span>
+<span class="sd">    y           : numpy.ndarray or pandas.Series</span>
+<span class="sd">                  nx1 array of dependent binary variable</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  PySAL weights instance aligned with y</span>
+<span class="sd">    slx_lags    : integer</span>
+<span class="sd">                  Number of spatial lags of X to include in the model specification.</span>
+<span class="sd">                  If slx_lags&gt;0, the specification becomes of the SLX type.</span>
+<span class="sd">    slx_vars    : variables to be lagged when slx_lags &gt; 0</span>
+<span class="sd">                  default = &quot;All&quot;, otherwise a list with Booleans indicating which</span>
+<span class="sd">                  variables must be lagged (True) or not (False)</span>
+<span class="sd">    optim       : string</span>
+<span class="sd">                  Optimization method.</span>
+<span class="sd">                  Default: &#39;newton&#39; (Newton-Raphson).</span>
+<span class="sd">                  Alternatives: &#39;ncg&#39; (Newton-CG), &#39;bfgs&#39; (BFGS algorithm)</span>
+<span class="sd">    bstart      : list</span>
+<span class="sd">                  list with starting values for betas, default = False</span>
+<span class="sd">    scalem      : string</span>
+<span class="sd">                  Method to calculate the scale of the marginal effects.</span>
+<span class="sd">                  Default: &#39;phimean&#39; (Mean of individual marginal effects)</span>
+<span class="sd">                  Alternative: &#39;xmean&#39; (Marginal effects at variables mean)</span>
+<span class="sd">    predflag    : flag to print prediction table</span>
+<span class="sd">    maxiter     : int</span>
+<span class="sd">                  Maximum number of iterations until optimizer stops</span>
+<span class="sd">    name_y       : string</span>
+<span class="sd">                   Name of dependent variable for use in output</span>
+<span class="sd">    name_x       : list of strings</span>
+<span class="sd">                   Names of independent variables for use in output</span>
+<span class="sd">    name_w       : string</span>
+<span class="sd">                   Name of weights matrix for use in output</span>
+<span class="sd">    name_ds      : string</span>
+<span class="sd">                   Name of dataset for use in output</span>
+
+<span class="sd">    Attributes </span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    x           : array</span>
+<span class="sd">                  Two dimensional array with n rows and one column for each</span>
+<span class="sd">                  independent (exogenous) variable, including the constant</span>
+<span class="sd">    xmean       : array</span>
+<span class="sd">                  kx1 vector with means of explanatory variables</span>
+<span class="sd">                  (for use in slopes)</span>
+<span class="sd">    y           : array</span>
+<span class="sd">                  nx1 array of dependent variable</span>
+<span class="sd">    w           : spatial weights object</span>
+<span class="sd">    optim       : string</span>
+<span class="sd">                  optimization method</span>
+<span class="sd">    predflag    : flag to print prediction table (predtable)</span>
+<span class="sd">    maxiter     : int</span>
+<span class="sd">                  maximum number of iterations</span>
+<span class="sd">    q           : array</span>
+<span class="sd">                  nx1 array of transformed dependent variable 2*y - 1</span>
+<span class="sd">    betas       : array</span>
+<span class="sd">                  kx1 array with estimated coefficients</span>
+<span class="sd">    bstart      : list with starting values for betas or False</span>
+<span class="sd">    predy       : array</span>
+<span class="sd">                  nx1 array of predicted y values (probabilities)</span>
+<span class="sd">    n           : int</span>
+<span class="sd">                  Number of observations</span>
+<span class="sd">    k           : int</span>
+<span class="sd">                  Number of variables</span>
+<span class="sd">    vm          : array</span>
+<span class="sd">                  Variance-covariance matrix (kxk)</span>
+<span class="sd">    logl        : float</span>
+<span class="sd">                  Log-Likelihhod of the estimation</span>
+<span class="sd">    xb          : predicted value of linear index</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    predybin    : predicted value as binary</span>
+<span class="sd">                  =1 for predy &gt; 0.5</span>
+<span class="sd">    phiy        : normal density at xb (phi function)</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    u_naive     : naive residuals y - predy</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    u_gen       : generalized residuals</span>
+<span class="sd">                  nx1 array</span>
+<span class="sd">    warning     : boolean</span>
+<span class="sd">                  if True Maximum number of iterations exceeded or gradient</span>
+<span class="sd">                  and/or function calls not changing.</span>
+<span class="sd">    std_err     : standard errors of estimates</span>
+<span class="sd">    z_stat      : list of tuples</span>
+<span class="sd">                  z statistic; each tuple contains the pair (statistic,</span>
+<span class="sd">                  p-value), where each is a float</span>
+<span class="sd">    predtable   : dictionary</span>
+<span class="sd">                  includes margins and cells of actual and predicted</span>
+<span class="sd">                  values for discrete choice model</span>
+<span class="sd">    fit         : a dictionary containing various measures of fit</span>
+<span class="sd">                  TPR    : true positive rate (sensitivity, recall, hit rate)</span>
+<span class="sd">                  TNR    : true negative rate (specificity, selectivity)</span>
+<span class="sd">                  PREDPC : accuracy, percent correctly predicted</span>
+<span class="sd">                  BA     : balanced accuracy</span>
+<span class="sd">    predpc      : float</span>
+<span class="sd">                  Percent of y correctly predicted (legacy)</span>
+<span class="sd">    LRtest      : dictionary</span>
+<span class="sd">                   contains the statistic for the null model (L0), the LR test(likr), </span>
+<span class="sd">                   the degrees of freedom (df) and the p-value (pvalue)</span>
+<span class="sd">    L0          : likelihood of null model</span>
+<span class="sd">    LR          : tuple (legacy)</span>
+<span class="sd">                  Likelihood Ratio test of all coefficients = 0</span>
+<span class="sd">                  (test statistics, p-value)</span>
+<span class="sd">    mcfadrho    : McFadden rho statistics of fit</span>
+<span class="sd">    scale       : float</span>
+<span class="sd">                  Scale of the marginal effects.</span>
+<span class="sd">    slopes      : array</span>
+<span class="sd">                  Marginal effects of the independent variables (k-1x1)</span>
+<span class="sd">    slopes_vm   : array</span>
+<span class="sd">                  Variance-covariance matrix of the slopes (k-1xk-1)</span>
+<span class="sd">    slopes_std_err : estimates of standard errors of marginal effects</span>
+<span class="sd">    slopes_z_stat  : tuple with z-statistics and p-values for marginal effects</span>
+<span class="sd">    Pinkse_error: array with statistic and p-value</span>
+<span class="sd">                  Lagrange Multiplier test against spatial error correlation.</span>
+<span class="sd">                  Implemented as presented in :cite:`Pinkse2004`</span>
+<span class="sd">    KP_error    : array with statistic and p-value</span>
+<span class="sd">                  Moran&#39;s I type test against spatial error correlation.</span>
+<span class="sd">                  Implemented as presented in :cite:`Kelejian2001`</span>
+<span class="sd">    PS_error    : array with statistic and p-value</span>
+<span class="sd">                  Lagrange Multiplier test against spatial error correlation.</span>
+<span class="sd">                  Implemented as presented in :cite:`Pinkse1998`</span>
+<span class="sd">    name_y       : string</span>
+<span class="sd">                   Name of dependent variable for use in output</span>
+<span class="sd">    name_x       : list of strings</span>
+<span class="sd">                   Names of independent variables for use in output</span>
+<span class="sd">    name_w       : string</span>
+<span class="sd">                   Name of weights matrix for use in output</span>
+<span class="sd">    name_ds      : string</span>
+<span class="sd">                   Name of dataset for use in output</span>
+<span class="sd">    title        : string</span>
+<span class="sd">                   Name of the regression method used</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    We first need to import the needed modules, namely numpy to convert the</span>
+<span class="sd">    data we read into arrays that ``spreg`` understands and ``libpysal`` to</span>
+<span class="sd">    perform all the analysis.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; np.set_printoptions(suppress=True) #prevent scientific format</span>
+
+<span class="sd">    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().</span>
+<span class="sd">    This is the DBF associated with the Columbus shapefile.  Note that</span>
+<span class="sd">    libpysal.io.open() also reads data in CSV format; since the actual class</span>
+<span class="sd">    requires data to be passed in as numpy arrays, the user can read their</span>
+<span class="sd">    data in using any method.</span>
+
+<span class="sd">    &gt;&gt;&gt; dbf = libpysal.io.open(libpysal.examples.get_path(&#39;columbus.dbf&#39;),&#39;r&#39;)</span>
+
+<span class="sd">    Extract the CRIME column (crime) from the DBF file and make it the</span>
+<span class="sd">    dependent variable for the regression. Note that libpysal requires this to be</span>
+<span class="sd">    an numpy array of shape (n, 1) as opposed to the also common shape of (n, )</span>
+<span class="sd">    that other packages accept. Since we want to run a probit model and for this</span>
+<span class="sd">    example we use the Columbus data, we also need to transform the continuous</span>
+<span class="sd">    CRIME variable into a binary variable. As in :cite:`McMillen1992`, we define</span>
+<span class="sd">    y = 1 if CRIME &gt; 40.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([dbf.by_col(&#39;CRIME&#39;)]).T</span>
+<span class="sd">    &gt;&gt;&gt; y = (y&gt;40).astype(float)</span>
+
+<span class="sd">    Extract HOVAL (home values) and INC (income) vectors from the DBF to be used as</span>
+<span class="sd">    independent variables in the regression.  Note that libpysal requires this to</span>
+<span class="sd">    be an nxj numpy array, where j is the number of independent variables (not</span>
+<span class="sd">    including a constant). By default this class adds a vector of ones to the</span>
+<span class="sd">    independent variables passed in.</span>
+
+<span class="sd">    &gt;&gt;&gt; names_to_extract = [&#39;INC&#39;, &#39;HOVAL&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([dbf.by_col(name) for name in names_to_extract]).T</span>
+
+<span class="sd">    Since we want to the test the probit model for spatial dependence, we need to</span>
+<span class="sd">    specify the spatial weights matrix that includes the spatial configuration of</span>
+<span class="sd">    the observations into the error component of the model. To do that, we can open</span>
+<span class="sd">    an already existing gal file or create a new one. In this case, we will use</span>
+<span class="sd">    ``columbus.gal``, which contains contiguity relationships between the</span>
+<span class="sd">    observations in the Columbus dataset we are using throughout this example.</span>
+<span class="sd">    Note that, in order to read the file, not only to open it, we need to</span>
+<span class="sd">    append &#39;.read()&#39; at the end of the command.</span>
+
+<span class="sd">    &gt;&gt;&gt; w = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.gal&quot;), &#39;r&#39;).read()</span>
+
+<span class="sd">    Unless there is a good reason not to do it, the weights have to be</span>
+<span class="sd">    row-standardized so every row of the matrix sums to one. In libpysal, this</span>
+<span class="sd">    can be easily performed in the following way:</span>
+
+<span class="sd">    &gt;&gt;&gt; w.transform=&#39;r&#39;</span>
+
+<span class="sd">    We are all set with the preliminaries, we are good to run the model. In this</span>
+<span class="sd">    case, we will need the variables and the weights matrix. If we want to</span>
+<span class="sd">    have the names of the variables printed in the output summary, we will</span>
+<span class="sd">    have to pass them in as well, although this is optional.</span>
+
+<span class="sd">    &gt;&gt;&gt; from spreg import Probit</span>
+<span class="sd">    &gt;&gt;&gt; model = Probit(y, x, w=w, name_y=&#39;crime&#39;, name_x=[&#39;income&#39;,&#39;home value&#39;], name_ds=&#39;columbus&#39;, name_w=&#39;columbus.gal&#39;)</span>
+
+<span class="sd">    Once we have run the model, we can explore a little bit the output. The</span>
+<span class="sd">    regression object we have created has many attributes so take your time to</span>
+<span class="sd">    discover them.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.around(model.betas, decimals=6)</span>
+<span class="sd">    array([[ 3.353811],</span>
+<span class="sd">           [-0.199653],</span>
+<span class="sd">           [-0.029514]])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.around(model.vm, decimals=6)</span>
+<span class="sd">    array([[ 0.852814, -0.043627, -0.008052],</span>
+<span class="sd">           [-0.043627,  0.004114, -0.000193],</span>
+<span class="sd">           [-0.008052, -0.000193,  0.00031 ]])</span>
+
+<span class="sd">    Since we have provided a spatial weigths matrix, the diagnostics for</span>
+<span class="sd">    spatial dependence have also been computed. We can access them and their</span>
+<span class="sd">    p-values individually:</span>
+
+<span class="sd">    &gt;&gt;&gt; tests = np.array([[&#39;Pinkse_error&#39;,&#39;KP_error&#39;,&#39;PS_error&#39;]])</span>
+<span class="sd">    &gt;&gt;&gt; stats = np.array([[model.Pinkse_error[0],model.KP_error[0],model.PS_error[0]]])</span>
+<span class="sd">    &gt;&gt;&gt; pvalue = np.array([[model.Pinkse_error[1],model.KP_error[1],model.PS_error[1]]])</span>
+<span class="sd">    &gt;&gt;&gt; print(np.hstack((tests.T,np.around(np.hstack((stats.T,pvalue.T)),6))))</span>
+<span class="sd">    [[&#39;Pinkse_error&#39; &#39;3.131719&#39; &#39;0.076783&#39;]</span>
+<span class="sd">     [&#39;KP_error&#39; &#39;1.721312&#39; &#39;0.085194&#39;]</span>
+<span class="sd">     [&#39;PS_error&#39; &#39;2.558166&#39; &#39;0.109726&#39;]]</span>
+
+<span class="sd">    Or we can easily obtain a full summary of all the results nicely formatted and</span>
+<span class="sd">    ready to be printed simply by typing &#39;print model.summary&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Probit.__init__">
+<a class="viewcode-back" href="../../generated/spreg.Probit.html#spreg.Probit.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">slx_vars</span> <span class="o">=</span> <span class="s2">&quot;All&quot;</span><span class="p">,</span>
+        <span class="n">optim</span><span class="o">=</span><span class="s2">&quot;newton&quot;</span><span class="p">,</span>
+        <span class="n">bstart</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">scalem</span><span class="o">=</span><span class="s2">&quot;phimean&quot;</span><span class="p">,</span>
+        <span class="n">predflag</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">vm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">name_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_ds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">spat_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_arrays</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">name_y</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_y</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">name_y</span><span class="p">)</span>
+        <span class="n">x_constant</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+        <span class="n">set_warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_x</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_x</span><span class="p">(</span><span class="n">name_x</span><span class="p">,</span> <span class="n">x_constant</span><span class="p">)</span>
+
+        <span class="n">w_required</span><span class="o">=</span><span class="kc">False</span>
+        <span class="k">if</span> <span class="n">spat_diag</span><span class="p">:</span>
+            <span class="n">w_required</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_weights</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_required</span><span class="o">=</span><span class="n">w_required</span><span class="p">,</span> <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx_lags</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x_constant</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">flex_wx</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="n">x_constant</span><span class="p">,</span><span class="n">name_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">,</span><span class="n">constant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                            <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx_lags</span><span class="p">,</span><span class="n">slx_vars</span><span class="o">=</span><span class="n">slx_vars</span><span class="p">)</span>            
+
+        <span class="n">BaseProbit</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_constant</span><span class="p">,</span> <span class="n">optim</span><span class="o">=</span><span class="n">optim</span><span class="p">,</span> <span class="n">bstart</span><span class="o">=</span><span class="n">bstart</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;CLASSIC PROBIT ESTIMATOR&quot;</span>
+        <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">+=</span> <span class="s2">&quot; WITH SPATIALLY LAGGED X (SLX)&quot;</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">slx_lags</span> <span class="o">=</span> <span class="n">slx_lags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_ds</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_ds</span><span class="p">(</span><span class="n">name_ds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_y</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_y</span><span class="p">(</span><span class="n">name_y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_w</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_w</span><span class="p">(</span><span class="n">name_w</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalem</span> <span class="o">=</span> <span class="n">scalem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predflag</span> <span class="o">=</span> <span class="n">predflag</span>  <span class="c1"># flag to print prediction table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>   <span class="c1"># note, not sparse</span>
+
+        <span class="c1"># standard errors and z, p-values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std_err</span> <span class="o">=</span> <span class="n">DIAGNOSTICS</span><span class="o">.</span><span class="n">se_betas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_stat</span> <span class="o">=</span> <span class="n">DIAGNOSTICS</span><span class="o">.</span><span class="n">t_stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">z_stat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># truepos, trueneg, predpc - measures of fit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predtable</span> <span class="o">=</span> <span class="n">PROBDIAG</span><span class="o">.</span><span class="n">pred_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span> <span class="o">=</span> <span class="n">PROBDIAG</span><span class="o">.</span><span class="n">probit_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predpc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">[</span><span class="s2">&quot;PREDPC&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LRtest</span> <span class="o">=</span> <span class="n">PROBDIAG</span><span class="o">.</span><span class="n">probit_lrtest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LRtest</span><span class="p">[</span><span class="s2">&quot;L0&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LR</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LRtest</span><span class="p">[</span><span class="s2">&quot;likr&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">LRtest</span><span class="p">[</span><span class="s2">&quot;p-value&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcfadrho</span> <span class="o">=</span> <span class="n">PROBDIAG</span><span class="o">.</span><span class="n">mcfad_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># impact measures</span>
+        <span class="n">scale</span><span class="p">,</span><span class="n">slopes</span><span class="p">,</span><span class="n">slopes_vm</span><span class="p">,</span><span class="n">slopes_std_err</span><span class="p">,</span><span class="n">slopes_z_stat</span> <span class="o">=</span> <span class="n">PROBDIAG</span><span class="o">.</span><span class="n">probit_ape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slopes</span> <span class="o">=</span> <span class="n">slopes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slopes_vm</span> <span class="o">=</span> <span class="n">slopes_vm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slopes_std_err</span> <span class="o">=</span> <span class="n">slopes_std_err</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slopes_z_stat</span> <span class="o">=</span> <span class="n">slopes_z_stat</span>
+
+        <span class="c1"># tests for spatial autocorrelation</span>
+        <span class="k">if</span> <span class="n">spat_diag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Pinkse_error</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">KP_error</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">PS_error</span> <span class="o">=</span> <span class="n">PROBDIAG</span><span class="o">.</span><span class="n">sp_tests</span><span class="p">(</span><span class="n">regprob</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1">#output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;var_names&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;var_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;regime&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;equation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other_top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">other_mid</span><span class="p">,</span> <span class="n">other_end</span> <span class="o">=</span> <span class="n">_probit_out</span><span class="p">(</span><span class="n">reg</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">spat_diag</span><span class="o">=</span><span class="n">spat_diag</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">(</span><span class="n">reg</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">vm</span><span class="o">=</span><span class="n">vm</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">other_end</span><span class="o">=</span><span class="n">other_end</span><span class="p">,</span> <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">newton</span><span class="p">(</span><span class="n">flogl</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">fgrad</span><span class="p">,</span> <span class="n">fhess</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Newton-Raphson method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    flogl       : lambda</span>
+<span class="sd">                  Function to calculate the log-likelihood</span>
+<span class="sd">    start       : array</span>
+<span class="sd">                  kx1 array of starting values</span>
+<span class="sd">    fgrad       : lambda</span>
+<span class="sd">                  Function to calculate the gradient</span>
+<span class="sd">    fhess       : lambda</span>
+<span class="sd">                  Function to calculate the hessian</span>
+<span class="sd">    maxiter     : int</span>
+<span class="sd">                  Maximum number of iterations until optimizer stops</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">par_hat0</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">iteration</span> <span class="o">&lt;</span> <span class="n">maxiter</span> <span class="ow">and</span> <span class="n">m</span> <span class="o">&gt;=</span> <span class="mf">1e-04</span><span class="p">:</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="o">-</span><span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">fhess</span><span class="p">(</span><span class="n">par_hat0</span><span class="p">))</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">fgrad</span><span class="p">(</span><span class="n">par_hat0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">Hg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">par_hat0</span> <span class="o">=</span> <span class="n">par_hat0</span> <span class="o">+</span> <span class="n">Hg</span>
+        <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Hg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="n">maxiter</span><span class="p">:</span>
+        <span class="n">warn</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">logl</span> <span class="o">=</span> <span class="n">flogl</span><span class="p">(</span><span class="n">par_hat0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">par_hat0</span><span class="p">,</span> <span class="n">logl</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">start_suppress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">get_printoptions</span><span class="p">()[</span><span class="s2">&quot;suppress&quot;</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="n">start_suppress</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">libpysal</span>
+
+    <span class="n">dbf</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.dbf&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dbf</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s2">&quot;CRIME&quot;</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">var_x</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;INC&quot;</span><span class="p">,</span> <span class="s2">&quot;HOVAL&quot;</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dbf</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_x</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.gal&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span>
+    <span class="n">probit1</span> <span class="o">=</span> <span class="n">Probit</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mi">40</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+        <span class="n">name_x</span><span class="o">=</span><span class="n">var_x</span><span class="p">,</span>
+        <span class="n">name_y</span><span class="o">=</span><span class="s2">&quot;CRIME&quot;</span><span class="p">,</span>
+        <span class="n">name_ds</span><span class="o">=</span><span class="s2">&quot;Columbus&quot;</span><span class="p">,</span>
+        <span class="n">name_w</span><span class="o">=</span><span class="s2">&quot;columbus.dbf&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">probit1</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

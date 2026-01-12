@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>spreg.ML_Lag_Regimes &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="spreg.ML_Error_Regimes" href="spreg.ML_Error_Regimes.html" />
+    <link rel="prev" title="spreg.TSLS_Regimes" href="spreg.TSLS_Regimes.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">spreg.ML_Lag_Regimes</a><ul>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes</span></code></a><ul>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.__init__"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.ML_Lag_Regimes_Multi"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.ML_Lag_Regimes_Multi()</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.mean_y"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.mean_y</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.sig2n"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.sig2n</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.sig2n_k"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.sig2n_k</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.std_y"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.std_y</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.utu"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.utu</span></code></a></li>
+<li><a class="reference internal" href="#spreg.ML_Lag_Regimes.vm"><code class="docutils literal notranslate"><span class="pre">ML_Lag_Regimes.vm</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <section id="spreg-ml-lag-regimes">
+<h1>spreg.ML_Lag_Regimes<a class="headerlink" href="#spreg-ml-lag-regimes" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">spreg.</span></span><span class="sig-name descname"><span class="pre">ML_Lag_Regimes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regimes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant_regi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'many'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols2regi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime_lag_sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_diag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_impacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_ds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_regimes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/ml_lag_regimes.html#ML_Lag_Regimes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spreg.ML_Lag_Regimes" title="Link to this definition">¶</a></dt>
+<dd><p>ML estimation of the spatial lag model with regimes (note no consistency 
+checks, diagnostics or constants added) <span id="id1">[<a class="reference internal" href="../references.html#id3" title="Luc Anselin. Spatial Econometrics: Methods and Models. Kluwer, Dordrecht, 1988.">Ans88</a>]</span>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code></a></span></dt><dd><p>nx1 array for dependent variable</p>
+</dd>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v2.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas</span></code></a> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></span></dt><dd><p>Two dimensional array with n rows and one column for each
+independent (exogenous) variable, excluding the constant</p>
+</dd>
+<dt><strong>regimes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code></a></span></dt><dd><p>List of n values with the mapping of each
+observation to a regime. Assumed to be aligned with ‘x’.</p>
+</dd>
+<dt><strong>constant_regi: string</strong></dt><dd><p>Switcher controlling the constant term setup. It may take
+the following values:</p>
+<ul class="simple">
+<li><p>‘one’: a vector of ones is appended to x and held constant across regimes</p></li>
+<li><p>‘many’: a vector of ones is appended to x and considered different per regime (default)</p></li>
+</ul>
+</dd>
+<dt><strong>cols2regi</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, ‘all’</span></dt><dd><p>Argument indicating whether each
+column of x should be considered as different per regime
+or held constant across regimes (False).
+If a list, k booleans indicating for each variable the
+option (True if one per regime, False to be held constant).
+If ‘all’ (default), all the variables vary by regime.</p>
+</dd>
+<dt><strong>w</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sparse</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">matrix</span></code></span></dt><dd><p>Spatial weights sparse matrix</p>
+</dd>
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>if ‘full’, brute force calculation (full matrix expressions)
+if ‘ord’, Ord eigenvalue method
+if ‘LU’, LU sparse matrix decomposition</p>
+</dd>
+<dt><strong>epsilon</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>tolerance criterion in mimimize_scalar function and inverse_product</p>
+</dd>
+<dt><strong>slx_lags</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integer</span></code></span></dt><dd><p>Number of spatial lags of X to include in the model specification.
+If slx_lags&gt;0, the specification becomes of the Spatial Durbin type.</p>
+</dd>
+<dt><strong>slx_vars</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">either</span></code> “all” (<code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code>) <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">booleans</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <a class="reference external" href="https://docs.python.org/3/library/select.html#module-select" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">variables</span></code></span></dt><dd><p>to be lagged</p>
+</dd>
+<dt><strong>regime_lag_sep: boolean</strong></dt><dd><p>If True, the spatial parameter for spatial lag is also
+computed according to different regimes. If False (default),
+the spatial parameter is fixed accross regimes.</p>
+</dd>
+<dt><strong>spat_diag</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If True, then compute Common Factor Hypothesis test when applicable</p>
+</dd>
+<dt><strong>spat_impacts</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><dl class="simple">
+<dt>Include average direct impact (ADI), average indirect impact (AII),</dt><dd><p>and average total impact (ATI) in summary results.
+Options are ‘simple’, ‘full’, ‘power’, ‘all’ or None.
+See sputils.spmultiplier for more information.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>cores</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Specifies if multiprocessing is to be used
+Default: no multiprocessing, cores = False
+Note: Multiprocessing may not work on all platforms.</p>
+</dd>
+<dt><strong>vm</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>if True, include variance-covariance matrix in summary
+results</p>
+</dd>
+<dt><strong>name_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dependent variable for use in output</p>
+</dd>
+<dt><strong>name_x</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">strings</span></code></span></dt><dd><p>Names of independent variables for use in output</p>
+</dd>
+<dt><strong>name_w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of weights matrix for use in output</p>
+</dd>
+<dt><strong>name_ds</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dataset for use in output</p>
+</dd>
+<dt><strong>name_regimes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of regimes variable for use in output</p>
+</dd>
+<dt><strong>latex</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Specifies if summary is to be printed in latex format</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>output</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataframe</span></code></span></dt><dd><p>regression results pandas dataframe</p>
+</dd>
+<dt><strong>summary</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Summary of regression results and diagnostics (note: use in
+conjunction with the print command)</p>
+</dd>
+<dt><strong>betas</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>(k+1)x1 array of estimated coefficients (rho first)</p>
+</dd>
+<dt><strong>rho</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>estimate of spatial autoregressive coefficient
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>u</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>nx1 array of residuals</p>
+</dd>
+<dt><strong>predy</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>nx1 array of predicted y values</p>
+</dd>
+<dt><strong>n</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integer</span></code></span></dt><dd><p>Number of observations</p>
+</dd>
+<dt><strong>k</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integer</span></code></span></dt><dd><p>Number of variables for which coefficients are estimated
+(including the constant, excluding the rho)
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>nx1 array for dependent variable</p>
+</dd>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Two dimensional array with n rows and one column for each
+independent (exogenous) variable, including the constant
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>log Jacobian method.
+if ‘full’: brute force (full matrix computations)
+if ‘ord’, Ord eigenvalue method
+if ‘LU’, LU sparse matrix decomposition</p>
+</dd>
+<dt><strong>cfh_test</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></span></dt><dd><p>Common Factor Hypothesis test; tuple contains the pair (statistic,
+p-value). Only when it applies (see specific documentation).</p>
+</dd>
+<dt><strong>epsilon</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>tolerance criterion used in minimize_scalar function and inverse_product</p>
+</dd>
+<dt><strong>mean_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Mean of dependent variable</p>
+</dd>
+<dt><strong>std_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Standard deviation of dependent variable</p>
+</dd>
+<dt><strong>vm</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Variance covariance matrix (k+1 x k+1), all coefficients</p>
+</dd>
+<dt><strong>vm1</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Variance covariance matrix (k+2 x k+2), includes sig2
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>sig2</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Sigma squared used in computations
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>logll</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>maximized log-likelihood (including constant terms)
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>aic</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Akaike information criterion
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>schwarz</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Schwarz criterion
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>predy_e</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>predicted values from reduced form</p>
+</dd>
+<dt><strong>e_pred</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>prediction errors using reduced form predicted values</p>
+</dd>
+<dt><strong>pr2</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Pseudo R squared (squared correlation between y and ypred)
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>pr2_e</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Pseudo R squared (squared correlation between y and ypred_e
+(using reduced form))
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>std_err</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>1xk array of standard errors of the betas    
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>z_stat</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">tuples</span></code></span></dt><dd><p>z statistic; each tuple contains the pair (statistic,
+p-value), where each is a float
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>sp_multipliers: dict</strong></dt><dd><p>Dictionary of spatial multipliers (if spat_impacts is not None)
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>name_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dependent variable for use in output</p>
+</dd>
+<dt><strong>name_x</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">strings</span></code></span></dt><dd><p>Names of independent variables for use in output</p>
+</dd>
+<dt><strong>name_w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of weights matrix for use in output</p>
+</dd>
+<dt><strong>name_ds</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dataset for use in output</p>
+</dd>
+<dt><strong>name_regimes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of regimes variable for use in output</p>
+</dd>
+<dt><strong>title</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the regression method used
+Only available in dictionary ‘multi’ when multiple regressions
+(see ‘multi’ below for details)</p>
+</dd>
+<dt><strong>regimes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>List of n values with the mapping of each
+observation to a regime. Assumed to be aligned with ‘x’.</p>
+</dd>
+<dt><strong>constant_regi: [‘one’, ‘many’]</strong></dt><dd><p>Ignored if regimes=False. Constant option for regimes.
+Switcher controlling the constant term setup. It may take
+the following values:</p>
+<ul class="simple">
+<li><p>‘one’: a vector of ones is appended to x and held constant across regimes</p></li>
+<li><p>‘many’: a vector of ones is appended to x and considered different per regime</p></li>
+</ul>
+</dd>
+<dt><strong>cols2regi</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, ‘all’</span></dt><dd><p>Ignored if regimes=False. Argument indicating whether each
+column of x should be considered as different per regime
+or held constant across regimes (False).
+If a list, k booleans indicating for each variable the
+option (True if one per regime, False to be held constant).
+If ‘all’, all the variables vary by regime.</p>
+</dd>
+<dt><strong>regime_lag_sep: boolean</strong></dt><dd><p>If True, the spatial parameter for spatial lag is also
+computed according to different regimes. If False (default),
+the spatial parameter is fixed accross regimes.</p>
+</dd>
+<dt><strong>regime_err_sep: boolean</strong></dt><dd><p>always set to False - kept for compatibility with other
+regime models</p>
+</dd>
+<dt><strong>kr</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of variables/columns to be “regimized” or subject
+to change by regime. These will result in one parameter
+estimate by regime for each variable (i.e. nr parameters per
+variable)</p>
+</dd>
+<dt><strong>kf</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of variables/columns to be considered fixed or
+global across regimes and hence only obtain one parameter
+estimate</p>
+</dd>
+<dt><strong>nr</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of different regimes in the ‘regimes’ list</p>
+</dd>
+<dt><strong>multi</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dictionary</span></code></span></dt><dd><p>Only available when multiple regressions are estimated,
+i.e. when regime_err_sep=True and no variable is fixed
+across regimes.
+Contains all attributes of each individual regression</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Open data baltim.dbf using pysal and create the variables matrices and weights matrix.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">libpysal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libpysal</span><span class="w"> </span><span class="kn">import</span> <span class="n">examples</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libpysal.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_example</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libpysal.weights</span><span class="w"> </span><span class="kn">import</span> <span class="n">Queen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">spreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">ML_Lag_Regimes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#prevent scientific format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">baltimore</span> <span class="o">=</span> <span class="n">load_example</span><span class="p">(</span><span class="s1">&#39;Baltimore&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">baltimore</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;baltim.dbf&quot;</span><span class="p">),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">baltimore</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;baltim.shp&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds_name</span> <span class="o">=</span> <span class="s2">&quot;baltim.dbf&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_name</span> <span class="o">=</span> <span class="s2">&quot;PRICE&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">y_name</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NROOM&quot;</span><span class="p">,</span><span class="s2">&quot;AGE&quot;</span><span class="p">,</span><span class="s2">&quot;SQFT&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">x_names</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">Queen</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w_name</span> <span class="o">=</span> <span class="s2">&quot;baltim_q.gal&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>    
+</pre></div>
+</div>
+<p>Since in this example we are interested in checking whether the results vary
+by regimes, we use CITCOU to define whether the location is in the city or 
+outside the city (in the county):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regimes</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s2">&quot;CITCOU&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can run the regression with all parameters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mllag</span> <span class="o">=</span> <span class="n">ML_Lag_Regimes</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">regimes</span><span class="p">,</span><span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span><span class="n">name_y</span><span class="o">=</span><span class="n">y_name</span><span class="p">,</span><span class="n">name_x</span><span class="o">=</span><span class="n">x_names</span><span class="p">,</span>               <span class="n">name_w</span><span class="o">=</span><span class="n">w_name</span><span class="p">,</span><span class="n">name_ds</span><span class="o">=</span><span class="n">ds_name</span><span class="p">,</span><span class="n">name_regimes</span><span class="o">=</span><span class="s2">&quot;CITCOU&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">betas</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([[-14.5158],</span>
+<span class="go">       [  4.4923],</span>
+<span class="go">       [ -0.0336],</span>
+<span class="go">       [  0.3541],</span>
+<span class="go">       [ -3.601 ],</span>
+<span class="go">       [  3.8736],</span>
+<span class="go">       [ -0.1747],</span>
+<span class="go">       [  0.8238],</span>
+<span class="go">       [  0.525 ]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span>
+<span class="go">&#39;0.524971&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">mean_y</span><span class="p">)</span>
+<span class="go">&#39;44.307180&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">std_y</span><span class="p">)</span>
+<span class="go">&#39;23.606077&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">vm1</span><span class="p">),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([ 48.6818,   2.4524,   0.0052,   0.0663,  71.4439,   3.2837,</span>
+<span class="go">         0.0118,   0.0498,   0.0042, 409.1225])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">vm</span><span class="p">),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([48.6818,  2.4524,  0.0052,  0.0663, 71.4439,  3.2837,  0.0118,</span>
+<span class="go">        0.0498,  0.0042])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">sig2</span><span class="p">)</span>
+<span class="go">&#39;204.827093&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">logll</span><span class="p">)</span>
+<span class="go">&#39;-867.086467&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">aic</span><span class="p">)</span>
+<span class="go">&#39;1752.172934&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{0:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mllag</span><span class="o">.</span><span class="n">schwarz</span><span class="p">)</span>
+<span class="go">&#39;1782.339657&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mllag</span><span class="o">.</span><span class="n">title</span>
+<span class="go">&#39;MAXIMUM LIKELIHOOD SPATIAL LAG - REGIMES (METHOD = full)&#39;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regimes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant_regi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'many'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols2regi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime_lag_sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_diag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_impacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_ds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_regimes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/ml_lag_regimes.html#ML_Lag_Regimes.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spreg.ML_Lag_Regimes.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.ML_Lag_Regimes_Multi" title="spreg.ML_Lag_Regimes.ML_Lag_Regimes_Multi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ML_Lag_Regimes_Multi</span></code></a>(y, x, w_i, w, regi_ids, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.__init__" title="spreg.ML_Lag_Regimes.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(y, x, regimes[, w, constant_regi, ...])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.mean_y" title="spreg.ML_Lag_Regimes.mean_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_y</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.sig2n" title="spreg.ML_Lag_Regimes.sig2n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sig2n</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.sig2n_k" title="spreg.ML_Lag_Regimes.sig2n_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sig2n_k</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.std_y" title="spreg.ML_Lag_Regimes.std_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std_y</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.utu" title="spreg.ML_Lag_Regimes.utu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utu</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spreg.ML_Lag_Regimes.vm" title="spreg.ML_Lag_Regimes.vm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vm</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.ML_Lag_Regimes_Multi">
+<span class="sig-name descname"><span class="pre">ML_Lag_Regimes_Multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regi_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_lags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols2regi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_diag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_impacts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_regimes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/ml_lag_regimes.html#ML_Lag_Regimes.ML_Lag_Regimes_Multi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spreg.ML_Lag_Regimes.ML_Lag_Regimes_Multi" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.mean_y">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mean_y</span></span><a class="headerlink" href="#spreg.ML_Lag_Regimes.mean_y" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.sig2n">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sig2n</span></span><a class="headerlink" href="#spreg.ML_Lag_Regimes.sig2n" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.sig2n_k">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sig2n_k</span></span><a class="headerlink" href="#spreg.ML_Lag_Regimes.sig2n_k" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.std_y">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">std_y</span></span><a class="headerlink" href="#spreg.ML_Lag_Regimes.std_y" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.utu">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">utu</span></span><a class="headerlink" href="#spreg.ML_Lag_Regimes.utu" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spreg.ML_Lag_Regimes.vm">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">vm</span></span><a class="headerlink" href="#spreg.ML_Lag_Regimes.vm" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/spreg.ML_Lag_Regimes.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

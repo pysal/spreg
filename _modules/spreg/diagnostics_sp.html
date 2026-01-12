@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.diagnostics_sp &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.diagnostics_sp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spatial diagnostics module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Luc Anselin lanselin@gmail.com, Daniel Arribas-Bel darribas@asu.edu, Pedro Amaral pedrovma@gmail.com&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.sputils</span><span class="w"> </span><span class="kn">import</span> <span class="n">spdot</span>
+
+<span class="c1"># from scipy.stats.stats import chisqprob</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="c1"># stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)</span>
+<span class="n">chisqprob</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">chisq</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">chisq</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LMtests&quot;</span><span class="p">,</span> <span class="s2">&quot;MoranRes&quot;</span><span class="p">,</span> <span class="s2">&quot;AKtest&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="LMtests">
+<a class="viewcode-back" href="../../generated/spreg.LMtests.html#spreg.LMtests">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LMtests</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lagrange Multiplier tests. Implemented as presented in :cite:`Anselin1996a` and :cite:`KoleyBera2024`</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    ols         : OLS</span>
+<span class="sd">                  OLS regression object</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    tests       : list</span>
+<span class="sd">                  Lists of strings with the tests desired to be performed.</span>
+<span class="sd">                  Values may be:</span>
+
+<span class="sd">                  * &#39;all&#39;: runs all the options (default)</span>
+<span class="sd">                  * &#39;lme&#39;: LM error test</span>
+<span class="sd">                  * &#39;rlme&#39;: Robust LM error test</span>
+<span class="sd">                  * &#39;lml&#39; : LM lag test</span>
+<span class="sd">                  * &#39;rlml&#39;: Robust LM lag test</span>
+<span class="sd">                  * &#39;sarma&#39;: LM SARMA test</span>
+<span class="sd">                  * &#39;lmwx&#39;: LM test for WX</span>
+<span class="sd">                  * &#39;rlmwx&#39;: Robust LM WX test</span>
+<span class="sd">                  * &#39;lmspdurbin&#39;: Joint test for SDM</span>
+<span class="sd">                  * &#39;rlmdurlag&#39;: Robust LM Lag - SDM</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    lme         : tuple</span>
+<span class="sd">                  (Only if &#39;lme&#39; or &#39;all&#39; was in tests). Pair of statistic and</span>
+<span class="sd">                  p-value for the LM error test.</span>
+<span class="sd">    lml         : tuple</span>
+<span class="sd">                  (Only if &#39;lml&#39; or &#39;all&#39; was in tests). Pair of statistic and</span>
+<span class="sd">                  p-value for the LM lag test.</span>
+<span class="sd">    rlme        : tuple</span>
+<span class="sd">                  (Only if &#39;rlme&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the Robust LM error test.</span>
+<span class="sd">    rlml        : tuple</span>
+<span class="sd">                  (Only if &#39;rlml&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the Robust LM lag test.</span>
+<span class="sd">    sarma       : tuple</span>
+<span class="sd">                  (Only if &#39;sarma&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the SARMA test.</span>
+<span class="sd">    lmwx       : tuple</span>
+<span class="sd">                  (Only if &#39;lmwx&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the LM test for WX.</span>
+<span class="sd">    rlmwx       : tuple</span>
+<span class="sd">                  (Only if &#39;rlmwx&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the Robust LM WX test.</span>
+<span class="sd">    rlmdurlag   : tuple</span>
+<span class="sd">                  (Only if &#39;rlmdurlag&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the Robust LM Lag - SDM test.</span>
+<span class="sd">    lmspdurbin  : tuple</span>
+<span class="sd">                  (Only if &#39;lmspdurbin&#39; or &#39;all&#39; was in tests). Pair of statistic</span>
+<span class="sd">                  and p-value for the Joint test for SDM.</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+
+<span class="sd">    Open the csv file to access the data for analysis</span>
+
+<span class="sd">    &gt;&gt;&gt; csv = libpysal.io.open(libpysal.examples.get_path(&#39;columbus.dbf&#39;),&#39;r&#39;)</span>
+
+<span class="sd">    Pull out from the csv the files we need (&#39;HOVAL&#39; as dependent as well as</span>
+<span class="sd">    &#39;INC&#39; and &#39;CRIME&#39; as independent) and directly transform them into nx1 and</span>
+<span class="sd">    nx2 arrays, respectively</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([csv.by_col(&#39;HOVAL&#39;)]).T</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([csv.by_col(&#39;INC&#39;), csv.by_col(&#39;CRIME&#39;)]).T</span>
+
+<span class="sd">    Create the weights object from existing .gal file</span>
+
+<span class="sd">    &gt;&gt;&gt; w = libpysal.io.open(libpysal.examples.get_path(&#39;columbus.gal&#39;), &#39;r&#39;).read()</span>
+
+<span class="sd">    Row-standardize the weight object (not required although desirable in some</span>
+<span class="sd">    cases)</span>
+
+<span class="sd">    &gt;&gt;&gt; w.transform=&#39;r&#39;</span>
+
+<span class="sd">    Run an OLS regression</span>
+
+<span class="sd">    &gt;&gt;&gt; ols = OLS(y, x)</span>
+
+<span class="sd">    Run all the LM tests in the residuals. These diagnostics test for the</span>
+<span class="sd">    presence of remaining spatial autocorrelation in the residuals of an OLS</span>
+<span class="sd">    model and give indication about the type of spatial model. There are five</span>
+<span class="sd">    types: presence of a spatial lag model (simple and robust version),</span>
+<span class="sd">    presence of a spatial error model (simple and robust version) and joint presence</span>
+<span class="sd">    of both a spatial lag as well as a spatial error model.</span>
+
+<span class="sd">    &gt;&gt;&gt; lms = spreg.LMtests(ols, w)</span>
+
+<span class="sd">    LM error test:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.lme[0],4), round(lms.lme[1],4))</span>
+<span class="sd">    3.0971 0.0784</span>
+
+<span class="sd">    LM lag test:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.lml[0],4), round(lms.lml[1],4))</span>
+<span class="sd">    0.9816 0.3218</span>
+
+<span class="sd">    Robust LM error test:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.rlme[0],4), round(lms.rlme[1],4))</span>
+<span class="sd">    3.2092 0.0732</span>
+
+<span class="sd">    Robust LM lag test:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.rlml[0],4), round(lms.rlml[1],4))</span>
+<span class="sd">    1.0936 0.2957</span>
+
+<span class="sd">    LM SARMA test:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.sarma[0],4), round(lms.sarma[1],4))</span>
+<span class="sd">    4.1907 0.123</span>
+
+<span class="sd">    LM test for WX:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.lmwx[0],4), round(lms.lmwx[1],4))</span>
+<span class="sd">    1.3377 0.5123</span>
+
+<span class="sd">    Robust LM WX test:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.rlmwx[0],4), round(lms.rlmwx[1],4))</span>
+<span class="sd">    3.4532 0.1779</span>
+
+<span class="sd">    Robust LM Lag - SDM:</span>
+<span class="sd">    &gt;&gt;&gt; print(round(lms.rlmdurlag[0],4), round(lms.rlmdurlag[1],4))</span>
+<span class="sd">    3.0971 0.0784</span>
+
+<span class="sd">    Joint test for SDM:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(lms.lmspdurbin[0],4), round(lms.lmspdurbin[1],4))</span>
+<span class="sd">    4.4348 0.2182</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LMtests.__init__">
+<a class="viewcode-back" href="../../generated/spreg.LMtests.html#spreg.LMtests.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]):</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">spDcache</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tests</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]:</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;lme&quot;</span><span class="p">,</span> <span class="s2">&quot;lml&quot;</span><span class="p">,</span> <span class="s2">&quot;rlme&quot;</span><span class="p">,</span> <span class="s2">&quot;rlml&quot;</span><span class="p">,</span> <span class="s2">&quot;sarma&quot;</span><span class="p">,</span> <span class="s2">&quot;lmwx&quot;</span><span class="p">,</span> <span class="s2">&quot;lmspdurbin&quot;</span><span class="p">,</span> <span class="s2">&quot;rlmwx&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;rlmdurlag&quot;</span><span class="p">,</span> <span class="s2">&quot;lmslxerr&quot;</span><span class="p">]</span>    <span class="c1"># added back in for access</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lme&quot;</span><span class="p">,</span> <span class="s2">&quot;lmslxerr&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">):</span>
+        <span class="c1">#if &quot;lme&quot; in tests:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lme</span> <span class="o">=</span> <span class="n">lmErr</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lml&quot;</span><span class="p">,</span> <span class="s2">&quot;rlmwx&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lml</span> <span class="o">=</span> <span class="n">lmLag</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;rlme&quot;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rlme</span> <span class="o">=</span> <span class="n">rlmErr</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;rlml&quot;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rlml</span> <span class="o">=</span> <span class="n">rlmLag</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;sarma&quot;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sarma</span> <span class="o">=</span> <span class="n">lmSarma</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="c1">#if any(test in [&quot;lmwx&quot;, &quot;rlmdurlag&quot;, &quot;lmslxerr&quot;] for test in tests):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lmwx&quot;</span><span class="p">,</span> <span class="s2">&quot;rlmdurlag&quot;</span><span class="p">,</span><span class="s2">&quot;lmslxerr&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lmwx</span> <span class="o">=</span> <span class="n">lm_wx</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lmspdurbin&quot;</span><span class="p">,</span> <span class="s2">&quot;rlmdurlag&quot;</span><span class="p">,</span> <span class="s2">&quot;rlmwx&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lmspdurbin</span> <span class="o">=</span> <span class="n">lm_spdurbin</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;rlmwx&quot;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rlmwx</span> <span class="o">=</span> <span class="n">rlm_wx</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmspdurbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lml</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;rlmdurlag&quot;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rlmdurlag</span> <span class="o">=</span> <span class="n">rlm_durlag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lmspdurbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmwx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;lmslxerr&quot;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span> <span class="c1">#currently removed - LA added back in for access</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lmslxerr</span> <span class="o">=</span> <span class="n">lm_slxerr</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmwx</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="MoranRes">
+<a class="viewcode-back" href="../../generated/spreg.MoranRes.html#spreg.MoranRes">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MoranRes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moran&#39;s I for spatial autocorrelation in residuals from OLS regression</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ols         : OLS</span>
+<span class="sd">                  OLS regression object</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    z           : boolean</span>
+<span class="sd">                  If set to True computes attributes eI, vI and zI. Due to computational burden of vI, defaults to False.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    I           : float</span>
+<span class="sd">                  Moran&#39;s I statistic</span>
+<span class="sd">    eI          : float</span>
+<span class="sd">                  Moran&#39;s I expectation</span>
+<span class="sd">    vI          : float</span>
+<span class="sd">                  Moran&#39;s I variance</span>
+<span class="sd">    zI          : float</span>
+<span class="sd">                  Moran&#39;s I standardized value</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import OLS</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+
+<span class="sd">    Open the csv file to access the data for analysis</span>
+
+<span class="sd">    &gt;&gt;&gt; csv = libpysal.io.open(libpysal.examples.get_path(&#39;columbus.dbf&#39;),&#39;r&#39;)</span>
+
+<span class="sd">    Pull out from the csv the files we need (&#39;HOVAL&#39; as dependent as well as</span>
+<span class="sd">    &#39;INC&#39; and &#39;CRIME&#39; as independent) and directly transform them into nx1 and</span>
+<span class="sd">    nx2 arrays, respectively</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([csv.by_col(&#39;HOVAL&#39;)]).T</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([csv.by_col(&#39;INC&#39;), csv.by_col(&#39;CRIME&#39;)]).T</span>
+
+<span class="sd">    Create the weights object from existing .gal file</span>
+
+<span class="sd">    &gt;&gt;&gt; w = libpysal.io.open(libpysal.examples.get_path(&#39;columbus.gal&#39;), &#39;r&#39;).read()</span>
+
+<span class="sd">    Row-standardize the weight object (not required although desirable in some</span>
+<span class="sd">    cases)</span>
+
+<span class="sd">    &gt;&gt;&gt; w.transform=&#39;r&#39;</span>
+
+<span class="sd">    Run an OLS regression</span>
+
+<span class="sd">    &gt;&gt;&gt; ols = OLS(y, x)</span>
+
+<span class="sd">    Run Moran&#39;s I test for residual spatial autocorrelation in an OLS model.</span>
+<span class="sd">    This computes the traditional statistic applying a correction in the</span>
+<span class="sd">    expectation and variance to account for the fact it comes from residuals</span>
+<span class="sd">    instead of an independent variable</span>
+
+<span class="sd">    &gt;&gt;&gt; m = spreg.MoranRes(ols, w, z=True)</span>
+
+<span class="sd">    Value of the Moran&#39;s I statistic:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(m.I,4))</span>
+<span class="sd">    0.1713</span>
+
+<span class="sd">    Value of the Moran&#39;s I expectation:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(m.eI,4))</span>
+<span class="sd">    -0.0345</span>
+
+<span class="sd">    Value of the Moran&#39;s I variance:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(m.vI,4))</span>
+<span class="sd">    0.0081</span>
+
+<span class="sd">    Value of the Moran&#39;s I standardized value. This is</span>
+<span class="sd">    distributed as a standard Normal(0, 1)</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(m.zI,4))</span>
+<span class="sd">    2.2827</span>
+
+<span class="sd">    P-value of the standardized Moran&#39;s I value (z):</span>
+
+<span class="sd">    &gt;&gt;&gt; print(round(m.p_norm,4))</span>
+<span class="sd">    0.0224</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MoranRes.__init__">
+<a class="viewcode-back" href="../../generated/spreg.MoranRes.html#spreg.MoranRes.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">spDcache</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I</span> <span class="o">=</span> <span class="n">get_mI</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">z</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eI</span> <span class="o">=</span> <span class="n">get_eI</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vI</span> <span class="o">=</span> <span class="n">get_vI</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eI</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zI</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_norm</span> <span class="o">=</span> <span class="n">get_zI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eI</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vI</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AKtest">
+<a class="viewcode-back" href="../../generated/spreg.AKtest.html#spreg.AKtest">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AKtest</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moran&#39;s I test of spatial autocorrelation for IV estimation.</span>
+<span class="sd">    Implemented following the original reference :cite:`Anselin1997`</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    iv          : TSLS</span>
+<span class="sd">                  Regression object from TSLS class</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    case        : string</span>
+<span class="sd">                  Flag for special cases (default to &#39;nosp&#39;):</span>
+
+<span class="sd">                  * &#39;nosp&#39;: Only NO spatial end. reg.</span>
+<span class="sd">                  * &#39;gen&#39;: General case (spatial lag + end. reg.)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    mi          : float</span>
+<span class="sd">                  Moran&#39;s I statistic for IV residuals</span>
+<span class="sd">    ak          : float</span>
+<span class="sd">                  Square of corrected Moran&#39;s I for residuals</span>
+<span class="sd">                  :math:`ak = \dfrac{N \times I^*}{\phi^2}`.</span>
+<span class="sd">                  Note: if case=&#39;nosp&#39; then it simplifies to the LMerror</span>
+<span class="sd">    p           : float</span>
+<span class="sd">                  P-value of the test</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    We first need to import the needed modules. Numpy is needed to convert the</span>
+<span class="sd">    data we read into arrays that ``spreg`` understands and ``pysal`` to</span>
+<span class="sd">    perform all the analysis. The TSLS is required to run the model on</span>
+<span class="sd">    which we will perform the tests.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import TSLS, GM_Lag, AKtest</span>
+
+<span class="sd">    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().</span>
+<span class="sd">    This is the DBF associated with the Columbus shapefile.  Note that</span>
+<span class="sd">    libpysal.io.open() also reads data in CSV format; since the actual class</span>
+<span class="sd">    requires data to be passed in as numpy arrays, the user can read their</span>
+<span class="sd">    data in using any method.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;),&#39;r&#39;)</span>
+
+<span class="sd">    Before being able to apply the diagnostics, we have to run a model and,</span>
+<span class="sd">    for that, we need the input variables. Extract the CRIME column (crime</span>
+<span class="sd">    rates) from the DBF file and make it the dependent variable for the</span>
+<span class="sd">    regression. Note that PySAL requires this to be an numpy array of shape</span>
+<span class="sd">    (n, 1) as opposed to the also common shape of (n, ) that other packages</span>
+<span class="sd">    accept.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Extract INC (income) vector from the DBF to be used as</span>
+<span class="sd">    independent variables in the regression.  Note that PySAL requires this to</span>
+<span class="sd">    be an nxj numpy array, where j is the number of independent variables (not</span>
+<span class="sd">    including a constant). By default this model adds a vector of ones to the</span>
+<span class="sd">    independent variables passed in, but this can be overridden by passing</span>
+<span class="sd">    constant=False.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    In this case, we consider HOVAL (home value) as an endogenous regressor,</span>
+<span class="sd">    so we acknowledge that by reading it in a different category.</span>
+
+<span class="sd">    &gt;&gt;&gt; yd = []</span>
+<span class="sd">    &gt;&gt;&gt; yd.append(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.array(yd).T</span>
+
+<span class="sd">    In order to properly account for the endogeneity, we have to pass in the</span>
+<span class="sd">    instruments. Let us consider DISCBD (distance to the CBD) is a good one:</span>
+
+<span class="sd">    &gt;&gt;&gt; q = []</span>
+<span class="sd">    &gt;&gt;&gt; q.append(db.by_col(&quot;DISCBD&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.array(q).T</span>
+
+<span class="sd">    Now we are good to run the model. It is an easy one line task.</span>
+
+<span class="sd">    &gt;&gt;&gt; reg = TSLS(y, X, yd, q=q)</span>
+
+<span class="sd">    Now we are concerned with whether our non-spatial model presents spatial</span>
+<span class="sd">    autocorrelation in the residuals. To assess this possibility, we can run</span>
+<span class="sd">    the Anselin-Kelejian test, which is a version of the classical LM error</span>
+<span class="sd">    test adapted for the case of residuals from an instrumental variables (IV)</span>
+<span class="sd">    regression. First we need an extra object, the weights matrix, which</span>
+<span class="sd">    includes the spatial configuration of the observations</span>
+<span class="sd">    into the error component of the model. To do that, we can open an already</span>
+<span class="sd">    existing gal file or create a new one. In this case, we will create one</span>
+<span class="sd">    from ``columbus.shp``.</span>
+
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+
+<span class="sd">    Unless there is a good reason not to do it, the weights have to be</span>
+<span class="sd">    row-standardized so every row of the matrix sums to one. Among other</span>
+<span class="sd">    things, this allows to interpret the spatial lag of a variable as the</span>
+<span class="sd">    average value of the neighboring observations. In PySAL, this can be</span>
+<span class="sd">    easily performed in the following way:</span>
+
+<span class="sd">    &gt;&gt;&gt; w.transform = &#39;r&#39;</span>
+
+<span class="sd">    We are good to run the test. It is a very simple task:</span>
+
+<span class="sd">    &gt;&gt;&gt; ak = AKtest(reg, w)</span>
+
+<span class="sd">    And explore the information obtained:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(&#39;AK test: %f\tP-value: %f&#39;%(ak.ak, ak.p))</span>
+<span class="sd">    AK test: 4.642895      P-value: 0.031182</span>
+
+<span class="sd">    The test also accomodates the case when the residuals come from an IV</span>
+<span class="sd">    regression that includes a spatial lag of the dependent variable. The only</span>
+<span class="sd">    requirement needed is to modify the ``case`` parameter when we call</span>
+<span class="sd">    ``AKtest``. First, let us run a spatial lag model:</span>
+
+<span class="sd">    &gt;&gt;&gt; reg_lag = GM_Lag(y, X, yd, q=q, w=w)</span>
+
+<span class="sd">    And now we can run the AK test and obtain similar information as in the</span>
+<span class="sd">    non-spatial model.</span>
+
+<span class="sd">    &gt;&gt;&gt; ak_sp = AKtest(reg, w, case=&#39;gen&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(&#39;AK test: %f\tP-value: %f&#39;%(ak_sp.ak, ak_sp.p))</span>
+<span class="sd">    AK test: 1.157593      P-value: 0.281965</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AKtest.__init__">
+<a class="viewcode-back" href="../../generated/spreg.AKtest.html#spreg.AKtest.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;nosp&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;gen&quot;</span><span class="p">:</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">spDcache</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ak</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">akTest</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s2">&quot;nosp&quot;</span><span class="p">:</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">spDcache</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mi</span> <span class="o">=</span> <span class="n">get_mI</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ak</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">lmErr</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;\n</span>
+<span class="sd">            Fix the optional argument &#39;case&#39; to match the requirements:</span>
+<span class="sd">                * &#39;gen&#39;: General case (spatial lag + end. reg.)</span>
+<span class="sd">                * &#39;nosp&#39;: No spatial end. reg.</span>
+<span class="sd">            \n&quot;&quot;&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">spDcache</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class to compute reusable pieces in the spatial diagnostics module</span>
+<span class="sd">    ...</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    reg         : OLS_dev, TSLS_dev, STSLS_dev</span>
+<span class="sd">                  Instance from a regression class</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    j           : array</span>
+<span class="sd">                  1x1 array with the result from:</span>
+<span class="sd">                  :math:`J = \dfrac{1}{[(WX\beta)&#39; M (WX\beta) + T \sigma^2]}`</span>
+<span class="sd">    wu          : array</span>
+<span class="sd">                  nx1 array with spatial lag of the residuals</span>
+<span class="sd">    utwuDs      : array</span>
+<span class="sd">                  1x1 array with the result from:</span>
+<span class="sd">                  :math:`utwuDs = \dfrac{u&#39; W u}{\tilde{\sigma^2}}`</span>
+<span class="sd">    utwyDs      : array</span>
+<span class="sd">                  1x1 array with the result from:</span>
+<span class="sd">                  :math:`utwyDs = \dfrac{u&#39; W y}{\tilde{\sigma^2}}`</span>
+<span class="sd">    t           : array</span>
+<span class="sd">                  1x1 array with the result from :</span>
+<span class="sd">                  :math:` T = tr[(W&#39; + W) W]`</span>
+<span class="sd">    trA         : float</span>
+<span class="sd">                  Trace of A as in Cliff &amp; Ord (1981)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">=</span> <span class="n">reg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">j</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;j&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">wxb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">predy</span>
+            <span class="n">wxb2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">wxb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">wxb</span><span class="p">)</span>
+            <span class="n">xwxb</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">wxb</span><span class="p">)</span>
+            <span class="n">num1</span> <span class="o">=</span> <span class="n">wxb2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">xwxb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">xtxi</span><span class="p">,</span> <span class="n">xwxb</span><span class="p">))</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span><span class="p">)</span>
+            <span class="n">den</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;j&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;j&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;wu&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;wu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">u</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;wu&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">utwuDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;utwuDs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wu</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;utwuDs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;utwuDs&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">utwyDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;utwyDs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;utwyDs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;utwyDs&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">prod</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">prod</span><span class="o">.</span><span class="n">diagonal</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trA</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;trA&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">xtwx</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">mw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">xtxi</span><span class="p">,</span> <span class="n">xtwx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;trA&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">diagonal</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;trA&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">AB</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes A and B matrices as in Cliff-Ord 1981, p. 203</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;AB&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">U</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">c1</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">c2</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">xtxi</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">c1</span><span class="p">)</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;AB&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;AB&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lmErr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LM error test. Implemented as presented in eq. (9) of Anselin et al.</span>
+<span class="sd">    (1996) :cite:`Anselin1996a`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg         : OLS_dev, TSLS_dev, STSLS_dev</span>
+<span class="sd">                  Instance from a regression class</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    spDcache    : spDcache</span>
+<span class="sd">                  Instance of spDcache class</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lme         : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the LM error test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">utwuDs</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lmLag</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LM lag test. Implemented as presented in eq. (13) of Anselin et al.</span>
+<span class="sd">    (1996) :cite:`Anselin1996a`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ols         : OLS_dev</span>
+<span class="sd">                  Instance from an OLS_dev regression</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    spDcache     : spDcache</span>
+<span class="sd">                   Instance of spDcache class</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lml         : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the LM lag test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">utwyDs</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rlmErr</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robust LM error test. Implemented as presented in eq. (8) of Anselin et</span>
+<span class="sd">    al. (1996) :cite:`Anselin1996a`.</span>
+
+<span class="sd">    NOTE: eq. (8) has an errata, the power -1 in the denominator</span>
+<span class="sd">    should be inside the square bracket.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ols         : OLS_dev</span>
+<span class="sd">                  Instance from an OLS_dev regression</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    spDcache    : spDcache</span>
+<span class="sd">                  Instance of spDcache class</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rlme        : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the Robust LM error test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nj</span> <span class="o">=</span> <span class="n">ols</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">j</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">utwuDs</span> <span class="o">-</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">t</span> <span class="o">*</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">utwyDs</span><span class="p">)</span> <span class="o">/</span> <span class="n">nj</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">den</span> <span class="o">=</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">t</span> <span class="o">/</span> <span class="n">nj</span><span class="p">))</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rlmLag</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robust LM lag test. Implemented as presented in eq. (12) of Anselin et al.</span>
+<span class="sd">    (1996) :cite:`Anselin1996a`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ols             : OLS_dev</span>
+<span class="sd">                      Instance from an OLS_dev regression</span>
+<span class="sd">    w               : W</span>
+<span class="sd">                      Spatial weights instance</span>
+<span class="sd">    spDcache        : spDcache</span>
+<span class="sd">                      Instance of spDcache class</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rlml            : tuple</span>
+<span class="sd">                      Pair of statistic and p-value for the Robust LM lag test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">utwyDs</span> <span class="o">-</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">utwuDs</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">((</span><span class="n">ols</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lmSarma</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LM error test. Implemented as presented in eq. (15) of Anselin et al.</span>
+<span class="sd">    (1996) :cite:`Anselin1996a`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ols         : OLS_dev</span>
+<span class="sd">                  Instance from an OLS_dev regression</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    spDcache     : spDcache</span>
+<span class="sd">                  Instance of spDcache class</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sarma       : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the LM sarma test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">first</span> <span class="o">=</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">utwyDs</span> <span class="o">-</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">utwuDs</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">j</span> <span class="o">-</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">secnd</span> <span class="o">=</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">utwuDs</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">t</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="n">secnd</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lm_wx</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LM test for WX. Implemented as presented in Koley &amp; Bera (2024) :cite:`KoleyBera2024`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg         : OLS</span>
+<span class="sd">                  Instance from an OLS regression</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lmwx        : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the LM test for WX.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># preliminaries</span>
+    <span class="c1"># set up X1 (constant) and X (no constant) as x1 and xx</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">[:,</span> <span class="n">reg</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;var_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">[:,</span> <span class="n">reg</span><span class="o">.</span><span class="n">_var_type</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="c1"># WX</span>
+    <span class="n">wx</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="n">xx</span>
+    <span class="c1"># end of preliminaries</span>
+    <span class="c1"># X&#39;W&#39;u</span>
+    <span class="n">xtwtu</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span>
+    <span class="c1"># X&#39;W&#39;X1(X1&#39;X1)-1X1WX</span>
+    <span class="n">mx1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">x1</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="p">(</span><span class="n">mx1</span> <span class="o">@</span> <span class="n">reg</span><span class="o">.</span><span class="n">xtxi</span><span class="p">)</span> <span class="o">@</span> <span class="n">mx1</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">xwwx</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">wx</span>
+    <span class="n">xqx</span> <span class="o">=</span> <span class="n">xwwx</span> <span class="o">-</span> <span class="n">mx</span>
+    <span class="n">xqxi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">xqx</span><span class="p">)</span>
+    <span class="c1"># RSgamma: (X&#39;W&#39;u)&#39;(X&#39;Q1X)-1(X&#39;W&#39;u) / sig2n</span>
+    <span class="n">xpwpu</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span>
+    <span class="n">rsg1</span> <span class="o">=</span> <span class="p">(</span><span class="n">xpwpu</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">xqxi</span><span class="p">)</span> <span class="o">@</span> <span class="n">xpwpu</span>
+    <span class="n">rsgam</span> <span class="o">=</span> <span class="n">rsg1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">rsgam</span><span class="p">,</span> <span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">rsgamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">rsgam</span><span class="p">,</span><span class="n">pval</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">rsgamma</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lm_spdurbin</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span><span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Joint test for SDM. Implemented as presented in Koley &amp; Bera (2024) :cite:`KoleyBera2024`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg         : OLS</span>
+<span class="sd">                  Instance from an OLS regression</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lmspdurbin  : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the Joint test for SDM.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># preliminaries</span>
+    <span class="c1"># set up X1 (constant) and X (no constant) as x1 and xx</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">[:,</span> <span class="n">reg</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;var_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">[:,</span> <span class="n">reg</span><span class="o">.</span><span class="n">_var_type</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># WX</span>
+    <span class="n">wx</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="n">xx</span>
+    <span class="c1"># X1b</span>
+    <span class="n">xb</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">predy</span>
+    <span class="c1"># WX1b</span>
+    <span class="n">wxb</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="n">xb</span>
+    <span class="c1"># Wy</span>
+    <span class="n">wy</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span> <span class="o">@</span> <span class="n">reg</span><span class="o">.</span><span class="n">y</span>
+    <span class="c1"># y&#39;W&#39;e / sig2n</span>
+    <span class="n">drho</span> <span class="o">=</span> <span class="p">(</span><span class="n">wy</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+    <span class="c1"># X&#39;W&#39;e / sign2n</span>
+    <span class="n">dgam</span> <span class="o">=</span> <span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+    <span class="c1"># P = T = tr(W2 + W&#39;W)</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">trcWtW_WW</span>
+    <span class="c1"># end of preliminaries</span>
+    <span class="c1"># J_11: block matrix with X1&#39;X1 and n/2sig2n</span>
+    <span class="n">jj1a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">reg</span><span class="o">.</span><span class="n">xtx</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="mi">1</span><span class="p">))))</span>
+    <span class="n">jj1b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">)),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">reg</span><span class="o">.</span><span class="n">n</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span><span class="p">)])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="n">jj11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">jj1a</span><span class="p">,</span><span class="n">jj1b</span><span class="p">))</span>
+    <span class="c1"># J_12: matrix with k-1 rows X1&#39;WX1b and X1&#39;WX, and 1 row of zeros</span>
+    <span class="n">jj12a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x1</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">wxb</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">wx</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+    <span class="n">jj12</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">jj12a</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">jj12a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))))</span>
+    <span class="c1"># J_22 matrix with diagonal elements b&#39;X1&#39;W&#39;WX1b + T.sig2n and X&#39;W&#39;WX</span>
+    <span class="c1"># and off-diagonal element b&#39;X1&#39;W&#39;WX</span>
+    <span class="n">jj22a</span> <span class="o">=</span> <span class="n">wxb</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">wxb</span> <span class="o">+</span> <span class="n">pp</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+    <span class="n">jj22a</span> <span class="o">=</span> <span class="n">jj22a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">wxbtwx</span> <span class="o">=</span> <span class="p">(</span><span class="n">wxb</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">wx</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">jj22b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">jj22a</span><span class="p">,</span><span class="n">wxbtwx</span><span class="p">))</span>
+    <span class="n">wxtwx</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">wx</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">jj22c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">wxbtwx</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">wxtwx</span><span class="p">))</span>
+    <span class="n">jj22</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">jj22b</span><span class="p">,</span><span class="n">jj22c</span><span class="p">))</span>
+    <span class="c1"># J^22 (the inverse) from J^22 = (J_22 - J_21.J_11^-1.J_12)^-1</span>
+    <span class="n">jj11i</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">jj11</span><span class="p">)</span>
+    <span class="n">j121121</span> <span class="o">=</span> <span class="p">(</span><span class="n">jj12</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">jj11i</span><span class="p">)</span> <span class="o">@</span> <span class="n">jj12</span>
+    <span class="n">jj22i1</span> <span class="o">=</span> <span class="n">jj22</span> <span class="o">-</span> <span class="n">j121121</span>
+    <span class="n">jj22i</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">jj22i1</span><span class="p">)</span>
+    <span class="c1"># rescale by sig2n</span>
+    <span class="n">jj22i</span> <span class="o">=</span> <span class="n">jj22i</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">sig2n</span>
+    <span class="c1"># statistic</span>
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">drho</span><span class="p">,</span><span class="n">dgam</span><span class="p">))</span>
+    <span class="n">rsjoint</span> <span class="o">=</span> <span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">jj22i</span><span class="p">)</span> <span class="o">@</span> <span class="n">dd</span>
+    <span class="n">rsjoint</span> <span class="o">=</span> <span class="n">rsjoint</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">rsjoint</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">rsrhogam</span> <span class="o">=</span> <span class="p">(</span><span class="n">rsjoint</span><span class="p">,</span> <span class="n">pval</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">rsrhogam</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rlm_wx</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span><span class="n">lmspdurbin</span><span class="p">,</span><span class="n">lmlag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robust LM WX test. Implemented as presented in Koley &amp; Bera (2024) :cite:`KoleyBera2024`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg         : OLS</span>
+<span class="sd">                  Instance from an OLS regression</span>
+<span class="sd">    lmspdurbin  : tuple</span>
+<span class="sd">                  Joint test for SDM as in lm_spdurbin function</span>
+<span class="sd">    lmlag       : tuple</span>
+<span class="sd">                  LM Lag test as in lmLag function</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rlmwx       : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the Robust LM WX test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># robust gamma = rsjoint - rsrho</span>
+    <span class="n">rsgams</span> <span class="o">=</span> <span class="n">lmspdurbin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">lmlag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">rsgams</span><span class="p">,(</span><span class="n">reg</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">rsgamstar</span> <span class="o">=</span> <span class="p">(</span><span class="n">rsgams</span><span class="p">,</span> <span class="n">pval</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">rsgamstar</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rlm_durlag</span><span class="p">(</span><span class="n">lmspdurbin</span><span class="p">,</span><span class="n">lmwx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robust LM Lag - SDM. Implemented as presented in Koley &amp; Bera (2024) :cite:`KoleyBera2024`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmspdurbin  : tuple</span>
+<span class="sd">                  Joint test for SDM as in lm_spdurbin function</span>
+<span class="sd">    lmwx        : tuple</span>
+<span class="sd">                  LM test for WX as in lm_wx function</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rlmwx       : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the Robust LM Lag - SDM test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># robust rho = rsjoint - rsgam</span>
+    <span class="n">rsrhos</span> <span class="o">=</span> <span class="n">lmspdurbin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">lmwx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">rsrhos</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rsrhostar</span> <span class="o">=</span> <span class="p">(</span><span class="n">rsrhos</span><span class="p">,</span> <span class="n">pval</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">rsrhostar</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lm_slxerr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span><span class="n">lmerr</span><span class="p">,</span><span class="n">lmwx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Joint test for Error and WX. Implemented as presented in Koley &amp; Bera (2024) :cite:`KoleyBera2024`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg         : OLS</span>
+<span class="sd">                  Instance from an OLS regression</span>
+<span class="sd">    lmerr         : tuple</span>
+<span class="sd">                  LM Error test as in lmErr function</span>
+<span class="sd">    lmwx        : tuple</span>
+<span class="sd">                  LM test for WX as in lm_wx function</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rlmwx       : tuple</span>
+<span class="sd">                  Pair of statistic and p-value for the Joint test for Error and WX.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rslamgam</span> <span class="o">=</span> <span class="n">lmerr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">lmwx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">rslamgam</span><span class="p">,</span><span class="n">reg</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">rslamgamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">rslamgam</span><span class="p">,</span><span class="n">pval</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">rslamgamma</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mI</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moran&#39;s I statistic of spatial autocorrelation as showed in Cliff &amp; Ord</span>
+<span class="sd">    (1981) :cite:`clifford1981`, p. 201-203</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg             : OLS_dev, TSLS_dev, STSLS_dev</span>
+<span class="sd">                      Instance from a regression class</span>
+<span class="sd">    w               : W</span>
+<span class="sd">                      Spatial weights instance</span>
+<span class="sd">    spDcache        : spDcache</span>
+<span class="sd">                      Instance of spDcache class</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    moran           : float</span>
+<span class="sd">                      Statistic Moran&#39;s I test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mi</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">wu</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">s0</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">utu</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mi</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_vI</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">ei</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moran&#39;s I variance coded as in :cite:`clifford1981` (p. 201-203) and R&#39;s spdep</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">AB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">trA2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+    <span class="n">trA2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">trA2</span><span class="o">.</span><span class="n">diagonal</span><span class="p">())</span>
+
+    <span class="n">B</span> <span class="o">=</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">AB</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">trB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">diagonal</span><span class="p">())</span> <span class="o">*</span> <span class="mf">4.0</span>
+    <span class="n">vi</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">s0</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">ols</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">ols</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">s1</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">trA2</span> <span class="o">-</span> <span class="n">trB</span> <span class="o">-</span> <span class="p">((</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">trA</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">ols</span><span class="o">.</span><span class="n">k</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">vi</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_eI</span><span class="p">(</span><span class="n">ols</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moran&#39;s I expectation using matrix M</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">spDcache</span><span class="o">.</span><span class="n">trA</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">s0</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="n">ols</span><span class="o">.</span><span class="n">k</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_zI</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">ei</span><span class="p">,</span> <span class="n">vi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardized I</span>
+
+<span class="sd">    Returns two-sided p-values as provided in the GeoDa family</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#z = abs((I - ei) / np.sqrt(vi))</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">I</span> <span class="o">-</span> <span class="n">ei</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vi</span><span class="p">)</span>
+    <span class="c1">#pval = norm.sf(z) * 2.0</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.0</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pval</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">akTest</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes AK-test for the general case (end. reg. + sp. lag)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    iv          : STSLS_dev</span>
+<span class="sd">                  Instance from spatial 2SLS regression</span>
+<span class="sd">    w           : W</span>
+<span class="sd">                  Spatial weights instance</span>
+<span class="sd">    spDcache    : spDcache</span>
+<span class="sd">                  Instance of spDcache class</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mi          : float</span>
+<span class="sd">                  Moran&#39;s I statistic for IV residuals</span>
+<span class="sd">    ak          : float</span>
+<span class="sd">                  Square of corrected Moran&#39;s I for residuals:</span>
+<span class="sd">                  :math:`ak = \dfrac{N \times I^*}{\phi^2}`</span>
+<span class="sd">    p           : float</span>
+<span class="sd">                  P-value of the test</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mi</span> <span class="o">=</span> <span class="n">get_mI</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spDcache</span><span class="p">)</span>
+    <span class="c1"># Phi2</span>
+    <span class="n">etwz</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">iv</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="n">iv</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">etwz</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">iv</span><span class="o">.</span><span class="n">varb</span><span class="p">,</span> <span class="n">etwz</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="n">s12</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">s0</span> <span class="o">/</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">phi2</span> <span class="o">=</span> <span class="p">(</span><span class="n">spDcache</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">/</span> <span class="n">iv</span><span class="o">.</span><span class="n">sig2n</span><span class="p">)</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">s12</span> <span class="o">*</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">ak</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">mi</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">phi2</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">ak</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">mi</span><span class="p">,</span> <span class="n">ak</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">comfac_test</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">vm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Spatial Common Factor Hypothesis test as shown in Anselin (1988, p. 226-229).</span>
+<span class="sd">    Note that for the Common Factor Hypothesis test to be valid, gamma has to equal</span>
+<span class="sd">    *negative* rho times beta for all beta parameters.</span>
+<span class="sd">    That is, when rho is positive, a positive beta means gamma must be negative and vice versa.</span>
+<span class="sd">    For a negative rho, beta, and gamma must have the same sign.</span>
+<span class="sd">    If those signs are not compatible, the test will not be meaningful.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    rho         : float</span>
+<span class="sd">                  Spatial autoregressive coefficient (as in rho*Wy)</span>
+<span class="sd">    beta        : array</span>
+<span class="sd">                  Coefficients of the exogenous (not spatially lagged) variables, without the constant (as in X*beta)</span>
+<span class="sd">    gamma       : array</span>
+<span class="sd">                  coefficients of the spatially lagged exogenous variables (as in WX*gamma)</span>
+<span class="sd">    vm          : array</span>
+<span class="sd">                  Variance-covariance matrix of the coefficients</span>
+<span class="sd">                  Obs. Needs to match the order of theta&#39; = [beta&#39;, gamma&#39;, lambda]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    W       : float</span>
+<span class="sd">              Wald statistic</span>
+<span class="sd">    pvalue  : float</span>
+<span class="sd">              P value for Wald statistic calculated as a Chi sq. distribution</span>
+<span class="sd">              with k-1 degrees of freedom</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">gamma</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">rho</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">beta</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+
+    <span class="n">GVGi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vm</span><span class="p">,</span> <span class="n">G</span><span class="p">)))</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">GVGi</span><span class="p">,</span> <span class="n">g</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pvalue</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">pvalue</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

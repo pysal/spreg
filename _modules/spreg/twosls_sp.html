@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.twosls_sp &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.twosls_sp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spatial Two Stages Least Squares</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Luc Anselin lanselin@gmail.com, David C. Folch david.folch@asu.edu&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">twosls</span> <span class="k">as</span> <span class="n">TSLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_output</span> <span class="k">as</span> <span class="n">USER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_endog</span><span class="p">,</span> <span class="n">sp_att</span><span class="p">,</span> <span class="n">set_warn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.output</span><span class="w"> </span><span class="kn">import</span> <span class="n">output</span><span class="p">,</span> <span class="n">_spat_diag_out</span><span class="p">,</span> <span class="n">_spat_pseudo_r2</span><span class="p">,</span> <span class="n">_summary_impacts</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">compress</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;GM_Lag&quot;</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseGM_Lag</span><span class="p">(</span><span class="n">TSLS</span><span class="o">.</span><span class="n">BaseTSLS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spatial two stage least squares (S2SLS) (note: no consistency checks,</span>
+<span class="sd">    diagnostics or constant added); Anselin (1988) [Anselin1988]_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nx1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   independent (exogenous) variable; assumes the constant is</span>
+<span class="sd">                   in column 0.</span>
+<span class="sd">    yend         : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   endogenous variable</span>
+<span class="sd">    q            : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   external exogenous variable to use as instruments (note:</span>
+<span class="sd">                   this should not contain any variables from x); cannot be</span>
+<span class="sd">                   used in combination with h</span>
+<span class="sd">    w            : Pysal weights matrix</span>
+<span class="sd">                   Spatial weights matrix</span>
+<span class="sd">    w_lags       : integer</span>
+<span class="sd">                   Orders of W to include as instruments for the spatially</span>
+<span class="sd">                   lagged dependent variable. For example, w_lags=1, then</span>
+<span class="sd">                   instruments are WX; if w_lags=2, then WX, WWX; and so on.</span>
+<span class="sd">    lag_q        : boolean</span>
+<span class="sd">                   If True, then include spatial lags of the additional</span>
+<span class="sd">                   instruments (q).</span>
+<span class="sd">    slx_lags     : integer</span>
+<span class="sd">                   Number of spatial lags of X to include in the model specification.</span>
+<span class="sd">                   If slx_lags&gt;0, the specification becomes of the Spatial Durbin type.</span>
+<span class="sd">    slx_vars     : either &quot;All&quot; (default) or list of booleans to select x variables</span>
+<span class="sd">                   to be lagged</span>
+<span class="sd">    robust       : string</span>
+<span class="sd">                   If &#39;white&#39;, then a White consistent estimator of the</span>
+<span class="sd">                   variance-covariance matrix is given.  If &#39;hac&#39;, then a</span>
+<span class="sd">                   HAC consistent estimator of the variance-covariance</span>
+<span class="sd">                   matrix is given. Default set to None.</span>
+<span class="sd">    gwk          : pysal W object</span>
+<span class="sd">                   Kernel spatial weights needed for HAC estimation. Note:</span>
+<span class="sd">                   matrix must have ones along the main diagonal.</span>
+<span class="sd">    sig2n_k      : boolean</span>
+<span class="sd">                   If True, then use n-k to estimate sigma^2. If False, use n.</span>
+
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    betas        : array</span>
+<span class="sd">                   kx1 array of estimated coefficients</span>
+<span class="sd">    u            : array</span>
+<span class="sd">                   nx1 array of residuals</span>
+<span class="sd">    predy        : array</span>
+<span class="sd">                   nx1 array of predicted y values</span>
+<span class="sd">    n            : integer</span>
+<span class="sd">                   Number of observations</span>
+<span class="sd">    k            : integer</span>
+<span class="sd">                   Number of variables for which coefficients are estimated</span>
+<span class="sd">                   (including the constant)</span>
+<span class="sd">    kstar        : integer</span>
+<span class="sd">                   Number of endogenous variables.</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nx1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   independent (exogenous) variable, including the constant</span>
+<span class="sd">    yend         : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   endogenous variable</span>
+<span class="sd">    q            : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   external exogenous variable used as instruments</span>
+<span class="sd">    z            : array</span>
+<span class="sd">                   nxk array of variables (combination of x and yend)</span>
+<span class="sd">    h            : array</span>
+<span class="sd">                   nxl array of instruments (combination of x and q)</span>
+<span class="sd">    mean_y       : float</span>
+<span class="sd">                   Mean of dependent variable</span>
+<span class="sd">    std_y        : float</span>
+<span class="sd">                   Standard deviation of dependent variable</span>
+<span class="sd">    vm           : array</span>
+<span class="sd">                   Variance covariance matrix (kxk)</span>
+<span class="sd">    utu          : float</span>
+<span class="sd">                   Sum of squared residuals</span>
+<span class="sd">    sig2         : float</span>
+<span class="sd">                   Sigma squared used in computations</span>
+<span class="sd">    sig2n        : float</span>
+<span class="sd">                   Sigma squared (computed with n in the denominator)</span>
+<span class="sd">    sig2n_k      : float</span>
+<span class="sd">                   Sigma squared (computed with n-k in the denominator)</span>
+<span class="sd">    hth          : float</span>
+<span class="sd">                   H&#39;H</span>
+<span class="sd">    hthi         : float</span>
+<span class="sd">                   (H&#39;H)^-1</span>
+<span class="sd">    varb         : array</span>
+<span class="sd">                   (Z&#39;H (H&#39;H)^-1 H&#39;Z)^-1</span>
+<span class="sd">    zthhthi      : array</span>
+<span class="sd">                   Z&#39;H(H&#39;H)^-1</span>
+<span class="sd">    pfora1a2     : array</span>
+<span class="sd">                   n(zthhthi)&#39;varb</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+<span class="sd">    &gt;&gt;&gt; np.set_printoptions(suppress=True) #prevent scientific format</span>
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &#39;r&#39;</span>
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;),&#39;r&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; # no non-spatial endogenous variables</span>
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+<span class="sd">    &gt;&gt;&gt; X = np.hstack((np.ones(y.shape),X))</span>
+<span class="sd">    &gt;&gt;&gt; reg = spreg.twosls_sp.BaseGM_Lag(y, X, w=w, w_lags=2)</span>
+<span class="sd">    &gt;&gt;&gt; reg.betas</span>
+<span class="sd">    array([[45.30170561],</span>
+<span class="sd">           [ 0.62088862],</span>
+<span class="sd">           [-0.48072345],</span>
+<span class="sd">           [ 0.02836221]])</span>
+<span class="sd">    &gt;&gt;&gt; spreg.se_betas(reg)</span>
+<span class="sd">    array([17.91278862,  0.52486082,  0.1822815 ,  0.31740089])</span>
+<span class="sd">    &gt;&gt;&gt; reg = spreg.twosls_sp.BaseGM_Lag(y, X, w=w, w_lags=2, robust=&#39;white&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; reg.betas</span>
+<span class="sd">    array([[45.30170561],</span>
+<span class="sd">           [ 0.62088862],</span>
+<span class="sd">           [-0.48072345],</span>
+<span class="sd">           [ 0.02836221]])</span>
+<span class="sd">    &gt;&gt;&gt; spreg.se_betas(reg)</span>
+<span class="sd">    array([20.47077481,  0.50613931,  0.20138425,  0.38028295])</span>
+<span class="sd">    &gt;&gt;&gt; # instrument for HOVAL with DISCBD</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.reshape(X, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.reshape(yd, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.array(db.by_col(&quot;DISCBD&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.reshape(q, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.hstack((np.ones(y.shape),X))</span>
+<span class="sd">    &gt;&gt;&gt; reg = spreg.twosls_sp.BaseGM_Lag(y, X, w=w, yend=yd, q=q, w_lags=2)</span>
+<span class="sd">    &gt;&gt;&gt; reg.betas</span>
+<span class="sd">    array([[100.79359082],</span>
+<span class="sd">           [ -0.50215501],</span>
+<span class="sd">           [ -1.14881711],</span>
+<span class="sd">           [ -0.38235022]])</span>
+<span class="sd">    &gt;&gt;&gt; spreg.se_betas(reg)</span>
+<span class="sd">    array([53.0829123 ,  1.02511494,  0.57589064,  0.59891744])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">yend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">w_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">slx_vars</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
+            <span class="n">lag_q</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">gwk</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        
+
+
+        <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">yend2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">wx</span> <span class="o">=</span> <span class="n">set_endog</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">w</span><span class="p">,</span> <span class="n">yend</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">w_lags</span><span class="p">,</span> <span class="n">lag_q</span><span class="p">,</span> <span class="n">slx_lags</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">wx</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yend2</span><span class="p">,</span> <span class="n">q2</span> <span class="o">=</span> <span class="n">set_endog</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">w</span><span class="p">,</span> <span class="n">yend</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">w_lags</span><span class="p">,</span> <span class="n">lag_q</span><span class="p">)</span>
+
+        
+
+        <span class="n">TSLS</span><span class="o">.</span><span class="n">BaseTSLS</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">yend</span><span class="o">=</span><span class="n">yend2</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q2</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="n">robust</span><span class="p">,</span> <span class="n">gwk</span><span class="o">=</span><span class="n">gwk</span><span class="p">,</span> <span class="n">sig2n_k</span><span class="o">=</span><span class="n">sig2n_k</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="GM_Lag">
+<a class="viewcode-back" href="../../generated/spreg.GM_Lag.html#spreg.GM_Lag">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GM_Lag</span><span class="p">(</span><span class="n">BaseGM_Lag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spatial two stage least squares (S2SLS) with results and diagnostics;</span>
+<span class="sd">    Anselin (1988) :cite:`Anselin1988`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y            : numpy.ndarray or pandas.Series</span>
+<span class="sd">                   nx1 array for dependent variable</span>
+<span class="sd">    x            : numpy.ndarray or pandas object</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   independent (exogenous) variable, excluding the constant</span>
+<span class="sd">    yend         : numpy.ndarray or pandas object</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   endogenous variable</span>
+<span class="sd">    q            : numpy.ndarray or pandas object</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   external exogenous variable to use as instruments (note:</span>
+<span class="sd">                   this should not contain any variables from x); cannot be</span>
+<span class="sd">                   used in combination with h</span>
+<span class="sd">    w            : pysal W object</span>
+<span class="sd">                   Spatial weights object</span>
+<span class="sd">    w_lags       : integer</span>
+<span class="sd">                   Orders of W to include as instruments for the spatially</span>
+<span class="sd">                   lagged dependent variable. For example, w_lags=1, then</span>
+<span class="sd">                   instruments are WX; if w_lags=2, then WX, WWX; and so on.</span>
+<span class="sd">    lag_q        : boolean</span>
+<span class="sd">                   If True, then include spatial lags of the additional</span>
+<span class="sd">                   instruments (q).</span>
+<span class="sd">    slx_lags     : integer</span>
+<span class="sd">                   Number of spatial lags of X to include in the model specification.</span>
+<span class="sd">                   If slx_lags&gt;0, the specification becomes of the Spatial Durbin type.</span>
+<span class="sd">    slx_vars     : either &quot;All&quot; (default) or list of booleans to select x variables</span>
+<span class="sd">                   to be lagged</span>
+<span class="sd">    regimes      : list or pandas.Series</span>
+<span class="sd">                   List of n values with the mapping of each</span>
+<span class="sd">                   observation to a regime. Assumed to be aligned with &#39;x&#39;.</span>
+<span class="sd">                   For other regimes-specific arguments, see GM_Lag_Regimes</span>
+<span class="sd">    robust       : string</span>
+<span class="sd">                   If &#39;white&#39;, then a White consistent estimator of the</span>
+<span class="sd">                   variance-covariance matrix is given.  If &#39;hac&#39;, then a</span>
+<span class="sd">                   HAC consistent estimator of the variance-covariance</span>
+<span class="sd">                   matrix is given. Default set to None.</span>
+<span class="sd">    gwk          : pysal W object</span>
+<span class="sd">                   Kernel spatial weights needed for HAC estimation. Note:</span>
+<span class="sd">                   matrix must have ones along the main diagonal.</span>
+<span class="sd">    sig2n_k      : boolean</span>
+<span class="sd">                   If True, then use n-k to estimate sigma^2. If False, use n.</span>
+<span class="sd">    spat_diag    : boolean</span>
+<span class="sd">                   If True, then compute Anselin-Kelejian test and Common Factor Hypothesis test (if applicable)</span>
+<span class="sd">    spat_impacts : string or list</span>
+<span class="sd">                   Include average direct impact (ADI), average indirect impact (AII),</span>
+<span class="sd">                    and average total impact (ATI) in summary results.</span>
+<span class="sd">                    Options are &#39;simple&#39;, &#39;full&#39;, &#39;power&#39;, &#39;all&#39; or None.</span>
+<span class="sd">                    See sputils.spmultiplier for more information.</span>
+<span class="sd">    vm           : boolean</span>
+<span class="sd">                   If True, include variance-covariance matrix in summary</span>
+<span class="sd">                   results</span>
+<span class="sd">    name_y       : string</span>
+<span class="sd">                   Name of dependent variable for use in output</span>
+<span class="sd">    name_x       : list of strings</span>
+<span class="sd">                   Names of independent variables for use in output</span>
+<span class="sd">    name_yend    : list of strings</span>
+<span class="sd">                   Names of endogenous variables for use in output</span>
+<span class="sd">    name_q       : list of strings</span>
+<span class="sd">                   Names of instruments for use in output</span>
+<span class="sd">    name_w       : string</span>
+<span class="sd">                   Name of weights matrix for use in output</span>
+<span class="sd">    name_gwk     : string</span>
+<span class="sd">                   Name of kernel weights matrix for use in output</span>
+<span class="sd">    name_ds      : string</span>
+<span class="sd">                   Name of dataset for use in output</span>
+<span class="sd">    latex        : boolean</span>
+<span class="sd">                   Specifies if summary is to be printed in latex format</span>
+<span class="sd">    hard_bound   : boolean</span>
+<span class="sd">                   If true, raises an exception if the estimated spatial</span>
+<span class="sd">                   autoregressive parameter is outside the bounds of -1 and 1.</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output       : dataframe</span>
+<span class="sd">                   regression results pandas dataframe</span>
+<span class="sd">    summary      : string</span>
+<span class="sd">                   Summary of regression results and diagnostics (note: use in</span>
+<span class="sd">                   conjunction with the print command)</span>
+<span class="sd">    betas        : array</span>
+<span class="sd">                   kx1 array of estimated coefficients</span>
+<span class="sd">    u            : array</span>
+<span class="sd">                   nx1 array of residuals</span>
+<span class="sd">    e_pred       : array</span>
+<span class="sd">                   nx1 array of residuals (using reduced form)</span>
+<span class="sd">    predy        : array</span>
+<span class="sd">                   nx1 array of predicted y values</span>
+<span class="sd">    predy_e      : array</span>
+<span class="sd">                   nx1 array of predicted y values (using reduced form)</span>
+<span class="sd">    n            : integer</span>
+<span class="sd">                   Number of observations</span>
+<span class="sd">    k            : integer</span>
+<span class="sd">                   Number of variables for which coefficients are estimated</span>
+<span class="sd">                   (including the constant)</span>
+<span class="sd">    kstar        : integer</span>
+<span class="sd">                   Number of endogenous variables.</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nx1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   independent (exogenous) variable, including the constant</span>
+<span class="sd">    yend         : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   endogenous variable</span>
+<span class="sd">    q            : array</span>
+<span class="sd">                   Two dimensional array with n rows and one column for each</span>
+<span class="sd">                   external exogenous variable used as instruments</span>
+<span class="sd">    z            : array</span>
+<span class="sd">                   nxk array of variables (combination of x and yend)</span>
+<span class="sd">    h            : array</span>
+<span class="sd">                   nxl array of instruments (combination of x and q)</span>
+<span class="sd">    robust       : string</span>
+<span class="sd">                   Adjustment for robust standard errors</span>
+<span class="sd">    mean_y       : float</span>
+<span class="sd">                   Mean of dependent variable</span>
+<span class="sd">    std_y        : float</span>
+<span class="sd">                   Standard deviation of dependent variable</span>
+<span class="sd">    vm           : array</span>
+<span class="sd">                   Variance covariance matrix (kxk)</span>
+<span class="sd">    pr2          : float</span>
+<span class="sd">                   Pseudo R squared (squared correlation between y and ypred)</span>
+<span class="sd">    pr2_e        : float</span>
+<span class="sd">                   Pseudo R squared (squared correlation between y and ypred_e</span>
+<span class="sd">                   (using reduced form))</span>
+<span class="sd">    utu          : float</span>
+<span class="sd">                   Sum of squared residuals</span>
+<span class="sd">    sig2         : float</span>
+<span class="sd">                   Sigma squared used in computations</span>
+<span class="sd">    std_err      : array</span>
+<span class="sd">                   1xk array of standard errors of the betas</span>
+<span class="sd">    z_stat       : list of tuples</span>
+<span class="sd">                   z statistic; each tuple contains the pair (statistic,</span>
+<span class="sd">                   p-value), where each is a float</span>
+<span class="sd">    ak_test      : tuple</span>
+<span class="sd">                   Anselin-Kelejian test; tuple contains the pair (statistic,</span>
+<span class="sd">                   p-value)</span>
+<span class="sd">    cfh_test     : tuple</span>
+<span class="sd">                   Common Factor Hypothesis test; tuple contains the pair (statistic,</span>
+<span class="sd">                   p-value). Only when it applies (see specific documentation).</span>
+<span class="sd">    name_y       : string</span>
+<span class="sd">                   Name of dependent variable for use in output</span>
+<span class="sd">    name_x       : list of strings</span>
+<span class="sd">                   Names of independent variables for use in output</span>
+<span class="sd">    name_yend    : list of strings</span>
+<span class="sd">                   Names of endogenous variables for use in output</span>
+<span class="sd">    name_z       : list of strings</span>
+<span class="sd">                   Names of exogenous and endogenous variables for use in</span>
+<span class="sd">                   output</span>
+<span class="sd">    name_q       : list of strings</span>
+<span class="sd">                   Names of external instruments</span>
+<span class="sd">    name_h       : list of strings</span>
+<span class="sd">                   Names of all instruments used in ouput</span>
+<span class="sd">    name_w       : string</span>
+<span class="sd">                   Name of weights matrix for use in output</span>
+<span class="sd">    name_gwk     : string</span>
+<span class="sd">                   Name of kernel weights matrix for use in output</span>
+<span class="sd">    name_ds      : string</span>
+<span class="sd">                   Name of dataset for use in output</span>
+<span class="sd">    title        : string</span>
+<span class="sd">                   Name of the regression method used</span>
+<span class="sd">    sig2n        : float</span>
+<span class="sd">                   Sigma squared (computed with n in the denominator)</span>
+<span class="sd">    sig2n_k      : float</span>
+<span class="sd">                   Sigma squared (computed with n-k in the denominator)</span>
+<span class="sd">    hth          : float</span>
+<span class="sd">                   :math:`H&#39;H`</span>
+<span class="sd">    hthi         : float</span>
+<span class="sd">                   :math:`(H&#39;H)^{-1}`</span>
+<span class="sd">    varb         : array</span>
+<span class="sd">                   :math:`(Z&#39;H (H&#39;H)^{-1} H&#39;Z)^{-1}`</span>
+<span class="sd">    zthhthi      : array</span>
+<span class="sd">                   :math:`Z&#39;H(H&#39;H)^{-1}`</span>
+<span class="sd">    pfora1a2     : array</span>
+<span class="sd">                   n(zthhthi)&#39;varb</span>
+<span class="sd">    sp_multipliers: dict</span>
+<span class="sd">                   Dictionary of spatial multipliers (if spat_impacts is not None)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    We first need to import the needed modules, namely numpy to convert the</span>
+<span class="sd">    data we read into arrays that ``spreg`` understands and ``pysal`` to</span>
+<span class="sd">    perform all the analysis. Since we will need some tests for our</span>
+<span class="sd">    model, we also import the diagnostics module.</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; import spreg</span>
+
+<span class="sd">    Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().</span>
+<span class="sd">    This is the DBF associated with the Columbus shapefile.  Note that</span>
+<span class="sd">    libpysal.io.open() also reads data in CSV format; since the actual class</span>
+<span class="sd">    requires data to be passed in as numpy arrays, the user can read their</span>
+<span class="sd">    data in using any method.</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;),&#39;r&#39;)</span>
+
+<span class="sd">    Extract the HOVAL column (home value) from the DBF file and make it the</span>
+<span class="sd">    dependent variable for the regression. Note that PySAL requires this to be</span>
+<span class="sd">    an numpy array of shape (n, 1) as opposed to the also common shape of (n, )</span>
+<span class="sd">    that other packages accept.</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array(db.by_col(&quot;HOVAL&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.reshape(y, (49,1))</span>
+
+<span class="sd">    Extract INC (income) and CRIME (crime rates) vectors from the DBF to be used as</span>
+<span class="sd">    independent variables in the regression.  Note that PySAL requires this to</span>
+<span class="sd">    be an nxj numpy array, where j is the number of independent variables (not</span>
+<span class="sd">    including a constant). By default this model adds a vector of ones to the</span>
+<span class="sd">    independent variables passed in, but this can be overridden by passing</span>
+<span class="sd">    constant=False.</span>
+
+<span class="sd">    &gt;&gt;&gt; X = []</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X.append(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array(X).T</span>
+
+<span class="sd">    Since we want to run a spatial error model, we need to specify the spatial</span>
+<span class="sd">    weights matrix that includes the spatial configuration of the observations</span>
+<span class="sd">    into the error component of the model. To do that, we can open an already</span>
+<span class="sd">    existing gal file or create a new one. In this case, we will create one</span>
+<span class="sd">    from ``columbus.shp``.</span>
+
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+
+<span class="sd">    Unless there is a good reason not to do it, the weights have to be</span>
+<span class="sd">    row-standardized so every row of the matrix sums to one. Among other</span>
+<span class="sd">    things, this allows to interpret the spatial lag of a variable as the</span>
+<span class="sd">    average value of the neighboring observations. In PySAL, this can be</span>
+<span class="sd">    easily performed in the following way:</span>
+
+<span class="sd">    &gt;&gt;&gt; w.transform = &#39;r&#39;</span>
+
+<span class="sd">    This class runs a lag model, which means that includes the spatial lag of</span>
+<span class="sd">    the dependent variable on the right-hand side of the equation. If we want</span>
+<span class="sd">    to have the names of the variables printed in the</span>
+<span class="sd">    output summary, we will have to pass them in as well, although this is</span>
+<span class="sd">    optional. The default most basic model to be run would be:</span>
+
+<span class="sd">    &gt;&gt;&gt; from spreg import GM_Lag</span>
+<span class="sd">    &gt;&gt;&gt; np.set_printoptions(suppress=True) #prevent scientific format</span>
+<span class="sd">    &gt;&gt;&gt; reg=GM_Lag(y, X, w=w, w_lags=2, name_x=[&#39;inc&#39;, &#39;crime&#39;], name_y=&#39;hoval&#39;, name_ds=&#39;columbus&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; reg.betas</span>
+<span class="sd">    array([[45.30170561],</span>
+<span class="sd">           [ 0.62088862],</span>
+<span class="sd">           [-0.48072345],</span>
+<span class="sd">           [ 0.02836221]])</span>
+
+<span class="sd">    Once the model is run, we can obtain the standard error of the coefficient</span>
+<span class="sd">    estimates by calling the diagnostics module:</span>
+
+<span class="sd">    &gt;&gt;&gt; spreg.se_betas(reg)</span>
+<span class="sd">    array([17.91278862,  0.52486082,  0.1822815 ,  0.31740089])</span>
+
+<span class="sd">    But we can also run models that incorporates corrected standard errors</span>
+<span class="sd">    following the White procedure. For that, we will have to include the</span>
+<span class="sd">    optional parameter ``robust=&#39;white&#39;``:</span>
+
+<span class="sd">    &gt;&gt;&gt; reg=GM_Lag(y, X, w=w, w_lags=2, robust=&#39;white&#39;, name_x=[&#39;inc&#39;, &#39;crime&#39;], name_y=&#39;hoval&#39;, name_ds=&#39;columbus&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; reg.betas</span>
+<span class="sd">    array([[45.30170561],</span>
+<span class="sd">           [ 0.62088862],</span>
+<span class="sd">           [-0.48072345],</span>
+<span class="sd">           [ 0.02836221]])</span>
+
+<span class="sd">    And we can access the standard errors from the model object:</span>
+
+<span class="sd">    &gt;&gt;&gt; reg.std_err</span>
+<span class="sd">    array([20.47077481,  0.50613931,  0.20138425,  0.38028295])</span>
+
+<span class="sd">    The class is flexible enough to accomodate a spatial lag model that,</span>
+<span class="sd">    besides the spatial lag of the dependent variable, includes other</span>
+<span class="sd">    non-spatial endogenous regressors. As an example, we will assume that</span>
+<span class="sd">    CRIME is actually endogenous and we decide to instrument for it with</span>
+<span class="sd">    DISCBD (distance to the CBD). We reload the X including INC only and</span>
+<span class="sd">    define CRIME as endogenous and DISCBD as instrument:</span>
+
+<span class="sd">    &gt;&gt;&gt; X = np.array(db.by_col(&quot;INC&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; X = np.reshape(X, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.array(db.by_col(&quot;CRIME&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; yd = np.reshape(yd, (49,1))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.array(db.by_col(&quot;DISCBD&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; q = np.reshape(q, (49,1))</span>
+
+<span class="sd">    And we can run the model again:</span>
+
+<span class="sd">    &gt;&gt;&gt; reg=GM_Lag(y, X, w=w, yend=yd, q=q, w_lags=2, name_x=[&#39;inc&#39;], name_y=&#39;hoval&#39;, name_yend=[&#39;crime&#39;], name_q=[&#39;discbd&#39;], name_ds=&#39;columbus&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; reg.betas</span>
+<span class="sd">    array([[100.79359082],</span>
+<span class="sd">           [ -0.50215501],</span>
+<span class="sd">           [ -1.14881711],</span>
+<span class="sd">           [ -0.38235022]])</span>
+
+<span class="sd">    Once the model is run, we can obtain the standard error of the coefficient</span>
+<span class="sd">    estimates by calling the diagnostics module:</span>
+
+<span class="sd">    &gt;&gt;&gt; spreg.se_betas(reg)</span>
+<span class="sd">    array([53.0829123 ,  1.02511494,  0.57589064,  0.59891744])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GM_Lag.__init__">
+<a class="viewcode-back" href="../../generated/spreg.GM_Lag.html#spreg.GM_Lag.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">yend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">w_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">lag_q</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">slx_vars</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">,</span>
+            <span class="n">regimes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">gwk</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">spat_impacts</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+            <span class="n">vm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">name_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name_yend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name_q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name_gwk</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">hard_bound</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">regimes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.twosls_sp_regimes</span><span class="w"> </span><span class="kn">import</span> <span class="n">GM_Lag_Regimes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">GM_Lag_Regimes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="n">regimes</span><span class="o">=</span><span class="n">regimes</span><span class="p">,</span>
+                <span class="n">yend</span><span class="o">=</span><span class="n">yend</span><span class="p">,</span>
+                <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx_lags</span><span class="p">,</span>
+                <span class="n">lag_q</span><span class="o">=</span><span class="n">lag_q</span><span class="p">,</span>
+                <span class="n">robust</span><span class="o">=</span><span class="n">robust</span><span class="p">,</span>
+                <span class="n">gwk</span><span class="o">=</span><span class="n">gwk</span><span class="p">,</span>
+                <span class="n">sig2n_k</span><span class="o">=</span><span class="n">sig2n_k</span><span class="p">,</span>
+                <span class="n">spat_diag</span><span class="o">=</span><span class="n">spat_diag</span><span class="p">,</span>
+                <span class="n">spat_impacts</span><span class="o">=</span><span class="n">spat_impacts</span><span class="p">,</span>
+                <span class="n">vm</span><span class="o">=</span><span class="n">vm</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_yend</span><span class="o">=</span><span class="n">name_yend</span><span class="p">,</span>
+                <span class="n">name_q</span><span class="o">=</span><span class="n">name_q</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_gwk</span><span class="o">=</span><span class="n">name_gwk</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="n">hard_bound</span><span class="o">=</span><span class="n">hard_bound</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>            
+            <span class="n">n</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_arrays</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">yend</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">name_y</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_y</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">name_y</span><span class="p">)</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_weights</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx_lags</span><span class="p">)</span>
+            <span class="n">USER</span><span class="o">.</span><span class="n">check_robust</span><span class="p">(</span><span class="n">robust</span><span class="p">,</span> <span class="n">gwk</span><span class="p">)</span>
+            <span class="n">yend</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">name_yend</span><span class="p">,</span> <span class="n">name_q</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_endog</span><span class="p">([</span><span class="n">yend</span><span class="p">,</span> <span class="n">q</span><span class="p">],</span> <span class="p">[</span><span class="n">name_yend</span><span class="p">,</span> <span class="n">name_q</span><span class="p">])</span>
+            <span class="n">spat_diag</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_spat_diag</span><span class="p">(</span><span class="n">spat_diag</span><span class="o">=</span><span class="n">spat_diag</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="n">robust</span><span class="p">,</span> <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx_lags</span><span class="p">)</span>
+            <span class="n">set_warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+            <span class="n">x_constant</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+            <span class="n">set_warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+            <span class="n">name_x</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_x</span><span class="p">(</span><span class="n">name_x</span><span class="p">,</span> <span class="n">x_constant</span><span class="p">)</span>  <span class="c1"># need to check for None and set defaults</span>
+
+            <span class="c1"># kx and wkx are used to replace complex calculation for output</span>
+            <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># adjust for flexwx</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">slx_vars</span><span class="p">,</span><span class="nb">list</span><span class="p">)):</span>     <span class="c1"># slx_vars has True,False</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slx_vars</span><span class="p">)</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;slx_vars incompatible with x column dimensions&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># use slx_vars to extract proper columns</span>
+                        <span class="n">workname</span> <span class="o">=</span> <span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                        <span class="n">kx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">workname</span><span class="p">)</span>
+                        <span class="n">vv</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">compress</span><span class="p">(</span><span class="n">workname</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">))</span>
+                        <span class="n">name_x</span> <span class="o">+=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_spatial_lags</span><span class="p">(</span><span class="n">vv</span><span class="p">,</span> <span class="n">slx_lags</span><span class="p">)</span>
+                        <span class="n">wkx</span> <span class="o">=</span> <span class="n">slx_vars</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">kx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">wkx</span> <span class="o">=</span> <span class="n">kx</span>
+                    <span class="n">name_x</span> <span class="o">+=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_spatial_lags</span><span class="p">(</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">slx_lags</span><span class="p">)</span>  <span class="c1"># exclude constant</span>
+                    
+
+            <span class="n">BaseGM_Lag</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">x_constant</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">yend</span><span class="o">=</span><span class="n">yend</span><span class="p">,</span>
+                <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx_lags</span><span class="p">,</span>
+                <span class="n">slx_vars</span><span class="o">=</span><span class="n">slx_vars</span><span class="p">,</span>
+                <span class="n">robust</span><span class="o">=</span><span class="n">robust</span><span class="p">,</span>
+                <span class="n">gwk</span><span class="o">=</span><span class="n">gwk</span><span class="p">,</span>
+                <span class="n">lag_q</span><span class="o">=</span><span class="n">lag_q</span><span class="p">,</span>
+                <span class="n">sig2n_k</span><span class="o">=</span><span class="n">sig2n_k</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predy_e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_pred</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">sp_att</span><span class="p">(</span>
+                <span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">predy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yend</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="n">hard_bound</span><span class="o">=</span><span class="n">hard_bound</span>
+            <span class="p">)</span>
+            <span class="n">set_warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;SPATIAL TWO STAGE LEAST SQUARES&quot;</span>
+            <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">+=</span> <span class="s2">&quot; WITH SLX (SPATIAL DURBIN MODEL)&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_ds</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_ds</span><span class="p">(</span><span class="n">name_ds</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_y</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_y</span><span class="p">(</span><span class="n">name_y</span><span class="p">)</span>
+            <span class="c1">#        self.name_x = USER.set_name_x(name_x, x_constant)   # name_x contains SLX terms for slx_lags &gt; 0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_x</span> <span class="o">=</span> <span class="n">name_x</span>  <span class="c1"># already contains constant in new setup</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_yend</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_yend</span><span class="p">(</span><span class="n">name_yend</span><span class="p">,</span> <span class="n">yend</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_yend</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">set_name_yend_sp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_y</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_yend</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_q</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_q</span><span class="p">(</span><span class="n">name_q</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># need to remove all but last SLX variables from name_x</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name_x0</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name_x0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># constant</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">slx_vars</span><span class="p">,</span><span class="nb">list</span><span class="p">)):</span>   <span class="c1"># boolean list passed</span>
+                    <span class="c1"># x variables that were not lagged</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name_x0</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">compress</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:],[</span><span class="ow">not</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">slx_vars</span><span class="p">])))</span>
+                    <span class="c1"># last wkx variables</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name_x0</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="o">-</span><span class="n">wkx</span><span class="p">:])</span>
+
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">okx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">kstar</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">slx_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># number of original exogenous vars</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name_x0</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="o">-</span><span class="n">okx</span><span class="p">:])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">name_q</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">set_name_q_sp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x0</span><span class="p">,</span> <span class="n">w_lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_q</span><span class="p">,</span> <span class="n">lag_q</span><span class="p">))</span>
+
+                <span class="c1">#var_types = [&#39;x&#39;] * (kx + 1) + [&#39;wx&#39;] * kx * slx_lags + [&#39;yend&#39;] * (len(self.name_yend) - 1) + [&#39;rho&#39;]</span>
+                <span class="n">var_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">kx</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;wx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wkx</span> <span class="o">*</span> <span class="n">slx_lags</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;yend&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_yend</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name_q</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">set_name_q_sp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">,</span> <span class="n">w_lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_q</span><span class="p">,</span> <span class="n">lag_q</span><span class="p">))</span>
+                <span class="n">var_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;yend&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_yend</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_h</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_h</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_q</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robust</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_robust</span><span class="p">(</span><span class="n">robust</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_w</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_w</span><span class="p">(</span><span class="n">name_w</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_gwk</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">set_name_w</span><span class="p">(</span><span class="n">name_gwk</span><span class="p">,</span> <span class="n">gwk</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slx_lags</span> <span class="o">=</span> <span class="n">slx_lags</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slx_vars</span> <span class="o">=</span> <span class="n">slx_vars</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_yend</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;var_names&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;var_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_types</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;regime&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;equation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">other_top</span> <span class="o">=</span> <span class="n">_spat_pseudo_r2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">diag_out</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">spat_diag</span><span class="p">:</span>
+                <span class="n">diag_out</span> <span class="o">=</span> <span class="n">_spat_diag_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="s1">&#39;yend&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">spat_impacts</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sp_multipliers</span><span class="p">,</span> <span class="n">impacts_str</span> <span class="o">=</span> <span class="n">_summary_impacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spat_impacts</span><span class="p">,</span> <span class="n">slx_lags</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">diag_out</span> <span class="o">+=</span> <span class="n">impacts_str</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="n">diag_out</span> <span class="o">=</span> <span class="n">impacts_str</span>
+            <span class="n">output</span><span class="p">(</span><span class="n">reg</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">vm</span><span class="o">=</span><span class="n">vm</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="n">robust</span><span class="p">,</span> <span class="n">other_end</span><span class="o">=</span><span class="n">diag_out</span><span class="p">,</span> <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">start_suppress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">get_printoptions</span><span class="p">()[</span><span class="s2">&quot;suppress&quot;</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="n">start_suppress</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">libpysal</span>
+
+    <span class="n">db</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.dbf&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">y_var</span> <span class="o">=</span> <span class="s2">&quot;CRIME&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">y_var</span><span class="p">)])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x_var</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;INC&quot;</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">x_var</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">yd_var</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;HOVAL&quot;</span><span class="p">]</span>
+    <span class="n">yd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">yd_var</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">q_var</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DISCBD&quot;</span><span class="p">]</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">q_var</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">Rook</span><span class="o">.</span><span class="n">from_shapefile</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.shp&quot;</span><span class="p">))</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GM_Lag</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">yd</span><span class="p">,</span>
+        <span class="n">q</span><span class="p">,</span>
+        <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+        <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">name_y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span>
+        <span class="n">name_x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span>
+        <span class="n">name_yend</span><span class="o">=</span><span class="n">yd_var</span><span class="p">,</span>
+        <span class="n">name_q</span><span class="o">=</span><span class="n">q_var</span><span class="p">,</span>
+        <span class="n">name_ds</span><span class="o">=</span><span class="s2">&quot;columbus&quot;</span><span class="p">,</span>
+        <span class="n">name_w</span><span class="o">=</span><span class="s2">&quot;columbus.gal&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

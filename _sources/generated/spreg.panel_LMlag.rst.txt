@@ -1,0 +1,6 @@
+﻿spreg.panel\_LMlag
+==================
+
+.. currentmodule:: spreg
+
+.. autofunction:: panel_LMlag

@@ -1,101 +1,970 @@
-
-
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <title>Index &#8212; No Errors Test Project  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pysal-styles.css?v=b100b7f1" />
+    <script src="_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="_static/pysal_favicon.ico"/>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
 
   </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
 
-          <div class="body" role="main">
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
             
+                <li><a href="installation.html">Installation</a></li>
+                <li><a href="tutorials.html">Tutorials</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
 
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.AKtest.html#spreg.AKtest.__init__">__init__() (spreg.AKtest method)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Combo.html#spreg.GM_Combo.__init__">(spreg.GM_Combo method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het.__init__">(spreg.GM_Combo_Het method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes.__init__">(spreg.GM_Combo_Het_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom.__init__">(spreg.GM_Combo_Hom method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes.__init__">(spreg.GM_Combo_Hom_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes.__init__">(spreg.GM_Combo_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error.__init__">(spreg.GM_Endog_Error method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het.__init__">(spreg.GM_Endog_Error_Het method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes.__init__">(spreg.GM_Endog_Error_Het_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom.__init__">(spreg.GM_Endog_Error_Hom method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes.__init__">(spreg.GM_Endog_Error_Hom_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes.__init__">(spreg.GM_Endog_Error_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error.html#spreg.GM_Error.__init__">(spreg.GM_Error method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het.__init__">(spreg.GM_Error_Het method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes.__init__">(spreg.GM_Error_Het_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom.__init__">(spreg.GM_Error_Hom method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes.__init__">(spreg.GM_Error_Hom_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes.__init__">(spreg.GM_Error_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_KKP.html#spreg.GM_KKP.__init__">(spreg.GM_KKP method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.__init__">(spreg.GM_Lag method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.__init__">(spreg.GM_Lag_Endog_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.__init__">(spreg.GM_Lag_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.GMM_Error.html#spreg.GMM_Error.__init__">(spreg.GMM_Error method)</a>
+</li>
+        <li><a href="generated/spreg.LMtests.html#spreg.LMtests.__init__">(spreg.LMtests method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.__init__">(spreg.ML_Error method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.__init__">(spreg.ML_Error_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.__init__">(spreg.ML_Lag method)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.__init__">(spreg.ML_Lag_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.MoranRes.html#spreg.MoranRes.__init__">(spreg.MoranRes method)</a>
+</li>
+        <li><a href="generated/spreg.NSLX.html#spreg.NSLX.__init__">(spreg.NSLX method)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.__init__">(spreg.OLS method)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.__init__">(spreg.OLS_Endog_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.__init__">(spreg.OLS_Regimes method)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.__init__">(spreg.Panel_FE_Error method)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.__init__">(spreg.Panel_FE_Lag method)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.__init__">(spreg.Panel_RE_Error method)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.__init__">(spreg.Panel_RE_Lag method)</a>
+</li>
+        <li><a href="generated/spreg.Probit.html#spreg.Probit.__init__">(spreg.Probit method)</a>
+</li>
+        <li><a href="generated/spreg.Skater_reg.html#spreg.Skater_reg.__init__">(spreg.Skater_reg method)</a>
+</li>
+        <li><a href="generated/spreg.SUR.html#spreg.SUR.__init__">(spreg.SUR method)</a>
+</li>
+        <li><a href="generated/spreg.SURerrorGM.html#spreg.SURerrorGM.__init__">(spreg.SURerrorGM method)</a>
+</li>
+        <li><a href="generated/spreg.SURerrorML.html#spreg.SURerrorML.__init__">(spreg.SURerrorML method)</a>
+</li>
+        <li><a href="generated/spreg.SURlagIV.html#spreg.SURlagIV.__init__">(spreg.SURlagIV method)</a>
+</li>
+        <li><a href="generated/spreg.ThreeSLS.html#spreg.ThreeSLS.__init__">(spreg.ThreeSLS method)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.__init__">(spreg.TSLS method)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.__init__">(spreg.TSLS_Regimes method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.akaike.html#spreg.akaike">akaike() (in module spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.AKtest.html#spreg.AKtest">AKtest (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ar2.html#spreg.ar2">ar2() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.breusch_pagan.html#spreg.breusch_pagan">breusch_pagan() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.condition_index.html#spreg.condition_index">condition_index() (in module spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.constant_check.html#spreg.constant_check">constant_check() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.dgp.dgp_errproc.html#spreg.dgp.dgp_errproc">dgp_errproc() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_gns.html#spreg.dgp.dgp_gns">dgp_gns() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_lag.html#spreg.dgp.dgp_lag">dgp_lag() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_lagerr.html#spreg.dgp.dgp_lagerr">dgp_lagerr() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_mess.html#spreg.dgp.dgp_mess">dgp_mess() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_ols.html#spreg.dgp.dgp_ols">dgp_ols() (in module spreg.dgp)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.dgp.dgp_probit.html#spreg.dgp.dgp_probit">dgp_probit() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_slx.html#spreg.dgp.dgp_slx">dgp_slx() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_slxerror.html#spreg.dgp.dgp_slxerror">dgp_slxerror() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_spdurbin.html#spreg.dgp.dgp_spdurbin">dgp_spdurbin() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.dgp_sperror.html#spreg.dgp.dgp_sperror">dgp_sperror() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dwh.html#spreg.dwh">dwh() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.f_stat.html#spreg.f_stat">f_stat() (in module spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.Skater_reg.html#spreg.Skater_reg.find_cut">find_cut() (spreg.Skater_reg method)</a>
+</li>
+      <li><a href="generated/spreg.Skater_reg.html#spreg.Skater_reg.fit">fit() (spreg.Skater_reg method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.get_x_lag">get_x_lag() (spreg.ML_Error method)</a>
+
+      <ul>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.get_x_lag">(spreg.ML_Error_Regimes method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/spreg.spsearch.gets_gns.html#spreg.spsearch.gets_gns">gets_gns() (in module spreg.spsearch)</a>
+</li>
+      <li><a href="generated/spreg.spsearch.gets_sdm.html#spreg.spsearch.gets_sdm">gets_sdm() (in module spreg.spsearch)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo.html#spreg.GM_Combo">GM_Combo (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het">GM_Combo_Het (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes">GM_Combo_Het_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom">GM_Combo_Hom (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes">GM_Combo_Hom_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes">GM_Combo_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error">GM_Endog_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het">GM_Endog_Error_Het (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes">GM_Endog_Error_Het_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom">GM_Endog_Error_Hom (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes">GM_Endog_Error_Hom_Regimes (class in spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes">GM_Endog_Error_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error.html#spreg.GM_Error">GM_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het">GM_Error_Het (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes">GM_Error_Het_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom">GM_Error_Hom (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes">GM_Error_Hom_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes">GM_Error_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_KKP.html#spreg.GM_KKP">GM_KKP (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag">GM_Lag (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes">GM_Lag_Endog_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes">GM_Lag_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.GM_Lag_Regimes_Multi">GM_Lag_Regimes_Multi() (spreg.GM_Lag_Endog_Regimes method)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.GM_Lag_Regimes_Multi">(spreg.GM_Lag_Regimes method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/spreg.GMM_Error.html#spreg.GMM_Error">GMM_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.Probit.html#spreg.Probit.gradient">gradient() (spreg.Probit method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.Probit.html#spreg.Probit.hessian">hessian() (spreg.Probit method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.jarque_bera.html#spreg.jarque_bera">jarque_bera() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.koenker_bassett.html#spreg.koenker_bassett">koenker_bassett() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.lam_setp.html#spreg.lam_setp">lam_setp() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.likratiotest.html#spreg.likratiotest">likratiotest() (in module spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.Probit.html#spreg.Probit.ll">ll() (spreg.Probit method)</a>
+</li>
+      <li><a href="generated/spreg.LMtests.html#spreg.LMtests">LMtests (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.log_likelihood.html#spreg.log_likelihood">log_likelihood() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.dgp.make_bin.html#spreg.dgp.make_bin">make_bin() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_error.html#spreg.dgp.make_error">make_error() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_heterror.html#spreg.dgp.make_heterror">make_heterror() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_vmult.html#spreg.dgp.make_vmult">make_vmult() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_wx.html#spreg.dgp.make_wx">make_wx() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_wxg.html#spreg.dgp.make_wxg">make_wxg() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_x.html#spreg.dgp.make_x">make_x() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.dgp.make_xb.html#spreg.dgp.make_xb">make_xb() (in module spreg.dgp)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo.html#spreg.GM_Combo.mean_y">mean_y (spreg.GM_Combo property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het.mean_y">(spreg.GM_Combo_Het property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes.mean_y">(spreg.GM_Combo_Het_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom.mean_y">(spreg.GM_Combo_Hom property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes.mean_y">(spreg.GM_Combo_Hom_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes.mean_y">(spreg.GM_Combo_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error.mean_y">(spreg.GM_Endog_Error property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het.mean_y">(spreg.GM_Endog_Error_Het property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes.mean_y">(spreg.GM_Endog_Error_Het_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom.mean_y">(spreg.GM_Endog_Error_Hom property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes.mean_y">(spreg.GM_Endog_Error_Hom_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes.mean_y">(spreg.GM_Endog_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error.html#spreg.GM_Error.mean_y">(spreg.GM_Error property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het.mean_y">(spreg.GM_Error_Het property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes.mean_y">(spreg.GM_Error_Het_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom.mean_y">(spreg.GM_Error_Hom property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes.mean_y">(spreg.GM_Error_Hom_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes.mean_y">(spreg.GM_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_KKP.html#spreg.GM_KKP.mean_y">(spreg.GM_KKP property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.mean_y">(spreg.GM_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.mean_y">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.mean_y">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GMM_Error.html#spreg.GMM_Error.mean_y">(spreg.GMM_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.mean_y">(spreg.ML_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.mean_y">(spreg.ML_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.mean_y">(spreg.ML_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.mean_y">(spreg.ML_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.NSLX.html#spreg.NSLX.mean_y">(spreg.NSLX property)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.mean_y">(spreg.OLS property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.mean_y">(spreg.OLS_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.mean_y">(spreg.OLS_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.mean_y">(spreg.Panel_FE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.mean_y">(spreg.Panel_FE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.mean_y">(spreg.Panel_RE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.mean_y">(spreg.Panel_RE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.mean_y">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.mean_y">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error">ML_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes">ML_Error_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag">ML_Lag (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes">ML_Lag_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.ML_Lag_Regimes_Multi">ML_Lag_Regimes_Multi() (spreg.ML_Lag_Regimes method)</a>
+</li>
+      <li><a href="generated/spreg.MoranRes.html#spreg.MoranRes">MoranRes (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.NSLX.html#spreg.NSLX">NSLX (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.OLS.html#spreg.OLS">OLS (class in spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes">OLS_Endog_Regimes (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes">OLS_Regimes (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error">Panel_FE_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag">Panel_FE_Lag (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.panel_Hausman.html#spreg.panel_Hausman">panel_Hausman() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.panel_LMerror.html#spreg.panel_LMerror">panel_LMerror() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.panel_LMlag.html#spreg.panel_LMlag">panel_LMlag() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error">Panel_RE_Error (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag">Panel_RE_Lag (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.panel_rLMerror.html#spreg.panel_rLMerror">panel_rLMerror() (in module spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.panel_rLMlag.html#spreg.panel_rLMlag">panel_rLMlag() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.Probit.html#spreg.Probit.par_est">par_est() (spreg.Probit method)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.pfora1a2">pfora1a2 (spreg.GM_Lag property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.pfora1a2">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.pfora1a2">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.pfora1a2">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.pfora1a2">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/spreg.Probit.html#spreg.Probit">Probit (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.r2.html#spreg.r2">r2() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.schwarz.html#spreg.schwarz">schwarz() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.Skater_reg.html#spreg.Skater_reg.score_spreg">score_spreg() (spreg.Skater_reg method)</a>
+</li>
+      <li><a href="generated/spreg.Skater_reg.html#spreg.Skater_reg.score_stats">score_stats() (spreg.Skater_reg method)</a>
+</li>
+      <li><a href="generated/spreg.se_betas.html#spreg.se_betas">se_betas() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.sig2n">sig2n (spreg.GM_Lag property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.sig2n">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.sig2n">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.sig2n">(spreg.ML_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.sig2n">(spreg.ML_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.sig2n">(spreg.ML_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.sig2n">(spreg.ML_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.sig2n">(spreg.OLS property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.sig2n">(spreg.OLS_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.sig2n">(spreg.OLS_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.sig2n">(spreg.Panel_FE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.sig2n">(spreg.Panel_FE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.sig2n">(spreg.Panel_RE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.sig2n">(spreg.Panel_RE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.sig2n">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.sig2n">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.sig2n_k">sig2n_k (spreg.GM_Lag property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.sig2n_k">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.sig2n_k">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.sig2n_k">(spreg.ML_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.sig2n_k">(spreg.ML_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.sig2n_k">(spreg.ML_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.sig2n_k">(spreg.ML_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.sig2n_k">(spreg.OLS property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.sig2n_k">(spreg.OLS_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.sig2n_k">(spreg.OLS_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.sig2n_k">(spreg.Panel_FE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.sig2n_k">(spreg.Panel_FE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.sig2n_k">(spreg.Panel_RE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.sig2n_k">(spreg.Panel_RE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.sig2n_k">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.sig2n_k">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/spreg.Skater_reg.html#spreg.Skater_reg">Skater_reg (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.sp_att_reg">sp_att_reg() (spreg.GM_Lag_Endog_Regimes method)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.sp_att_reg">(spreg.GM_Lag_Regimes method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/spreg.diagnostics_probit.sp_tests.html#spreg.diagnostics_probit.sp_tests">sp_tests() (in module spreg.diagnostics_probit)</a>
+</li>
+      <li><a href="generated/spreg.sputils.spmultiplier.html#spreg.sputils.spmultiplier">spmultiplier() (in module spreg.sputils)</a>
+</li>
+      <li><a href="generated/spreg.GM_Combo.html#spreg.GM_Combo.std_y">std_y (spreg.GM_Combo property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Combo_Het.html#spreg.GM_Combo_Het.std_y">(spreg.GM_Combo_Het property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Het_Regimes.html#spreg.GM_Combo_Het_Regimes.std_y">(spreg.GM_Combo_Het_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom.html#spreg.GM_Combo_Hom.std_y">(spreg.GM_Combo_Hom property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Hom_Regimes.html#spreg.GM_Combo_Hom_Regimes.std_y">(spreg.GM_Combo_Hom_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Combo_Regimes.html#spreg.GM_Combo_Regimes.std_y">(spreg.GM_Combo_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error.html#spreg.GM_Endog_Error.std_y">(spreg.GM_Endog_Error property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het.html#spreg.GM_Endog_Error_Het.std_y">(spreg.GM_Endog_Error_Het property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Het_Regimes.html#spreg.GM_Endog_Error_Het_Regimes.std_y">(spreg.GM_Endog_Error_Het_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom.html#spreg.GM_Endog_Error_Hom.std_y">(spreg.GM_Endog_Error_Hom property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Hom_Regimes.html#spreg.GM_Endog_Error_Hom_Regimes.std_y">(spreg.GM_Endog_Error_Hom_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Endog_Error_Regimes.html#spreg.GM_Endog_Error_Regimes.std_y">(spreg.GM_Endog_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error.html#spreg.GM_Error.std_y">(spreg.GM_Error property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het.html#spreg.GM_Error_Het.std_y">(spreg.GM_Error_Het property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Het_Regimes.html#spreg.GM_Error_Het_Regimes.std_y">(spreg.GM_Error_Het_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom.html#spreg.GM_Error_Hom.std_y">(spreg.GM_Error_Hom property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Hom_Regimes.html#spreg.GM_Error_Hom_Regimes.std_y">(spreg.GM_Error_Hom_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Error_Regimes.html#spreg.GM_Error_Regimes.std_y">(spreg.GM_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_KKP.html#spreg.GM_KKP.std_y">(spreg.GM_KKP property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.std_y">(spreg.GM_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.std_y">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.std_y">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GMM_Error.html#spreg.GMM_Error.std_y">(spreg.GMM_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.std_y">(spreg.ML_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.std_y">(spreg.ML_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.std_y">(spreg.ML_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.std_y">(spreg.ML_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.NSLX.html#spreg.NSLX.std_y">(spreg.NSLX property)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.std_y">(spreg.OLS property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.std_y">(spreg.OLS_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.std_y">(spreg.OLS_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.std_y">(spreg.Panel_FE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.std_y">(spreg.Panel_FE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.std_y">(spreg.Panel_RE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.std_y">(spreg.Panel_RE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.std_y">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.std_y">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.spsearch.stge_classic.html#spreg.spsearch.stge_classic">stge_classic() (in module spreg.spsearch)</a>
+</li>
+      <li><a href="generated/spreg.spsearch.stge_kb.html#spreg.spsearch.stge_kb">stge_kb() (in module spreg.spsearch)</a>
+</li>
+      <li><a href="generated/spreg.spsearch.stge_pre.html#spreg.spsearch.stge_pre">stge_pre() (in module spreg.spsearch)</a>
+</li>
+      <li><a href="generated/spreg.SUR.html#spreg.SUR">SUR (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.sur_lmtest.html#spreg.sur_lmtest">sur_lmtest() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.sur_lrtest.html#spreg.sur_lrtest">sur_lrtest() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.sur_setp.html#spreg.sur_setp">sur_setp() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.SURerrorGM.html#spreg.SURerrorGM">SURerrorGM (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.SURerrorML.html#spreg.SURerrorML">SURerrorML (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.SURlagIV.html#spreg.SURlagIV">SURlagIV (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.surLMe.html#spreg.surLMe">surLMe() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.surLMlag.html#spreg.surLMlag">surLMlag() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.t_stat.html#spreg.t_stat">t_stat() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.ThreeSLS.html#spreg.ThreeSLS">ThreeSLS (class in spreg)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.TSLS.html#spreg.TSLS">TSLS (class in spreg)</a>
+</li>
+      <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes">TSLS_Regimes (class in spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.utu">utu (spreg.GM_Lag property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.utu">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.utu">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.utu">(spreg.ML_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.utu">(spreg.ML_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.utu">(spreg.ML_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.utu">(spreg.ML_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.utu">(spreg.OLS property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.utu">(spreg.OLS_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.utu">(spreg.OLS_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.utu">(spreg.Panel_FE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.utu">(spreg.Panel_FE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.utu">(spreg.Panel_RE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.utu">(spreg.Panel_RE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.utu">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.utu">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.vif.html#spreg.vif">vif() (in module spreg)</a>
+</li>
+      <li><a href="generated/spreg.GM_Lag.html#spreg.GM_Lag.vm">vm (spreg.GM_Lag property)</a>
+
+      <ul>
+        <li><a href="generated/spreg.GM_Lag_Endog_Regimes.html#spreg.GM_Lag_Endog_Regimes.vm">(spreg.GM_Lag_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.GM_Lag_Regimes.html#spreg.GM_Lag_Regimes.vm">(spreg.GM_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error.html#spreg.ML_Error.vm">(spreg.ML_Error property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Error_Regimes.html#spreg.ML_Error_Regimes.vm">(spreg.ML_Error_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag.html#spreg.ML_Lag.vm">(spreg.ML_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.ML_Lag_Regimes.html#spreg.ML_Lag_Regimes.vm">(spreg.ML_Lag_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS.html#spreg.OLS.vm">(spreg.OLS property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Endog_Regimes.html#spreg.OLS_Endog_Regimes.vm">(spreg.OLS_Endog_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.OLS_Regimes.html#spreg.OLS_Regimes.vm">(spreg.OLS_Regimes property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Error.html#spreg.Panel_FE_Error.vm">(spreg.Panel_FE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_FE_Lag.html#spreg.Panel_FE_Lag.vm">(spreg.Panel_FE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Error.html#spreg.Panel_RE_Error.vm">(spreg.Panel_RE_Error property)</a>
+</li>
+        <li><a href="generated/spreg.Panel_RE_Lag.html#spreg.Panel_RE_Lag.vm">(spreg.Panel_RE_Lag property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS.html#spreg.TSLS.vm">(spreg.TSLS property)</a>
+</li>
+        <li><a href="generated/spreg.TSLS_Regimes.html#spreg.TSLS_Regimes.vm">(spreg.TSLS_Regimes property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/spreg.white.html#spreg.white">white() (in module spreg)</a>
+</li>
+  </ul></td>
+</tr></table>
 
 
-          </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">No Errors Test Project</a></h1>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, sphinx-action Test Suite.
       
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
       
-    </div>
-
-    
-
-    
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

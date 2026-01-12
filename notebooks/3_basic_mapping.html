@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Basic Mapping &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spatial Weights" href="4_spatial_weights.html" />
+    <link rel="prev" title="Data Input/Output" href="2_data_input_output.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Basic Mapping</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#09/06/2024">09/06/2024</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Files">Files</a><ul>
+<li><a class="reference internal" href="#Getting-Started">Getting Started</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Default-Map">Default Map</a></li>
+<li><a class="reference internal" href="#Matplotlib-Logic">Matplotlib Logic</a><ul>
+<li><a class="reference internal" href="#Map-Design-Characteristics">Map Design Characteristics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Classification">Classification</a></li>
+<li><a class="reference internal" href="#Color-Map">Color Map</a></li>
+<li><a class="reference internal" href="#Final-Customization">Final Customization</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/3_basic_mapping.ipynb">notebooks/3_basic_mapping.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/3_basic_mapping.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Basic-Mapping">
+<h1>Basic Mapping<a class="headerlink" href="#Basic-Mapping" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="09/06/2024">
+<h2>09/06/2024<a class="headerlink" href="#09/06/2024" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>There are many ways to create beautiful maps in Python using packages such as <em>folium</em> or <em>plotly</em>. In this notebook, the <code class="docutils literal notranslate"><span class="pre">plot</span></code> functionality of <em>geopandas</em> is illustrated, which is sufficient for most of our purposes. The functionality will be illustrated with the <strong>Police</strong> sample data set that contains police expenditure data for Mississippi counties. It is assumed that this data has been installed using <code class="docutils literal notranslate"><span class="pre">libpysal.examples.load_example(&quot;Police&quot;)</span></code>.</p>
+<p>A video recording is available from the GeoDa Center YouTube channel playlist <em>Applied Spatial Regression - Notebooks</em>, at <a class="reference external" href="https://www.youtube.com/watch?v=rZ1Mw-hZcMY&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=3">https://www.youtube.com/watch?v=rZ1Mw-hZcMY&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=3</a>.</p>
+</section>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>As before, the main modules are <em>geopandas</em> and <em>libpysal</em>. Specifically, <em>libpysal.examples</em> is used to get the path to the sample data. In addition, to save the maps to a file, <em>matplotlib.pyplot</em> is needed.</p>
+<p>The full set of imports is shown below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from libpysal.examples import get_path
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+<li><p>plot</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>get_path</p></li>
+</ul>
+</li>
+<li><p>from matplotlib.pyplot:</p>
+<ul>
+<li><p>savefig</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Files">
+<h2>Files<a class="headerlink" href="#Files" title="Link to this heading">¶</a></h2>
+<p>The mapping functionality will be illustrated with the same <strong>Police</strong> sample data set as used in the previous notebook. The following files will be used:</p>
+<ul class="simple">
+<li><p><strong>police.shp,shx,dbf,prj</strong>: shape file (four files) for 82 counties</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = &quot;police.shp&quot;   # input shape file
+inpath = get_path(infileshp)
+dfs = gpd.read_file(inpath)
+</pre></div>
+</div>
+</div>
+<section id="Getting-Started">
+<h3>Getting Started<a class="headerlink" href="#Getting-Started" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Default-Map">
+<h2>Default Map<a class="headerlink" href="#Default-Map" title="Link to this heading">¶</a></h2>
+<p>Before delving into customization, the default choropleth map created by the <code class="docutils literal notranslate"><span class="pre">plot</span></code> function applied to a <strong>GeoDataFrame</strong> is illustrated. A bare bones implementation only requires the variable (column) to be mapped and the argument <code class="docutils literal notranslate"><span class="pre">legend</span> <span class="pre">=</span> <span class="pre">True</span></code>. Without the latter, there will still be a map, but it will not have a legend, so there will be no guide as to what the colors mean.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs.plot(&#39;POLICE&#39;,legend=True)
+</pre></div>
+</div>
+</div>
+<p>Not exactly the prettiest thing in the world. A continuous color ramp as seen here is not recommended by cartographers. Also, the classification is such that too many observations have seemingly the same color. Finally, there is also this strange mention of <strong>&lt;Axes: &gt;</strong>.</p>
+<p>There are two important types of modifications that can be considered. One pertains to the fundamental characteristics of a choropleth map, the other to the way <em>matplotlib</em> constructs visualizations under the hood. The <em>geopandas</em> library relies on <em>matplotlib</em> so there is no need to <code class="docutils literal notranslate"><span class="pre">import</span></code> the latter explicitly, except when one wants to save the maps to a file. In any case, it helps to understand the <em>matplotlib</em> logic. This is considered first.</p>
+</section>
+<section id="Matplotlib-Logic">
+<h2>Matplotlib Logic<a class="headerlink" href="#Matplotlib-Logic" title="Link to this heading">¶</a></h2>
+<p>The <em>matplotlib</em> library is extremely powerful and allows just about any type of customized visualization. It starts by setting up the basic parameters and then builds a graphic representation layer by layer. The terminology may seem a bit strange at first, but after a while, it becomes more familiar.</p>
+<p>A plot is initialized by assigning some parameters to the tuple <code class="docutils literal notranslate"><span class="pre">fig</span> <span class="pre">,</span> <span class="pre">ax</span></code>. It is important to realize that <code class="docutils literal notranslate"><span class="pre">fig</span></code> is about the figure makeup and <code class="docutils literal notranslate"><span class="pre">ax</span></code> is about the actual plots. For example, <code class="docutils literal notranslate"><span class="pre">fig</span></code> is used to specify how many subplots there need to be, how they are arranged and what their size is. Since the examples used here and in later notebooks will only produce a single plot, the <code class="docutils literal notranslate"><span class="pre">fig</span></code> aspect can be ignored and only <code class="docutils literal notranslate"><span class="pre">ax</span></code> is needed. In fact, for simple plots such as the maps in our
+applications, the specification of <code class="docutils literal notranslate"><span class="pre">ax</span></code> as such is not needed and the <code class="docutils literal notranslate"><span class="pre">plot</span></code> function can be applied directly to the GeoDataFrame. However, it remains important that the plot object is referred to as <code class="docutils literal notranslate"><span class="pre">ax</span></code> in many operations.</p>
+<p>An alternative way to set up the default map just shown is to explicitly assign it to an object <code class="docutils literal notranslate"><span class="pre">ax</span></code>, as <code class="docutils literal notranslate"><span class="pre">ax</span> <span class="pre">=</span> <span class="pre">dfs.plot(</span> <span class="pre">)</span></code> with the same arguments as before. To remove the x-y coordinates and box around the map, the method <code class="docutils literal notranslate"><span class="pre">set_axis_off()</span></code> is applied to the <code class="docutils literal notranslate"><span class="pre">ax</span></code> object. Using this setup also removes the <strong>&lt;Axes: &gt;</strong> listing. Otherwise, everything is still the same as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(&#39;POLICE&#39;,legend = True)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>Note that the same result can be obtained without the explicit assignment to <code class="docutils literal notranslate"><span class="pre">ax</span></code> by simply applying the method to the <code class="docutils literal notranslate"><span class="pre">plot</span></code> object, as in the example below. Typically, the more explicit assignment is considered to be more readable, but it is mostly a matter of preference.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs.plot(&#39;POLICE&#39;,legend=True).set_axis_off()
+</pre></div>
+</div>
+</div>
+<section id="Map-Design-Characteristics">
+<h3>Map Design Characteristics<a class="headerlink" href="#Map-Design-Characteristics" title="Link to this heading">¶</a></h3>
+<p>The purpose of a choropleth or thematic map is to visualize the spatial distribution of a variable over areal units. Choropleth comes from the Greek choros, which stands for region, so it is a map for regions. For our purposes, the proper design of a map has three important characteristics, which each translate into arguments to the <code class="docutils literal notranslate"><span class="pre">plot</span></code> function:</p>
+<ul class="simple">
+<li><p>classification</p></li>
+<li><p>color</p></li>
+<li><p>legend</p></li>
+</ul>
+</section>
+</section>
+<section id="Classification">
+<h2>Classification<a class="headerlink" href="#Classification" title="Link to this heading">¶</a></h2>
+<p>Arguably the most important characteristic is the classification used, i.e., how the continuous distribution of a given variable gets translated into a small number of discrete categories, or bins. This is exactly the same issue encountered in the design of histogram bins.</p>
+<p>The assignment of observations to distinct bins is done by the <em>mapclassify</em> library, which is part of the <em>PySAL</em> family. However, this is done under the hood by <em>geopandas</em> so that no separate <code class="docutils literal notranslate"><span class="pre">import</span></code> statement is needed.</p>
+<p>The classification is set by means of the <code class="docutils literal notranslate"><span class="pre">scheme</span></code> argument. Common options are <code class="docutils literal notranslate"><span class="pre">Quantiles</span></code> (for a quantile map), <code class="docutils literal notranslate"><span class="pre">EqualInterval</span></code> (for an equal intervals map), <code class="docutils literal notranslate"><span class="pre">NaturalBreaks</span></code> (for a natural breaks map), <code class="docutils literal notranslate"><span class="pre">StdMean</span></code> (for a standard deviational map), and <code class="docutils literal notranslate"><span class="pre">BoxPlot</span></code> (for a box map). All but the last two classifications require an additional argument for the number of bins, <code class="docutils literal notranslate"><span class="pre">k</span></code>. This is not needed for the standard deviational map and the box map, for which the breakpoints are derived
+from the data, respectively the standard deviation and the quartiles/hinge.</p>
+<p>The default hinge for the box map is 1.5 times the interquartile range. Other values for the hinge can be specified by setting a different value for the argument <code class="docutils literal notranslate"><span class="pre">hinge</span></code>, but this is typically not necessary. However, to pass this to the <em>geopandas</em> <code class="docutils literal notranslate"><span class="pre">plot</span></code> function it cannot just be set as <code class="docutils literal notranslate"><span class="pre">hinge</span> <span class="pre">=</span> <span class="pre">3.0</span></code> as in <em>mapclassify</em>. In <em>geopandas</em> it is necessary to pass this in a <code class="docutils literal notranslate"><span class="pre">classification_kwds</span></code> dictionary, where the relevant parameters are set. For example, this would be
+<code class="docutils literal notranslate"><span class="pre">classification_kwds</span> <span class="pre">=</span> <span class="pre">{&quot;hinge&quot;:</span> <span class="pre">3.0}</span></code> for a hinge of 3 times the interquartile range.</p>
+<p>The default for the standard deviational map is to show all observations within one standard deviation below and above the mean as one category. To separate observations below and above the mean can be accomplished by setting the argument <code class="docutils literal notranslate"><span class="pre">anchor</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Again, this is done by means of the <code class="docutils literal notranslate"><span class="pre">classification_kwds</span></code> dictionary.</p>
+<p>Full details on all the classifications available through <em>mapclassify</em> and their use in <em>geopandas</em> can be found at <a class="reference external" href="https://geopandas.org/en/stable/docs/user_guide/mapping">https://geopandas.org/en/stable/docs/user_guide/mapping</a>.html# and <a class="reference external" href="https://pysal.org/mapclassify/api.html">https://pysal.org/mapclassify/api.html</a>.</p>
+<p>Each of the five cases is illustrated in turn. Note that the <code class="docutils literal notranslate"><span class="pre">column</span></code> argument is used to designate the variable to be mapped.</p>
+<p>The placement of the legend is managed by means of the <code class="docutils literal notranslate"><span class="pre">legend_kwds</span></code> argument (similar to <code class="docutils literal notranslate"><span class="pre">classification_kwds</span></code>). This is a dictionary that specifies aspects such as the location of the legend and how it is positioned relative to its anchor point. It also makes it possible to set a <code class="docutils literal notranslate"><span class="pre">title</span></code> for the legend, e.g., to set it to the variable that is being mapped.</p>
+<p>In the examples, the following arguments are used: <code class="docutils literal notranslate"><span class="pre">legend_kwds={&quot;loc&quot;:&quot;center</span> <span class="pre">left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5),</span> <span class="pre">&quot;title&quot;:</span> <span class="pre">&quot;&lt;variable</span> <span class="pre">name&gt;&quot;}</span></code>. This is not totally intuitive, but it works. See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend">https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend</a> for details about the various legend customizations.</p>
+<p>Also note that the map uses the default color map. More appropriate color maps will be considered below.</p>
+<p>A simple six category quantile map is illustrated by setting <code class="docutils literal notranslate"><span class="pre">scheme</span> <span class="pre">=</span> <span class="pre">&quot;Quantiles&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">k=6</span></code>. The <code class="docutils literal notranslate"><span class="pre">legend</span></code> arguments now also include a <code class="docutils literal notranslate"><span class="pre">title</span></code>. In addition, two <code class="docutils literal notranslate"><span class="pre">ax</span></code> methods are used for a minor customization: <code class="docutils literal notranslate"><span class="pre">ax.set_title</span></code> to give the map a title and, as before, <code class="docutils literal notranslate"><span class="pre">ax.set_axis_off</span></code> to get rid of the box with x-y coordinates.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;Quantiles&#39;,
+    k = 6,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot; : &quot;Police&quot;}
+)
+ax.set_title(&quot;Quantiles&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>Rather than repeating the single command for each type of map that needs the argument <code class="docutils literal notranslate"><span class="pre">k</span></code>, a small loop is constructed that creates each in turn. This is accomplished by putting the name for the respective <code class="docutils literal notranslate"><span class="pre">scheme</span></code> in a list and using that same name as the map title. The three types are <code class="docutils literal notranslate"><span class="pre">Quantiles</span></code>, <code class="docutils literal notranslate"><span class="pre">EqualInterval</span></code> and <code class="docutils literal notranslate"><span class="pre">NaturalBreaks</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>schemek = [&quot;Quantiles&quot;,&quot;EqualInterval&quot;,&quot;NaturalBreaks&quot;]
+for i in schemek:
+    ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = i,
+    k = 6,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &quot;Police&quot;}
+    )
+    ax.set_title(i)
+    ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>Note the contrast in the visualization of the spatial distribution between the different classifications. It is important to keep in mind that each has pros and cons. For example, the quantile map yields an equal number of observations in each category, but the range of the categories can vary subtantially, resulting in the grouping of very disparate observations. In the example, this is the case for the top category, which ranges from 1,275 to 10,972.</p>
+<p>On the other hand, the range in an equal intervals map is the same for all categories, but as a result some bins may have very few or very many observations, as is the case here for the lowest bin.</p>
+<p>Finally, a natural breaks map uses an optimization criterion (essentially equivalent to k-means on one variable) to determine the grouping of observations. Both the number of observations in each bin and the range of the bins is variable.</p>
+<p>The standard deviational map and box map have a pre-set number of bins, depending on, respectively, standard deviational units and quantiles/interquantile range. Again, they are illustrated using a small loop.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>schemenok = [&quot;StdMean&quot;,&quot;BoxPlot&quot;]
+for i in schemenok:
+    ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = i,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+    )
+    ax.set_title(i)
+    ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>Both types of maps are designed to highlight outliers. In the standard deviational map, these are observations more than two standard deviations away from the mean, in the box map, the outliers are outside the hinge (1.5 times the interquartile range from the median). This can be customized by setting a different value for the hinge through the <code class="docutils literal notranslate"><span class="pre">classification_kwds</span></code> argument. For example, selecting only the most extreme observations is achieved by setting
+<code class="docutils literal notranslate"><span class="pre">classification_kwds</span> <span class="pre">=</span> <span class="pre">{&quot;hinge&quot;:</span> <span class="pre">3.0}</span></code>, as illustrated below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;BoxPlot&#39;,
+    k = 6,
+    classification_kwds = {&#39;hinge&#39;: 3.0},
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &quot;Police&quot;}
+)
+ax.set_title(&quot;Box Map&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>A standard deviational map with the categories below and above the mean shown is implemented with <code class="docutils literal notranslate"><span class="pre">classification_kwds</span> <span class="pre">=</span> <span class="pre">{&quot;anchor&quot;</span> <span class="pre">:</span> <span class="pre">True}</span></code>, as shown below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;StdMean&#39;,
+    k = 6,
+    classification_kwds = {&#39;anchor&#39;: True},
+    legend = True,
+    legend_kwds = {&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Standard Deviational Map&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>Whereas the first three types of classifications have a color scheme that suggests a progression from low to high values, a so-called <em>sequential</em> legend, the standard deviational map and box map focus on differences from a central value. This requires a color map that highlights the move away from the center, a so-called <em>diverging</em> legend. In the examples shown so far, the categories were shown with the default sequential color map, which is not appropriate. The needed customizations are
+considered next.</p>
+</section>
+<section id="Color-Map">
+<h2>Color Map<a class="headerlink" href="#Color-Map" title="Link to this heading">¶</a></h2>
+<p>The color scheme for the map is set by means of the <code class="docutils literal notranslate"><span class="pre">cmap</span></code> argument. This refers to a <em>matplotlib</em> color map, i.e., a pre-determined range of colors optimized for a particular purpose. For example, this allows for a different color map to represent a sequential vs. a diverging legend.</p>
+<p>The full range of color maps can be found at <a class="reference external" href="https://matplotlib.org/stable/users/explain/colors/colormaps.html">https://matplotlib.org/stable/users/explain/colors/colormaps.html</a>.</p>
+<p>For our purposes, a good sequential color map uses a gradation that goes from light to dark, either in the same color, such as <code class="docutils literal notranslate"><span class="pre">cmap=&quot;Blues&quot;</span></code>, or moving between colors, such as <code class="docutils literal notranslate"><span class="pre">cmap=&quot;YlOrRd&quot;</span></code>. For a diverging legend, going from one extreme color to another is preferred, e.g., dark blue to light blue and then to light red and dark red, as in <code class="docutils literal notranslate"><span class="pre">cmap=&quot;bwr&quot;</span></code>, or even more extreme, as in <code class="docutils literal notranslate"><span class="pre">cmap=&quot;seismic&quot;</span></code>.</p>
+<p>Some examples are shown below.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;Quantiles&#39;,
+    k = 6,
+    cmap = &#39;Blues&#39;,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Quantiles&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;Quantiles&#39;,
+    k = 6,
+    cmap = &#39;YlOrRd&#39;,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Quantiles&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;BoxPlot&#39;,
+    cmap = &#39;seismic&#39;,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Box Map&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>But notice when this is applied to the standard deviational map with <code class="docutils literal notranslate"><span class="pre">cmap</span> <span class="pre">=</span> <span class="pre">bwr</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;StdMean&#39;,
+    cmap = &#39;bwr&#39;,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Standard Deviational Map&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>What happened? Many of the counties are invisible. The reason is that there is no borderline specified for the map. This final customization is considered next.</p>
+</section>
+<section id="Final-Customization">
+<h2>Final Customization<a class="headerlink" href="#Final-Customization" title="Link to this heading">¶</a></h2>
+<p>As mentioned, the full range of <em>matplotlib</em> customizations is available to manipulate legends, colors and placement. For our purposes, one more map-specific element is of interest. As seen in the previous examples, the border between polygons is not clear or even non-existent.</p>
+<p>This can be fixed by setting the <code class="docutils literal notranslate"><span class="pre">edgecolor</span></code> and associated <code class="docutils literal notranslate"><span class="pre">linewidth</span></code> attributes. For example, with <code class="docutils literal notranslate"><span class="pre">edgecolor</span> <span class="pre">=</span> <span class="pre">&quot;Black&quot;</span></code>, the standard deviational map becomes more meaningful.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;StdMean&#39;,
+    cmap = &#39;bwr&#39;,
+    edgecolor = &quot;Black&quot;,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Standard Deviational Map&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<p>So far, the maps are generated in the notebook, but are not separately available. To save a specific map to a file, the <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig</span></code> command is used. For example, to save the standard deviational map (or any other map) to a png format file, only the filename needs to be specified as an argument to <code class="docutils literal notranslate"><span class="pre">plt.savefig</span></code>. Optionally, to get higher quality figures, the number of dots per inch can be set by means of <code class="docutils literal notranslate"><span class="pre">dpi</span></code>.</p>
+<p>This is illustrated for the standard deviational map where a more subtle border line is obtained by setting the thickness with <code class="docutils literal notranslate"><span class="pre">linewidth</span> <span class="pre">=</span> <span class="pre">0.2</span></code>. The quality is set to <code class="docutils literal notranslate"><span class="pre">dpi</span> <span class="pre">=</span> <span class="pre">600</span></code>.</p>
+<p>The file will be in the current working directory.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.plot(
+    column = &#39;POLICE&#39;,
+    scheme = &#39;StdMean&#39;,
+    cmap = &#39;bwr&#39;,
+    edgecolor = &quot;Black&quot;,
+    linewidth = 0.2,
+    legend = True,
+    legend_kwds={&quot;loc&quot;:&quot;center left&quot;,&quot;bbox_to_anchor&quot;:(1,0.5), &quot;title&quot;: &#39;Police&#39;}
+)
+ax.set_title(&quot;Standard Deviational Map&quot;)
+ax.set_axis_off()
+plt.savefig(&quot;police_stdmean.png&quot;,dpi=600)
+</pre></div>
+</div>
+</div>
+<p>Finally, a map with just the county borders is obtained with the <code class="docutils literal notranslate"><span class="pre">boundary.plot</span></code> command, where the color of the border line is controlled by <code class="docutils literal notranslate"><span class="pre">edgecolor</span></code> and the line thickness by <code class="docutils literal notranslate"><span class="pre">linewidth</span></code>, as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ax = dfs.boundary.plot(
+    edgecolor = &quot;Black&quot;,
+    linewidth = 0.2,
+)
+ax.set_title(&quot;Map of County Boundaries&quot;)
+ax.set_axis_off()
+</pre></div>
+</div>
+</div>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>Use your own data set or one of the PySAL sample data sets to load a spatial data frame and experiment with various map types, color schemes and other customizations. Save each map to a file for inclusion in papers, reports, etc.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/3_basic_mapping.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

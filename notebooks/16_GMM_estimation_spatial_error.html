@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>GMM Estimation - Spatial Error Model &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GMM Estimation - Higher Order Models" href="17_GMM_higher_order.html" />
+    <link rel="prev" title="Maximum Likelihood Estimation - Spatial Error Model" href="15_ML_estimation_spatial_error.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">GMM Estimation - Spatial Error Model</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/26/2024)">(revised 09/26/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Variable-definition-and-data-input">Variable definition and data input</a><ul>
+<li><a class="reference internal" href="#GMM-Estimation-of-the-Error-Model">GMM Estimation of the Error Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Principle">Principle</a></li>
+<li><a class="reference internal" href="#Implementation-methods">Implementation methods</a><ul>
+<li><a class="reference internal" href="#GMM-Estimation-of-the-SLX-Error-Model">GMM Estimation of the SLX-Error Model</a></li>
+<li><a class="reference internal" href="#Exogenous-and-Endogenous-Variables">Exogenous and Endogenous Variables</a></li>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/16_GMM_estimation_spatial_error.ipynb">notebooks/16_GMM_estimation_spatial_error.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/16_GMM_estimation_spatial_error.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="GMM-Estimation---Spatial-Error-Model">
+<h1>GMM Estimation - Spatial Error Model<a class="headerlink" href="#GMM-Estimation---Spatial-Error-Model" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/26/2024)">
+<h2>(revised 09/26/2024)<a class="headerlink" href="#(revised-09/26/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>This module covers the estimation of spatial error models by means of the general method of moments (GMM). As for the IV estimation of the spatial lag model, this allows for both exogenous and endogenous explanatory variables. The estimates for the spatial error parameter are obtained as the solution of a set of moment conditions. As of version 1.4 of <em>spreg</em>, all spatial error estimation is implemented through the <code class="docutils literal notranslate"><span class="pre">spreg.GMM_Error</span></code> command. This is essentially a wrapper around the original
+implementations of the various <code class="docutils literal notranslate"><span class="pre">GM_Error</span></code>, <code class="docutils literal notranslate"><span class="pre">GM_Endog_Error</span></code> and <code class="docutils literal notranslate"><span class="pre">GM_Combo</span></code> functions (that still work exactly as before) with a more simplified interface. Beyond the classic spatial error specification, more complex models can be estimated by including <code class="docutils literal notranslate"><span class="pre">slx_lags</span></code> (for additional WX) or <code class="docutils literal notranslate"><span class="pre">add_wy</span></code> (for inclusion of a spatially lagged dependent variable). This yields a range of higher order models, such as SLX Error, SARSAR (spatial lag with spatial autoregressive errors), and the
+generalized nested specification (GNS), i.e., a Spatial Durbin model with spatial autoregressive errors. The latter two models are treated in a separate notebook.</p>
+</section>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main module continues to be <em>spreg</em> for spatial regression analysis. From this, <code class="docutils literal notranslate"><span class="pre">GMM_Error</span></code> is imported. In addition, the utilities in <em>libpysal</em> (to open spatial weights and access the sample data set), <em>pandas</em> and <em>geopandas</em> are needed. All of these rely on <em>numpy</em> as a dependency.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+from libpysal.io import open
+from libpysal.examples import get_path
+from libpysal.weights import lag_spatial
+
+from spreg import GMM_Error
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>io.open</p></li>
+<li><p>examples.get_path</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>spreg.GMM_Error</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Variable-definition-and-data-input">
+<h2>Variable definition and data input<a class="headerlink" href="#Variable-definition-and-data-input" title="Link to this heading">¶</a></h2>
+<p>The data set and spatial weights are again from the <strong>chicagoSDOH</strong> sample data set:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic indicators of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_q.gal</strong>: queen contiguity weights</p></li>
+</ul>
+<p>To illustrate the methods, the same descriptive model is used as in the ML notebook. It relates the rate of uninsured households in a tract(for health insurance, <strong>EP_UNINSUR</strong>) to the lack of high school education (<strong>EP_NOHSDP</strong>), the economic deprivation index (<strong>HIS_ct</strong>), limited command of English (<strong>EP_LIMENG</strong>) and the lack of access to a vehicle (<strong>EP_NOVEH</strong>). This is purely illustrative of a spatial error specification and does not have a particular theoretical or policy motivation.</p>
+<p>In an alternative specification, <strong>HIS_ct</strong> is considered to be endogenous, with, as before, <strong>COORD_X</strong> and <strong>COORD_Y</strong> as instruments.</p>
+<p>The file names and variable names are set in the usual manner. Any customization for different data sets/weights and different variables should be specified in this top cell.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = get_path(&quot;Chi-SDOH.shp&quot;)     # input shape file with data
+infileq = get_path(&quot;Chi-SDOH_q.gal&quot;)     # queen contiguity weights created with GeoDa
+
+y_name = &#39;EP_UNINSUR&#39;
+x_names = [&#39;EP_NOHSDP&#39;,&#39;HIS_ct&#39;,&#39;EP_LIMENG&#39;,&#39;EP_NOVEH&#39;]
+xe_names = [&#39;EP_NOHSDP&#39;,&#39;EP_LIMENG&#39;,&#39;EP_NOVEH&#39;]
+yend_names = [&#39;HIS_ct&#39;]
+q_names = [&#39;COORD_X&#39;,&#39;COORD_Y&#39;]
+ds_name = &#39;Chi-SDOH&#39;
+w_name = &#39;Chi-SDOH_q&#39;
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">read_file</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span></code> functions are used to access the sample data set and contiguity weights. The weights are row-standardized and the data frames for the dependent and explanatory variables are constructed. As before, this functionality is agnostic to the actual data sets and variables used, since it relies on the specification given in the initial block above.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = gpd.read_file(infileshp)
+wq =  open(infileq).read()
+wq.transform = &#39;r&#39;    # row-transform the weights
+y = dfs[y_name]
+x = dfs[x_names]
+yend = dfs[yend_names]
+xe = dfs[xe_names]
+q = dfs[q_names]
+</pre></div>
+</div>
+</div>
+<section id="GMM-Estimation-of-the-Error-Model">
+<h3>GMM Estimation of the Error Model<a class="headerlink" href="#GMM-Estimation-of-the-Error-Model" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Principle">
+<h2>Principle<a class="headerlink" href="#Principle" title="Link to this heading">¶</a></h2>
+<p>As in the ML case, estimation of the spatial error model by means of GMM is based on spatially weighted least squares, where a consistent estimate for <span class="math notranslate nohighlight">\(\lambda\)</span> is used to create the spatially filtered dependent and explanatory variables, <span class="math notranslate nohighlight">\((I - \hat{\lambda} W)y\)</span> and <span class="math notranslate nohighlight">\((I - \hat{\lambda} W)X\)</span>. If the only interest is in obtaining consistent estimates for <span class="math notranslate nohighlight">\(\beta\)</span>, then any consistent estimate for <span class="math notranslate nohighlight">\(\lambda\)</span> will do. The only property that matters is consistency, since,
+unlike what holds in the spatial lag case, the precision of the <span class="math notranslate nohighlight">\(\lambda\)</span> estimate does not affect the precision of the <span class="math notranslate nohighlight">\(\beta\)</span> estimates.</p>
+<p>In two classic papers by Kelejian and Prucha (1998,1999), it was shown how a consistent estimate can be obtained as the solution of a set of moment equations formulated in terms of the regression residuals and their spatial lags. However, this did not provide an asymptotic variance for the spatial parameter, and thus did not allow for inference. In a series of later papers (Kelejian and Prucha 2010, Arraiz et al. 2010, 2013, Drukker et al 2013), the approach was extended to also allow for
+heteroskedasticity of unknown form and to include an asymptotic variance matrix.</p>
+<p>The technical details are quite complex and are outlined in Chapter 9 of Anselin and Rey (2014). The upshot is that there are three main estimation methods: the original Kelejian-Prucha generalized momens (GM) approach, the generalized method of moments (GMM) approach with heteroskedastic errors; and the GMM approach with homoskedastic errors. In practice, the GMM-heteroskedastic approach is greatly preferred. It is also the default used by <code class="docutils literal notranslate"><span class="pre">GMM_Error</span></code>.</p>
+<p>The GM and GMM approaches can be extended to models that include endogenous variables by means of spatially weighted two stage least squares (SW2SLS). This estimator uses the same expression as standard 2SLS, but replaces the <span class="math notranslate nohighlight">\(Z\)</span> matrix of exogenous and endogenous regressors by its spatially filtered counterpart, <span class="math notranslate nohighlight">\(Z - \hat{\lambda} WZ\)</span>. The instrument matrix <span class="math notranslate nohighlight">\(Q\)</span> is unaffected.</p>
+<p>In both cases, inference in based on two asymptotic variance matrices: one for the regression coefficients and one for the spatial error coefficient.</p>
+</section>
+<section id="Implementation-methods">
+<h2>Implementation methods<a class="headerlink" href="#Implementation-methods" title="Link to this heading">¶</a></h2>
+<p>GMM estimation of the spatial error model is implemented in <code class="docutils literal notranslate"><span class="pre">spreg.GMM_Error</span></code>. This requires the standard regression arguments (i.e., at a minimum, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">w</span></code>, as well as <code class="docutils literal notranslate"><span class="pre">yend</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code> for the endogenous case). Three methods are implemented, specified by means of the <code class="docutils literal notranslate"><span class="pre">estimator</span></code> argument.</p>
+<p>The default is <code class="docutils literal notranslate"><span class="pre">estimator</span> <span class="pre">=</span> <span class="pre">&quot;het&quot;</span></code> for the heteroskedastic-robust GMM method. Other options are <code class="docutils literal notranslate"><span class="pre">estimator</span> <span class="pre">=</span> <span class="pre">&quot;hom&quot;</span></code>, for GMM with homoskedastic errors, and <code class="docutils literal notranslate"><span class="pre">estimator</span> <span class="pre">=</span> <span class="pre">&quot;kp98&quot;</span></code>, for the legacy Kelejian-Prucha GM approach.</p>
+<p>In addition, there are some more technical options for the GMM methods. In practice, these are rarely needed.</p>
+<p>For GMM-heteroskedastic, the extra arguments include <code class="docutils literal notranslate"><span class="pre">step1c</span></code>, <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> and <code class="docutils literal notranslate"><span class="pre">epsilon</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">step1c</span> <span class="pre">=</span> <span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">max_iter</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">epsilon</span> <span class="pre">=</span> <span class="pre">0.00001</span></code>. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">step1c</span></code> carries out an additional estimation step for the autoregressive coefficient after the solution of the initial set of moment equations, as in Arraiz et. al (2010). The default follows the later paper by Arraiz et al. (2013) and skips this step. It is possible to iterate the procedure by using
+the new/updated residuals in additional rounds of estimation by setting <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> to a larger value than <code class="docutils literal notranslate"><span class="pre">1</span></code>. Typically, this is not needed. When there are additional iterations, <code class="docutils literal notranslate"><span class="pre">epsilon</span></code> is used as a convergence criterion to stop the procedure.</p>
+<p>For GMM-homoskedastic, the option <code class="docutils literal notranslate"><span class="pre">A1</span></code> determines the exact manner in which the first set of moment equations is constructed. This pertains to very technical details regarding the trace of a matrix. The default is <code class="docutils literal notranslate"><span class="pre">A1</span> <span class="pre">=</span> <span class="pre">&quot;hom_sc&quot;</span></code>, which applies a scaling factor suggested in Drukker et al. (2013). Other options are <code class="docutils literal notranslate"><span class="pre">A1</span> <span class="pre">=</span> <span class="pre">&quot;hom&quot;</span></code> for no scaling, and <code class="docutils literal notranslate"><span class="pre">A1</span> <span class="pre">=</span> <span class="pre">&quot;het&quot;</span></code> for a slightly different matrix expression (details are given on p. 217 of Anselin and Rey 2014). In practice, the options seldom
+make much of a difference and the default is fine. There are no <code class="docutils literal notranslate"><span class="pre">step1c</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> options for this case.</p>
+<p>The legacy <code class="docutils literal notranslate"><span class="pre">kp98</span></code> method has no special options.</p>
+<p>GMM-heteroskedastic is the default, so the <code class="docutils literal notranslate"><span class="pre">estimator</span></code> argument does not need to be specified. The first illustration is for all default settings with only exogenous regressors.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>err1 = GMM_Error(y,x,w=wq,
+                     name_w=w_name,name_ds=ds_name)
+print(err1.summary)
+</pre></div>
+</div>
+</div>
+<p>The estimate of <span class="math notranslate nohighlight">\(\lambda\)</span>, 0.4677, is almost identical to that obtained by means of ML (0.451). The other characteristics of the model are very similar as well, with a pseudo <span class="math notranslate nohighlight">\(R^2\)</span> of 0.634 (compared to 0.633). The interpretation of the other features of the regression object are the same as for the ML estimation, and will not be repeated here.</p>
+<p>Again, there is only one type of predicted value, contained in <strong>predy</strong>. There are two types of residuals, the classic residual, <span class="math notranslate nohighlight">\(u = y - X \hat{\beta}\)</span>, stored in <strong>u</strong>, and the spatially filtered residuals, <span class="math notranslate nohighlight">\(u - \lambda W u\)</span>, stored in <strong>e_filtered</strong>.</p>
+<p>To illustrate the (minor) effect of the additional arguments, <code class="docutils literal notranslate"><span class="pre">step1c</span></code> is next set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>err2 = GMM_Error(y,x,w=wq,
+                     step1c=True,
+                     name_w=w_name,name_ds=ds_name)
+print(err2.summary)
+</pre></div>
+</div>
+</div>
+<p>The estimate for <span class="math notranslate nohighlight">\(\lambda\)</span> is only marginally different, at 0.4722, with a slightly smaller standard error, but the fit is unaffected (in fact, in terms of pseudo <span class="math notranslate nohighlight">\(R^2\)</span>, it is slightly worse than before, 0.6337 vs. 0.6340).</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">max_iter</span> <span class="pre">=</span> <span class="pre">10</span></code>, the differences are again marginal.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>err3 = GMM_Error(y,x,w=wq,
+                     max_iter=10,
+                     name_w=w_name,name_ds=ds_name)
+print(err3.summary)
+</pre></div>
+</div>
+</div>
+<p>In practice, ignoring heteroskedasticiy is typically not a good idea for cross-sectional regressions. The <code class="docutils literal notranslate"><span class="pre">hom</span></code> estimator is included here for the sake of completeness, but should usually not be considered. Only the default settings are illustrated.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>err4 = GMM_Error(y,x,w=wq,
+                     estimator=&quot;hom&quot;,
+                     name_w=w_name,name_ds=ds_name)
+print(err4.summary)
+</pre></div>
+</div>
+</div>
+<p>The spatial coefficient is again slightly different, but the effect on the <span class="math notranslate nohighlight">\(\beta\)</span> coefficient is marginal. The main differences are in the results for the standard errors. As mentioned, ignoring heteroskedasticity may yield an overly optimistic impression of precision.</p>
+<p>The final estimator is the legacy <code class="docutils literal notranslate"><span class="pre">kp98</span></code> method, which is only included for completeness. Since it does not provide inference for the spatial parameter, it is otherwise not recommended for use in practice.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>err5 = GMM_Error(y,x,w=wq,
+                     estimator=&quot;kp98&quot;,
+                     name_w=w_name,name_ds=ds_name)
+print(err5.summary)
+</pre></div>
+</div>
+</div>
+<p>Note how the output now does not list standard errors, z-statistics and p-value for the <span class="math notranslate nohighlight">\(\lambda\)</span> estimate. The regression estimates are essentially the same.</p>
+<section id="GMM-Estimation-of-the-SLX-Error-Model">
+<h3>GMM Estimation of the SLX-Error Model<a class="headerlink" href="#GMM-Estimation-of-the-SLX-Error-Model" title="Link to this heading">¶</a></h3>
+<p>As for ML, GMM estimation of the SLX-Error model is a special case of <code class="docutils literal notranslate"><span class="pre">spreg.GMM_Error</span></code>, with the additional argument of <code class="docutils literal notranslate"><span class="pre">slx_lags=1</span></code> (or a larger value). Everything else remains the same. More specifically, the three estimators of <code class="docutils literal notranslate"><span class="pre">het</span></code>, <code class="docutils literal notranslate"><span class="pre">hom</span></code> and <code class="docutils literal notranslate"><span class="pre">kp98</span></code> are again available. Only the default <code class="docutils literal notranslate"><span class="pre">het</span></code> is considered here. The results show only minor differences for the other methods.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>slxerr1 = GMM_Error(y,x,w=wq,slx_lags=1,
+                    name_w=w_name,name_ds=ds_name)
+print(slxerr1.summary)
+</pre></div>
+</div>
+</div>
+<p>In general, as before, there is little support for including all the WX terms after controlling for spatial error autocorrelation. Only the coefficient of <strong>W_HIS_ct</strong> is significant, but, as before, the value of the estimate is larger than that for the unlagged regressor.</p>
+<p>The spatial autoregressive coefficient, 0.422, is highly significant.</p>
+<p>As usual, further refinements of the model specification can be carried out by eliminating some lag terms by means of <code class="docutils literal notranslate"><span class="pre">slx_vars</span></code>, as in the standard SLX model. This is not further pursued here.</p>
+</section>
+<section id="Exogenous-and-Endogenous-Variables">
+<h3>Exogenous and Endogenous Variables<a class="headerlink" href="#Exogenous-and-Endogenous-Variables" title="Link to this heading">¶</a></h3>
+<p>Additional endogenous variables and associated instruments are added in the standard way by including <code class="docutils literal notranslate"><span class="pre">yend</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code> as arguments. Note that in the example, the regression matrix is now set to <code class="docutils literal notranslate"><span class="pre">xe</span></code>, for only the exogenous variables. Everything else is the same as before. Only the default <code class="docutils literal notranslate"><span class="pre">estimator</span> <span class="pre">=</span> <span class="pre">&quot;het&quot;</span></code> is illustrated, with its default settings.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>enderr = GMM_Error(y,xe,w=wq,yend=yend,q=q,
+                     name_w=w_name,name_ds=ds_name)
+print(enderr.summary)
+</pre></div>
+</div>
+</div>
+<p>The estimate for <span class="math notranslate nohighlight">\(\lambda\)</span> is again in the same general ballpark, but <strong>HIS_ct</strong> is no longer significant. As usual, the endogenous variable is listed as <strong>Instrumented</strong> as well as the <strong>Instruments</strong>.</p>
+<p>Finally, the SLX model can be estimated with additional endogenous variables, by including <code class="docutils literal notranslate"><span class="pre">yend</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code> with <code class="docutils literal notranslate"><span class="pre">slx_lags=1</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>slxenderr = GMM_Error(y,xe,w=wq,yend=yend,q=q,
+                      slx_lags=1,
+                     name_w=w_name,name_ds=ds_name)
+print(slxenderr.summary)
+</pre></div>
+</div>
+</div>
+<p>In this example, none of the WX terms end up being significant. In addition, of the original regressors, only <strong>EP_LIMENG</strong> remains as significant.</p>
+</section>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>As practice, different model specifications could be considered, including adding additional explanatory variables, selectively removing some lag terms, and using different spatial weights, in the same way as for the other models.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/16_GMM_estimation_spatial_error.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

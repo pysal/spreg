@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spatial Weights &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic Ordinary Least Squares Regression (OLS)" href="5_OLS.html" />
+    <link rel="prev" title="Basic Mapping" href="3_basic_mapping.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Spatial Weights</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#09/06/2024">09/06/2024</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Files-and-Variables">Files and Variables</a><ul>
+<li><a class="reference internal" href="#Spatial-Weights-from-a-File-(GeoDa)">Spatial Weights from a File (GeoDa)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Queen-Contiguity-Weights">Queen Contiguity Weights</a></li>
+<li><a class="reference internal" href="#K-Nearest-Neighbors-Weights">K-Nearest Neighbors Weights</a></li>
+<li><a class="reference internal" href="#Kernel-Weights">Kernel Weights</a><ul>
+<li><a class="reference internal" href="#Creating-Weights-from-a-GeoDataFrame">Creating Weights from a GeoDataFrame</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">Queen Contiguity Weights</a></li>
+<li><a class="reference internal" href="#Row-standardization">Row-standardization</a></li>
+<li><a class="reference internal" href="#Writing-a-Weights-File">Writing a Weights File</a></li>
+<li><a class="reference internal" href="#KNN-Weights">KNN Weights</a><ul>
+<li><a class="reference internal" href="#id4">Kernel Weights</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Kernel-Weights-Computation">Kernel Weights Computation</a></li>
+<li><a class="reference internal" href="#Kernel-Weights-from-a-Shape-File">Kernel Weights from a Shape File</a></li>
+<li><a class="reference internal" href="#Writing-the-Kernel-Weights">Writing the Kernel Weights</a><ul>
+<li><a class="reference internal" href="#Special-Weights-Operations">Special Weights Operations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Weights-for-Regular-Grids">Weights for Regular Grids</a></li>
+<li><a class="reference internal" href="#Weights-as-Matrices">Weights as Matrices</a><ul>
+<li><a class="reference internal" href="#Spatially-Lagged-Variables">Spatially Lagged Variables</a></li>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/4_spatial_weights.ipynb">notebooks/4_spatial_weights.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/4_spatial_weights.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Spatial-Weights">
+<h1>Spatial Weights<a class="headerlink" href="#Spatial-Weights" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="09/06/2024">
+<h2>09/06/2024<a class="headerlink" href="#09/06/2024" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, basic operations pertaining to spatial weights are reviewed. Two major cases are considered: reading weights files constructed by other software, such as <em>GeoDa</em>, and creating weights from GeoDataFrames or spatial layers using the functionality in <em>libpysal.weights</em>. In addition, some special operations are covered, such as creating spatial weights for regular grids and turning a <em>PySAL</em> weights object into a full matrix. The computation of a spatially lagged variable is
+illustrated as well.</p>
+<p>A video recording is available from the GeoDa Center YouTube channel playlist <em>Applied Spatial Regression - Notebooks</em>, at <a class="reference external" href="https://www.youtube.com/watch?v=IbmTItot0q8&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=4">https://www.youtube.com/watch?v=IbmTItot0q8&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=4</a>.</p>
+</section>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main functionality is provided by the utilities in <em>libpysal</em> for spatial weights, and the functionality in <em>geopandas</em> for data input and output. All of these rely on <em>numpy</em> as a dependency.</p>
+<p>To simplify notation, the <code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code> module is imported as <code class="docutils literal notranslate"><span class="pre">weights</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_path</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span></code> are imported from respectively <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code> and <code class="docutils literal notranslate"><span class="pre">libpysal.io</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">warnings</span></code> module filters some warnings about future changes. To avoid some arguably obnoxious new features of <em>numpy</em> 2.0, it is necessary to include the <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code> command if you are using a Python 3.12 environment with numpy 2.0 or greater.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import numpy as np
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+import geopandas as gpd
+from libpysal.examples import get_path
+from libpysal.io import open
+import libpysal.weights as weights
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>array</p></li>
+<li><p>mean</p></li>
+<li><p>std</p></li>
+<li><p>flatten</p></li>
+<li><p>&#64;</p></li>
+</ul>
+</li>
+<li><p>from geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+<li><p>astype</p></li>
+</ul>
+</li>
+<li><p>from libpysal.examples:</p>
+<ul>
+<li><p>get_path</p></li>
+</ul>
+</li>
+<li><p>from libpysal.io:</p>
+<ul>
+<li><p>open</p></li>
+</ul>
+</li>
+<li><p>from libpysal.weights:</p>
+<ul>
+<li><p>neighbors</p></li>
+<li><p>weights</p></li>
+<li><p>n</p></li>
+<li><p>min_neighbors, max_neighbors, mean_neighbors</p></li>
+<li><p>pct_nonzero</p></li>
+<li><p>asymmetry, asymmetries</p></li>
+<li><p>Kernel.from_file</p></li>
+<li><p>Queen.from_dataframe</p></li>
+<li><p>transform</p></li>
+<li><p>Queen.from_file</p></li>
+<li><p>KNN.from_dataframe</p></li>
+<li><p>symmetrize</p></li>
+<li><p>Kernel</p></li>
+<li><p>Kernel.from_shapefile</p></li>
+<li><p>lat2W</p></li>
+<li><p>full</p></li>
+<li><p>lag_spatial</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Files-and-Variables">
+<h2>Files and Variables<a class="headerlink" href="#Files-and-Variables" title="Link to this heading">¶</a></h2>
+<p>This notebook uses data on socio-economic correlates of health outcomes contained in the <strong>chicagoSDOH</strong> sample shape files and associated spatial weights. It is assumed that all sample files have been installed.</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic indicators of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_q.gal</strong>: queen contiguity spatial weights from <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code></p></li>
+<li><p><strong>Chi-SDOH_k6s.gal</strong>: k-nearest neighbor weights for k=6, made symmetric in <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code></p></li>
+<li><p><strong>Chi-SDOH_k10tri.kwt</strong>: triangular kernel weights based on a variable bandwidth with 10 nearest neighbors from <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code></p></li>
+</ul>
+<p>As before, file names and variable names are specified at the top of the notebook so that this is the only part that needs to be changed for other data sets and variables.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = &quot;Chi-SDOH.shp&quot;         # input shape file
+infileq = &quot;Chi-SDOH_q.gal&quot;         # queen contiguity from GeoDa
+infileknn = &quot;Chi-SDOH_k6s.gal&quot;     # symmetric k-nearest neighbor weights from GeoDa
+infilekwt = &quot;Chi-SDOH_k10tri.kwt&quot;  # triangular kernel weights for a variable knn bandwidth from GeoDa
+outfileq = &quot;test_q.gal&quot;            # output file for queen weights computed with libpysal
+outfilek = &quot;test_k.kwt&quot;            # outpuf file for kernel weights computed with libpysal
+y_name = [&quot;YPLL_rate&quot;]             # variable to compute spatial lag
+</pre></div>
+</div>
+</div>
+<section id="Spatial-Weights-from-a-File-(GeoDa)">
+<h3>Spatial Weights from a File (GeoDa)<a class="headerlink" href="#Spatial-Weights-from-a-File-(GeoDa)" title="Link to this heading">¶</a></h3>
+<p>Spatial weights are an essential part of any spatial autocorrelation analysis and spatial regression. Functionality to create and analyze spatial weights is contained in the <code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code> library. The full range of functions is much beyond the current scope and can be found at <a class="reference external" href="https://pysal.org/libpysal/api.html">https://pysal.org/libpysal/api.html</a>.</p>
+<p>Only the essentials are covered here, sufficient to proceed with the spatial regression analysis. Also, only the original <code class="docutils literal notranslate"><span class="pre">Weights</span></code> class is considered. A newer alternative is provided by the <code class="docutils literal notranslate"><span class="pre">Graph</span></code> class, but it is not further discussed here. Full details can be found at <a class="reference external" href="https://pysal.org/libpysal/user-guide/graph/w_g_migration.html">https://pysal.org/libpysal/user-guide/graph/w_g_migration.html</a>.</p>
+<p>Arguably the easiest way to create spatial weights is to use the <em>GeoDa</em> software (<a class="reference external" href="https://geodacenter.github.io/download.html">https://geodacenter.github.io/download.html</a>), which provides functionality to construct a wide range of contiguity as well as distance based weights through a graphical user interface. The weights information is stored as <strong>gal</strong>, <strong>gwt</strong> or <strong>kwt</strong> files. Importing these weights into <em>PySAL</em> is considered first.</p>
+</section>
+</section>
+<section id="Queen-Contiguity-Weights">
+<h2>Queen Contiguity Weights<a class="headerlink" href="#Queen-Contiguity-Weights" title="Link to this heading">¶</a></h2>
+<p>Contiguity weights can be read into PySAL spatial weights objects using the <code class="docutils literal notranslate"><span class="pre">read</span></code> function, after opening the file with <code class="docutils literal notranslate"><span class="pre">libpysal.io.open</span></code> (here, just <code class="docutils literal notranslate"><span class="pre">open</span></code>). This is applied to the queen contiguity weights created by <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code>, contained in the file <strong>infileq</strong>, after obtaining its path using <code class="docutils literal notranslate"><span class="pre">get_path</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infileq)
+wq = open(inpath).read()
+wq
+</pre></div>
+</div>
+</div>
+<p>The result is a PySAL spatial weights object of the class <code class="docutils literal notranslate"><span class="pre">libpysal.weights.weights.W</span></code>. This object contains lists of <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code> as well as many other attributes and methods.</p>
+<p>It is useful to remember that the <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code> are dictionaries that use an ID variable or simple sequence number as the key. A quick view of the relevant keys is obtained by converting them to a <code class="docutils literal notranslate"><span class="pre">list</span></code> and printing out the first few elements.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(list(wq.neighbors.keys())[0:5])
+</pre></div>
+</div>
+</div>
+<p>This reveals that the keys are simple strings, starting at <strong>‘1’</strong> and not at <strong>0</strong> as in the usual Python indexing. The IDs of the neighbors for a given observation can be listed by specifying the key. For example, for observation with ID=’1’, this yields:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq.neighbors[&#39;1&#39;]
+</pre></div>
+</div>
+</div>
+<p>When an inappropriate key is used, an error is generated (recall that dictionaries have no order, so there are no sequence numbers). For example, here <code class="docutils literal notranslate"><span class="pre">1</span></code> is entered as an integer, but it should have been a string, as above.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq.neighbors[1]
+</pre></div>
+</div>
+</div>
+<p>The weights associated with each observation key are found using <code class="docutils literal notranslate"><span class="pre">weights</span></code>. For example, for observation with ID=’1’ this yields:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq.weights[&#39;1&#39;]
+</pre></div>
+</div>
+</div>
+<p>At this point, all the weights are simply binary. Row-standardization is considered below.</p>
+<p>A quick check on the number of observations, i.e., the number of rows in the weights matrix.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq.n
+</pre></div>
+</div>
+</div>
+<p>Minimum, maximum and average number of neighbors and percent non-zero (an indication of sparsity)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq.min_neighbors,wq.max_neighbors,wq.mean_neighbors,wq.pct_nonzero
+</pre></div>
+</div>
+</div>
+<p>There is no explicit check for symmetry as such, but instead the lack of symmetry can be assessed by means of the <code class="docutils literal notranslate"><span class="pre">asymmetry</span></code> method, or the list of id pairs with asymmetric weights is obtained by means of the <code class="docutils literal notranslate"><span class="pre">asymmetries</span></code> attribute.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(wq.asymmetry())
+print(wq.asymmetries)
+</pre></div>
+</div>
+</div>
+<p>Since contiguity weights are symmetric by construction, the presence of an asymmetry would indicate some kind of error. This is not the case here.</p>
+</section>
+<section id="K-Nearest-Neighbors-Weights">
+<h2>K-Nearest Neighbors Weights<a class="headerlink" href="#K-Nearest-Neighbors-Weights" title="Link to this heading">¶</a></h2>
+<p>Similarly, the symmetric knn weights (k=6) created by <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code> can be read from the file <strong>infileknn</strong>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infileknn)
+wk6s = open(inpath).read()
+wk6s
+</pre></div>
+</div>
+</div>
+<p>Some characteristics:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk6s.n
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(wk6s.min_neighbors,wk6s.max_neighbors,wk6s.mean_neighbors,wk6s.pct_nonzero)
+</pre></div>
+</div>
+</div>
+<p>Note how the operation to make the initially asymmetric k-nearest neighbor weights symmetric has resulted in many observations having more than 6 neighbors (<code class="docutils literal notranslate"><span class="pre">max_neighbors</span></code> is larger than 6). That is the price to pay to end up with symmetric weights, which is required for some of the estimation methods. We can list neighbors and weights in the usual way. As it turns out, the observation with key <code class="docutils literal notranslate"><span class="pre">1</span></code> is not adjusted, but observation with key <code class="docutils literal notranslate"><span class="pre">3</span></code> now has eight neighbors (up from the original
+six).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk6s.neighbors[&#39;1&#39;]
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk6s.neighbors[&#39;3&#39;]
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Kernel-Weights">
+<h2>Kernel Weights<a class="headerlink" href="#Kernel-Weights" title="Link to this heading">¶</a></h2>
+<p>Triangular kernel weights based on a variable bandwidth with 10 nearest neighbors created by <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code> are contained in the file <strong>infilekwt</strong>. The properties of kernel weights are considered in more detail in a later notebook.</p>
+<p>The weights can be read in the usual fashion, by means of <code class="docutils literal notranslate"><span class="pre">libpysal.io.open</span></code>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infilekwt)
+kwtri = open(inpath).read()
+</pre></div>
+</div>
+</div>
+<p>However, this does not give the desired result. The object is not recognized as kernel weights, but as a standard spatial weights object, revealed by checking the <code class="docutils literal notranslate"><span class="pre">type</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(type(kwtri))
+</pre></div>
+</div>
+</div>
+<p>Tthe kernel weights can be checked with the usual <code class="docutils literal notranslate"><span class="pre">weights</span></code> attribute. However, the values for the keys in this example are not characters, but simple integers. This is revealed by a quick check of the keys.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(list(kwtri.neighbors.keys())[0:5])
+</pre></div>
+</div>
+</div>
+<p>Now, with the integer 1 as the key, the contents of the weights can be listed. Note the presence of the weights 1.0 (for the diagonal). All is fine, except that <em>PySAL</em> does not recognize the weights as kernel weights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(kwtri.weights[1])
+</pre></div>
+</div>
+</div>
+<p>The alternative, using the <code class="docutils literal notranslate"><span class="pre">weights.Kernel.from_file</span></code> method from <code class="docutils literal notranslate"><span class="pre">libpysal</span></code> has the same problem.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kwtri10f = weights.Kernel.from_file(inpath)
+print(type(kwtri10f))
+print(kwtri10f.weights[1])
+</pre></div>
+</div>
+</div>
+<p>In this particular case, a hack is to force the class of the weights object to be a kernel weight. This is generally not recommended, but since the object in question has all the characteristics of kernel weights, it is safe to do so.</p>
+<p>It is accomplished by setting the attribute <code class="docutils literal notranslate"><span class="pre">__class__</span></code> of the weights object to <code class="docutils literal notranslate"><span class="pre">libpysal.weights.distance.Kernel</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kwtri10f.__class__ = weights.distance.Kernel
+print(type(kwtri10f))
+</pre></div>
+</div>
+</div>
+<section id="Creating-Weights-from-a-GeoDataFrame">
+<h3>Creating Weights from a GeoDataFrame<a class="headerlink" href="#Creating-Weights-from-a-GeoDataFrame" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="id3">
+<h2>Queen Contiguity Weights<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p>In <em>PySAL</em>, the spatial weights construction is handled by <code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code>. The generic function is <code class="docutils literal notranslate"><span class="pre">weights.&lt;weights_type&gt;.from_dataframe</span></code> with as arguments the geodataframe and optionally the <code class="docutils literal notranslate"><span class="pre">ids</span></code> (recommended). For the Chicago data, the ID variable is <strong>OJECTID</strong>. To make sure the latter is an integer (it is not in the original data frame), its type is changed by means of the <code class="docutils literal notranslate"><span class="pre">astype</span></code> method.</p>
+<p>The same operation can also create a contiguity weights file from a shape file, using <code class="docutils literal notranslate"><span class="pre">weigths.&lt;weights_type&gt;.from_shapefile</span></code>, but this is left as an exercise.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infileshp)
+dfs = gpd.read_file(inpath)
+dfs = dfs.astype({&#39;OBJECTID&#39;:&#39;int&#39;})
+wq1 = weights.Queen.from_dataframe(dfs,ids=&#39;OBJECTID&#39;)
+wq1
+</pre></div>
+</div>
+</div>
+<p>A quick check on the keys reveals these are integers.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(list(wq1.neighbors.keys())[0:5])
+</pre></div>
+</div>
+</div>
+<p>Again, some characteristics:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq1.n
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(wq1.min_neighbors,wq1.max_neighbors,wq1.mean_neighbors,wq1.pct_nonzero)
+</pre></div>
+</div>
+</div>
+<p>The structure of the weights is identical to that from the file read from <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code>. For example, the first set of neighbors and weights are:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(wq1.neighbors[1])
+print(wq1.weights[1])
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Row-standardization">
+<h2>Row-standardization<a class="headerlink" href="#Row-standardization" title="Link to this heading">¶</a></h2>
+<p>As created, the weights are simply 1.0 for binary weights. To turn the weights into row-standardized form, a <em>transformation</em> is needed, <code class="docutils literal notranslate"><span class="pre">wq1.transform</span> <span class="pre">=</span> <span class="pre">'r'</span></code>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq1.transform = &#39;r&#39;
+wq1.weights[1]
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Writing-a-Weights-File">
+<h2>Writing a Weights File<a class="headerlink" href="#Writing-a-Weights-File" title="Link to this heading">¶</a></h2>
+<p>To write out the weights object to a GAL file, <code class="docutils literal notranslate"><span class="pre">libpysal.io.open</span></code> is used with the <code class="docutils literal notranslate"><span class="pre">write</span></code> method. The argument to the <code class="docutils literal notranslate"><span class="pre">open</span></code> command is the filename and <code class="docutils literal notranslate"><span class="pre">mode='w'</span></code> (for writing a file). The weights object itself is the argument to the <code class="docutils literal notranslate"><span class="pre">write</span></code> method.</p>
+<p>Note that even though the weights are row-standardized, this information is lost in the output file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>open(outfileq,mode=&#39;w&#39;).write(wq1)
+</pre></div>
+</div>
+</div>
+<p>A quick check using the <code class="docutils literal notranslate"><span class="pre">weights.Queen.from_file</span></code> operation on the just created weights file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq1a = weights.Queen.from_file(outfileq)
+print(wq1a.n)
+print(list(wq1a.neighbors.keys())[0:5])
+</pre></div>
+</div>
+</div>
+<p>Note how the type of the key has changed from integer above to character after reading from the outside file. This again stresses the importance of checking the keys before any further operations.</p>
+<p>The weights are back to their original binary form, so the row-standardization is lost after writing the output file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq1a.weights[&#39;1&#39;]
+</pre></div>
+</div>
+</div>
+</section>
+<section id="KNN-Weights">
+<h2>KNN Weights<a class="headerlink" href="#KNN-Weights" title="Link to this heading">¶</a></h2>
+<p>The corresponding functionality for k-nearest neighbor weights is <code class="docutils literal notranslate"><span class="pre">weights.KNN.from_dataframe</span></code>. An important argument is <code class="docutils literal notranslate"><span class="pre">k</span></code>, the number of neighbors, with the default set to <code class="docutils literal notranslate"><span class="pre">2</span></code>, which is typically not that useful. Again, it is useful to include OBJECTID as the ID variable. Initially the weights are in binary form. As before, they are row-standardized.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk6 = weights.KNN.from_dataframe(dfs,k=6,ids=&#39;OBJECTID&#39;)
+print(wk6.n)
+print(list(wk6.neighbors.keys())[0:5])
+wk6
+</pre></div>
+</div>
+</div>
+<p>To compare the just created weights to the symmetric form read into <strong>wk6s</strong>, the list of neighbors for observation 3 is informative. It consists of a subset of six from the list of eight from the above symmetric knn weights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(wk6.neighbors[3])
+</pre></div>
+</div>
+</div>
+<p>The k-nearest neighbor weights are intrinsically asymmetric. Rather than listing all the pairs that contain such asymmetries, the length of this list can be checked using the <code class="docutils literal notranslate"><span class="pre">asymmetry</span></code> method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(len(wk6.asymmetry()))
+</pre></div>
+</div>
+</div>
+<p>KNN weights have a built-in method to make them symmetric: <code class="docutils literal notranslate"><span class="pre">symmetrize</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk6s2 = wk6.symmetrize()
+print(len(wk6.asymmetry()))
+print(len(wk6s2.asymmetry()))
+</pre></div>
+</div>
+</div>
+<p>The entries are now the same as for the symmetric knn GAL file that was read in from <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code>. For example, the neighbors of observation with key <code class="docutils literal notranslate"><span class="pre">3</span></code> are:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(wk6s2.neighbors[3])
+</pre></div>
+</div>
+</div>
+<p>Finally, to make them row-standardized, the same transformation is used.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wk6s2.transform = &#39;r&#39;
+wk6s2.weights[3]
+</pre></div>
+</div>
+</div>
+<section id="id4">
+<h3>Kernel Weights<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<p>There are several ways to create the kernel weights that are used later in the course, for example to compute HAC standard errors in ordinary least squares regression. One is to create the weights in <code class="docutils literal notranslate"><span class="pre">GeoDa</span></code> and save them as a weights file with a <strong>kwt</strong> extension. However, currently, there is a bug in libpysal so that the proper class needs to be set explicitly.</p>
+<p>The alternative is to compute the weights directly with <code class="docutils literal notranslate"><span class="pre">PySAL</span></code>. This can be implemented in a number of ways. One is to create the weights using the <code class="docutils literal notranslate"><span class="pre">libpysal.weights.Kernel</span></code> function, with a matrix of x-y coordinates passed. Another is to compute the weights directly from the information in a shape file, using <code class="docutils literal notranslate"><span class="pre">libpysal.weights.Kernel.from_shapefile</span></code>.</p>
+<p>Each is considered in turn.</p>
+</section>
+</section>
+<section id="Kernel-Weights-Computation">
+<h2>Kernel Weights Computation<a class="headerlink" href="#Kernel-Weights-Computation" title="Link to this heading">¶</a></h2>
+<p>Direct computation of kernel weights takes as input an array of coordinates. Typically these are the coordinates of the locations, but it is a perfectly general approach and can take any number of variables to compute <em>general</em> distances (or economic distances). In the example, the X and Y coordinates contained in the geodataframe <strong>dfs</strong> are used as <code class="docutils literal notranslate"><span class="pre">COORD_X</span></code> and <code class="docutils literal notranslate"><span class="pre">COORD_Y</span></code>.</p>
+<p>First, the respective columns from the data frame are turned into a numpy array.</p>
+<p>The command to create the kernel weights is <code class="docutils literal notranslate"><span class="pre">libpysal.weights.Kernel</span></code>. It takes the array as the first argument, followed by a number of options. To have a variable bandwidth that follows the 10 nearest neighbors, <code class="docutils literal notranslate"><span class="pre">fixed</span> <span class="pre">=</span> <span class="pre">False</span></code> (the default is a fixed bandwidth) and <code class="docutils literal notranslate"><span class="pre">k=10</span></code>. The kernel function is selected as <code class="docutils literal notranslate"><span class="pre">function=&quot;triangular&quot;</span></code> (this is also the default, but it is included here for clarity). Finally, the use of kernel weights in the HAC calculations requires the diagonals to be set
+to the value of one, achieved by means of <code class="docutils literal notranslate"><span class="pre">diagonal=True</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>coords = np.array(dfs[[&#39;COORD_X&#39;,&#39;COORD_Y&#39;]])
+kwtri10 = weights.Kernel(coords,fixed=False,k=10,
+                                   function=&quot;triangular&quot;,diagonal=True)
+print(type(kwtri10))
+</pre></div>
+</div>
+</div>
+<p>The result is an object of class <code class="docutils literal notranslate"><span class="pre">libpysal.weights.distance.Kernel</span></code>. This contains several attributes, such as the kernel function used.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kwtri10.function
+</pre></div>
+</div>
+</div>
+<p>A check on the keys.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(list(kwtri10.neighbors.keys())[0:5])
+</pre></div>
+</div>
+</div>
+<p>Note that the index starts at 0 and the keys are integers. The neighbors for the first observation:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kwtri10.neighbors[0]
+</pre></div>
+</div>
+</div>
+<p>The kernel weights for the first observations:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kwtri10.weights[0]
+</pre></div>
+</div>
+</div>
+<p>These are the same values as we obtained above from reading the kwt file, but now they are recognized as a proper kernel weights object.</p>
+</section>
+<section id="Kernel-Weights-from-a-Shape-File">
+<h2>Kernel Weights from a Shape File<a class="headerlink" href="#Kernel-Weights-from-a-Shape-File" title="Link to this heading">¶</a></h2>
+<p>Contiguity weights, distance weights and kernel weights can also be constructed directly from a shape file, using the relevant <code class="docutils literal notranslate"><span class="pre">from_shapefile</span></code> methods. For kernel weights, this can be based on either point coordinates or on the coordinates of polygon centroids to compute the distances needed. The relevant function is <code class="docutils literal notranslate"><span class="pre">libpysal.weights.Kernel.from_shapefile</span></code> with as its main argument the file (path) name of the shape file involved. The other arguments are the same options as before. The
+shape file in <strong>infileshp</strong> is used as the input file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infileshp)
+kwtri10s = weights.Kernel.from_shapefile(inpath,
+                                                 fixed=False,k=10,
+                                   function=&quot;triangular&quot;,diagonal=True)
+print(type(kwtri10s))
+</pre></div>
+</div>
+</div>
+<p>The result is of the proper type, contains the same structure as before, with matching function, neighbors and weights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(kwtri10s.function)
+print(list(kwtri10s.neighbors.keys())[0:5])
+print(kwtri10s.neighbors[0])
+print(kwtri10s.weights[0])
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Writing-the-Kernel-Weights">
+<h2>Writing the Kernel Weights<a class="headerlink" href="#Writing-the-Kernel-Weights" title="Link to this heading">¶</a></h2>
+<p>We use the same method as for the queen weights to write the just constructed kernel weights to an outside kwt file. The output file is <code class="docutils literal notranslate"><span class="pre">outfilek</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>open(outfilek,mode=&#39;w&#39;).write(kwtri10s)
+</pre></div>
+</div>
+</div>
+<p>Quick check:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kk = weights.Kernel.from_file(outfilek)
+print(type(kk))
+</pre></div>
+</div>
+</div>
+<p>So, the same problem as mentioned above persists for weights files written by <em>PySAL</em> and the proper class needs to be set explicitly.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kk.__class__ = weights.distance.Kernel
+print(type(kk))
+</pre></div>
+</div>
+</div>
+<section id="Special-Weights-Operations">
+<h3>Special Weights Operations<a class="headerlink" href="#Special-Weights-Operations" title="Link to this heading">¶</a></h3>
+<p>A few special weights operations will come in handy later on. One is to create spatial weights for a regular grid setup, which is very useful for simulation designs. The other is to turn a spatial weights object into a standard numpy array, which can be be used in all kinds of matrix operations.</p>
+</section>
+</section>
+<section id="Weights-for-Regular-Grids">
+<h2>Weights for Regular Grids<a class="headerlink" href="#Weights-for-Regular-Grids" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">weights.lat2W</span></code> operation creates rook contiguity spatial weights (the default, queen contiguity is available for <code class="docutils literal notranslate"><span class="pre">rook</span> <span class="pre">=</span> <span class="pre">False</span></code>) for a regular rectangular grid with the number of rows and the number of columns as the arguments. The result is a simple binary weights object, so row-standardization is typically needed as well.</p>
+<p>For a square grid, with <strong>gridside=20</strong> as the number of rows/columns, the result has dimension 400.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>gridside = 20
+wgrid = weights.lat2W(gridside,gridside,rook=True)
+wgrid.n
+</pre></div>
+</div>
+</div>
+<p>Quick check on the neighbor keys.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(list(wgrid.neighbors.keys())[0:5])
+</pre></div>
+</div>
+</div>
+<p>Since this is a square grid, the first observation, in the upper left corner, has only two neighbors, one to the right (1) and one below (20 - since the first row goes from 0 to 19).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wgrid.neighbors[0]
+</pre></div>
+</div>
+</div>
+<p>Row-standardization yields the actual weights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wgrid.transform = &#39;r&#39;
+wgrid.weights[0]
+</pre></div>
+</div>
+</div>
+<p>Any non-border cell has four neighbors, one to the left, right, up and down.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wgrid.weights[21]
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Weights-as-Matrices">
+<h2>Weights as Matrices<a class="headerlink" href="#Weights-as-Matrices" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">weights.full</span></code> operation turns a spatial weights object into a standard numpy array. The function returns a tuple, of which the first element is the actual matrix and the second consists of a list of keys. For actual matrix operations, the latter is not that useful.</p>
+<p>It is important to remember to always extract the first element of the tuple as the matrix of interest. Otherwise, one quickly runs into trouble with array operations.</p>
+<p>This is illustrated for the row-standardized queen weights <strong>wq1</strong> created earlier.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wq1full, wqfkeys = weights.full(wq1)
+print(type(wq1full),type(wqfkeys))
+wq1full.shape
+</pre></div>
+</div>
+</div>
+<section id="Spatially-Lagged-Variables">
+<h3>Spatially Lagged Variables<a class="headerlink" href="#Spatially-Lagged-Variables" title="Link to this heading">¶</a></h3>
+<p>Spatially lagged variables are essential in the specification of spatial regression models. They are the product of a spatial weight matrix with a vector of observations and yield new values as (weighted) averages of the values observed at neighboring locations (with the neighbors defined by the spatial weights).</p>
+<p>This is illustrated for the variable <strong>y_name</strong> extracted from the data frame. Its mean and standard deviation are listed using the standard <code class="docutils literal notranslate"><span class="pre">numpy</span></code> methods.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>y = np.array(dfs[y_name])
+print(y.shape)
+print(y.mean())
+print(y.std())
+</pre></div>
+</div>
+</div>
+<p>The new spatially lagged variable is created with the <code class="docutils literal notranslate"><span class="pre">weights.lag_spatial</span></code> command, passing the weights object <strong>wq1</strong> and the vector of interest, <strong>y</strong>. Its important to make sure that the dimensions match. In particular, if the vector in question is not an actual column vector, but a one-dimensional array, the result will not be a vector, but an array. This may cause trouble in some applicaitons.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wy = weights.lag_spatial(wq1,y)
+print(wy.shape)
+print(wy.mean())
+print(wy.std())
+</pre></div>
+</div>
+</div>
+<p>The result is a column vector. The mean roughly corresponds to that of the original variable, but the spatially lagged variable has a smaller standard deviation. This illustrates the <em>smoothing</em> implied by the spatial lag operation.</p>
+<p>To illustrate the problem with numpy arrays rather than vectors, the original vector is flattened and then the <code class="docutils literal notranslate"><span class="pre">lag_spatial</span></code> operation is applied to it. Everything works fine, except that the result is an array, and not a column vector.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>yy = y.flatten()
+print(yy.shape)
+wyy = weights.lag_spatial(wq1,yy)
+print(wyy.shape)
+</pre></div>
+</div>
+</div>
+<p>The same result can also be obtained using an explicit matrix-vector multiplication with the full matrix <strong>wq1full</strong> just created.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>wy1 = wq1full @ y
+print(wy1.shape)
+print(wy1.mean())
+print(wy1.std())
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>Experiment with various spatial weights for your own data set or for one of the PySAL sample data sets. Create a spatially lagged variable for each of the weights and compare their properties, such as the mean, standard deviation, correlation between the original variable and the spatial lag, etc.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/4_spatial_weights.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

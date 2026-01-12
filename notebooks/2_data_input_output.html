@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data Input/Output &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic Mapping" href="3_basic_mapping.html" />
+    <link rel="prev" title="PySAL Sample Data Sets" href="1_sample_data.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Data Input/Output</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#09/06/2024">09/06/2024</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Files">Files</a><ul>
+<li><a class="reference internal" href="#Text-Files">Text Files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Input">Input</a></li>
+<li><a class="reference internal" href="#Contents">Contents</a></li>
+<li><a class="reference internal" href="#Descriptive-Statistics">Descriptive Statistics</a></li>
+<li><a class="reference internal" href="#Extracting-Variables">Extracting Variables</a></li>
+<li><a class="reference internal" href="#Extracting-Variables-to-a-Numpy-Array">Extracting Variables to a Numpy Array</a></li>
+<li><a class="reference internal" href="#Computations">Computations</a></li>
+<li><a class="reference internal" href="#Concatenating-Data-Frames">Concatenating Data Frames</a></li>
+<li><a class="reference internal" href="#Output">Output</a></li>
+<li><a class="reference internal" href="#DBase-Files-(dbf)">DBase Files (dbf)</a><ul>
+<li><a class="reference internal" href="#Spatial-Data-Files">Spatial Data Files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Spatial-Data">Spatial Data</a></li>
+<li><a class="reference internal" href="#Reading-a-shape-file">Reading a shape file</a></li>
+<li><a class="reference internal" href="#Creating-New-Variables">Creating New Variables</a></li>
+<li><a class="reference internal" href="#Reading-a-GeoJSON-File">Reading a GeoJSON File</a></li>
+<li><a class="reference internal" href="#Writing-a-GeoDataFrame">Writing a GeoDataFrame</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/2_data_input_output.ipynb">notebooks/2_data_input_output.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/2_data_input_output.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Data-Input/Output">
+<h1>Data Input/Output<a class="headerlink" href="#Data-Input/Output" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="09/06/2024">
+<h2>09/06/2024<a class="headerlink" href="#09/06/2024" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, some elementary functionality is covered to carry out data input and output from and to different types of files. The key concept is a so-called <em>DataFrame</em>, a tabular representation of the data with observations as rows and variables as columns.</p>
+<p>This is implemented by means of <em>pandas</em> for generic text files (as well as many other formats) and <em>geopandas</em> for spatial data files (shape files or geojson files). The functionality will be illustrated with the <strong>Police</strong> sample data set that contains police expenditure data for Mississippi counties. It is assumed that this data has been installed using <code class="docutils literal notranslate"><span class="pre">libpysal.examples.load_example(&quot;Police&quot;)</span></code>.</p>
+<p>A video recording is available from the GeoDa Center YouTube channel playlist <em>Applied Spatial Regression - Notebooks</em>, at <a class="reference external" href="https://www.youtube.com/watch?v=7yWOgPEBQmE&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=2">https://www.youtube.com/watch?v=7yWOgPEBQmE&amp;list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&amp;index=2</a>.</p>
+</section>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The work horse for spatial analysis in Python is the <em>PySAL</em> library. However, before addressing specific spatial functionality, the use of <em>pandas</em> and <em>geopandas</em> will be illustrated to load data into so-called data frames. In addition, <em>libpysal</em> is needed to access the sample data sets. All of these rely on <em>numpy</em> as a dependency.</p>
+<p>The full set of imports is shown below. Also, in this notebook, the <code class="docutils literal notranslate"><span class="pre">get_path</span></code> functionality of <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code> is imported separately, without the rest of <em>libpysal</em>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+import geopandas as gpd
+from libpysal.examples import get_path
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>array</p></li>
+<li><p>shape</p></li>
+<li><p>tolist</p></li>
+<li><p>reshape</p></li>
+</ul>
+</li>
+<li><p>from pandas:</p>
+<ul>
+<li><p>read_csv</p></li>
+<li><p>head</p></li>
+<li><p>info</p></li>
+<li><p>list</p></li>
+<li><p>columns</p></li>
+<li><p>describe</p></li>
+<li><p>corr</p></li>
+<li><p>DataFrame</p></li>
+<li><p>concat</p></li>
+<li><p>to_csv</p></li>
+<li><p>drop</p></li>
+</ul>
+</li>
+<li><p>from geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+<li><p>to_file</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>get_path</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Files">
+<h2>Files<a class="headerlink" href="#Files" title="Link to this heading">¶</a></h2>
+<p>Data input and output will be illustrated with the <strong>Police</strong> sample data set. This data set contains the same information in several different formats, such as csv, dbf, shp and geojson, which will be illustrated in turn. The following files will be used:</p>
+<ul class="simple">
+<li><p><strong>police.shp,shx,dbf,prj</strong>: shape file (four files) for 82 counties</p></li>
+<li><p><strong>police.csv</strong>: the same data in csv text format</p></li>
+<li><p><strong>police.geojson</strong>: the spatial layer in geojson format</p></li>
+</ul>
+<p>All the files are defined here, and referred to generically afterwards, so that it will be easy to re-run the commands for a separate application. The only changes needed would be the file names and/or variable names (if needed).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infilecsv = &quot;police.csv&quot;     # input csv file
+outfilecsv = &quot;test1.csv&quot;     # output csv file
+infiledbf = &quot;police.dbf&quot;     # input dbf file
+outfiledbf = &quot;test2.csv&quot;     # output dbf file
+infileshp = &quot;police.shp&quot;     # input shape file
+outfileshp =  &quot;test3.shp&quot;    # output shape file
+infilegeo = &quot;police.geojson&quot; # input geojson file
+outfilegeo = &quot;test4.geojson&quot; # output geojson file
+</pre></div>
+</div>
+</div>
+<section id="Text-Files">
+<h3>Text Files<a class="headerlink" href="#Text-Files" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Input">
+<h2>Input<a class="headerlink" href="#Input" title="Link to this heading">¶</a></h2>
+<p>The input file for csv formatted data is <strong>infilecsv</strong>. In the example, this is the csv file <strong>police.csv</strong>. The path to the installed sample data set is found with <code class="docutils literal notranslate"><span class="pre">get_path</span></code> (note the form of the <code class="docutils literal notranslate"><span class="pre">import</span></code> statement, which means that the full prefix <code class="docutils literal notranslate"><span class="pre">libpysal.examples</span></code> is not needed).</p>
+<p>The pandas command <code class="docutils literal notranslate"><span class="pre">read_csv</span></code> creates a data frame, essentially a data table. One of its attributes is <code class="docutils literal notranslate"><span class="pre">shape</span></code>, the dimension of the table as number of rows (observations) and number of columns (variables). <code class="docutils literal notranslate"><span class="pre">df.head(</span> <span class="pre">)</span></code> lists the first few rows of the actual table.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infilecsv)
+df = pd.read_csv(inpath)
+print(df.shape)
+df.head()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Contents">
+<h2>Contents<a class="headerlink" href="#Contents" title="Link to this heading">¶</a></h2>
+<p>A technical way to see the contents of a <em>pandas</em> data frame is to use the <code class="docutils literal notranslate"><span class="pre">info</span></code> command. This gives the class, range of the index (used internally to refer to rows) and the data type of the variables (columns).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df.info()
+</pre></div>
+</div>
+</div>
+<p>An arguably more intuitive sense of the contents of the data frame is to just list the names of all the variables. This can be accomplished several different ways, illustrating the flexibility of <em>pandas</em>. However, it is important to know what type of object the result of each operation yields. Depending on the approach, this could be a list, a pandas index object or a numpy array. Assuming the wrong type for the result can cause trouble.</p>
+<p>The following four approaches will each extract the column headers, but yield the result as a different type of object. This will determine how it can be further manipulated:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">list(df)</span></code>: creates a simple list with the variable names</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">df.columns</span></code>: yields the columns as a pandas index object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">df.columns.values</span></code>: yields the columns as a numpy array</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">df.columns.values.tolist(</span> <span class="pre">)</span></code>: yields the columns as a list, same as <code class="docutils literal notranslate"><span class="pre">list(df)</span></code></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>varlist1 = list(df)
+print(varlist1)
+type(varlist1)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>varlist2 = df.columns
+print(varlist2)
+type(varlist2)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>varlist3 = df.columns.values
+print(varlist3)
+type(varlist3)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>varlist4 = df.columns.values.tolist()
+print(varlist4)
+type(varlist4)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Descriptive-Statistics">
+<h2>Descriptive Statistics<a class="headerlink" href="#Descriptive-Statistics" title="Link to this heading">¶</a></h2>
+<p>A quick summary of the data set is provided by the <code class="docutils literal notranslate"><span class="pre">describe</span></code> command.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df.describe()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Extracting-Variables">
+<h2>Extracting Variables<a class="headerlink" href="#Extracting-Variables" title="Link to this heading">¶</a></h2>
+<p>Variables (columns) can easily be extracted from a dataframe by listing their names in a list and subsetting the data frame (there are other ways as well, but they will not be considered here). It is important to keep in mind that the result is a different view of the same data frame, which may not be what is expected. In fact, in many applications in the context of <em>spreg</em>, the result should be a numpy array. This requires an extra step to cast the data frame to an array object.</p>
+<p>Also, in many contexts, an additional variable may need to be added to the data frame. For example, this will be needed for regression residuals and predicted values in a later notebook. To illustrate some of the steps involved, the variable <strong>COLLEGE</strong> will be turned into its complement (i.e., percent population without a college degree) and subsequently added to the data frame. To illustrate some descriptive statistics, <strong>POLICE</strong> will be extracted as well.</p>
+<p>First, the variable names are put in a list to subset the data frame and check the type. Make sure to use double brackets, the argument to the subset [ ] is a list, so [[list of variable names in quotes, separated by commas]]. The result is a <em>pandas</em> data frame or series (one variable).</p>
+<p>Note: if you want to do this for your own data set, possibly using different variables and different expressions, you will need to adjust the code below accordingly. Typically, this is avoided in these notebooks, but here there is no option to make things totally generic.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df1 = df[[&#39;POLICE&#39;,&#39;COLLEGE&#39;]]
+type(df1)
+</pre></div>
+</div>
+</div>
+<p>A more elegant approach and one that will make it much easier to reuse the code for different data sets and variables is to enter the variable names in a list first, and then pass that to subset the data frame.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>varnames = [&#39;POLICE&#39;,&#39;COLLEGE&#39;]
+df2 = df[varnames]
+type(df2)
+</pre></div>
+</div>
+</div>
+<p>At this point, it is much more meaningful to get the descriptive statistics using <code class="docutils literal notranslate"><span class="pre">describe</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df2.describe()
+</pre></div>
+</div>
+</div>
+<p>A correlation coefficient is obtained by means of the <code class="docutils literal notranslate"><span class="pre">corr</span></code> method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df2.corr()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Extracting-Variables-to-a-Numpy-Array">
+<h2>Extracting Variables to a Numpy Array<a class="headerlink" href="#Extracting-Variables-to-a-Numpy-Array" title="Link to this heading">¶</a></h2>
+<p>As mentioned, when using variables in the context of <strong>spreg</strong> routines, they will often need to be numpy arrays, not a data frame. This is accomplished by means of the <code class="docutils literal notranslate"><span class="pre">numpy.array</span></code> function (<code class="docutils literal notranslate"><span class="pre">np.array</span></code> in the notation used here). The <code class="docutils literal notranslate"><span class="pre">shape</span></code> attribute is a check to make sure that the resulting matrices have the correct format. In the example:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>x1 = np.array(df[varnames])
+print(x1.shape)
+type(x1)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Computations">
+<h2>Computations<a class="headerlink" href="#Computations" title="Link to this heading">¶</a></h2>
+<p>New variables (columns) can be added to an existing data frame by means of straightforward element by element computations. However, to do this within the data frame structure is a bit cumbersome, since the data frame name needs to be included for each variable. On the other hand, the result is immediately attached to the data frame.</p>
+<p>Alternatively, the computations can be carried out using the numpy array and subsequently attached to the data frame. However, for a one-dimensional result, the shape of the result is a one-dimensional numpy array, not a row or a column vector. To obtain the latter, the <code class="docutils literal notranslate"><span class="pre">reshape</span></code> command needs to be used.</p>
+<p>For example, to compute the complement of the percentage with a college degree (in column 1 of array <strong>x1</strong>), the second column of the array is subtracted from 100. The element-by-element computation gives the desired result, but not the correct shape.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>noncollege = 100.0 - x1[:,1]
+noncollege
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>noncollege.shape
+</pre></div>
+</div>
+</div>
+<p>The correct dimension is obtained by means of <code class="docutils literal notranslate"><span class="pre">reshape(-1,1)</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>noncollege = noncollege.reshape(-1,1)
+print(noncollege.shape)
+noncollege[0:5,:]
+</pre></div>
+</div>
+</div>
+<p>Note the extra brackets in the (82,1) column vector compared to the (82, ) numpy array above.</p>
+</section>
+<section id="Concatenating-Data-Frames">
+<h2>Concatenating Data Frames<a class="headerlink" href="#Concatenating-Data-Frames" title="Link to this heading">¶</a></h2>
+<p>In order to add the result of the matrix calculation to the data frame, two steps are involved. First, the numpy array is turned into into a data frame using <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, making sure to give meaningful names to the columns by means of the <code class="docutils literal notranslate"><span class="pre">columns</span></code> argument. Then the <code class="docutils literal notranslate"><span class="pre">pandas.concat</span></code> function is applied to join the two data frames together. One can of course combine the two operations into one line, but here they are kept separate for clarity. <strong>NONCOLLEGE</strong> is added as the last
+variable in the data frame.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> is set as an argument to the <code class="docutils literal notranslate"><span class="pre">concat</span></code> function to make sure a column is added (<code class="docutils literal notranslate"><span class="pre">axis=0</span></code> is to add a row).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dd = pd.DataFrame(noncollege,columns=[&#39;NONCOLLEGE&#39;])
+df = pd.concat([df,dd],axis=1)
+print(df.columns)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Output">
+<h2>Output<a class="headerlink" href="#Output" title="Link to this heading">¶</a></h2>
+<p>If desired, the new data frame can be written to a csv file using the <code class="docutils literal notranslate"><span class="pre">to_csv</span></code> command. The only required argument is the filename. For example, with the generic file name <strong>outfilecsv</strong> as defined at the top of the notebook, the file will be written to the current working directory. Its contents can be examined with any text editor or by loading it into a spreadsheet program.</p>
+<p>To avoid the index numbers as a first unnamed column (i.e., the default row names), an extra argument is <code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">=</span> <span class="pre">False</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df.to_csv(outfilecsv,index=False)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="DBase-Files-(dbf)">
+<h2>DBase Files (dbf)<a class="headerlink" href="#DBase-Files-(dbf)" title="Link to this heading">¶</a></h2>
+<p>A common (but old) format for tabular data bases is the dBase format, with file extension dbf. Even though it is old (and, arguably, out of date), this format is still quite useful because it is used to store the data (attributes) in one of the common spatial data formats, the shape file popularized by ESRI (see below).</p>
+<p>As it happens, <em>pandas</em> is currently not able to read data from a dbf file directly into a data frame. Specialized packages exist that implement this functionality (like <em>simpledbf</em>). However, as it happens, <em>geopandas</em>, considered in more detail below, also reads dbf files by means of its <code class="docutils literal notranslate"><span class="pre">read_file</span></code> command. No special arguments are needed, since the file format is derived from the file extension.</p>
+<p>For example, to read the data from <strong>police.dbf</strong> (the same as in <strong>police.csv</strong>), the path to the sample data file <strong>infiledbf</strong> is found with <code class="docutils literal notranslate"><span class="pre">get_path</span></code> and passed to the <code class="docutils literal notranslate"><span class="pre">geopandas.read_file</span></code> command. The result is a <strong>GeoDataFrame</strong>, not a regular <strong>DataFrame</strong>. This is an artifact of the dbf file being in the same directory as the shape file. The same command applied to the dbf file in isolation will be a <strong>DataFrame</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infiledbf)
+dfdb = gpd.read_file(inpath)
+print(dfdb.shape)
+print(type(dfdb))
+print(dfdb.columns)
+</pre></div>
+</div>
+</div>
+<p>A close look at the dimensions and the columns reveals an additional column (22 compared to 21) with column name <code class="docutils literal notranslate"><span class="pre">geometry</span></code>. This can be removed by means of the <code class="docutils literal notranslate"><span class="pre">drop(columns</span> <span class="pre">=</span> <span class="pre">&quot;geometry&quot;)</span></code> command.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfdb = dfdb.drop(columns = &#39;geometry&#39;)
+print(dfdb.shape)
+print(type(dfdb))
+print(dfdb.columns)
+</pre></div>
+</div>
+</div>
+<p>Now, the dimension is tha same as for the csv file and the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> column has disappeared. Also, the <code class="docutils literal notranslate"><span class="pre">type</span></code> of the result is a regular <strong>DataFrame</strong>.</p>
+<p>As mentioned, if the dbf file is in a directory without the presence of a spatial layer, the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> column will not be present. In that case, the result is a regular <strong>DataFrame</strong>, NOT a <strong>GeoDataFrame</strong>.</p>
+<p>It is important to keep this in mind, since <em>pandas</em> has currently no support for writing dbf files, whereas <em>geopandas</em> only has support for writing dbf files that contain a <code class="docutils literal notranslate"><span class="pre">geometry</span></code> column. However, a <em>pandas</em> data frame can be written to a csv file as seen before, using <code class="docutils literal notranslate"><span class="pre">to_csv</span></code>. The input dbf file can thus be converted to a csv file, but any changes cannot be saved to another dbf file.</p>
+<p>In general, working with dbf files in isolation is to be discouraged.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfdb.to_csv(outfiledbf,index=False)
+</pre></div>
+</div>
+</div>
+<section id="Spatial-Data-Files">
+<h3>Spatial Data Files<a class="headerlink" href="#Spatial-Data-Files" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Spatial-Data">
+<h2>Spatial Data<a class="headerlink" href="#Spatial-Data" title="Link to this heading">¶</a></h2>
+<p>Spatial data are characterized by the combination of locational information (the precise definition of points, lines or areas) and so-called attribute information (variables).</p>
+<p>There are many formats to store spatial information, in files as well as in relational databases. To keep things simple, first the so-called <em>shape file</em> format is considered, a standard supported by ESRI, one of the major commercial GIS vendors. In addition, <em>geojson</em> will be covered as well, since it is an increasingly common open source format.</p>
+</section>
+<section id="Reading-a-shape-file">
+<h2>Reading a shape file<a class="headerlink" href="#Reading-a-shape-file" title="Link to this heading">¶</a></h2>
+<p>The terminology is a bit confusing, since there is no such thing as <em>one</em> shape file, but there is instead a collection of three (or four) files. One file has the extension <strong>.shp</strong>, one <strong>.shx</strong>, one <strong>.dbf</strong>, and one <strong>.prj</strong> (with the projection information). The first three are required, the fourth one is optional, but highly recommended. The files should all be in the same directory and have the same main file name.</p>
+<p>In Python, the easiest way to read shape files is to use <em>geopandas</em>. The command is <code class="docutils literal notranslate"><span class="pre">read_file</span></code>, followed by the file pathname in parentheses. The program is smart enough to figure out the file format from the file extension <em>.shp</em>. As we saw before for the dbf format, the result is a geopandas data frame, a so-called <strong>GeoDataFrame</strong>, say <strong>dfs</strong>, which is a <em>pandas</em> <strong>DataFrame</strong> with an additional column for the geometry.</p>
+<p>All the standard pandas commands also apply to a geopandas data frame.</p>
+<p>The example uses the <strong>police.shp</strong> sample file as the input file, as specified in <code class="docutils literal notranslate"><span class="pre">infileshp</span></code> at the top of the notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infileshp)
+dfs = gpd.read_file(inpath)
+print(dfs.shape)
+</pre></div>
+</div>
+</div>
+<p>Note how the data frame has one more column than the one created from the csv file. This is the same as in the dbf example above. The last column is <strong>geometry</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(dfs.columns)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Creating-New-Variables">
+<h2>Creating New Variables<a class="headerlink" href="#Creating-New-Variables" title="Link to this heading">¶</a></h2>
+<p>Just as for a standard pandas data frame, variables can be transformed, new variables created and data frames merged. The commands are the same as before and will not be repeated here.</p>
+</section>
+<section id="Reading-a-GeoJSON-File">
+<h2>Reading a GeoJSON File<a class="headerlink" href="#Reading-a-GeoJSON-File" title="Link to this heading">¶</a></h2>
+<p>Reading any of the supported spatial formats is implemented by the same <code class="docutils literal notranslate"><span class="pre">read_file</span></code> command. As mentioned, <em>geopandas</em> figures out the right format from the file extension. The result is identical to the one for the shape file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>inpath = get_path(infilegeo)
+dfg = gpd.read_file(inpath)
+print(dfg.shape)
+print(type(dfg))
+print(dfg.columns)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Writing-a-GeoDataFrame">
+<h2>Writing a GeoDataFrame<a class="headerlink" href="#Writing-a-GeoDataFrame" title="Link to this heading">¶</a></h2>
+<p>The output is accomplished by the <code class="docutils literal notranslate"><span class="pre">to_file</span></code> command. This supports many different output formats, but the default is the ESRI shape file, so we do not have to specify any arguments other than the filename. Here, we use the output file name specified in <code class="docutils literal notranslate"><span class="pre">outfileshp</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs.to_file(outfileshp)
+</pre></div>
+</div>
+</div>
+<p>Writing a geojson file works in exactly the same way, for example, using the output file specified in <strong>outputgeo</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfg.to_file(outfilegeo)
+</pre></div>
+</div>
+</div>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>Use your own data set or one of the PySAL sample data sets to load a spatial data frame, create some new variables, optionally get descriptive statistics and write out an updated data set. This type of operation will be used frequently in the course of the regression analysis, for example, to add predicted values and/or residuals to a spatial layer.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/2_data_input_output.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

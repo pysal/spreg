@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>spreg.Probit &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="spreg.OLS_Regimes" href="spreg.OLS_Regimes.html" />
+    <link rel="prev" title="spreg.NSLX" href="spreg.NSLX.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">spreg.Probit</a><ul>
+<li><a class="reference internal" href="#spreg.Probit"><code class="docutils literal notranslate"><span class="pre">Probit</span></code></a><ul>
+<li><a class="reference internal" href="#spreg.Probit.__init__"><code class="docutils literal notranslate"><span class="pre">Probit.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#spreg.Probit.gradient"><code class="docutils literal notranslate"><span class="pre">Probit.gradient()</span></code></a></li>
+<li><a class="reference internal" href="#spreg.Probit.hessian"><code class="docutils literal notranslate"><span class="pre">Probit.hessian()</span></code></a></li>
+<li><a class="reference internal" href="#spreg.Probit.ll"><code class="docutils literal notranslate"><span class="pre">Probit.ll()</span></code></a></li>
+<li><a class="reference internal" href="#spreg.Probit.par_est"><code class="docutils literal notranslate"><span class="pre">Probit.par_est()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <section id="spreg-probit">
+<h1>spreg.Probit<a class="headerlink" href="#spreg-probit" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="spreg.Probit">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">spreg.</span></span><span class="sig-name descname"><span class="pre">Probit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'All'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'newton'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phimean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predflag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_ds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_diag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/probit.html#Probit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spreg.Probit" title="Link to this definition">¶</a></dt>
+<dd><p>Classic non-spatial Probit and spatial diagnostics. The class includes a
+printout that formats all the results and tests in a nice format.</p>
+<p>The diagnostics for spatial dependence currently implemented are:</p>
+<ul class="simple">
+<li><p>Pinkse Error <span id="id1">[<a class="reference internal" href="../references.html#id25" title="Joris Pinske. Moran-flavored tests with nuisance parameters: examples. In L. Anselin, R. J. G. M. Florax, and S. J. Rey, editors, Advances in Spatial Econometrics: Methodology, Tools and Applications, pages 67-77. Springer, Berlin, 2004.">Pin04</a>]</span></p></li>
+<li><p>Kelejian and Prucha Moran’s I <span id="id2">[<a class="reference internal" href="../references.html#id20" title="Harry H. Kelejian and Ingmar R. Prucha. On the asymptotic distribution of the moran i test statistic with applications. Journal of Econometrics, 104(2):219 - 257, 2001. URL: http://www.sciencedirect.com/science/article/pii/S0304407601000641, doi:http://dx.doi.org/10.1016/S0304-4076(01)00064-1.">KP01</a>]</span></p></li>
+<li><p>Pinkse &amp; Slade Error <span id="id3">[<a class="reference internal" href="../references.html#id24" title="Joris Pinkse and Margaret E Slade. Contracting in space: an application of spatial statistics to discrete-choice models. Journal of Econometrics, 85(1):125–154, 1998.">PS98</a>]</span></p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v2.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas</span></code></a> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></span></dt><dd><p>nxk array of independent variables (assumed to be aligned with y)</p>
+</dd>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code></a></span></dt><dd><p>nx1 array of dependent binary variable</p>
+</dd>
+<dt><strong>w</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">W</span></code></span></dt><dd><p>PySAL weights instance aligned with y</p>
+</dd>
+<dt><strong>slx_lags</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integer</span></code></span></dt><dd><p>Number of spatial lags of X to include in the model specification.
+If slx_lags&gt;0, the specification becomes of the SLX type.</p>
+</dd>
+<dt><strong>slx_vars</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variables</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">be</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">lagged</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">slx_lags</span></code> &gt; 0</span></dt><dd><p>default = “All”, otherwise a list with Booleans indicating which
+variables must be lagged (True) or not (False)</p>
+</dd>
+<dt><strong>optim</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Optimization method.
+Default: ‘newton’ (Newton-Raphson).
+Alternatives: ‘ncg’ (Newton-CG), ‘bfgs’ (BFGS algorithm)</p>
+</dd>
+<dt><strong>bstart</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>list with starting values for betas, default = False</p>
+</dd>
+<dt><strong>scalem</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Method to calculate the scale of the marginal effects.
+Default: ‘phimean’ (Mean of individual marginal effects)
+Alternative: ‘xmean’ (Marginal effects at variables mean)</p>
+</dd>
+<dt><strong>predflag</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flag</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#print" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">prediction</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">table</span></code></span></dt><dd></dd>
+<dt><strong>maxiter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Maximum number of iterations until optimizer stops</p>
+</dd>
+<dt><strong>name_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dependent variable for use in output</p>
+</dd>
+<dt><strong>name_x</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">strings</span></code></span></dt><dd><p>Names of independent variables for use in output</p>
+</dd>
+<dt><strong>name_w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of weights matrix for use in output</p>
+</dd>
+<dt><strong>name_ds</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dataset for use in output</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Two dimensional array with n rows and one column for each
+independent (exogenous) variable, including the constant</p>
+</dd>
+<dt><strong>xmean</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>kx1 vector with means of explanatory variables
+(for use in slopes)</p>
+</dd>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>nx1 array of dependent variable</p>
+</dd>
+<dt><strong>w</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">weights</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></span></dt><dd></dd>
+<dt><strong>optim</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>optimization method</p>
+</dd>
+<dt><strong>predflag</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flag</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#print" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">prediction</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">table</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">predtable</span></code>)</span></dt><dd></dd>
+<dt><strong>maxiter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>maximum number of iterations</p>
+</dd>
+<dt><strong>q</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>nx1 array of transformed dependent variable 2*y - 1</p>
+</dd>
+<dt><strong>betas</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>kx1 array with estimated coefficients</p>
+</dd>
+<dt><strong>bstart</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">with</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">starting</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">for</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">betas</span></code> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">False</span></code></a></span></dt><dd></dd>
+<dt><strong>predy</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>nx1 array of predicted y values (probabilities)</p>
+</dd>
+<dt><strong>n</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of observations</p>
+</dd>
+<dt><strong>k</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of variables</p>
+</dd>
+<dt><strong>vm</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Variance-covariance matrix (kxk)</p>
+</dd>
+<dt><strong>logl</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Log-Likelihhod of the estimation</p>
+</dd>
+<dt><strong>xb</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predicted</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></span></dt><dd><p>nx1 array</p>
+</dd>
+<dt><strong>predybin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predicted</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">as</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">binary</span></code></span></dt><dd><p>=1 for predy &gt; 0.5</p>
+</dd>
+<dt><strong>phiy</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">density</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">at</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">xb</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>)</span></dt><dd><p>nx1 array</p>
+</dd>
+<dt><strong>u_naive</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">naive</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">residuals</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code> - <code class="xref py py-obj docutils literal notranslate"><span class="pre">predy</span></code></span></dt><dd><p>nx1 array</p>
+</dd>
+<dt><strong>u_gen</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generalized</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">residuals</span></code></span></dt><dd><p>nx1 array</p>
+</dd>
+<dt><strong>warning</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>if True Maximum number of iterations exceeded or gradient
+and/or function calls not changing.</p>
+</dd>
+<dt><strong>std_err</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">errors</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">estimates</span></code></span></dt><dd></dd>
+<dt><strong>z_stat</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">tuples</span></code></span></dt><dd><p>z statistic; each tuple contains the pair (statistic,
+p-value), where each is a float</p>
+</dd>
+<dt><strong>predtable</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dictionary</span></code></span></dt><dd><p>includes margins and cells of actual and predicted
+values for discrete choice model</p>
+</dd>
+<dt><strong>fit</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">a</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">dictionary</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">containing</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">various</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">measures</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></span></dt><dd><p>TPR    : true positive rate (sensitivity, recall, hit rate)
+TNR    : true negative rate (specificity, selectivity)
+PREDPC : accuracy, percent correctly predicted
+BA     : balanced accuracy</p>
+</dd>
+<dt><strong>predpc</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Percent of y correctly predicted (legacy)</p>
+</dd>
+<dt><strong>LRtest</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dictionary</span></code></span></dt><dd><p>contains the statistic for the null model (L0), the LR test(likr), 
+the degrees of freedom (df) and the p-value (pvalue)</p>
+</dd>
+<dt><strong>L0</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">likelihood</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">null</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code></span></dt><dd></dd>
+<dt><strong>LR</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">legacy</span></code>)</span></dt><dd><p>Likelihood Ratio test of all coefficients = 0
+(test statistics, p-value)</p>
+</dd>
+<dt><strong>mcfadrho</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">McFadden</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">rho</span></code> <a class="reference external" href="https://docs.python.org/3/library/statistics.html#module-statistics" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">statistics</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></span></dt><dd></dd>
+<dt><strong>scale</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Scale of the marginal effects.</p>
+</dd>
+<dt><strong>slopes</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Marginal effects of the independent variables (k-1x1)</p>
+</dd>
+<dt><strong>slopes_vm</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Variance-covariance matrix of the slopes (k-1xk-1)</p>
+</dd>
+<dt><strong>slopes_std_err</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimates</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">standard</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">errors</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">marginal</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">effects</span></code></span></dt><dd></dd>
+<dt><strong>slopes_z_stat</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">with</span></code> z-statistics <code class="xref py py-obj docutils literal notranslate"><span class="pre">and</span></code> p-values <code class="xref py py-obj docutils literal notranslate"><span class="pre">for</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">marginal</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">effects</span></code></span></dt><dd></dd>
+<dt><strong>Pinkse_error: array with statistic and p-value</strong></dt><dd><p>Lagrange Multiplier test against spatial error correlation.
+Implemented as presented in <span id="id4">[<a class="reference internal" href="../references.html#id25" title="Joris Pinske. Moran-flavored tests with nuisance parameters: examples. In L. Anselin, R. J. G. M. Florax, and S. J. Rey, editors, Advances in Spatial Econometrics: Methodology, Tools and Applications, pages 67-77. Springer, Berlin, 2004.">Pin04</a>]</span></p>
+</dd>
+<dt><strong>KP_error</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">with</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">statistic</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">and</span></code> p-value</span></dt><dd><p>Moran’s I type test against spatial error correlation.
+Implemented as presented in <span id="id5">[<a class="reference internal" href="../references.html#id20" title="Harry H. Kelejian and Ingmar R. Prucha. On the asymptotic distribution of the moran i test statistic with applications. Journal of Econometrics, 104(2):219 - 257, 2001. URL: http://www.sciencedirect.com/science/article/pii/S0304407601000641, doi:http://dx.doi.org/10.1016/S0304-4076(01)00064-1.">KP01</a>]</span></p>
+</dd>
+<dt><strong>PS_error</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">with</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">statistic</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">and</span></code> p-value</span></dt><dd><p>Lagrange Multiplier test against spatial error correlation.
+Implemented as presented in <span id="id6">[<a class="reference internal" href="../references.html#id24" title="Joris Pinkse and Margaret E Slade. Contracting in space: an application of spatial statistics to discrete-choice models. Journal of Econometrics, 85(1):125–154, 1998.">PS98</a>]</span></p>
+</dd>
+<dt><strong>name_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dependent variable for use in output</p>
+</dd>
+<dt><strong>name_x</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">strings</span></code></span></dt><dd><p>Names of independent variables for use in output</p>
+</dd>
+<dt><strong>name_w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of weights matrix for use in output</p>
+</dd>
+<dt><strong>name_ds</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of dataset for use in output</p>
+</dd>
+<dt><strong>title</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the regression method used</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We first need to import the needed modules, namely numpy to convert the
+data we read into arrays that <code class="docutils literal notranslate"><span class="pre">spreg</span></code> understands and <code class="docutils literal notranslate"><span class="pre">libpysal</span></code> to
+perform all the analysis.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">libpysal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#prevent scientific format</span>
+</pre></div>
+</div>
+<p>Open data on Columbus neighborhood crime (49 areas) using libpysal.io.open().
+This is the DBF associated with the Columbus shapefile.  Note that
+libpysal.io.open() also reads data in CSV format; since the actual class
+requires data to be passed in as numpy arrays, the user can read their
+data in using any method.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dbf</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;columbus.dbf&#39;</span><span class="p">),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Extract the CRIME column (crime) from the DBF file and make it the
+dependent variable for the regression. Note that libpysal requires this to be
+an numpy array of shape (n, 1) as opposed to the also common shape of (n, )
+that other packages accept. Since we want to run a probit model and for this
+example we use the Columbus data, we also need to transform the continuous
+CRIME variable into a binary variable. As in <span id="id7">[<a class="reference internal" href="../references.html#id23" title="Daniel P. McMillen. Probit with spatial autocorrelation. Journal of Regional Science, 32(3):335-348, 1992. URL: https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9787.1992.tb00190.x, arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1467-9787.1992.tb00190.x, doi:10.1111/j.1467-9787.1992.tb00190.x.">McM92</a>]</span>, we define
+y = 1 if CRIME &gt; 40.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dbf</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="s1">&#39;CRIME&#39;</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">&gt;</span><span class="mi">40</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Extract HOVAL (home values) and INC (income) vectors from the DBF to be used as
+independent variables in the regression.  Note that libpysal requires this to
+be an nxj numpy array, where j is the number of independent variables (not
+including a constant). By default this class adds a vector of ones to the
+independent variables passed in.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">names_to_extract</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;INC&#39;</span><span class="p">,</span> <span class="s1">&#39;HOVAL&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dbf</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names_to_extract</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>Since we want to the test the probit model for spatial dependence, we need to
+specify the spatial weights matrix that includes the spatial configuration of
+the observations into the error component of the model. To do that, we can open
+an already existing gal file or create a new one. In this case, we will use
+<code class="docutils literal notranslate"><span class="pre">columbus.gal</span></code>, which contains contiguity relationships between the
+observations in the Columbus dataset we are using throughout this example.
+Note that, in order to read the file, not only to open it, we need to
+append ‘.read()’ at the end of the command.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.gal&quot;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Unless there is a good reason not to do it, the weights have to be
+row-standardized so every row of the matrix sums to one. In libpysal, this
+can be easily performed in the following way:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">transform</span><span class="o">=</span><span class="s1">&#39;r&#39;</span>
+</pre></div>
+</div>
+<p>We are all set with the preliminaries, we are good to run the model. In this
+case, we will need the variables and the weights matrix. If we want to
+have the names of the variables printed in the output summary, we will
+have to pass them in as well, although this is optional.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">spreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Probit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Probit</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">name_y</span><span class="o">=</span><span class="s1">&#39;crime&#39;</span><span class="p">,</span> <span class="n">name_x</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;income&#39;</span><span class="p">,</span><span class="s1">&#39;home value&#39;</span><span class="p">],</span> <span class="n">name_ds</span><span class="o">=</span><span class="s1">&#39;columbus&#39;</span><span class="p">,</span> <span class="n">name_w</span><span class="o">=</span><span class="s1">&#39;columbus.gal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once we have run the model, we can explore a little bit the output. The
+regression object we have created has many attributes so take your time to
+discover them.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">betas</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">array([[ 3.353811],</span>
+<span class="go">       [-0.199653],</span>
+<span class="go">       [-0.029514]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">vm</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">array([[ 0.852814, -0.043627, -0.008052],</span>
+<span class="go">       [-0.043627,  0.004114, -0.000193],</span>
+<span class="go">       [-0.008052, -0.000193,  0.00031 ]])</span>
+</pre></div>
+</div>
+<p>Since we have provided a spatial weigths matrix, the diagnostics for
+spatial dependence have also been computed. We can access them and their
+p-values individually:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tests</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="s1">&#39;Pinkse_error&#39;</span><span class="p">,</span><span class="s1">&#39;KP_error&#39;</span><span class="p">,</span><span class="s1">&#39;PS_error&#39;</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">model</span><span class="o">.</span><span class="n">Pinkse_error</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">model</span><span class="o">.</span><span class="n">KP_error</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">model</span><span class="o">.</span><span class="n">PS_error</span><span class="p">[</span><span class="mi">0</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvalue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">model</span><span class="o">.</span><span class="n">Pinkse_error</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">model</span><span class="o">.</span><span class="n">KP_error</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">model</span><span class="o">.</span><span class="n">PS_error</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">tests</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">stats</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">pvalue</span><span class="o">.</span><span class="n">T</span><span class="p">)),</span><span class="mi">6</span><span class="p">))))</span>
+<span class="go">[[&#39;Pinkse_error&#39; &#39;3.131719&#39; &#39;0.076783&#39;]</span>
+<span class="go"> [&#39;KP_error&#39; &#39;1.721312&#39; &#39;0.085194&#39;]</span>
+<span class="go"> [&#39;PS_error&#39; &#39;2.558166&#39; &#39;0.109726&#39;]]</span>
+</pre></div>
+</div>
+<p>Or we can easily obtain a full summary of all the results nicely formatted and
+ready to be printed simply by typing ‘print model.summary’</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.Probit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slx_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'All'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'newton'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phimean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predflag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_ds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat_diag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/spreg/probit.html#Probit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spreg.Probit.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.Probit.__init__" title="spreg.Probit.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(y, x[, w, slx_lags, slx_vars, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spreg.Probit.gradient" title="spreg.Probit.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a>(par)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.Probit.hessian" title="spreg.Probit.hessian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hessian</span></code></a>(par)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#spreg.Probit.ll" title="spreg.Probit.ll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ll</span></code></a>(par)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#spreg.Probit.par_est" title="spreg.Probit.par_est"><code class="xref py py-obj docutils literal notranslate"><span class="pre">par_est</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.Probit.gradient">
+<span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spreg.Probit.gradient" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.Probit.hessian">
+<span class="sig-name descname"><span class="pre">hessian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spreg.Probit.hessian" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.Probit.ll">
+<span class="sig-name descname"><span class="pre">ll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spreg.Probit.ll" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spreg.Probit.par_est">
+<span class="sig-name descname"><span class="pre">par_est</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spreg.Probit.par_est" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/spreg.Probit.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

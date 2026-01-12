@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Two Stage Least Squares Regression (2SLS) &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spatial Model Specifications" href="7_spatial_models.html" />
+    <link rel="prev" title="Basic Ordinary Least Squares Regression (OLS)" href="5_OLS.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Two Stage Least Squares Regression (2SLS)</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/08/2024)">(revised 09/08/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functionality-Used">Functionality Used</a></li>
+<li><a class="reference internal" href="#Input-Files">Input Files</a></li>
+<li><a class="reference internal" href="#Variable-Names">Variable Names</a></li>
+<li><a class="reference internal" href="#Variable-definition-and-data-input">Variable definition and data input</a><ul>
+<li><a class="reference internal" href="#The-Principle-of-Two-Stage-Least-Squares">The Principle of Two Stage Least Squares</a></li>
+<li><a class="reference internal" href="#The-Two-Stages-of-2SLS">The Two Stages of 2SLS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Creating-the-instruments">Creating the instruments</a></li>
+<li><a class="reference internal" href="#Second-stage">Second stage</a></li>
+<li><a class="reference internal" href="#Predicted-values-and-residuals">Predicted values and residuals</a><ul>
+<li><a class="reference internal" href="#TSLS">TSLS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Immigrant-paradox">Immigrant paradox</a></li>
+<li><a class="reference internal" href="#id2">Predicted values and residuals</a></li>
+<li><a class="reference internal" href="#Two-endogenous-variables">Two endogenous variables</a><ul>
+<li><a class="reference internal" href="#Durbin-Wu-Hausman-Test">Durbin-Wu-Hausman Test</a></li>
+<li><a class="reference internal" href="#Robust-Standard-Errors">Robust Standard Errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#White-standard-errors">White standard errors</a></li>
+<li><a class="reference internal" href="#HAC-standard-errors">HAC standard errors</a><ul>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/6_TWOSLS.ipynb">notebooks/6_TWOSLS.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/6_TWOSLS.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Two-Stage-Least-Squares-Regression-(2SLS)">
+<h1>Two Stage Least Squares Regression (2SLS)<a class="headerlink" href="#Two-Stage-Least-Squares-Regression-(2SLS)" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/08/2024)">
+<h2>(revised 09/08/2024)<a class="headerlink" href="#(revised-09/08/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, endogenous and instrumental variables are introduced and the basics of two stage least squares estimation are presented.</p>
+<p>Technical details are given in Chapter 6 in Anselin and Rey (2014). <em>Modern Spatial Econometrics in Practice</em>.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Familiarity with <em>pandas</em>, <em>geopandas</em> and <em>libpysal</em> is assumed to read data files and manipulate spatial weights as well as knowledge of how to use <em>PySAL</em> sample data sets. Again, the <strong>chicagoSDOH</strong> sample data set is used. If not available, it must be installed first with <code class="docutils literal notranslate"><span class="pre">libpysal.examples.load_example(&quot;chicaogoSDOH&quot;)</span></code>.</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>The main module for spatial regression in PySAL is <em>spreg</em>. In addition, <em>libpysal</em> is needed to handle the example data sets and spatial weights, and <em>pandas</em> and <em>geopandas</em> for data input and output. This notebook is based on version 1.7 of <em>spreg</em>.</p>
+<p>Some additional imports are included to avoid excessive warning messages. With later versions of PySAL, these may not be needed. Finally, to avoid issues with the <code class="docutils literal notranslate"><span class="pre">print</span></code> function for <em>numpy</em> 2.0 and later, the <code class="docutils literal notranslate"><span class="pre">legacy</span></code> option is set in <code class="docutils literal notranslate"><span class="pre">set_printoptions</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+import os
+os.environ[&#39;USE_PYGEOS&#39;] = &#39;0&#39;
+
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+from libpysal.io import open
+from libpysal.examples import get_path
+import libpysal.weights as weights
+from spreg import OLS, TSLS, f_stat
+np.set_printoptions(legacy=&quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functionality-Used">
+<h2>Functionality Used<a class="headerlink" href="#Functionality-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from pandas/geopandas:</p>
+<ul>
+<li><p>read_file</p></li>
+<li><p>DataFrame</p></li>
+<li><p>concat</p></li>
+</ul>
+</li>
+<li><p>from libpysal:</p>
+<ul>
+<li><p>examples.get_path</p></li>
+<li><p>io.open</p></li>
+<li><p>weights.distance.Kernel</p></li>
+</ul>
+</li>
+<li><p>from spreg:</p>
+<ul>
+<li><p>OLS</p></li>
+<li><p>TSLS</p></li>
+<li><p>f_stat</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Input-Files">
+<h2>Input Files<a class="headerlink" href="#Input-Files" title="Link to this heading">¶</a></h2>
+<p>All notebooks are organized such that the relevant filenames and variables names are listed at the top, so that they can be easily adjusted for use with your own data sets and variables.</p>
+<p>In the current notebook, the <strong>Chi-SDOH</strong> sample shape file is used, with associated kernel weights (for HAC standard errors). The specific file names are:</p>
+<ul class="simple">
+<li><p><strong>Chi-SDOH.shp,shx,dbf,prj</strong>: socio-economic determinants of health for 2014 in 791 Chicago tracts</p></li>
+<li><p><strong>Chi-SDOH_k10tri.kwt</strong>: triangular kernel weights based on a variable bandwidth with 10 nearest neighbors from <em>GeoDa</em></p></li>
+</ul>
+<p>As before, the input files are specified generically as <strong>infileshp</strong> (for the shape file) and <strong>infilek</strong> (for the kernel weights). The <code class="docutils literal notranslate"><span class="pre">libpysal.examples.get_path</span></code> functionality is used to get the correct path.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>infileshp = get_path(&quot;Chi-SDOH.shp&quot;)            # input shape file with data
+infilek = get_path(&quot;Chi-SDOH_k10tri.kwt&quot;)       # triangular kernel weights from GeoDa
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Variable-Names">
+<h2>Variable Names<a class="headerlink" href="#Variable-Names" title="Link to this heading">¶</a></h2>
+<p>The illustration in this notebook considers two different specifications. One has <strong>YPLL_rate</strong> (index of premature mortality) as the dependent variable and <strong>Blk14P</strong> (percent Black population), <strong>Hisp14P</strong> (percent Hispanic population), and <strong>HIS_ct</strong> (economic hardship index) as explanatory variables. The variable <strong>HIS_ct</strong> is considered to be <em>endogenous</em>, with the census tract centroids as instruments (<strong>COORD_X</strong> and <strong>COORD_Y</strong>). The full set of regressors is specified in <strong>z_names1</strong>,
+the exogenous variables in <strong>xe_names</strong>, endogenous variable in <strong>yend_names1</strong>, and instruments in <strong>q_names1</strong>.</p>
+<p>A second specification uses the same dependent variable (<strong>y_name</strong>) and exogenous regressors (<strong>xe_names</strong>), but now includes two endogenous regressors, <strong>HIS_ct</strong> and <strong>EP_NOHDSP</strong> (percent without a high school diploma) in <strong>yend_names2</strong> (with the full set of regressors in <strong>z_names2</strong>), and one additional instrument (in addition to the census tract centroids), <strong>EP_LIMENG</strong> (percent with limited English proficiency), specified in <strong>q_names2</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>y_name = [&#39;YPLL_rate&#39;]
+z_names1 = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;,&#39;HIS_ct&#39;]
+z_names2 = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;,&#39;EP_NOHSDP&#39;,&#39;HIS_ct&#39;]
+xe_names = [&#39;Blk14P&#39;,&#39;Hisp14P&#39;]
+yend_names1 = [&#39;HIS_ct&#39;]
+yend_names2 = [&#39;EP_NOHSDP&#39;,&#39;HIS_ct&#39;]
+q_names1 = [&#39;COORD_X&#39;, &#39;COORD_Y&#39;]
+q_names2 = [&#39;COORD_X&#39;, &#39;COORD_Y&#39;,&#39;EP_LIMENG&#39;]
+ds_name = &#39;Chi-SDOH&#39;
+gwk_name = &#39;Chi-SDOH_k10tri&#39;
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Variable-definition-and-data-input">
+<h2>Variable definition and data input<a class="headerlink" href="#Variable-definition-and-data-input" title="Link to this heading">¶</a></h2>
+<p>The input geo data frame is created using <code class="docutils literal notranslate"><span class="pre">read_file</span></code> and the weights file using <code class="docutils literal notranslate"><span class="pre">libpysal.io</span></code> (imported as <code class="docutils literal notranslate"><span class="pre">open</span></code>). Also, the class of the kernel weights is corrected using <code class="docutils literal notranslate"><span class="pre">libpysal.weights.distance.Kernel</span></code> (<code class="docutils literal notranslate"><span class="pre">libpysal.weights</span></code> is imported as <code class="docutils literal notranslate"><span class="pre">weights</span></code>). Next, all the relevant variables are initialized as subsets from the data frame.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dfs = gpd.read_file(infileshp)
+wk = open(infilek).read()
+print(wk.n)
+wk.__class__ = weights.distance.Kernel
+print(type(wk))
+
+y = dfs[y_name]
+z1 = dfs[z_names1]
+z2 = dfs[z_names2]
+xe = dfs[xe_names]
+yend1 = dfs[yend_names1]
+yend2 = dfs[yend_names2]
+q1 = dfs[q_names1]
+q2 = dfs[q_names2]
+</pre></div>
+</div>
+</div>
+<section id="The-Principle-of-Two-Stage-Least-Squares">
+<h3>The Principle of Two Stage Least Squares<a class="headerlink" href="#The-Principle-of-Two-Stage-Least-Squares" title="Link to this heading">¶</a></h3>
+<p>A fundamental assumption behind OLS is, loosely put, that the explanatory variables (<span class="math notranslate nohighlight">\(X\)</span>) are uncorrelated with the error terms. If this is not the case for one or more variables, the OLS estimates will be <em>biased</em> (in the early days, this used to be called simultaneous equation bias, now it is referred to as endogeneity). To correct for this bias, the violating <em>endogenous</em> variables are replaced by <em>instruments</em> that are: (1) uncorrelated with the error term; and (2) closely related (but
+not too close) to the original endogenous variables.</p>
+<p>For example, consider a set of explanatory variables, such that: <span class="math">\begin{equation*}
+y = Z\delta + u,
+\end{equation*}</span> where <span class="math notranslate nohighlight">\(Z\)</span> is organized such that the exogenous variables <span class="math notranslate nohighlight">\(X\)</span> are first and the endogenous ones <span class="math notranslate nohighlight">\(Y\)</span> are second, as <span class="math notranslate nohighlight">\(Z = [X \  Y]\)</span>.</p>
+<p>In essence, 2SLS estimation can be thought of as proceeding in two stages (hence the acronym). In the first stage, each of the endogenous variables is regressed on a matrix of instruments, <span class="math notranslate nohighlight">\(Q\)</span>, which includes all of the exogenous variables in <span class="math notranslate nohighlight">\(X\)</span> as well as specific <em>instruments</em>. The predicted values from this regression are then used as explanatory variables, replacing the endogenous variables in the <em>second</em> stage, which yields consistent estimates for the coefficients
+<span class="math notranslate nohighlight">\(\delta\)</span>. Note that the predicted value in a regression of the <span class="math notranslate nohighlight">\(X\)</span> variables on <span class="math notranslate nohighlight">\(Q\)</span> (which includes the <span class="math notranslate nohighlight">\(X\)</span>) simply yields the original <span class="math notranslate nohighlight">\(X\)</span>, so that there are in fact no new instrumental variables for the <span class="math notranslate nohighlight">\(X\)</span>.</p>
+<p>The first stage can be expressed succinctly as: <span class="math">\begin{equation*}
+\hat{Z} = Q [ (Q'Q)^{-1} Q'Z ],
+\end{equation*}</span> where the term in square brackets is the vector of OLS regression coefficients in a regression of each of the <span class="math notranslate nohighlight">\(Z\)</span> on the instrument matrix <span class="math notranslate nohighlight">\(Q\)</span>.</p>
+<p>The second stage consists of an OLS regression of <span class="math notranslate nohighlight">\(y\)</span> on the predicted values <span class="math notranslate nohighlight">\(\hat{Z}\)</span>: <span class="math">\begin{equation*}
+\hat{\delta} = (\hat{Z'} \hat{Z} )^{-1} \hat{Z'} y.
+\end{equation*}</span></p>
+<p>Alternatively, substituting the results of the first regression yields the full expression as: <span class="math">\begin{equation*}
+\hat{\delta} = [ Z'Q (Q'Q)^{-1} Q'Z ]^{-1} Z'Q (Q'Q)^{-1} Q' y.
+\end{equation*}</span></p>
+<p>Strictly speaking, the 2SLS estimator is an instrumental variables estimator with instruments: <span class="math">\begin{equation*}
+H = Q (Q'Q)^{-1} Q'Z,
+\end{equation*}</span> where <span class="math notranslate nohighlight">\(Q (Q'Q)^{-1} Q'\)</span> is often referred to as a projection matrix. The estimator can be expressed in the usual way as: <span class="math">\begin{equation*}
+\hat{\delta} = (H'Z)^{-1} H'y,
+\end{equation*}</span> which, after substituting the full expression for <span class="math notranslate nohighlight">\(H\)</span> and some matrix algebra yields the same result as above.</p>
+</section>
+<section id="The-Two-Stages-of-2SLS">
+<h3>The Two Stages of 2SLS<a class="headerlink" href="#The-Two-Stages-of-2SLS" title="Link to this heading">¶</a></h3>
+<p>Before illustrating the <code class="docutils literal notranslate"><span class="pre">spreg.TSLS</span></code> functionality, the two stages of 2SLS are spelled out in detail, using the first regression example. First, as a reference point, the OLS estimation, using <code class="docutils literal notranslate"><span class="pre">spreg.OLS</span></code> with <code class="docutils literal notranslate"><span class="pre">nonspat_diag</span> <span class="pre">=</span> <span class="pre">False</span></code> to limit the output. The complete set of regressors is contained in <strong>z1</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols1 = OLS(y,x=z1,nonspat_diag = False,name_ds = ds_name)
+print(ols1.summary)
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Creating-the-instruments">
+<h2>Creating the instruments<a class="headerlink" href="#Creating-the-instruments" title="Link to this heading">¶</a></h2>
+<p>In the example, there is only one endogenous variable, <strong>HIS_ct</strong>. The associated <em>instrumental variable</em> is the predicted value from a regression of <strong>HIS_ct</strong> on the exogenous variables <strong>xe</strong> and the instruments <strong>q1</strong>. The terminology can get a bit confusing, since instrumental variables and instruments are often used interchangeably. In a strict sense, the predicted value is an instrumental variable for the endogenous variable and the exogenous variables are often not explicitly designated
+as instruments. This is the meaning used here. So, the full set of instruments consists of <em>both</em> <strong>xe</strong> and <strong>q1</strong>. This is accomplished by means of <em>pandas</em> <code class="docutils literal notranslate"><span class="pre">concat</span></code> function.</p>
+<p>The instrumental variable for <strong>HIS_ct</strong> is then extracted as the <code class="docutils literal notranslate"><span class="pre">predy</span></code> attribute of the regression object and turned into a dataframe.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>qq = pd.concat([xe,q1],axis=1)
+olsinst = OLS(yend1,qq,nonspat_diag=False,name_ds=ds_name)
+print(olsinst.summary)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>yend_p = olsinst.predy
+yep = pd.DataFrame(yend_p,columns=[&#39;HIS_ct_p&#39;])
+yep
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Second-stage">
+<h2>Second stage<a class="headerlink" href="#Second-stage" title="Link to this heading">¶</a></h2>
+<p>The second stage consists of an OLS estimation of <strong>YPLL_rate</strong> on the three regressors, where <strong>HIS_ct</strong> is replaced by its predicted value. Again, first <code class="docutils literal notranslate"><span class="pre">concat</span></code> is used to put the exogenous variables together with the newly created predicted value.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>zz = pd.concat([xe,yep],axis=1)
+ols2 = OLS(y,zz,nonspat_diag = False, name_ds=ds_name)
+print(ols2.summary)
+</pre></div>
+</div>
+</div>
+<p>Compared to the results of the original OLS regression (<strong>ols1</strong>), there are some marked differences in both the magnitude and significance of the coefficients. The coefficient for <strong>Blk14P</strong> is less than half its previous value (16.4 vs. 42.1) and is no longer significant. The coefficient for <strong>Hisp14P</strong> is three times as large (-45.7 vs. -14.6) and <strong>HIS_ct_p</strong> double (153.6 vs. 72.7). Both remain highly significant. However, as noted below, the standard errors and thus also the significance
+must be interpreted with caution.</p>
+</section>
+<section id="Predicted-values-and-residuals">
+<h2>Predicted values and residuals<a class="headerlink" href="#Predicted-values-and-residuals" title="Link to this heading">¶</a></h2>
+<p>The proper residuals for the 2SLS regression should be <span class="math notranslate nohighlight">\(y - Z\hat{\delta}\)</span>, and <em>not</em> <span class="math notranslate nohighlight">\(y - \hat{Z}\hat{\delta}\)</span>, as given by the second stage OLS regression. As a consequence, the standard errors (which are based on those residuals) given in the second stage OLS regression are <em>not</em> the proper standard errors in a 2SLS estimation. In some software implementations, this is sometimes overlooked when the estimation is implemented as two actual separate stages. The correct standard
+errors and associated (asymptotic) t-statistics and p-values are given by the <code class="docutils literal notranslate"><span class="pre">spreg.TSLS</span></code> command.</p>
+<section id="TSLS">
+<h3>TSLS<a class="headerlink" href="#TSLS" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Immigrant-paradox">
+<h2>Immigrant paradox<a class="headerlink" href="#Immigrant-paradox" title="Link to this heading">¶</a></h2>
+<p>The proper standard errors for 2SLS are obtained with <code class="docutils literal notranslate"><span class="pre">spreg.TSLS</span></code>. The required arguments are <code class="docutils literal notranslate"><span class="pre">y</span></code> for the dependent variable, <code class="docutils literal notranslate"><span class="pre">x</span></code> for the exogenous variables, <code class="docutils literal notranslate"><span class="pre">yend</span></code> for the endogenous variables and <code class="docutils literal notranslate"><span class="pre">q</span></code> for the instruments. The default is to have <code class="docutils literal notranslate"><span class="pre">nonspat_diag</span> <span class="pre">=</span> <span class="pre">True</span></code>, so this is turned to <code class="docutils literal notranslate"><span class="pre">False</span></code> to focus on just the estimates and their significance. Finally, <code class="docutils literal notranslate"><span class="pre">name_ds</span></code> is included for the data set name.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls1 = TSLS(y,x=xe,yend=yend1,q=q1,nonspat_diag = False,name_ds=ds_name)
+print(tsls1.summary)
+</pre></div>
+</div>
+</div>
+<p>The coefficient estimates are identical to the ones obtained in <strong>ols2</strong>, but the standard errors are slightly different. In the end, this does not affect the significance in a meaningful way. <strong>Blk14P</strong> remains not significant and the other p-values are only marginally affected.</p>
+<p>The complete set of attributes of the regression object is given with the usual <code class="docutils literal notranslate"><span class="pre">dir</span></code> command. They are essentially the same as for an OLS object, e.g., with the estimates in <code class="docutils literal notranslate"><span class="pre">betas</span></code>, predicted values in <code class="docutils literal notranslate"><span class="pre">predy</span></code> and residuals in <code class="docutils literal notranslate"><span class="pre">u</span></code>. In addition, several intermediate matrix results are included as well that are useful for customized calculations, but beyond the current scope.</p>
+</section>
+<section id="id2">
+<h2>Predicted values and residuals<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>As mentioned, the residuals are <span class="math notranslate nohighlight">\(y - \hat{y}\)</span>, with <span class="math notranslate nohighlight">\(\hat{y}\)</span> as the predicted values. The latter are obtained as <span class="math notranslate nohighlight">\(Z \hat{\delta}\)</span>. This is somewhat misleading as a measure of fit, since observations on the endogenous variables are included in the matrix <span class="math notranslate nohighlight">\(Z\)</span>. A proper predicted value would be obtained from a solution of the reduced form, with only exogenous variables on the RHS of the equation. However, in a single equation cross-sectional setting, this is not possible.
+As computed, the predicted value thus may give an overly optimistic measure of the fit of the model. Consequently, the associated residual sum of squares may be too small to reflect the correct performance of the model.</p>
+</section>
+<section id="Two-endogenous-variables">
+<h2>Two endogenous variables<a class="headerlink" href="#Two-endogenous-variables" title="Link to this heading">¶</a></h2>
+<p>To further illustrate that 2SLS also works for multiple endogenous variables, the second specification is used, now with <strong>yend2</strong> as the endogenous variables and <strong>q2</strong> as the associated instruments. For reference, the OLS results are given as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ols3 = OLS(y,x=z2,nonspat_diag=False,name_ds=ds_name)
+print(ols3.summary)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls2 = TSLS(y,x=xe,yend=yend2,q=q2,nonspat_diag=False,name_ds=ds_name)
+print(tsls2.summary)
+</pre></div>
+</div>
+</div>
+<p>The effect of correcting for potential endogeneity is again significant. In the OLS results, all coefficients except <strong>EP_NOHSDP</strong> are highly significant. However, in the 2SLS results, neither <strong>Blk14P</strong> nor <strong>Hisp14P</strong> are significant, but <strong>EP_NOHSDP</strong> becomes significant. Its coefficient also changes sign, from positive (but not significant, so essentially zero) to negative. This illustrates the importance of checking for potential endogeneity.</p>
+<section id="Durbin-Wu-Hausman-Test">
+<h3>Durbin-Wu-Hausman Test<a class="headerlink" href="#Durbin-Wu-Hausman-Test" title="Link to this heading">¶</a></h3>
+<p>The Durbin-Wu-Hausman statistic (DWH) is a test for the endogeneity of some regressors, provided instruments are available. It is a simple F-test on the joint significance of selected coefficients in an augmented regression. The augmented regression specification consists of the original exogenous variables and predicted values of the endogenous variables when regressed on the instruments (those include the exogenous variables). If the null hypothesis holds, the coefficients of these predicted
+values should not be significant. The DWH test then boils down to an F-test on their joint significance (see Davidson and MacKinnon 2004, p. 338-340).</p>
+<p>The test is included as a default diagnostic in <code class="docutils literal notranslate"><span class="pre">spreg.TSLS</span></code> (the default is <code class="docutils literal notranslate"><span class="pre">nonspat_diag=True</span></code> so this must not be included explicitly). For the two example regressions, this yields the following results.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls1a = TSLS(y,x=xe,yend=yend1,q=q1,name_ds=ds_name)
+print(tsls1a.summary)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls2a = TSLS(y,x=xe,yend=yend2,q=q2,name_ds=ds_name)
+print(tsls2a.summary)
+</pre></div>
+</div>
+</div>
+<p>In both instances, there is clear evidence that controlling for endogeneity was warranted.</p>
+<p>Since the predicted value for <strong>HIS_ct</strong> in the first regression is already available as <strong>yep</strong> above, the DWH test can be verified by carrying out the auxiliary regression. To this end <strong>z1</strong> must be concatenated with <strong>yep</strong> to form the new matrix of regressors.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>zza = pd.concat([z1,yep],axis=1)
+ols4 = OLS(y,zza,nonspat_diag=False,name_ds=ds_name)
+print(ols4.summary)
+</pre></div>
+</div>
+</div>
+<p>The DWH statistic then follows as the result of an F-test on the coefficient of <strong>HIS_ct_p</strong> in the auxiliary regression.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dwhf = f_stat(ols4,df=1)
+print(dwhf)
+</pre></div>
+</div>
+</div>
+<p>The resulting F-statistic is exactly the value of DWH listed for <strong>tsls1a</strong>, with the associated p-value. In the same way, the result for the second 2SLS regression can be verified, but this is slightly more involved. In the second case, two additional regression are required to obtain predicted values for each of the endogenous variables, but otherwise everything is the same. This is all carried out under the hood for the DWH statistic.</p>
+</section>
+<section id="Robust-Standard-Errors">
+<h3>Robust Standard Errors<a class="headerlink" href="#Robust-Standard-Errors" title="Link to this heading">¶</a></h3>
+<p>As was the case for OLS regression, 2SLS allows for robust standard errors by setting the arguments <code class="docutils literal notranslate"><span class="pre">robust=&quot;white&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">robust=&quot;hac&quot;</span></code>. Everything operates in the same way as for OLS, i.e., the estimates are identical, but the standard errors, z-statistic and p-values may differ.</p>
+</section>
+</section>
+<section id="White-standard-errors">
+<h2>White standard errors<a class="headerlink" href="#White-standard-errors" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls1b = TSLS(y,x=xe,yend=yend1,q=q1,name_ds=ds_name,
+                     robust=&#39;white&#39;)
+print(tsls1b.summary)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls2b = TSLS(y,x=xe,yend=yend2,q=q2,name_ds=ds_name,
+                   robust=&#39;white&#39;)
+print(tsls2b.summary)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="HAC-standard-errors">
+<h2>HAC standard errors<a class="headerlink" href="#HAC-standard-errors" title="Link to this heading">¶</a></h2>
+<p>As was the case for OLS, in addition to <code class="docutils literal notranslate"><span class="pre">robust=&quot;hac&quot;</span></code>, the kernel weights (<code class="docutils literal notranslate"><span class="pre">gwk</span></code>) and optionally their name (<code class="docutils literal notranslate"><span class="pre">name_gwk</span></code>) must be specified as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls1c = TSLS(y,x=xe,yend=yend1,q=q1,name_ds=ds_name,
+                     robust=&#39;hac&#39;,gwk=wk,name_gwk=gwk_name)
+print(tsls1c.summary)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tsls2c = TSLS(y,x=xe,yend=yend2,q=q2,name_ds=ds_name,
+                   robust=&#39;hac&#39;,gwk=wk,name_gwk=gwk_name)
+print(tsls2c.summary)
+</pre></div>
+</div>
+</div>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>At this point, you can assess endogeneity in your own regression specification, or experiment with different models constructed from the variables in the <strong>chicagoSDOH</strong> sample data set. Replicate the 2SLS results by explicitly carrying out the two stage OLS regressions and/or check on the value of the Durbin-Wu-Hausman test by means of the auxiliary regression.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/6_TWOSLS.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

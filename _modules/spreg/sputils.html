@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.sputils &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.sputils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SP</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">SPla</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">compress</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">libpysal.weights</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">weights</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">libpysal</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sparse</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matrix multiplication function to deal with sparse and dense objects</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : array</span>
+<span class="sd">                  first multiplication factor. Can either be sparse or dense.</span>
+<span class="sd">    b           : array</span>
+<span class="sd">                  second multiplication factor. Can either be sparse or dense.</span>
+<span class="sd">    array_out   : boolean</span>
+<span class="sd">                  If True (default) the output object is always a np.array</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ab : array</span>
+<span class="sd">         product of a times b. Sparse if a and b are sparse. Dense otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span>
+        <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span>
+        <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span>
+        <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span>
+    <span class="p">):</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span> <span class="o">@</span> <span class="n">b</span>
+        <span class="k">if</span> <span class="n">array_out</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ab</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">ab</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+                <span class="n">ab</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid format for &#39;spdot&#39; argument: </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ab</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spmultiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Element-wise multiplication function to deal with sparse and dense</span>
+<span class="sd">    objects. Both objects must be of the same type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : array</span>
+<span class="sd">                  first multiplication factor. Can either be sparse or dense.</span>
+<span class="sd">    b           : array</span>
+<span class="sd">                  second multiplication factor. Can either be sparse or dense.</span>
+<span class="sd">                  integer.</span>
+<span class="sd">    array_out   : boolean</span>
+<span class="sd">                  If True (default) the output object is always a np.array</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ab : array</span>
+<span class="sd">         elementwise multiplied object. Sparse if a is sparse. Dense otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span>
+    <span class="p">):</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array_out</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ab</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csc_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">ab</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+                <span class="n">ab</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid format for &#39;spmultiply&#39; argument: </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ab</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sphstack</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Horizontal stacking of vectors (or matrices) to deal with sparse and dense objects</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : array or sparse matrix</span>
+<span class="sd">                  First object.</span>
+<span class="sd">    b           : array or sparse matrix</span>
+<span class="sd">                  Object to be stacked next to a</span>
+<span class="sd">    array_out   : boolean</span>
+<span class="sd">                  If True the output object is a np.array; if False (default)</span>
+<span class="sd">                  the output object is an np.array if both inputs are</span>
+<span class="sd">                  arrays or CSR matrix if at least one input is a CSR matrix</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ab          : array or sparse matrix</span>
+<span class="sd">                  Horizontally stacked objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">SP</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array_out</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ab</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+                <span class="n">ab</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid format for &#39;sphstack&#39; argument: </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ab</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spbroadcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">array_out</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Element-wise multiplication of a matrix and vector to deal with sparse</span>
+<span class="sd">    and dense objects</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : array or sparse matrix</span>
+<span class="sd">                  Object with one or more columns.</span>
+<span class="sd">    b           : array</span>
+<span class="sd">                  Object with only one column</span>
+<span class="sd">    array_out   : boolean</span>
+<span class="sd">                  If True the output object is a np.array; if False (default)</span>
+<span class="sd">                  the output object is an np.array if both inputs are</span>
+<span class="sd">                  arrays or CSR matrix if at least one input is a CSR matrix</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ab          : array or sparse matrix</span>
+<span class="sd">                  Element-wise multiplication of a and b</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+        <span class="n">b_mod</span> <span class="o">=</span> <span class="n">SP</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">b_mod</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">ab</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">b_mod</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">array_out</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ab</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;csr_matrix&quot;</span><span class="p">:</span>
+                <span class="n">ab</span> <span class="o">=</span> <span class="n">ab</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid format for &#39;spbroadcast&#39; argument: </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ab</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spmin</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Minimum value in a matrix or vector to deal with sparse and dense objects</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : array or sparse matrix</span>
+<span class="sd">                  Object with one or more columns.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    min a       : int or float</span>
+<span class="sd">                  minimum value in a</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spmax</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maximum value in a matrix or vector to deal with sparse and dense objects</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a           : array or sparse matrix</span>
+<span class="sd">                  Object with one or more columns.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    max a       : int or float</span>
+<span class="sd">                  maximum value in a</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">splogdet</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the log determinant of a large matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a       :   array or sparse matrix</span>
+<span class="sd">                Object with one or more columns</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    log determinant of a    :   int or float</span>
+<span class="sd">                                logged determinant of a</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">SP</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">LU</span> <span class="o">=</span> <span class="n">SPla</span><span class="o">.</span><span class="n">splu</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">LU</span><span class="o">.</span><span class="n">U</span><span class="o">.</span><span class="n">diagonal</span><span class="p">())))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sgn</span><span class="p">,</span> <span class="n">ldet</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">sgn</span> <span class="o">*</span> <span class="n">ldet</span>
+    <span class="k">return</span> <span class="n">det</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spfill_diagonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fill the diagonal of a sparse or dense matrix</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    a       :   array or sparse matrix</span>
+<span class="sd">                Object with one or more columns</span>
+<span class="sd">    val     :   int or float</span>
+<span class="sd">                value with which to fill the diagonal of a</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    a       :   array or sparse matrix</span>
+<span class="sd">                with val on each element of the diagonal</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">SP</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spinv</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the inverse of a sparse or dense matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a       :   array or sparse matrix</span>
+<span class="sd">                Object with one or more columns</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ai      :   array or sparse matrix</span>
+<span class="sd">                the inverse of a</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">SP</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">ai</span> <span class="o">=</span> <span class="n">SPla</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ai</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ai</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spisfinite</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine whether an array has nan or inf values</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a   :   array or sparse matrix</span>
+<span class="sd">            Object with one or more columns</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        :   bool</span>
+<span class="sd">            denoting whether or not the array contains any NaN or inf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="spmultiplier">
+<a class="viewcode-back" href="../../generated/spreg.sputils.spmultiplier.html#spreg.sputils.spmultiplier">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spmultiplier</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span> <span class="n">mtol</span><span class="o">=</span><span class="mf">0.00000001</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">    Spatial Lag Multiplier Calculation</span>
+<span class="sd">    Follows Kim, Phipps and Anselin (2003) (simple), and LeSage and Pace (2009) (full, power)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w          : PySAL format spatial weights matrix</span>
+<span class="sd">    rho        : spatial autoregressive coefficient</span>
+<span class="sd">    method     : one of &quot;simple&quot; (default), &quot;full&quot; or &quot;power&quot;</span>
+<span class="sd">    mtol       : tolerance for power iteration (default=0.00000001)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    multipliers : dictionary with</span>
+<span class="sd">                  ati = average total impact multiplier</span>
+<span class="sd">                  adi = average direct impact multiplier</span>
+<span class="sd">                  aii = average indirect impact multiplier</span>
+<span class="sd">                  pow = powers used in power approximation (otherwise 0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">multipliers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ati&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;adi&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;aii&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+    <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;pow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;ati&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;simple&quot;</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span>
+        <span class="n">wf</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">id0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">irw0</span> <span class="o">=</span> <span class="p">(</span><span class="n">id0</span> <span class="o">-</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">wf</span><span class="p">)</span>
+        <span class="n">invirw0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">irw0</span><span class="p">)</span>
+        <span class="n">adii0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">invirw0</span><span class="p">))</span>
+        <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;adi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adii0</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;power&quot;</span><span class="p">:</span>
+        <span class="n">ws3</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">to_sparse</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">)</span>        
+        <span class="n">rhop</span> <span class="o">=</span> <span class="n">rho</span>
+        <span class="n">ww</span> <span class="o">=</span> <span class="n">ws3</span>
+        <span class="nb">pow</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">adi</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">adidiff</span> <span class="o">=</span> <span class="mf">100.00</span>
+
+        <span class="k">while</span> <span class="n">adidiff</span> <span class="o">&gt;</span> <span class="n">mtol</span><span class="p">:</span>
+            <span class="nb">pow</span> <span class="o">=</span> <span class="nb">pow</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">ww</span> <span class="o">=</span> <span class="n">SP</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">ws3</span><span class="p">)</span>
+            <span class="n">trw</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">rhop</span> <span class="o">=</span> <span class="n">rhop</span> <span class="o">*</span> <span class="n">rho</span>
+            <span class="n">adidiff</span> <span class="o">=</span> <span class="n">rhop</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">/</span> <span class="n">n</span>
+            <span class="n">adi</span> <span class="o">=</span> <span class="n">adi</span> <span class="o">+</span> <span class="n">adidiff</span>
+        <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;adi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adi</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;pow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;warn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Method &#39;&quot;</span><span class="o">+</span><span class="n">method</span><span class="o">+</span><span class="s2">&quot;&#39; not supported for spatial impacts.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;simple&#39;</span>
+    <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;aii&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;ati&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;adi&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">multipliers</span><span class="p">)</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sp_effects</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">spmult</span><span class="p">,</span> <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">slx_vars</span><span class="o">=</span><span class="s2">&quot;All&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate spatial lag, direct and indirect effects</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg        : regression object</span>
+<span class="sd">    variables  : chunk of self.output with variables to calculate effects</span>
+<span class="sd">    spmult     : dictionary with spatial multipliers</span>
+<span class="sd">    slx_lags   : number of SLX lags</span>
+<span class="sd">    slx_vars   : either &quot;All&quot; (default) for all variables lagged, or a list</span>
+<span class="sd">                 of booleans matching the columns of x that will be lagged or not</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    btot       : total effects</span>
+<span class="sd">    bdir       : direct effects</span>
+<span class="sd">    bind       : indirect effects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">variables_x_index</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">spmult</span><span class="p">[</span><span class="s1">&#39;ati&#39;</span><span class="p">]</span>
+    <span class="n">btot</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">variables_x_index</span><span class="p">]</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">spmult</span><span class="p">[</span><span class="s1">&#39;adi&#39;</span><span class="p">]</span>
+    <span class="n">bdir</span> <span class="o">=</span> <span class="n">m2</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">variables_x_index</span><span class="p">]</span>
+
+    <span class="c1"># Assumes all SLX effects are indirect effects. </span>
+    <span class="k">if</span> <span class="n">slx_lags</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reg</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">regime</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">btot_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">btot</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">variables_x_index</span><span class="p">)</span>   
+            <span class="n">wchunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;regime == @reg.output.regime.iloc[0]&quot;</span><span class="p">))</span> <span class="c1">#Number of exogenous variables in each regime</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">slx_lags</span><span class="p">):</span>
+                <span class="n">chunk_indices</span> <span class="o">=</span> <span class="n">variables_x_index</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">wchunk_size</span>
+                <span class="n">bmult</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">chunk_indices</span><span class="p">]</span>
+                <span class="n">btot_idx</span><span class="p">[</span><span class="n">variables_x_index</span><span class="p">]</span> <span class="o">+=</span> <span class="n">bmult</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="n">btot</span> <span class="o">=</span> <span class="n">btot_idx</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">btot</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">variables_wx</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;var_type == &#39;wx&#39;&quot;</span><span class="p">)</span>
+            <span class="n">variables_wx_index</span> <span class="o">=</span> <span class="n">variables_wx</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s1">&#39;slx_vars&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slx_vars</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+                <span class="n">flexwx_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">compress</span><span class="p">(</span><span class="n">variables_x_index</span><span class="p">,</span><span class="n">slx_vars</span><span class="p">))</span>   <span class="c1"># indices of x variables in wx</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flexwx_indices</span> <span class="o">=</span> <span class="n">variables_x_index</span>    <span class="c1"># all x variables</span>
+            <span class="n">xind</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">flexwx_indices</span><span class="p">]</span>
+            <span class="n">wchunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables_wx_index</span><span class="p">)</span><span class="o">//</span><span class="n">slx_lags</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">slx_lags</span><span class="p">):</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">wchunk_size</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">wchunk_size</span>
+                <span class="n">chunk_indices</span> <span class="o">=</span> <span class="n">variables_wx_index</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+                <span class="n">bmult</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">chunk_indices</span><span class="p">]</span>
+                <span class="n">btot</span><span class="p">[</span><span class="n">xind</span><span class="p">]</span> <span class="o">=</span> <span class="n">btot</span><span class="p">[</span><span class="n">xind</span><span class="p">]</span> <span class="o">+</span> <span class="n">bmult</span>
+
+        <span class="n">bind</span> <span class="o">=</span> <span class="n">btot</span> <span class="o">-</span> <span class="n">bdir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">m3</span> <span class="o">=</span> <span class="n">spmult</span><span class="p">[</span><span class="s1">&#39;aii&#39;</span><span class="p">]</span>
+        <span class="n">bind</span> <span class="o">=</span> <span class="n">m3</span> <span class="o">*</span> <span class="n">reg</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">variables_x_index</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">btot</span><span class="p">,</span> <span class="n">bdir</span><span class="p">,</span> <span class="n">bind</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">i_multipliers</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">coef</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;lag&#39;</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Creates pandas DataFrame with spatial multipliers with direct effects</span>
+<span class="sd">    (diagonal), effect of neighbors (row sum) and effect on neighbors</span>
+<span class="sd">    (column sum) for each observation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w         : spatial weights, either sparse CSR, PySAL weights object</span>
+<span class="sd">                or full array</span>
+<span class="sd">    coef      : spatial coefficient, default is 0.0; non-zero values for</span>
+<span class="sd">                spatial autoregressive coefficient or parameter in nonlinear</span>
+<span class="sd">                SLX -- coef has no effect on slx and kernel models</span>
+<span class="sd">    model     : type of spatial model, default is &#39;lag&#39; for spatial lag or </span>
+<span class="sd">                spatial Durbin model; other options are &quot;slx&quot; (contiguity</span>
+<span class="sd">                weights without parameters), &quot;kernel&quot; (kernel weights),</span>
+<span class="sd">                &quot;power&quot; (nonlinear SLX power model) and &quot;exponential&quot; (nonlinear</span>
+<span class="sd">                SLX exponential model)</span>
+<span class="sd">    id        : pandas Series with ID variable for each observation, default is none,</span>
+<span class="sd">                which creates a vector with sequence numbers and assigns variable name</span>
+<span class="sd">                &quot;ID&quot;; otherwise variable name is extracted from Series columns.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="k">if</span> <span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>   <span class="c1"># sparse kernel or dist fraction</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">edirect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">ww</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;power&#39;</span><span class="p">:</span>
+            <span class="n">ww</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;exponential&#39;</span><span class="p">:</span>
+
+            <span class="n">wdata</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">data</span>    <span class="c1"># uses data attribute of CSR to apply transformation</span>
+            <span class="n">wexp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">wdata</span> <span class="o">*</span> <span class="o">-</span><span class="n">coef</span><span class="p">)</span>
+            <span class="n">ww</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">wexp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Model not supported&quot;</span><span class="p">)</span>
+        
+    <span class="k">else</span><span class="p">:</span>     <span class="c1"># pysal weights</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">weights</span><span class="o">.</span><span class="n">W</span><span class="p">):</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+            <span class="n">wf</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">to_W</span><span class="p">()</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+            <span class="n">wf</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  
+            <span class="n">wf</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Weights object not supported&quot;</span><span class="p">)</span>
+        
+        <span class="n">edirect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;slx&#39;</span><span class="p">:</span>
+            <span class="n">ww</span> <span class="o">=</span> <span class="n">wf</span>
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;kernel&#39;</span><span class="p">:</span>
+            <span class="n">edirect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">wf</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ww</span> <span class="o">=</span> <span class="n">wf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>                  
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;lag&#39;</span><span class="p">:</span>
+            
+            <span class="n">id0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">irw0</span> <span class="o">=</span> <span class="p">(</span><span class="n">id0</span> <span class="o">-</span> <span class="n">coef</span> <span class="o">*</span> <span class="n">wf</span><span class="p">)</span>
+            <span class="n">invirw0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">irw0</span><span class="p">)</span>
+            <span class="n">edirect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">invirw0</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ww</span> <span class="o">=</span> <span class="n">invirw0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Model not supported&quot;</span><span class="p">)</span>
+            
+    <span class="n">eofNbrs</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">eonNbrs</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">gpd</span><span class="o">.</span><span class="n">geoseries</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">)):</span>
+        <span class="n">pdid</span> <span class="o">=</span> <span class="nb">id</span>   <span class="c1"># already a data frame</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">pdid</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">id</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pdid</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;ID format not supported&quot;</span><span class="p">)</span>
+        
+    <span class="n">impacts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">edirect</span><span class="p">,</span><span class="n">eofNbrs</span><span class="p">,</span><span class="n">eonNbrs</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="n">dfimpacts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">impacts</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Direct&quot;</span><span class="p">,</span><span class="s2">&quot;EofNbrs&quot;</span><span class="p">,</span><span class="s2">&quot;EonNbrs&quot;</span><span class="p">])</span>
+    <span class="n">dfimpacts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pdid</span><span class="p">,</span><span class="n">dfimpacts</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dfimpacts</span>
+    
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

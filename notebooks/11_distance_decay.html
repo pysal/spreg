@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Distance Decay &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Estimating SLX Models" href="12_estimating_slx.html" />
+    <link rel="prev" title="Specification Tests - Properties" href="10_specification_tests_properties.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Distance Decay</a><ul>
+<li><a class="reference internal" href="#Luc-Anselin">Luc Anselin</a></li>
+<li><a class="reference internal" href="#(revised-09/18/2024)">(revised 09/18/2024)</a><ul>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#Modules-Needed">Modules Needed</a></li>
+<li><a class="reference internal" href="#Functions-Used">Functions Used</a></li>
+<li><a class="reference internal" href="#Files-and-Variables">Files and Variables</a><ul>
+<li><a class="reference internal" href="#Distance-Metric">Distance Metric</a></li>
+<li><a class="reference internal" href="#Kernel-Functions">Kernel Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Triangular-Kernel">Triangular Kernel</a></li>
+<li><a class="reference internal" href="#Quadratic/Epanechnikov-Kernel">Quadratic/Epanechnikov Kernel</a></li>
+<li><a class="reference internal" href="#Quartic-Kernel">Quartic Kernel</a></li>
+<li><a class="reference internal" href="#Gaussian-Kernel">Gaussian Kernel</a></li>
+<li><a class="reference internal" href="#Comparison">Comparison</a><ul>
+<li><a class="reference internal" href="#Negative-Exponential-Distance-Function">Negative Exponential Distance Function</a></li>
+<li><a class="reference internal" href="#Inverse-Distance-Power-Function">Inverse Distance Power Function</a></li>
+<li><a class="reference internal" href="#Practice">Practice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/11_distance_decay.ipynb">notebooks/11_distance_decay.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/11_distance_decay.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Distance-Decay">
+<h1>Distance Decay<a class="headerlink" href="#Distance-Decay" title="Link to this heading">¶</a></h1>
+<section id="Luc-Anselin">
+<h2>Luc Anselin<a class="headerlink" href="#Luc-Anselin" title="Link to this heading">¶</a></h2>
+</section>
+<section id="(revised-09/18/2024)">
+<h2>(revised 09/18/2024)<a class="headerlink" href="#(revised-09/18/2024)" title="Link to this heading">¶</a></h2>
+<section id="Preliminaries">
+<h3>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h3>
+<p>In this notebook, a closer look is taken at the distance decay implied by different kernel functions that are used in the linear SLX model, as well as by the nonlinear distance transformations used in the NSLX specification. Since these functions are derived for the k-nearest neighbors, the spatial patterning of these neighbors will affect how much relevance the values observed at those locations have for the spatial lag. For example, if the nearest neighbors are all rather far away from the
+origin, e.g., with a relative distance (z) of 0.5 or more, a steep distance decay will essentially eliminate their effect.</p>
+</section>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading">¶</a></h2>
+<p>Familiarity with <em>numpy</em>, <em>pandas</em> operations and the <code class="docutils literal notranslate"><span class="pre">plot</span></code> function for <em>pandas</em> dataframes is assumed. Further customization can be carried out by means of specific features of <em>matplotlib</em>, but that is not considered here.</p>
+</section>
+<section id="Modules-Needed">
+<h2>Modules Needed<a class="headerlink" href="#Modules-Needed" title="Link to this heading">¶</a></h2>
+<p>Since no <em>spreg</em> functions are used, the imports are limited to <em>numpy</em>, <em>pandas</em> and <em>matplotlib.pyplot</em> (the latter is optional).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[85]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+np.set_printoptions(legacy = &quot;1.25&quot;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Functions-Used">
+<h2>Functions Used<a class="headerlink" href="#Functions-Used" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>from numpy:</p>
+<ul>
+<li><p>linspace</p></li>
+<li><p>reshape</p></li>
+<li><p>hstack</p></li>
+</ul>
+</li>
+<li><p>from pandas:</p>
+<ul>
+<li><p>DataFrame</p></li>
+<li><p>concat</p></li>
+<li><p>plot</p></li>
+</ul>
+</li>
+<li><p>from matplotlib.pyplot:</p>
+<ul>
+<li><p>show</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Files-and-Variables">
+<h2>Files and Variables<a class="headerlink" href="#Files-and-Variables" title="Link to this heading">¶</a></h2>
+<p>In this notebook, no actual data are used.</p>
+<section id="Distance-Metric">
+<h3>Distance Metric<a class="headerlink" href="#Distance-Metric" title="Link to this heading">¶</a></h3>
+<p>To obtain comparable graphs, the distance is scaled to a value less than one. This corresponds to the <span class="math notranslate nohighlight">\(z\)</span> value that is computed relative to the bandwidth. This approach avoids problems due to the varying scale of the actual distance metric (e.g., meters vs. km) and makes all distance decay functions comparable.</p>
+<p>For the purpose of graphing, 20 equidistance points are used in the interval 0-1, by means of <code class="docutils literal notranslate"><span class="pre">numpy.linspace</span></code>.</p>
+<p>In practice, the <span class="math notranslate nohighlight">\(z\)</span> values are computed for up to k nearest neighbors, which are not necessarily equally spaced. In fact, the weight of neighbors will vary depending on whether they are close to the origin or closer to the farthest nearest neighbor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>z = np.linspace(0.0,1.0,num=21)
+z = z.reshape(-1,1)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Kernel-Functions">
+<h3>Kernel Functions<a class="headerlink" href="#Kernel-Functions" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="Triangular-Kernel">
+<h2>Triangular Kernel<a class="headerlink" href="#Triangular-Kernel" title="Link to this heading">¶</a></h2>
+<p>The triangular kernel is <span class="math notranslate nohighlight">\(1.0 - z\)</span>. Note that in the SLX implementation, the value at the origin (diagonal) is set to zero. It is kept at 1.0 here to make the graph clearer.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tri = 1.0 - z
+tri = tri.reshape(-1,1)
+</pre></div>
+</div>
+</div>
+<p>The kernel function is matched with the distance metric to create a simple plot.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>p1 = np.hstack((z,tri))
+df1 = pd.DataFrame(p1,columns=[&quot;distance&quot;,&quot;triangular&quot;])
+df1.plot(x=&quot;distance&quot;,y=&quot;triangular&quot;,kind=&quot;line&quot;,title=&quot;Triangular Kernel&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>As expected, the result is a linear decline with distance, yielding a weight equal to <span class="math notranslate nohighlight">\(1.0 - z\)</span> at each point. The function terminates with a value of zero for <span class="math notranslate nohighlight">\(z = 1.0\)</span>.</p>
+</section>
+<section id="Quadratic/Epanechnikov-Kernel">
+<h2>Quadratic/Epanechnikov Kernel<a class="headerlink" href="#Quadratic/Epanechnikov-Kernel" title="Link to this heading">¶</a></h2>
+<p>The quadratric or Epanechnikov kernel takes the value <span class="math notranslate nohighlight">\(1.0 - z^2\)</span>. Strictly speaking, this value is scaled by 3/4, but this can be ignored here. The resulting distance decay graph is obtained in the same way as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>z2 = z**2
+z2 = z2.reshape(-1,1)
+epa = 1.0 - z2
+p2 = np.hstack((z,epa))
+df2 = pd.DataFrame(p2,columns=[&quot;distance&quot;,&quot;quadratic&quot;])
+df2.plot(x=&quot;distance&quot;,y=&quot;quadratic&quot;,kind=&quot;line&quot;,title=&quot;Epanechnikov Kernel&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>Note how the curvature is above the line that connects the two endpoints, yielding generally higher weights for the neighbors than the corresponding triangular kernel weights.</p>
+</section>
+<section id="Quartic-Kernel">
+<h2>Quartic Kernel<a class="headerlink" href="#Quartic-Kernel" title="Link to this heading">¶</a></h2>
+<p>The quartic kernel is <span class="math notranslate nohighlight">\((1.0 - z^2)^2\)</span>. Again, this is customary scaled by 15/16, which is ignored here. The graph is obtained in the same way.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>quar = (1.0 - z2) ** 2
+p3 = np.hstack((z,quar))
+df3 = pd.DataFrame(p3,columns=[&quot;distance&quot;,&quot;quartic&quot;])
+df3.plot(x=&quot;distance&quot;,y=&quot;quartic&quot;,kind=&quot;line&quot;,title=&quot;Quartic Kernel&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>Note the characteristic reverse S-shape with higher than linear weights close to the original, changing to less than linear values in the second half of the distance range.</p>
+</section>
+<section id="Gaussian-Kernel">
+<h2>Gaussian Kernel<a class="headerlink" href="#Gaussian-Kernel" title="Link to this heading">¶</a></h2>
+<p>The Gaussian kernel takes the form <span class="math notranslate nohighlight">\(\sqrt{(2 \pi)}. e^{-z^2/2}\)</span>. For the graph, the scaling factor is again ignored. Note that in contrast to the quadratic and quartic kernel functions, this would yield a value at the origin of larger than one, and generally remain above one in the distance range considered. It is therefore applied without the scaling factor. The graph is obtained in the same fashion as before.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>zz = -z2 / 2.0
+gs = np.exp(zz)
+p4 = np.hstack((z,gs))
+df4 = pd.DataFrame(p4,columns=[&quot;distance&quot;,&quot;Gaussian&quot;])
+df4.plot(x=&quot;distance&quot;,y=&quot;Gaussian&quot;,kind=&quot;line&quot;,title=&quot;Gaussian Kernel&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>Similar to the pattern for the quadratic kernel, this yields weights above the diagonal for the distance range. Also note that the value at the end point is not zero, but around 0.6 (in fact, for <span class="math notranslate nohighlight">\(z = 1\)</span>, the kernel value is <span class="math notranslate nohighlight">\(e^{-1/2} = 0.6\)</span>).</p>
+</section>
+<section id="Comparison">
+<h2>Comparison<a class="headerlink" href="#Comparison" title="Link to this heading">¶</a></h2>
+<p>To facilitate a comparison of the distance decay patterns generated by the different functions, they are next plotted together, anchored to the value of one at the origin.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pall = pd.concat((df1,df2[&quot;quadratic&quot;],df3[&quot;quartic&quot;],df4[&quot;Gaussian&quot;]),axis=1)
+pall.plot(x=&quot;distance&quot;,y=[&quot;triangular&quot;,&quot;quadratic&quot;,&quot;quartic&quot;,&quot;Gaussian&quot;],kind=&quot;line&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>The curves clearly show how the nonlinear functions provide differential weights with distance. Relative to the triangular kernel, only the quartic function penalizes more distant locations more. As pointed out earlier, the Gaussian kernel gives much higher weights than the other curves, implying very little distance decay.</p>
+<section id="Negative-Exponential-Distance-Function">
+<h3>Negative Exponential Distance Function<a class="headerlink" href="#Negative-Exponential-Distance-Function" title="Link to this heading">¶</a></h3>
+<p>The negative exponential distance function that is implemented for the nonlinear SLX model uses the transformation <span class="math notranslate nohighlight">\(e^{-\alpha z}\)</span>, where <span class="math notranslate nohighlight">\(z\)</span> is the same distance fraction as for the kernel functions. This function can be readily graphed for a range of values of the <span class="math notranslate nohighlight">\(\alpha\)</span> parameter. Note that <span class="math notranslate nohighlight">\(\alpha\)</span> is taken to be positive. Negative values for this coefficient are not allowed, since they would yield increasing weights with distance, violating Tobler’s law. For
+<span class="math notranslate nohighlight">\(\alpha = 0\)</span>, the weights are constant and equal to one.</p>
+<p>To illustrate the shape of the distance decay function for different parameter values, a range from 0 to 6.0 is considered. To graph the functions, only a simple computation is needed, which is implemented in a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>a = [0.0, 0.5, 1.0, 2.0, 6.0]
+
+p5 = z
+for i in a:
+    za = - i * z
+    expon = np.exp(za)
+    p5 = np.hstack((p5,expon))
+
+cols = [&quot;exp&quot; + str(i) for i in a]
+cols.insert(0,&quot;distance&quot;)
+
+df5 = pd.DataFrame(p5,columns=cols)
+df5.plot(x=&quot;distance&quot;,y=cols[1:],kind=&quot;line&quot;,title=&quot;Negative Exponential Distance&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>Using <span class="math notranslate nohighlight">\(\alpha = 1.0\)</span> as a reference, values less than 1.0 yield a much slower distance decay and vice versa. Note that the value of the weight at the end point is <span class="math notranslate nohighlight">\(e^{-\alpha}\)</span>, which is larger than zero for small values of <span class="math notranslate nohighlight">\(\alpha\)</span>. Once <span class="math notranslate nohighlight">\(\alpha\)</span> becomes larger, the distance decay becomes very steep. As illustrated in the graph, for a value of 6.0, the weights are essentially zero for <span class="math notranslate nohighlight">\(z &gt; 0.5\)</span>, wiping out the effect of any nearest neighbors beyond that distance.
+It is important to keep this in mind when interpreting the coefficient estimates in a NSLX model.</p>
+</section>
+<section id="Inverse-Distance-Power-Function">
+<h3>Inverse Distance Power Function<a class="headerlink" href="#Inverse-Distance-Power-Function" title="Link to this heading">¶</a></h3>
+<p>The inverse distance power transformation takes the form <span class="math notranslate nohighlight">\((1.0 - z)^{\alpha}\)</span>, with <span class="math notranslate nohighlight">\(\alpha\)</span> taking on a postive value. Using the same procedure as before, the implied distance decay can be graphed for a range of parameter values. For <span class="math notranslate nohighlight">\(\alpha = 0\)</span>, the curve is again horizontal.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>a = [0.0, 0.5, 1.0, 2.0, 6.0]
+
+p6 = z
+zz = 1.0 - z
+
+for i in a:
+    za = zz**i
+    p6 = np.hstack((p6,za))
+
+cols = [&quot;pow&quot; + str(i) for i in a]
+cols.insert(0,&quot;distance&quot;)
+
+df6 = pd.DataFrame(p6,columns=cols)
+df6.plot(x=&quot;distance&quot;,y=cols[1:],kind=&quot;line&quot;,title=&quot;Inverse Distance Power Function&quot;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<p>In contrast to the negative exponential function, the weights end up (by construction) with a value of zero at the bandwidth distance. Coefficient values less than one yield a distance decay with much larger weights for shorter distances, only dropping off more rapidly in the farthest distance range. Values of <span class="math notranslate nohighlight">\(\alpha\)</span> larger than one imply a much steeper (steeper than a linear curve) decay. Even more so than for the negative exponential function, larger values for <span class="math notranslate nohighlight">\(\alpha\)</span> yield
+essentially zero weights for smaller and smaller distances. In the graph, this is already the case for <span class="math notranslate nohighlight">\(z\)</span> around 0.4, again eliminating the impact of nearest neighbors that are farther away.</p>
+</section>
+<section id="Practice">
+<h3>Practice<a class="headerlink" href="#Practice" title="Link to this heading">¶</a></h3>
+<p>It is straightforward to experiment with some other parameter values and possibly other distance transformations. Consider some other kernel functions, currently not supported by PySAL, such as the tricube (<span class="math notranslate nohighlight">\((1.0 - z^3)^3\)</span>) or cosine kernel (<span class="math notranslate nohighlight">\((\pi/4).cos((\pi/2) z)\)</span>).</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/11_distance_decay.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

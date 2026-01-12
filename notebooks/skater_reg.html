@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Skater Regression &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API reference" href="../api.html" />
+    <link rel="prev" title="Spatial Panel Models with Fixed Effects" href="Panel_FE_example.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Skater Regression</a><ul>
+<li><a class="reference internal" href="#This-notebook-shows-the-use-of-the-Skater-Regression-funcion-(Skater_reg),-introduced-by-Anselin-&amp;-Amaral-(2021).-For-more-information-on-the-method,-check:">This notebook shows the use of the Skater Regression funcion (Skater_reg), introduced by Anselin &amp; Amaral (2021). For more information on the method, check:</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/skater_reg.ipynb">notebooks/skater_reg.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/skater_reg.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Skater-Regression">
+<h1>Skater Regression<a class="headerlink" href="#Skater-Regression" title="Link to this heading">¶</a></h1>
+<section id="This-notebook-shows-the-use-of-the-Skater-Regression-funcion-(Skater_reg),-introduced-by-Anselin-&amp;-Amaral-(2021).-For-more-information-on-the-method,-check:">
+<h2>This notebook shows the use of the Skater Regression funcion (Skater_reg), introduced by Anselin &amp; Amaral (2021). For more information on the method, check:<a class="headerlink" href="#This-notebook-shows-the-use-of-the-Skater-Regression-funcion-(Skater_reg),-introduced-by-Anselin-&-Amaral-(2021).-For-more-information-on-the-method,-check:" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://www.researchgate.net/publication/353411566_Endogenous_Spatial_Regimes">https://www.researchgate.net/publication/353411566_Endogenous_Spatial_Regimes</a></p>
+<p>In this example, in addition to the required packages, we will use geopandas to load the data and matplotlib to plot the results. Alternatively, PySAL’s own IO could also be used to load the data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Required imports
+import libpysal as ps
+import numpy as np
+import spreg
+from spreg.skater_reg import Skater_reg
+
+# Optional imports
+import matplotlib.pyplot as plt
+import geopandas as gpd
+</pre></div>
+</div>
+</div>
+<p>We use Messner et al. (2000) data on homicides and selected socio-economic characteristics for continental U.S. counties to exemplify the use of Skater_reg. It can be downloaded from PySAL’s examples repository.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load the example from PySAL
+ps.examples.load_example(&quot;NCOVR&quot;)
+data = gpd.read_file(ps.examples.get_path(&#39;NAT.shp&#39;)).set_index(&#39;FIPS&#39;)
+
+# Set depedent and independent variables and the W matrix.
+y = data[&#39;HR90&#39;].to_numpy()
+x = data[[&#39;RD90&#39;,&#39;PS90&#39;,&#39;UE90&#39;]].to_numpy()
+w = ps.weights.Queen.from_dataframe(data, use_index=True)
+</pre></div>
+</div>
+</div>
+<p>Skater_reg by default uses Euclidean distance to compute the Minimum Spanning Tree (MST). Therefore, we standardize the variables that will be used to compute the MST before calling the main Skater_reg function. Here, we use the X variables to compute the MST. Alternative specifications can be used.</p>
+<p>We set the number of clusters to 20 and minimum quorum to 100.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%%time
+# Standardize the variables to be used to compute the minimum spanning tree (could add/remove any variable)
+x_std = (x - np.mean(x,axis=0)) / np.std(x,axis=0)
+
+# Call the Skater_reg method based on OLS
+results = Skater_reg().fit(20, w, x_std, {&#39;reg&#39;:spreg.OLS,&#39;y&#39;:y,&#39;x&#39;:x}, quorum=100)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CPU times: user 1min 16s, sys: 31.6 s, total: 1min 48s
+Wall time: 25.3 s
+</pre></div></div>
+</div>
+<p>The intermediate steps are stored in the attibute _trace. We can use this information to plot the decrease in the total sum of squared residuals by number of clusters. This information can be helpful to select the number of desired clusters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>trace = [results._trace[i][1][2] for i in range(1,len(results._trace))]
+fig, ax = plt.subplots()
+ax.plot(list(range(2,len(trace)+2)), trace, &#39;-o&#39;, color=&#39;black&#39;, linewidth=2)
+
+ax.set(xlabel=&#39;Number of clusters&#39;, ylabel=&#39;Total sum of squared residuals&#39;)
+ax.grid()
+
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_skater_reg_9_0.png" src="../_images/notebooks_skater_reg_9_0.png" />
+</div>
+</div>
+<p>Let’s say we choose 12 clusters. We can plot the results using geopandas and matplotlib.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data[&quot;cl_regions&quot;] = results._trace[11][0]
+data.plot(column=&quot;cl_regions&quot;, categorical=True, legend=True, cmap=&#39;Paired&#39;).axis(&quot;off&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(-127.6195011138916, -64.0817699432373, 23.735178565979005, 50.59252300262451)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_skater_reg_11_1.png" src="../_images/notebooks_skater_reg_11_1.png" />
+</div>
+</div>
+<p>With the cluster allocations and selected number of clusters, we can call the Regimes methods in Spreg to get the full regression results and Chow tests on the stability of the coefficients accross the 12 different clusters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reg = spreg.OLS_Regimes(y,x,
+      regimes=results._trace[11][0], w=w, name_y=[&#39;HR90&#39;], name_x=[&#39;RD90&#39;,&#39;PS90&#39;,&#39;UE90&#39;], name_regimes=&#39;skater_reg&#39;)
+print(reg.summary)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 0
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  0_[&#39;HR90&#39;]                Number of Observations:         604
+Mean dependent var  :      2.4577                Number of Variables   :           4
+S.D. dependent var  :      3.9266                Degrees of Freedom    :         600
+R-squared           :      0.3305
+Adjusted R-squared  :      0.3271
+Sum squared residual:    6224.952                F-statistic           :     98.7116
+Sigma-square        :      10.375                Prob(F-statistic)     :   6.109e-52
+S.E. of regression  :       3.221                Log likelihood        :   -1561.528
+Sigma-square ML     :      10.306                Akaike info criterion :    3131.057
+S.E of regression ML:      3.2103                Schwarz criterion     :    3148.671
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          0_CONSTANT       4.0851876       0.4756999       8.5877407       0.0000000
+              0_RD90       3.1288181       0.2856649      10.9527571       0.0000000
+              0_PS90       1.4553321       0.1760078       8.2685645       0.0000000
+              0_UE90       0.0530250       0.0612926       0.8651115       0.3873233
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER            7.255
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2       20184.603           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          69.424           0.0000
+Koenker-Bassett test              3           4.695           0.1956
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 1
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  1_[&#39;HR90&#39;]                Number of Observations:         180
+Mean dependent var  :      2.6269                Number of Variables   :           4
+S.D. dependent var  :      4.5592                Degrees of Freedom    :         176
+R-squared           :      0.1473
+Adjusted R-squared  :      0.1328
+Sum squared residual:    3172.661                F-statistic           :     10.1339
+Sigma-square        :      18.026                Prob(F-statistic)     :   3.424e-06
+S.E. of regression  :       4.246                Log likelihood        :    -513.652
+Sigma-square ML     :      17.626                Akaike info criterion :    1035.304
+S.E of regression ML:      4.1983                Schwarz criterion     :    1048.076
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          1_CONSTANT       1.6802968       1.0041720       1.6733157       0.0960416
+              1_RD90       0.9214816       0.7386502       1.2475210       0.2138639
+              1_PS90       0.5520464       0.3817853       1.4459601       0.1499668
+              1_UE90       0.3793060       0.1012117       3.7476508       0.0002418
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER            6.525
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2        4249.029           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3           6.927           0.0743
+Koenker-Bassett test              3           0.565           0.9044
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 2
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  2_[&#39;HR90&#39;]                Number of Observations:         105
+Mean dependent var  :      5.4586                Number of Variables   :           4
+S.D. dependent var  :      3.9328                Degrees of Freedom    :         101
+R-squared           :      0.6004
+Adjusted R-squared  :      0.5885
+Sum squared residual:     642.756                F-statistic           :     50.5868
+Sigma-square        :       6.364                Prob(F-statistic)     :   4.794e-20
+S.E. of regression  :       2.523                Log likelihood        :    -244.108
+Sigma-square ML     :       6.121                Akaike info criterion :     496.217
+S.E of regression ML:      2.4742                Schwarz criterion     :     506.832
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          2_CONSTANT       2.9279569       1.6500241       1.7744934       0.0789946
+              2_RD90       3.8978472       0.8119511       4.8005936       0.0000055
+              2_PS90       2.5952604       0.2458875      10.5546660       0.0000000
+              2_UE90       0.3236171       0.1945793       1.6631633       0.0993799
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER           15.160
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2           6.807           0.0333
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          15.329           0.0016
+Koenker-Bassett test              3          14.809           0.0020
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 3
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  3_[&#39;HR90&#39;]                Number of Observations:         157
+Mean dependent var  :      3.2521                Number of Variables   :           4
+S.D. dependent var  :      3.4925                Degrees of Freedom    :         153
+R-squared           :      0.3735
+Adjusted R-squared  :      0.3612
+Sum squared residual:    1192.118                F-statistic           :     30.4049
+Sigma-square        :       7.792                Prob(F-statistic)     :   1.785e-15
+S.E. of regression  :       2.791                Log likelihood        :    -381.912
+Sigma-square ML     :       7.593                Akaike info criterion :     771.824
+S.E of regression ML:      2.7556                Schwarz criterion     :     784.049
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          3_CONSTANT       1.6648327       1.6499048       1.0090477       0.3145449
+              3_RD90       2.5911850       0.5446873       4.7571975       0.0000045
+              3_PS90       1.7951113       0.2645028       6.7867381       0.0000000
+              3_UE90       0.2831519       0.1896309       1.4931734       0.1374511
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER           17.037
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2         700.804           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3         128.095           0.0000
+Koenker-Bassett test              3          23.069           0.0000
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 4
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  4_[&#39;HR90&#39;]                Number of Observations:         157
+Mean dependent var  :      5.2565                Number of Variables   :           4
+S.D. dependent var  :      7.5670                Degrees of Freedom    :         153
+R-squared           :      0.0718
+Adjusted R-squared  :      0.0536
+Sum squared residual:    8291.273                F-statistic           :      3.9445
+Sigma-square        :      54.191                Prob(F-statistic)     :    0.009592
+S.E. of regression  :       7.361                Log likelihood        :    -534.160
+Sigma-square ML     :      52.811                Akaike info criterion :    1076.321
+S.E of regression ML:      7.2671                Schwarz criterion     :    1088.546
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          4_CONSTANT       6.5333323       2.4673414       2.6479239       0.0089474
+              4_RD90       2.7602351       1.0586310       2.6073627       0.0100275
+              4_PS90      -0.6252142       0.6065058      -1.0308463       0.3042397
+              4_UE90      -0.0983422       0.2825469      -0.3480561       0.7282764
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER            9.215
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2       10522.321           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3         397.444           0.0000
+Koenker-Bassett test              3          19.450           0.0002
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 5
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  5_[&#39;HR90&#39;]                Number of Observations:         416
+Mean dependent var  :      3.5350                Number of Variables   :           4
+S.D. dependent var  :      3.5289                Degrees of Freedom    :         412
+R-squared           :      0.2384
+Adjusted R-squared  :      0.2328
+Sum squared residual:    3936.025                F-statistic           :     42.9870
+Sigma-square        :       9.553                Prob(F-statistic)     :   3.458e-24
+S.E. of regression  :       3.091                Log likelihood        :   -1057.705
+Sigma-square ML     :       9.462                Akaike info criterion :    2123.409
+S.E of regression ML:      3.0760                Schwarz criterion     :    2139.532
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          5_CONSTANT       3.6580644       0.7883611       4.6400874       0.0000047
+              5_RD90       2.1705064       0.3732128       5.8157339       0.0000000
+              5_PS90       1.6485127       0.2143249       7.6916535       0.0000000
+              5_UE90      -0.0049898       0.0843801      -0.0591343       0.9528738
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER           11.124
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2        2163.820           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3         295.778           0.0000
+Koenker-Bassett test              3          48.598           0.0000
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 6
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  6_[&#39;HR90&#39;]                Number of Observations:         105
+Mean dependent var  :      6.9902                Number of Variables   :           4
+S.D. dependent var  :      7.7137                Degrees of Freedom    :         101
+R-squared           :      0.5133
+Adjusted R-squared  :      0.4989
+Sum squared residual:    3011.570                F-statistic           :     35.5107
+Sigma-square        :      29.818                Prob(F-statistic)     :   9.373e-16
+S.E. of regression  :       5.461                Log likelihood        :    -325.192
+Sigma-square ML     :      28.682                Akaike info criterion :     658.384
+S.E of regression ML:      5.3555                Schwarz criterion     :     669.000
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          6_CONSTANT      12.6762323       2.3973782       5.2875396       0.0000007
+              6_RD90       7.2357749       0.8959392       8.0761894       0.0000000
+              6_PS90       3.0087836       0.5687185       5.2904618       0.0000007
+              6_UE90      -0.9087647       0.4285148      -2.1207310       0.0363931
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER           10.336
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2        1082.543           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          69.868           0.0000
+Koenker-Bassett test              3           8.330           0.0397
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 7
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  7_[&#39;HR90&#39;]                Number of Observations:         212
+Mean dependent var  :      6.7045                Number of Variables   :           4
+S.D. dependent var  :      7.5062                Degrees of Freedom    :         208
+R-squared           :      0.6513
+Adjusted R-squared  :      0.6463
+Sum squared residual:    4145.470                F-statistic           :    129.5007
+Sigma-square        :      19.930                Prob(F-statistic)     :   2.429e-47
+S.E. of regression  :       4.464                Log likelihood        :    -615.973
+Sigma-square ML     :      19.554                Akaike info criterion :    1239.945
+S.E of regression ML:      4.4220                Schwarz criterion     :    1253.372
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          7_CONSTANT       6.8749278       1.4815715       4.6402943       0.0000062
+              7_RD90       5.0735729       0.4720012      10.7490683       0.0000000
+              7_PS90       4.3257745       0.4290443      10.0823502       0.0000000
+              7_UE90      -0.1901823       0.2136345      -0.8902227       0.3743748
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER           10.840
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2          23.086           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          68.023           0.0000
+Koenker-Bassett test              3          50.360           0.0000
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 8
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  8_[&#39;HR90&#39;]                Number of Observations:         142
+Mean dependent var  :      6.9674                Number of Variables   :           4
+S.D. dependent var  :      7.7639                Degrees of Freedom    :         138
+R-squared           :      0.0816
+Adjusted R-squared  :      0.0616
+Sum squared residual:    7805.895                F-statistic           :      4.0858
+Sigma-square        :      56.564                Prob(F-statistic)     :    0.008156
+S.E. of regression  :       7.521                Log likelihood        :    -485.973
+Sigma-square ML     :      54.971                Akaike info criterion :     979.945
+S.E of regression ML:      7.4142                Schwarz criterion     :     991.769
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          8_CONSTANT       8.9134518       2.2205952       4.0139922       0.0000975
+              8_RD90       3.1669956       1.0249618       3.0898670       0.0024224
+              8_PS90       0.9219418       0.7333370       1.2571872       0.2108094
+              8_UE90      -0.2902235       0.3083686      -0.9411576       0.3482687
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER            7.818
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2         211.413           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          16.332           0.0010
+Koenker-Bassett test              3           4.771           0.1893
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 9
+---------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :  9_[&#39;HR90&#39;]                Number of Observations:         494
+Mean dependent var  :      9.4357                Number of Variables   :           4
+S.D. dependent var  :      6.1868                Degrees of Freedom    :         490
+R-squared           :      0.3161
+Adjusted R-squared  :      0.3120
+Sum squared residual:   12904.325                F-statistic           :     75.5098
+Sigma-square        :      26.335                Prob(F-statistic)     :   3.675e-40
+S.E. of regression  :       5.132                Log likelihood        :   -1506.863
+Sigma-square ML     :      26.122                Akaike info criterion :    3021.726
+S.E of regression ML:      5.1110                Schwarz criterion     :    3038.536
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+          9_CONSTANT      10.2257744       0.7060239      14.4836089       0.0000000
+              9_RD90       4.9173048       0.3601681      13.6528046       0.0000000
+              9_PS90       2.7435413       0.3773269       7.2709932       0.0000000
+              9_UE90      -0.5158999       0.1027098      -5.0228862       0.0000007
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER            7.112
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2         164.804           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          93.891           0.0000
+Koenker-Bassett test              3          45.305           0.0000
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 10
+----------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  : 10_[&#39;HR90&#39;]                Number of Observations:         322
+Mean dependent var  :     10.9368                Number of Variables   :           4
+S.D. dependent var  :      7.1069                Degrees of Freedom    :         318
+R-squared           :      0.1980
+Adjusted R-squared  :      0.1904
+Sum squared residual:   13003.178                F-statistic           :     26.1676
+Sigma-square        :      40.890                Prob(F-statistic)     :   3.738e-15
+S.E. of regression  :       6.395                Log likelihood        :   -1052.340
+Sigma-square ML     :      40.383                Akaike info criterion :    2112.680
+S.E of regression ML:      6.3547                Schwarz criterion     :    2127.779
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+         10_CONSTANT       8.9613419       1.1548606       7.7596741       0.0000000
+             10_RD90       3.1036861       0.4676112       6.6373221       0.0000000
+             10_PS90       2.0054035       0.4775095       4.1997143       0.0000347
+             10_UE90      -0.1659300       0.1618652      -1.0251118       0.3060896
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER            8.728
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2         805.242           0.0000
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3         271.848           0.0000
+Koenker-Bassett test              3          60.502           0.0000
+----------
+
+SUMMARY OF OUTPUT: ORDINARY LEAST SQUARES ESTIMATION - REGIME 11
+----------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  : 11_[&#39;HR90&#39;]                Number of Observations:         191
+Mean dependent var  :     12.6163                Number of Variables   :           4
+S.D. dependent var  :      6.4910                Degrees of Freedom    :         187
+R-squared           :      0.2010
+Adjusted R-squared  :      0.1882
+Sum squared residual:    6396.303                F-statistic           :     15.6792
+Sigma-square        :      34.205                Prob(F-statistic)     :   3.882e-09
+S.E. of regression  :       5.848                Log likelihood        :    -606.337
+Sigma-square ML     :      33.488                Akaike info criterion :    1220.674
+S.E of regression ML:      5.7869                Schwarz criterion     :    1233.683
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+         11_CONSTANT      10.6523809       1.8667675       5.7063244       0.0000000
+             11_RD90       2.8884391       0.5972275       4.8364133       0.0000028
+             11_PS90       0.2205890       0.5966193       0.3697316       0.7120008
+             11_UE90      -0.0296635       0.3154386      -0.0940388       0.9251790
+------------------------------------------------------------------------------------
+Regimes variable: skater_reg
+
+REGRESSION DIAGNOSTICS
+MULTICOLLINEARITY CONDITION NUMBER           10.444
+
+TEST ON NORMALITY OF ERRORS
+TEST                             DF        VALUE           PROB
+Jarque-Bera                       2          16.443           0.0003
+
+DIAGNOSTICS FOR HETEROSKEDASTICITY
+RANDOM COEFFICIENTS
+TEST                             DF        VALUE           PROB
+Breusch-Pagan test                3          18.499           0.0003
+Koenker-Bassett test              3          11.542           0.0091
+
+REGIMES DIAGNOSTICS - CHOW TEST
+                 VARIABLE        DF        VALUE           PROB
+                 CONSTANT        11         110.297           0.0000
+                     PS90        11          95.473           0.0000
+                     RD90        11          75.733           0.0000
+                     UE90        11          52.373           0.0000
+              Global test        44         532.110           0.0000
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/skater_reg.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

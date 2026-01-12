@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.spsearch &#8212; spreg v1.8.6.dev8+g715b6dea5 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=c2ae4888"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.8.6.dev8+g715b6dea5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Panel_FE_example.html">Spatial Panel Models with Fixed Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.spsearch</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">spsearch.py: specification search strategies following Anselin, Serenini, Amaral (2024)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Luc Anselin lanselin@gmail.com,</span><span class="se">\</span>
+<span class="s2">     Pedro Amaral pedrovma@gmail.com,</span><span class="se">\</span>
+<span class="s2">     Renan Serenini renan.serenini@uniroma1.it&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">ols</span> <span class="k">as</span> <span class="n">OLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">twosls_sp</span> <span class="k">as</span> <span class="n">STSLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.diagnostics_sp</span><span class="w"> </span><span class="kn">import</span> <span class="n">LMtests</span><span class="p">,</span> <span class="n">AKtest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">error_sp</span> <span class="k">as</span> <span class="n">ERROR</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stge_classic&quot;</span><span class="p">,</span> <span class="s2">&quot;stge_kb&quot;</span><span class="p">,</span> <span class="s2">&quot;stge_pre&quot;</span><span class="p">,</span> <span class="s2">&quot;gets_gns&quot;</span><span class="p">,</span> <span class="s2">&quot;gets_sdm&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="stge_classic">
+<a class="viewcode-back" href="../../generated/spreg.spsearch.stge_classic.html#spreg.spsearch.stge_classic">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stge_classic</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">w_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">name_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_w</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_ds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">finmod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classic forward specification: Evaluate results from LM-tests and their robust versions from spreg.OLS.</span>
+<span class="sd">    Estimate lag model with AK test if warranted.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y        : dependent variable</span>
+<span class="sd">    x        : matrix of explanatory variables</span>
+<span class="sd">    w        : spatial weights</span>
+<span class="sd">    w_lags   : number of lags to be used as instruments in S2SLS</span>
+<span class="sd">    robust   : White standard errors?</span>
+<span class="sd">    sig2n_k  : error variance estimate (consistent or unbiased=True)</span>
+<span class="sd">    name_y   : name of dependent variable (string)</span>
+<span class="sd">    name_x   : list of strings with x-variable names</span>
+<span class="sd">    name_w   : string with name for spatial weights</span>
+<span class="sd">    name_ds  : string with name for data set</span>
+<span class="sd">    latex    : flag for latex output</span>
+<span class="sd">    p_value  : significance threshold</span>
+<span class="sd">    finmod   : flag for estimation of final model</span>
+<span class="sd">    mprint   : flag for regression summary as search result</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result: the selected model as a string</span>
+<span class="sd">            0 = OLS</span>
+<span class="sd">            1 = LAG</span>
+<span class="sd">            2 = ERROR</span>
+<span class="sd">            3 = LAGr</span>
+<span class="sd">            4 = ERRORr</span>
+<span class="sd">            5 = LAG_Br</span>
+<span class="sd">            6 = ERROR_Br</span>
+<span class="sd">            7 = LAG_Nr</span>
+<span class="sd">            8 = ERROR_Nr</span>
+<span class="sd">            9 = SARSAR</span>
+<span class="sd">    finreg: regression object for final model</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import stge_classic</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y_var = &quot;CRIME&quot;</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([db.by_col(y_var)]).reshape(49, 1)</span>
+<span class="sd">    &gt;&gt;&gt; x_var = [&quot;INC&quot;, &quot;HOVAL&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([db.by_col(name) for name in x_var]).T</span>
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &quot;r&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_y = y_var</span>
+<span class="sd">    &gt;&gt;&gt; name_x = x_var</span>
+<span class="sd">    &gt;&gt;&gt; name_w = &quot;Rook Weights&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_ds = &quot;Columbus Data&quot;</span>
+
+<span class="sd">    &gt;&gt;&gt; result, finreg = stge_classic(y, x, w, mprint=True,</span>
+<span class="sd">    ...                               name_y=name_y, name_x=name_x, name_w=name_w, name_ds=name_ds)</span>
+<span class="sd">    Model selected by STGE-Classic: LAG</span>
+<span class="sd">    REGRESSION RESULTS</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    SUMMARY OF OUTPUT: SPATIAL TWO STAGE LEAST SQUARES</span>
+<span class="sd">    --------------------------------------------------</span>
+<span class="sd">    Data set            :Columbus Data</span>
+<span class="sd">    Weights matrix      :Rook Weights</span>
+<span class="sd">    Dependent Variable  :       CRIME                Number of Observations:          49</span>
+<span class="sd">    Mean dependent var  :     35.1288                Number of Variables   :           4</span>
+<span class="sd">    S.D. dependent var  :     16.7321                Degrees of Freedom    :          45</span>
+<span class="sd">    Pseudo R-squared    :      0.6513</span>
+<span class="sd">    Spatial Pseudo R-squared:  0.5733</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    ------------------------------------------------------------------------------------</span>
+<span class="sd">                Variable     Coefficient       Std.Error     z-Statistic     Probability</span>
+<span class="sd">    ------------------------------------------------------------------------------------</span>
+<span class="sd">                CONSTANT        45.45909        10.72499         4.23861         0.00002</span>
+<span class="sd">                     INC        -1.04101         0.37241        -2.79531         0.00519</span>
+<span class="sd">                   HOVAL        -0.25954         0.08855        -2.93085         0.00338</span>
+<span class="sd">                 W_CRIME         0.41929         0.17977         2.33245         0.01968</span>
+<span class="sd">    ------------------------------------------------------------------------------------</span>
+<span class="sd">    Instrumented: W_CRIME</span>
+<span class="sd">    Instruments: W2_HOVAL, W2_INC, W_HOVAL, W_INC</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    DIAGNOSTICS FOR SPATIAL DEPENDENCE</span>
+<span class="sd">    TEST                              DF         VALUE           PROB</span>
+<span class="sd">    Anselin-Kelejian Test             1          0.130           0.7185</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    SPATIAL LAG MODEL IMPACTS</span>
+<span class="sd">                Variable         Direct        Indirect          Total</span>
+<span class="sd">                     INC        -1.0410         -0.7517         -1.7927</span>
+<span class="sd">                   HOVAL        -0.2595         -0.1874         -0.4469</span>
+<span class="sd">    ================================ END OF REPORT =====================================</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">p_value</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># indicator for type of final model 0 = OLS; 1 = Lag; 2 = Error; 3 = SAR-SAR; 4 = LAG from SAR</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_y</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_x</span><span class="p">):</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">name_y</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">name_y</span>
+        <span class="n">name_x</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+            <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">pvals</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_error</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_lag</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_error</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_lag</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_sarma</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">]</span>
+
+    <span class="n">p_error</span><span class="p">,</span> <span class="n">p_lag</span><span class="p">,</span> <span class="n">p_rerror</span><span class="p">,</span> <span class="n">p_rlag</span><span class="p">,</span> <span class="n">p_sarma</span> <span class="o">=</span> <span class="n">pvals</span>
+    <span class="k">if</span> <span class="n">p_lag</span> <span class="o">&gt;=</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># First test, no LM significant= Stop and keep OLS</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Just one significant</span>
+        <span class="k">if</span> <span class="n">p_lag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG&quot;</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">p_lag</span> <span class="o">&gt;=</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="c1"># Both are significant (Check robust version)</span>
+        <span class="k">elif</span> <span class="n">p_lag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+            <span class="c1"># One robust significant</span>
+            <span class="k">if</span> <span class="n">p_rlag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rerror</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAGr&quot;</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&gt;=</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rerror</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERRORr&quot;</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="c1"># Both robust are significant (look for the most significant)</span>
+            <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rerror</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+                <span class="c1"># check AK in lag model</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">model_lag</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                        <span class="n">y</span><span class="p">,</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                        <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                        <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                        <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                        <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                        <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                        <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">ak_lag</span> <span class="o">=</span> <span class="n">AKtest</span><span class="p">(</span><span class="n">model_lag</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;gen&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ak_lag</span><span class="o">.</span><span class="n">p</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SARSAR&quot;</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span>
+                    <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&lt;=</span> <span class="n">p_rerror</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG_BR&quot;</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="mi">4</span>
+                    <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&gt;</span> <span class="n">p_rerror</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR_Br&quot;</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">p_rlag</span> <span class="o">&lt;=</span> <span class="n">p_rerror</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG_BR&quot;</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR_Br&quot;</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># None robust are significant (still look for the &#39;most significant&#39;)</span>
+                <span class="k">if</span> <span class="n">p_rlag</span> <span class="o">&lt;=</span> <span class="n">p_rerror</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG_Nr&quot;</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="mi">4</span>
+                <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&gt;</span> <span class="n">p_rerror</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR_Nr&quot;</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>  <span class="c1"># pass final regression</span>
+        <span class="n">msel</span> <span class="o">=</span> <span class="s2">&quot;Model selected by STGE-Classic: &quot;</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># OLS</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_ols_1</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">4</span><span class="p">):</span>  <span class="c1"># LAG</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GM LAG parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># ERROR</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GMM Error parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># SARSAR</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: SARSAR parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1">#        elif k == 4: # LAG already computed</span>
+        <span class="c1">#            finreg = model_lag</span>
+        <span class="k">if</span> <span class="n">mprint</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msel</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">finreg</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>  <span class="c1"># cannot print when finreg=False</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">finreg</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="stge_kb">
+<a class="viewcode-back" href="../../generated/spreg.spsearch.stge_kb.html#spreg.spsearch.stge_kb">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stge_kb</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">w_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">name_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_w</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_ds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">finmod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forward specification: Evaluate results from Koley-Bera LM-tests and their robust versions from spreg.OLS.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y        : dependent variable</span>
+<span class="sd">    x        : matrix of explanatory variables</span>
+<span class="sd">    w        : spatial weights</span>
+<span class="sd">    w_lags   : number of lags to be used as instruments in S2SLS</span>
+<span class="sd">    robust   : White standard errors?</span>
+<span class="sd">    sig2n_k  : error variance estimate (consistent or unbiased=True)</span>
+<span class="sd">    name_y   : name of dependent variable (string)</span>
+<span class="sd">    name_x   : list of strings with x-variable names</span>
+<span class="sd">    name_w   : string with name for spatial weights</span>
+<span class="sd">    name_ds  : string with name for data set</span>
+<span class="sd">    latex    : flag for latex output</span>
+<span class="sd">    p_value  : significance threshold</span>
+<span class="sd">    finmod   : flag for estimation of final model</span>
+<span class="sd">    mprint   : flag for regression summary as search result</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result: the selected model as a string</span>
+<span class="sd">            0 = OLS</span>
+<span class="sd">            1 = LAG</span>
+<span class="sd">            2 = SLX</span>
+<span class="sd">            3 = SDM</span>
+<span class="sd">    finreg: regression object for final model</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import stge_kb</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y_var = &quot;CRIME&quot;</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([db.by_col(y_var)]).reshape(49, 1)</span>
+<span class="sd">    &gt;&gt;&gt; x_var = [&quot;INC&quot;, &quot;HOVAL&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([db.by_col(name) for name in x_var]).T</span>
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &quot;r&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_y = y_var</span>
+<span class="sd">    &gt;&gt;&gt; name_x = x_var</span>
+<span class="sd">    &gt;&gt;&gt; name_w = &quot;Rook Weights&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_ds = &quot;Columbus Data&quot;</span>
+
+<span class="sd">    &gt;&gt;&gt; result, finreg = stge_kb(y, x, w, name_y=name_y, name_x=name_x,</span>
+<span class="sd">    ...                               name_w=name_w, name_ds=name_ds, mprint=False)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Model selected by STGE-KB:&quot;,result)</span>
+<span class="sd">    Model selected by STGE-KB: OLS</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">p_value</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># indicator for type of final model 0 = OLS; 1 = Lag; 2 = SLX; 3 = SDM</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_y</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_x</span><span class="p">):</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">name_y</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">name_y</span>
+        <span class="n">name_x</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+            <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">pvals</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_wx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_durlag</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_spdurbin</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">]</span>
+
+    <span class="n">p_rlwx</span><span class="p">,</span> <span class="n">p_rdury</span><span class="p">,</span> <span class="n">p_spdur</span> <span class="o">=</span> <span class="n">pvals</span>
+
+    <span class="c1"># first check following KB(2024) - joint test on SDM</span>
+    <span class="k">if</span> <span class="n">p_spdur</span> <span class="o">&gt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># not significant</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># joint test is significant</span>
+        <span class="k">if</span> <span class="n">p_rlwx</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rdury</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SDM&quot;</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="n">p_rdury</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># only robust lag</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG&quot;</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">p_rlwx</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># only robust WX</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SLX&quot;</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># should never be reached</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>  <span class="c1"># pass final regression</span>
+        <span class="n">msel</span> <span class="o">=</span> <span class="s2">&quot;Model selected by STGE-KB: &quot;</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># OLS</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_ols_1</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># LAG</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GM Lag parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># SLX</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># SDM</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: SDM parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mprint</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msel</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">finreg</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>  <span class="c1"># cannot print when finreg=False</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">finreg</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="stge_pre">
+<a class="viewcode-back" href="../../generated/spreg.spsearch.stge_pre.html#spreg.spsearch.stge_pre">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stge_pre</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">w_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">name_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_w</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_ds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">finmod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forward specification: Evaluate results from Koley-Bera LM-tests to decide on OLS vs SLX then</span>
+<span class="sd">    proceed as in stge_classic.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y        : dependent variable</span>
+<span class="sd">    x        : matrix of explanatory variables</span>
+<span class="sd">    w        : spatial weights</span>
+<span class="sd">    w_lags   : number of lags to be used as instruments in S2SLS</span>
+<span class="sd">    robust   : White standard errors?</span>
+<span class="sd">    sig2n_k  : error variance estimate (consistent or unbiased=True)</span>
+<span class="sd">    name_y   : name of dependent variable (string)</span>
+<span class="sd">    name_x   : list of strings with x-variable names</span>
+<span class="sd">    name_w   : string with name for spatial weights</span>
+<span class="sd">    name_ds  : string with name for data set</span>
+<span class="sd">    latex    : flag for latex output</span>
+<span class="sd">    p_value  : significance threshold</span>
+<span class="sd">    finmod   : flag for estimation of final model</span>
+<span class="sd">    mprint   : flag for regression summary as search result</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result: the selected model as a string</span>
+<span class="sd">            0 = OLS</span>
+<span class="sd">            1 = LAG</span>
+<span class="sd">            2 = ERROR</span>
+<span class="sd">            3 = SARMA</span>
+<span class="sd">            4 = SLX</span>
+<span class="sd">            5 = SDM</span>
+<span class="sd">            6 = SLX-ERR</span>
+<span class="sd">            7 = GNS</span>
+<span class="sd">    finreg: regression object for final model</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import stge_pre</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y_var = &quot;CRIME&quot;</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([db.by_col(y_var)]).reshape(49, 1)</span>
+<span class="sd">    &gt;&gt;&gt; x_var = [&quot;INC&quot;, &quot;HOVAL&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([db.by_col(name) for name in x_var]).T</span>
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &quot;r&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_y = y_var</span>
+<span class="sd">    &gt;&gt;&gt; name_x = x_var</span>
+<span class="sd">    &gt;&gt;&gt; name_w = &quot;Rook Weights&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_ds = &quot;Columbus Data&quot;</span>
+
+<span class="sd">    &gt;&gt;&gt; result, finreg = stge_pre(y, x, w, name_y=name_y, name_x=name_x,</span>
+<span class="sd">    ...                               name_w=name_w, name_ds=name_ds, mprint=False)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Model selected by STGE-Pre:&quot;,result)</span>
+<span class="sd">    Model selected by STGE-Pre: LAG</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">p_value</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># indicator for type of final model 0 = OLS; 1 = Lag; 2 = Error; 3 = SARSAR;</span>
+    <span class="c1"># 4 = SLX; 5 = SDM; 6 = SLX-Err; 7 = GNS</span>
+
+    <span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;OLS&quot;</span><span class="p">,</span> <span class="s2">&quot;LAG&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;SARSAR&quot;</span><span class="p">,</span> <span class="s2">&quot;SLX&quot;</span><span class="p">,</span> <span class="s2">&quot;SDM&quot;</span><span class="p">,</span> <span class="s2">&quot;SLX-ERR&quot;</span><span class="p">,</span> <span class="s2">&quot;GNS&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_y</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_x</span><span class="p">):</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">name_y</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">name_y</span>
+        <span class="n">name_x</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+            <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">pv1</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_wx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># LM test on WX</span>
+    <span class="n">pv2</span> <span class="o">=</span> <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_wx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># robust LM test in presence of rho</span>
+
+    <span class="c1"># selection of OLS or SLX</span>
+    <span class="k">if</span> <span class="n">pv1</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">pv2</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># proceed with SLX results</span>
+        <span class="n">slx</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">model_ols_1</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+            <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># stay with OLS estimation</span>
+        <span class="n">slx</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">idv</span> <span class="o">=</span> <span class="n">slx</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># keeps track of model</span>
+
+    <span class="n">pvals</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_error</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_lag</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_error</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">rlm_lag</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">model_ols_1</span><span class="o">.</span><span class="n">lm_sarma</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">]</span>
+
+    <span class="n">p_error</span><span class="p">,</span> <span class="n">p_lag</span><span class="p">,</span> <span class="n">p_rerror</span><span class="p">,</span> <span class="n">p_rlag</span><span class="p">,</span> <span class="n">p_sarma</span> <span class="o">=</span> <span class="n">pvals</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">p_lag</span> <span class="o">&gt;=</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&gt;=</span> <span class="n">p</span>
+    <span class="p">):</span>  <span class="c1"># First test, no LM significant= Stop and keep OLS or SLX</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">0</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Just one significant</span>
+        <span class="k">if</span> <span class="n">p_lag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">p_lag</span> <span class="o">&gt;=</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="c1"># Both are significant (Check robust version)</span>
+        <span class="k">elif</span> <span class="n">p_lag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_error</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+            <span class="c1"># One robust significant</span>
+            <span class="k">if</span> <span class="n">p_rlag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rerror</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&gt;=</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rerror</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="c1"># Both robust are significant (look for the most significant)</span>
+            <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p_rerror</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
+                <span class="c1"># check AK in lag model</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">model_lag</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                        <span class="n">y</span><span class="p">,</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                        <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx</span><span class="p">,</span>
+                        <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                        <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                        <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                        <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                        <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                        <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">ak_lag</span> <span class="o">=</span> <span class="n">AKtest</span><span class="p">(</span><span class="n">model_lag</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;gen&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ak_lag</span><span class="o">.</span><span class="n">p</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">3</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+                    <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&lt;=</span> <span class="n">p_rerror</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+                    <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&gt;</span> <span class="n">p_rerror</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">2</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+                <span class="k">except</span><span class="p">:</span>  <span class="c1"># ignore lag model</span>
+                    <span class="k">if</span> <span class="n">p_rlag</span> <span class="o">&lt;=</span> <span class="n">p_rerror</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">2</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># None robust are significant (still look for the &#39;most significant&#39;)</span>
+                <span class="k">if</span> <span class="n">p_rlag</span> <span class="o">&lt;=</span> <span class="n">p_rerror</span><span class="p">:</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+                <span class="k">elif</span> <span class="n">p_rlag</span> <span class="o">&gt;</span> <span class="n">p_rerror</span><span class="p">:</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="n">idv</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>  <span class="c1"># pass final regression</span>
+        <span class="n">msel</span> <span class="o">=</span> <span class="s2">&quot;Model selected by STGE-Pre: &quot;</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_ols_1</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GM LAG parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GMM Error parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="n">slx</span><span class="p">,</span>
+                    <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: autoregressive parameters outside bounds&quot;</span>
+                <span class="p">)</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mprint</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msel</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">finreg</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>  <span class="c1"># cannot print when finreg=False</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">finreg</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="gets_gns">
+<a class="viewcode-back" href="../../generated/spreg.spsearch.gets_gns.html#spreg.spsearch.gets_gns">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gets_gns</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">w_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">name_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_w</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_ds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">finmod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GETS specification starting with GNS model estimation. Estimate simplified model when t-tests are</span>
+<span class="sd">    not significant.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y        : dependent variable</span>
+<span class="sd">    x        : matrix of explanatory variables</span>
+<span class="sd">    w        : spatial weights</span>
+<span class="sd">    w_lags   : number of lags to be used as instruments in S2SLS</span>
+<span class="sd">    robust   : White standard errors?</span>
+<span class="sd">    sig2n_k  : error variance estimate (consistent or unbiased=True)</span>
+<span class="sd">    name_y   : name of dependent variable (string)</span>
+<span class="sd">    name_x   : list of strings with x-variable names</span>
+<span class="sd">    name_w   : string with name for spatial weights</span>
+<span class="sd">    name_ds  : string with name for data set</span>
+<span class="sd">    latex    : flag for latex output</span>
+<span class="sd">    p_value  : significance threshold</span>
+<span class="sd">    finmod   : flag for estimation of final model</span>
+<span class="sd">    mprint   : flag for regression summary as search result</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result: the selected model as a string</span>
+<span class="sd">            0 = OLS</span>
+<span class="sd">            1 = LAG</span>
+<span class="sd">            2 = ERROR</span>
+<span class="sd">            3 = SARSAR</span>
+<span class="sd">            4 = SLX</span>
+<span class="sd">            5 = SDM</span>
+<span class="sd">            6 = SLX-Err</span>
+<span class="sd">            7 = GNS</span>
+<span class="sd">    finreg: regression object for final model</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import gets_gns</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y_var = &quot;CRIME&quot;</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([db.by_col(y_var)]).reshape(49, 1)</span>
+<span class="sd">    &gt;&gt;&gt; x_var = [&quot;INC&quot;, &quot;HOVAL&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([db.by_col(name) for name in x_var]).T</span>
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &quot;r&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_y = y_var</span>
+<span class="sd">    &gt;&gt;&gt; name_x = x_var</span>
+<span class="sd">    &gt;&gt;&gt; name_w = &quot;Rook Weights&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_ds = &quot;Columbus Data&quot;</span>
+
+<span class="sd">    &gt;&gt;&gt; result, finreg = gets_gns(y, x, w, name_y=name_y, name_x=name_x,</span>
+<span class="sd">    ...                               name_w=name_w, name_ds=name_ds, mprint=False)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Model selected by GETS-GNS:&quot;,result)</span>
+<span class="sd">    Model selected by GETS-GNS: OLS</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">p_value</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_y</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_x</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_gns</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: GNS parameters out of bounds&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+        <span class="n">name_y</span> <span class="o">=</span> <span class="n">model_gns</span><span class="o">.</span><span class="n">name_y</span>
+        <span class="n">name_x</span> <span class="o">=</span> <span class="n">model_gns</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_gns</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: GNS parameters out of bounds&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+    <span class="n">pstats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">model_gns</span><span class="o">.</span><span class="n">z_stat</span><span class="p">)[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># t statistics p-values</span>
+    <span class="n">pk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">pstats</span>
+    <span class="p">)</span>  <span class="c1"># number of p-values, last one is p_lam, next to last p_rho, before that p_gam</span>
+
+    <span class="k">if</span> <span class="n">pstats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># least significant of three is still significant</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;GNS&quot;</span>
+        <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_gns</span>
+
+    <span class="k">elif</span> <span class="n">pstats</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># all non-significant</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># at least one non-significant and one sig spatial parameter</span>
+        <span class="c1"># since max is not sig, but (at least) min is</span>
+        <span class="n">cand</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># least significant is not sig since max &gt; p</span>
+        <span class="k">if</span> <span class="n">cand</span> <span class="o">==</span> <span class="p">(</span><span class="n">pk</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># lambda not significant, but at least one of rho/gamma is</span>
+            <span class="c1"># go to spatial Durbin - only rho and gam</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">model_sdm</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: SDM parameters out of bounds&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+            <span class="n">pstats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">model_sdm</span><span class="o">.</span><span class="n">z_stat</span><span class="p">)[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pstats</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">pstats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span>
+            <span class="p">):</span>  <span class="c1"># least significant of two is still significant - SDM candidate</span>
+                <span class="c1"># check on spatial common factor</span>
+                <span class="k">if</span> <span class="n">model_sdm</span><span class="o">.</span><span class="n">cfh_test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># rejected - SDM</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SDM&quot;</span>
+                    <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                        <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_sdm</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># not reject common factor hypothesis - ERROR</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+            <span class="k">elif</span> <span class="n">pstats</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># none significant, even bother?</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># one significant and one non-sign spatial parameter</span>
+                <span class="n">cand</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># non-significant one</span>
+                <span class="k">if</span> <span class="n">cand</span> <span class="o">==</span> <span class="p">(</span><span class="n">pk</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># rho not sig</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SLX&quot;</span>
+
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># gamma not sig</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG&quot;</span>
+
+        <span class="k">elif</span> <span class="n">cand</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="n">pk</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="p">):</span>  <span class="c1"># rho not significant, but at least one of lambda/gamma is</span>
+            <span class="c1"># go to SLX-Error</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">model_slxerr</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: SLX Error parameters out of bounds&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+            <span class="n">pstats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">model_slxerr</span><span class="o">.</span><span class="n">z_stat</span><span class="p">)[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pstats</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pstats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># least significant of two is still significant</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SLX-ERR&quot;</span>
+                <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                    <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_slxerr</span>
+
+            <span class="k">elif</span> <span class="n">pstats</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># none significant, even bother?</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># one significant and one non-sign spatial parameter</span>
+                <span class="n">cand</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># non-significant one</span>
+                <span class="k">if</span> <span class="n">cand</span> <span class="o">==</span> <span class="p">(</span><span class="n">pk</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># lambda not sig</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SLX&quot;</span>
+
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># gamma not sig</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># gamma not sig, but at least one of rho/lambda is</span>
+            <span class="c1"># go to SARSAR</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">model_sarsar</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: SARSAR parameters out of bounds&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+            <span class="n">pstats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">model_sarsar</span><span class="o">.</span><span class="n">z_stat</span><span class="p">)[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pstats</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pstats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># least significant of two is still significant</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SARSAR&quot;</span>
+                <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                    <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_sarsar</span>
+            <span class="k">elif</span> <span class="n">pstats</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># none significant, even bother?</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># one significant and one non-sign spatial parameter</span>
+                <span class="n">cand</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># non-significant one</span>
+                <span class="k">if</span> <span class="n">cand</span> <span class="o">==</span> <span class="p">(</span><span class="n">pk</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># lambda not sig</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG&quot;</span>
+
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># rho not sig</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+    <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>  <span class="c1"># pass final regression</span>
+        <span class="n">msel</span> <span class="o">=</span> <span class="s2">&quot;Model selected by GETS-GNS: &quot;</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;OLS&quot;</span><span class="p">:</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;SLX&quot;</span><span class="p">:</span>
+            <span class="n">finreg</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GMM Error parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;LAG&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GM LAG parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mprint</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msel</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">finreg</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>  <span class="c1"># cannot print when finreg=False</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">finreg</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="gets_sdm">
+<a class="viewcode-back" href="../../generated/spreg.spsearch.gets_sdm.html#spreg.spsearch.gets_sdm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gets_sdm</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">w_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">robust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sig2n_k</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">name_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_w</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name_ds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">finmod</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">mprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hybrid specification search: Starting from the estimation of the Spatial Durbin model,</span>
+<span class="sd">                          it tests significance of coefficients and carries out specification</span>
+<span class="sd">                          tests for error autocorrelation to suggest the most appropriate model</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y        : dependent variable</span>
+<span class="sd">    x        : matrix of explanatory variables</span>
+<span class="sd">    w        : spatial weights</span>
+<span class="sd">    w_lags   : number of lags to be used as instruments in S2SLS</span>
+<span class="sd">    robust   : White standard errors?</span>
+<span class="sd">    sig2n_k  : error variance estimate (consistent or unbiased=True)</span>
+<span class="sd">    name_y   : name of dependent variable (string)</span>
+<span class="sd">    name_x   : list of strings with x-variable names</span>
+<span class="sd">    name_w   : string with name for spatial weights</span>
+<span class="sd">    name_ds  : string with name for data set</span>
+<span class="sd">    latex    : flag for latex output</span>
+<span class="sd">    p_value  : significance threshold</span>
+<span class="sd">    finmod   : flag for estimation of final model</span>
+<span class="sd">    mprint   : flag for regression summary as search result</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result: the selected model as a string</span>
+<span class="sd">            0 = OLS</span>
+<span class="sd">            1 = LAG</span>
+<span class="sd">            2 = ERROR</span>
+<span class="sd">            3 = SARSAR</span>
+<span class="sd">            4 = SLX</span>
+<span class="sd">            5 = SDM</span>
+<span class="sd">            6 = SLX-Err</span>
+<span class="sd">            7 = GNS</span>
+<span class="sd">    finreg: regression object for final model</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import libpysal</span>
+<span class="sd">    &gt;&gt;&gt; from spreg import gets_sdm</span>
+
+<span class="sd">    &gt;&gt;&gt; db = libpysal.io.open(libpysal.examples.get_path(&quot;columbus.dbf&quot;), &quot;r&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y_var = &quot;CRIME&quot;</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([db.by_col(y_var)]).reshape(49, 1)</span>
+<span class="sd">    &gt;&gt;&gt; x_var = [&quot;INC&quot;, &quot;HOVAL&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([db.by_col(name) for name in x_var]).T</span>
+<span class="sd">    &gt;&gt;&gt; w = libpysal.weights.Rook.from_shapefile(libpysal.examples.get_path(&quot;columbus.shp&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; w.transform = &quot;r&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_y = y_var</span>
+<span class="sd">    &gt;&gt;&gt; name_x = x_var</span>
+<span class="sd">    &gt;&gt;&gt; name_w = &quot;Rook Weights&quot;</span>
+<span class="sd">    &gt;&gt;&gt; name_ds = &quot;Columbus Data&quot;</span>
+
+<span class="sd">    &gt;&gt;&gt; result, finreg = gets_sdm(y, x, w, name_y=name_y, name_x=name_x,</span>
+<span class="sd">    ...                               name_w=name_w, name_ds=name_ds, mprint=False)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Model selected by GETS-SDM:&quot;,result)</span>
+<span class="sd">    Model selected by GETS-SDM: OLS</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">p_value</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_y</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name_x</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_sdm</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: SDM parameters out of bounds&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+        <span class="n">name_y</span> <span class="o">=</span> <span class="n">model_sdm</span><span class="o">.</span><span class="n">name_y</span>
+        <span class="n">name_x</span> <span class="o">=</span> <span class="n">model_sdm</span><span class="o">.</span><span class="n">name_x</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_sdm</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: SDM parameters out of bounds&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+
+    <span class="n">pstats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">model_sdm</span><span class="o">.</span><span class="n">z_stat</span><span class="p">)[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># spatial parameters</span>
+    <span class="n">pk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pstats</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pstats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># least significant of two is still significant = SDM or GNS</span>
+        <span class="c1"># check on spatial common factor</span>
+        <span class="k">if</span> <span class="n">model_sdm</span><span class="o">.</span><span class="n">cfh_test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># not rejected - ERROR</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># could be GNS</span>
+            <span class="n">ak_sdm</span> <span class="o">=</span> <span class="n">AKtest</span><span class="p">(</span><span class="n">model_sdm</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;gen&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ak_sdm</span><span class="o">.</span><span class="n">p</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># remaining error</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;GNS&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SDM&quot;</span>
+                <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                    <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_sdm</span>
+
+    <span class="k">elif</span> <span class="n">pstats</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># none significant - OLS or SEM</span>
+        <span class="n">model_ols</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+            <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+            <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+            <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+            <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+            <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># check on LM-Error</span>
+        <span class="n">errtest</span> <span class="o">=</span> <span class="n">LMtests</span><span class="p">(</span><span class="n">model_ols</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errtest</span><span class="o">.</span><span class="n">lme</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># ERROR</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;OLS&quot;</span>
+            <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_ols</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># one significant and one non-sign spatial parameter</span>
+        <span class="n">cand</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># non-significant one</span>
+        <span class="k">if</span> <span class="n">cand</span> <span class="o">==</span> <span class="p">(</span><span class="n">pk</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># rho not sig, SLX model</span>
+            <span class="c1"># check error in SLX</span>
+            <span class="n">model_slx</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">errtest</span> <span class="o">=</span> <span class="n">LMtests</span><span class="p">(</span><span class="n">model_slx</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">errtest</span><span class="o">.</span><span class="n">lme</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># SLX-ERROR</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SLX-Err&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SLX&quot;</span>
+                <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                    <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_slx</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># gamma not sign, lag model</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">model_lag</span> <span class="o">=</span> <span class="n">STSLS</span><span class="o">.</span><span class="n">GM_Lag</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;Exception: LAG parameters out of bounds&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+            <span class="c1"># print(model_lag.summary)</span>
+            <span class="n">ak_lag</span> <span class="o">=</span> <span class="n">AKtest</span><span class="p">(</span><span class="n">model_lag</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;gen&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ak_lag</span><span class="o">.</span><span class="n">p</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>  <span class="c1"># remaining error</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;SARSAR&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># no error</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;LAG&quot;</span>
+                <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>
+                    <span class="n">finreg</span> <span class="o">=</span> <span class="n">model_lag</span>
+
+    <span class="k">if</span> <span class="n">finmod</span><span class="p">:</span>  <span class="c1"># pass final regression</span>
+        <span class="n">msel</span> <span class="o">=</span> <span class="s2">&quot;Model selected by GETS-SDM: &quot;</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GMM Error parameters outside bounds&quot;</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;SARSAR&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: SARSAR parameters out of bounds&quot;</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;SLX-Err&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: SLX Error parameters out of bounds&quot;</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;GNS&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">finreg</span> <span class="o">=</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">GMM_Error</span><span class="p">(</span>
+                    <span class="n">y</span><span class="p">,</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                    <span class="n">slx_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">add_wy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">w_lags</span><span class="o">=</span><span class="n">w_lags</span><span class="p">,</span>
+                    <span class="n">hard_bound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+                    <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+                    <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+                    <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+                    <span class="n">latex</span><span class="o">=</span><span class="n">latex</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s2">&quot; -- Exception: GNS parameters out of bounds&quot;</span>
+        <span class="k">if</span> <span class="n">mprint</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msel</span> <span class="o">+</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">finreg</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>  <span class="c1"># cannot print when finreg=False</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">finreg</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">finreg</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="c1"># the following line could be used to define an alternative to the &#39;&lt;BLANKLINE&gt;&#39; flag</span>
+    <span class="c1"># doctest.BLANKLINE_MARKER = &#39;something better than &lt;BLANKLINE&gt;&#39;</span>
+    <span class="n">start_suppress</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">get_printoptions</span><span class="p">()[</span><span class="s2">&quot;suppress&quot;</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="n">start_suppress</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_test</span><span class="p">()</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">libpysal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">spreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">stge_classic</span>
+
+    <span class="c1"># Load data</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.dbf&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define the dependent variable</span>
+    <span class="n">y_var</span> <span class="o">=</span> <span class="s2">&quot;CRIME&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">y_var</span><span class="p">)])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">49</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Define the explanatory variables</span>
+    <span class="n">x_var</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;INC&quot;</span><span class="p">,</span> <span class="s2">&quot;HOVAL&quot;</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">db</span><span class="o">.</span><span class="n">by_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">x_var</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="c1"># Define the spatial weights</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">Rook</span><span class="o">.</span><span class="n">from_shapefile</span><span class="p">(</span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;columbus.shp&quot;</span><span class="p">))</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span>
+
+    <span class="c1"># Define the names for the variables and the dataset</span>
+    <span class="n">name_y</span> <span class="o">=</span> <span class="n">y_var</span>
+    <span class="n">name_x</span> <span class="o">=</span> <span class="n">x_var</span>
+    <span class="n">name_w</span> <span class="o">=</span> <span class="s2">&quot;Rook Weights&quot;</span>
+    <span class="n">name_ds</span> <span class="o">=</span> <span class="s2">&quot;Columbus Data&quot;</span>
+
+    <span class="c1"># Call the stge_classic function and output the results</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">finreg</span> <span class="o">=</span> <span class="n">stge_classic</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">w</span><span class="p">,</span>
+        <span class="n">mprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">name_y</span><span class="o">=</span><span class="n">name_y</span><span class="p">,</span>
+        <span class="n">name_x</span><span class="o">=</span><span class="n">name_x</span><span class="p">,</span>
+        <span class="n">name_w</span><span class="o">=</span><span class="n">name_w</span><span class="p">,</span>
+        <span class="n">name_ds</span><span class="o">=</span><span class="n">name_ds</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

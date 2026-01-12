@@ -1,0 +1,6 @@
+﻿spreg.condition\_index
+======================
+
+.. currentmodule:: spreg
+
+.. autofunction:: condition_index
