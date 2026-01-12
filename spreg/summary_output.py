@@ -227,15 +227,15 @@ def ML_Lag(reg, w, vm, spat_diag, regimes=False):  # extra space d
     beta_diag_lag(reg, robust=None, error=False)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
-        reg.logll,
+        reg.logll.item(),
     )
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "S.E of regression",
-        np.sqrt(reg.sig2),
+        np.sqrt(reg.sig2).item(),
         "Akaike info criterion",
-        reg.aic,
+        reg.aic.item(),
     )
     reg.__summary["summary_r2"] += (
         "                                                 %-22s:%12.3f\n"
@@ -261,21 +261,21 @@ def ML_Lag_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=False
         beta_diag_lag(mreg, robust=None, error=False)
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            mreg.sig2,
+            mreg.sig2.item(),
             "Log likelihood",
-            mreg.logll,
+            mreg.logll.item(),
         )
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "S.E of regression",
-            np.sqrt(mreg.sig2),
+            np.sqrt(mreg.sig2).item(),
             "Akaike info criterion",
-            mreg.aic,
+            mreg.aic.item(),
         )
         mreg.__summary["summary_r2"] += (
             "                                                 %-22s:%12.3f\n"
             % (
                 "Schwarz criterion",
-                mreg.schwarz,
+                mreg.schwarz.item(),
             )
         )
         # build coefficients table body
@@ -304,21 +304,21 @@ def ML_Error(reg, w, vm, spat_diag, regimes=False):  # extra space d
     beta_diag(reg, robust=None)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
-        reg.logll,
+        reg.logll.item(),
     )
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "S.E of regression",
-        np.sqrt(reg.sig2),
+        np.sqrt(reg.sig2).item(),
         "Akaike info criterion",
-        reg.aic,
+        reg.aic.item(),
     )
     reg.__summary["summary_r2"] += (
         "                                                 %-22s:%12.3f\n"
         % (
             "Schwarz criterion",
-            reg.schwarz,
+            reg.schwarz.item(),
         )
     )
     # build coefficients table body
@@ -338,21 +338,21 @@ def ML_Error_multi(reg, multireg, vm, spat_diag, regimes=False, sur=False, w=Fal
         beta_diag(mreg, robust=None)
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            mreg.sig2,
+            mreg.sig2.item(),
             "Log likelihood",
-            mreg.logll,
+            mreg.logll.item(),
         )
         mreg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "S.E of regression",
-            np.sqrt(mreg.sig2),
+            np.sqrt(mreg.sig2).item(),
             "Akaike info criterion",
-            mreg.aic,
+            mreg.aic.item(),
         )
         mreg.__summary["summary_r2"] += (
             "                                                 %-22s:%12.3f\n"
             % (
                 "Schwarz criterion",
-                mreg.schwarz,
+                mreg.schwarz.item(),
             )
         )
         # build coefficients table body
@@ -873,21 +873,21 @@ def Panel_FE_Lag(reg, w, vm):
     beta_diag_lag(reg, robust=None, error=False)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
-        reg.logll,
+        reg.logll.item(),
     )
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "S.E of regression",
-        np.sqrt(reg.sig2),
+        np.sqrt(reg.sig2).item(),
         "Akaike info criterion",
-        reg.aic,
+        reg.aic.item(),
     )
     reg.__summary["summary_r2"] += (
         "                                                 %-22s:%12.3f\n"
         % (
             "Schwarz criterion",
-            reg.schwarz,
+            reg.schwarz.item(),
         )
     )
     # build coefficients table body
@@ -902,21 +902,21 @@ def Panel_FE_Error(reg, w, vm, regimes=False):
     beta_diag(reg, robust=None)
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2,
+        reg.sig2.item(),
         "Log likelihood",
-        reg.logll,
+        reg.logll.item(),
     )
     reg.__summary["summary_r2"] += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "S.E of regression",
-        np.sqrt(reg.sig2),
+        np.sqrt(reg.sig2).item(),
         "Akaike info criterion",
-        reg.aic,
+        reg.aic.item(),
     )
     reg.__summary["summary_r2"] += (
         "                                                 %-22s:%12.3f\n"
         % (
             "Schwarz criterion",
-            reg.schwarz,
+            reg.schwarz.item(),
         )
     )
     # build coefficients table body
@@ -1281,7 +1281,7 @@ def summary_intro(reg, short, sur=False):  # extra space d
 def summary_sur_mid(reg, eq):
     strSummary = "SUMMARY OF EQUATION " + str(eq + 1) + "\n"
     strSummary += "-" * (len(strSummary) - 1) + "\n"
-    n_var = int(reg.bigK[list(reg.name_bigy.keys()).index(eq)])
+    n_var = int(reg.bigK[list(reg.name_bigy.keys()).index(eq)].item())
     strSummary += "%-20s:%12s                %-22s:%12d\n" % (
         "Dependent Variable",
         reg.name_bigy[eq],
@@ -1383,7 +1383,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
             try:
                 strSummary += "%20s    %12.7f    %12.7f    %12.7f    %12.7f\n" % (
                     "lambda_" + str(eq + 1),
-                    reg.lamsur[pos],
+                    reg.lamsur[pos].item(),
                     reg.lamsetp[0][pos][0],
                     reg.lamsetp[1][pos][0],
                     reg.lamsetp[2][pos][0],
@@ -1391,7 +1391,7 @@ def summary_coefs_sur(reg, lambd=False, regimes=False):
             except:
                 strSummary += "%20s    %12.7f    \n" % (
                     "lambda_" + str(eq + 1),
-                    reg.lamsur[pos],
+                    reg.lamsur[pos].item(),
                 )
 
         reg.__summary[eq]["summary_coefs"] = strSummary
@@ -1660,27 +1660,27 @@ def summary_nonspat_diag_1(reg):  # extra space d
     )
     strSummary += "%-20s:%12.3f                %-22s:%12.4g\n" % (
         "Sigma-square",
-        reg.sig2,
+        reg.sig2.item(),
         "Prob(F-statistic)",
         reg.f_stat[1],
     )
     strSummary += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "S.E. of regression",
-        np.sqrt(reg.sig2),
+        np.sqrt(reg.sig2).item(),
         "Log likelihood",
-        reg.logll,
+        reg.logll.item(),
     )
     strSummary += "%-20s:%12.3f                %-22s:%12.3f\n" % (
         "Sigma-square ML",
-        reg.sig2ML,
+        reg.sig2ML.item(),
         "Akaike info criterion",
-        reg.aic,
+        reg.aic.item(),
     )
     strSummary += "%-20s:%12.4f                %-22s:%12.3f\n" % (
         "S.E of regression ML",
-        np.sqrt(reg.sig2ML),
+        np.sqrt(reg.sig2ML).item(),
         "Schwarz criterion",
-        reg.schwarz,
+        reg.schwarz.item(),
     )
     return strSummary
 

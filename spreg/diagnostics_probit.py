@@ -278,7 +278,7 @@ def sp_tests(regprob=None, obj_list=None):
     LM_err_num = np.dot(u_gen.T, (w @ u_gen)) ** 2
     trWW = np.sum((w @ w).diagonal())
     trWWWWp = trWW + np.sum((w @ w.T).diagonal())
-    LM_err = float(1.0 * LM_err_num / (sig2 ** 2 * trWWWWp))
+    LM_err = (1.0 * LM_err_num / (sig2 ** 2 * trWWWWp)).item()
     LM_err = np.array([LM_err, stats.chisqprob(LM_err, 1)])
     # KP_error:
     moran = moran_KP(w, u_naive, Phi_prod)
@@ -286,7 +286,7 @@ def sp_tests(regprob=None, obj_list=None):
     u_std = u_naive / np.sqrt(Phi_prod)
     ps_num = np.dot(u_std.T, (w @ u_std)) ** 2
     trWpW = np.sum((w.T @ w).diagonal())
-    ps = float(ps_num / (trWW + trWpW))
+    ps = (ps_num / (trWW + trWpW)).item()
     # chi-square instead of bootstrap.
     ps = np.array([ps, stats.chisqprob(ps, 1)])
 
@@ -328,7 +328,7 @@ def moran_KP(w, u, sig2i):
     E = E.asformat("csr")
     WE = w @ E
     moran_den = np.sqrt(np.sum((WE @ WE + (w.T @ E) @ WE).diagonal()))
-    moran = float(1.0 * moran_num / moran_den)
+    moran = (1.0 * moran_num / moran_den).item()
     moran = np.array([moran, stats.norm.sf(abs(moran)) * 2.0])
     return moran
 

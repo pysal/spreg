@@ -933,7 +933,7 @@ class GM_Endog_Error_Regimes(RegressionPropsY, REGI.Regimes_Frame):
             self.betas = np.vstack((tsls2.betas, np.array([[lambda1]])))
             self.predy = spdot(tsls.z, tsls2.betas)
             self.u = y - self.predy
-            self.sig2 = float(np.dot(tsls2.u.T, tsls2.u)) / self.n
+            self.sig2 = np.dot(tsls2.u.T, tsls2.u).item() / self.n
             self.e_filtered = self.u - lambda1 * lag_spatial(w, self.u)
             self.vm = self.sig2 * tsls2.varb
             self.name_x = USER.set_name_x(name_x, x_constant, constant=True)

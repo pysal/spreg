@@ -428,44 +428,44 @@ def _nonspat_top(reg, ml=False):
             "Sum squared residual", reg.utu, "F-statistic", reg.f_stat[0],)
         strSummary += "%-20s:%12.3f                %-22s:%12.4g\n" % (
             "Sigma-square",
-            reg.sig2,
+            reg.sig2.item(),
             "Prob(F-statistic)",
             reg.f_stat[1],
         )
         strSummary += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "S.E. of regression",
-            np.sqrt(reg.sig2),
+            np.sqrt(reg.sig2).item(),
             "Log likelihood",
-            reg.logll,
+            reg.logll.item(),
         )
         strSummary += "%-20s:%12.3f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            reg.sig2ML,
+            reg.sig2ML.item(),
             "Akaike info criterion",
-            reg.aic,
+            reg.aic.item(),
         )
         strSummary += "%-20s:%12.4f                %-22s:%12.3f\n" % (
             "S.E of regression ML",
-            np.sqrt(reg.sig2ML),
+            np.sqrt(reg.sig2ML).item(),
             "Schwarz criterion",
-            reg.schwarz,
+            reg.schwarz.item(),
         )
     else:
         strSummary = "%-20s:%12.4f\n" % (
             "Log likelihood",
-            reg.logll,
+            reg.logll.item(),
         )
         strSummary += "%-20s:%12.4f                %-22s:%12.3f\n" % (
             "Sigma-square ML",
-            reg.sig2,
+            reg.sig2.item(),
             "Akaike info criterion",
-            reg.aic,
+            reg.aic.item(),
         )
         strSummary += "%-20s:%12.4f                %-22s:%12.3f\n" % (
             "S.E of regression",
-            np.sqrt(reg.sig2),
+            np.sqrt(reg.sig2).item(),
             "Schwarz criterion",
-            reg.schwarz,
+            reg.schwarz.item(),
         )
 
     return strSummary
@@ -704,11 +704,11 @@ def _nslx_out(reg, section):
         strSummary = "%-20s:%12.3f                %-22s:%12.6g\n" % (
                 "Sigma-square", reg.sign, "Sum squared residual", reg.utu,)
         strSummary += "%-20s:%12.3f                %-22s:%12.3f\n" % (
-            "S.E. of regression", np.sqrt(reg.sig2), "Log likelihood",
-            reg.ll,)
+            "S.E. of regression", np.sqrt(reg.sig2).item(), "Log likelihood",
+            reg.ll.item(),)
         strSummary += "%-20s:%12.3f                %-22s:%12.3f\n" % (
-            "Schwarz criterion", reg.schwarz, "Akaike info criterion",
-            reg.aic,) 
+            "Schwarz criterion", reg.schwarz.item(), "Akaike info criterion",
+            reg.aic.item(),) 
         if len(''.join(reg.name_coords)) <= 12:       
             strSummary += "%-20s:%12s                %-22s:%12s\n" % (
                 "Coordinates", reg.name_coords, "Distance metric", reg.distance_metric,)        
@@ -788,7 +788,7 @@ def _probit_out(reg, spat_diag=False, sptests_only=False):
             strSummary_mid += "%20s    %12.5f    %12.5f    %12.5f    %12.5f\n" % (
                 reg.name_x[i + 1],
                 reg.slopes[i][0],
-                reg.slopes_std_err[i],
+                reg.slopes_std_err[i][0],
                 reg.slopes_z_stat[i][0],
                 reg.slopes_z_stat[i][1],
             )
