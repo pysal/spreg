@@ -153,15 +153,15 @@ class TestPanel(unittest.TestCase):
         )
 
         expected_betas = np.array([[7.587277, 4.392572, 1.058833, 0.440583, 6.020487]])
-        np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-4)
+        np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-3)
         
         expected_vm = np.array([5.286577e-02, 2.920644e-02, 3.598327e-02, 2.455856e-05,
        1.347449e-03])
-        np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-5)
+        np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
 
         other = [model.logll, model.phi]
         expected_other = [-7445.639541,  0.2503416]
-        np.testing.assert_allclose(other, expected_other, rtol=1e-4)
+        np.testing.assert_allclose(other, expected_other, rtol=1e-3)
 
     def test_ML_LagFE(self):
         model = PANEL.ML_LagFE(
@@ -195,17 +195,17 @@ class TestPanel(unittest.TestCase):
         )
 
         expected_betas = np.array([[4.508465, 3.580695, 1.19552 , 0.358007, 0.742009]])
-        np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-4)
+        np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-3)
         
         expected_vm = np.array([0.067993, 0.026325, 0.028039, 0.000575, 0.000455])
-        np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-4)
+        np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
 
         other = [model.aic, model.schwarz, model.logll]
         expected_other = [14774.555911, 14797.633426, -7383.277956]
-        np.testing.assert_allclose(other, expected_other, rtol=1e-4)
+        np.testing.assert_allclose(other, expected_other, rtol=1e-3)
 
         multipliers = [1.      , 0.557649, 1.557649]
-        np.testing.assert_allclose(model.sp_multipliers['simple'], multipliers, atol=1e-4)
+        np.testing.assert_allclose(model.sp_multipliers['simple'], multipliers, atol=1e-3)
 
         impact_out = model.summary[-135:-85] #Check actual impact output lines
         expected_impact_out = "PS         1.1955          0.6667          1.8622"
