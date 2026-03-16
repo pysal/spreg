@@ -199,7 +199,7 @@ class PooledOLS(BaseOLS, RegressionPropsY, RegressionPropsVM):
         if spat_diag:
             self.bsk = BSK_tests(self, w, which=BSK_list)
             other_end += "\nSPATIAL DIAGNOSTIC TESTS\n"
-            other_end += f"{"-" * 84 }\n"
+            other_end += f"{'-' * 84 }\n"
             other_end += "TEST                             DF        VALUE           PROB\n"
             for i in range(len(self.bsk)):
                 other_end += f"{self.bsk['Test'][i]:30s} {self.bsk['df'][i]:3d}   {self.bsk['Statistic'][i]:12.4f}       {self.bsk['p-value'][i]:8.5f}\n"  
