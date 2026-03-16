@@ -1,4 +1,12 @@
 """
+######################################################################################
+#####                                                                            #####
+##### DEPRECATION WARNING (VERSION 1.9.0):                                       #####
+#####                                                                            #####
+##### ALL FUNCTIONS IN THIS FILE ARE DEPRECATED AND WERE SUPERSEDED BY PANEL.PY  #####
+#####                                                                            #####
+######################################################################################
+
 Spatial random effects panel model based on: :cite:`KKP2007`
 """
 
@@ -329,6 +337,7 @@ class GM_KKP(BaseGM_KKP, REGI.Regimes_Frame):
         name_ds=None,
         name_regimes=None,
     ):
+        set_warn(self, "This function is deprecated and was superseded by spreg.GM_ErrorRE in panel.py")
         n_rows = USER.check_arrays(y, x)
         bigy, bigx, name_y, name_x = _get_panel_data(y, x, w, name_y, name_x)
         w = USER.check_weights(w, bigy, w_required=True, time=True)

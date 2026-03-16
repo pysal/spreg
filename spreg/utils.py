@@ -13,8 +13,8 @@ from scipy import sparse as SP
 import scipy.optimize as op
 import numpy.linalg as la
 from libpysal.weights.spatial_lag import lag_spatial
-from libpysal.cg import KDTree        # new for make_wnslx
-from scipy.sparse import coo_array,csr_array    # new for make_wnslx
+from libpysal.cg import KDTree
+from scipy.sparse import coo_array, csr_array, kron, identity
 from .sputils import *
 import copy
 
@@ -172,23 +172,18 @@ class RegressionPropsVM(object):
     def vm(self):
         try:
             return self._cache["vm"]
-        except AttributeError:
-            self._cache = {}
+        except (AttributeError, KeyError):
+            # Either _cache doesn't exist or doesn't have 'vm'
+            if not hasattr(self, '_cache'):
+                self._cache = {}
             self._cache["vm"] = np.dot(self.sig2, self.xtxi)
-        except KeyError:
-            self._cache["vm"] = np.dot(self.sig2, self.xtxi)
-        finally:
             return self._cache["vm"]
 
     @vm.setter
     def vm(self, val):
-        try:
-            self._cache["vm"] = val
-        except AttributeError:
+        if not hasattr(self, '_cache'):
             self._cache = {}
-            self._cache["vm"] = val
-        except KeyError:
-            self._cache["vm"] = val
+        self._cache["vm"] = val
 
 
 def get_A1_het(S):
@@ -473,7 +468,7 @@ def get_spFilter(w, lamb, sf):
     return result
 
 
-def get_lags(w, x, w_lags):
+def get_lags(w, x, w_lags, panel=False):
     """
     Calculates a given order of spatial lags and all the smaller orders
 
@@ -485,6 +480,8 @@ def get_lags(w, x, w_lags):
               nxk arrays with the variables to be lagged
     w_lags  : integer
               Maximum order of spatial lag
+    panel    : boolean, default = False
+               if True, data is panel and spatial lags are computed accordingly
 
     Returns
     --------
@@ -492,11 +489,19 @@ def get_lags(w, x, w_lags):
               nxk*(w_lags) array with spatially lagged variables
 
     """
-    lag = lag_spatial(w, x)
+
+    if panel:
+        wt = kron(identity(x.shape[0] // w.n), w.sparse, format="csr")
+        lag_operation = lambda x: spdot(wt, x)
+    else:
+        lag_operation = lambda x: lag_spatial(w, x)
+    
+    lag = lag_operation(x)
     spat_lags = lag
     for i in range(w_lags - 1):
-        lag = lag_spatial(w, lag)
+        lag = lag_operation(lag)
         spat_lags = sphstack(spat_lags, lag)
+
     return spat_lags
 
 def get_lags_split(w, x, max_lags, split_at):

@@ -24,7 +24,8 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
                    nx1 array for dependent variable
     x            : array
                    Two dimensional array with n rows and one column for each
-                   independent (exogenous) variable, excluding the constant
+                   independent (exogenous) variable.
+                   Note: must already include the constant if wanted
     robust       : string
                    If 'white', then a White consistent estimator of the
                    variance-covariance matrix is given.  If 'hac', then a
@@ -98,12 +99,15 @@ class BaseOLS(RegressionPropsY, RegressionPropsVM):
            [ -2.15109867,   0.06809568,   0.03336939]])
     """
 
-    def __init__(self, y, x, robust=None, gwk=None, sig2n_k=True):
+    def __init__(self, y, x, robust=None, gwk=None, sig2n_k=True, pinv=False):
         self.x = x
         self.xtx = spdot(self.x.T, self.x)
         xty = spdot(self.x.T, y)
 
-        self.xtxi = la.inv(self.xtx)
+        if pinv:
+            self.xtxi = la.pinv(self.xtx)
+        else:
+            self.xtxi = la.inv(self.xtx)
         self.betas = np.dot(self.xtxi, xty)
         predy = spdot(self.x, self.betas)
 
@@ -538,6 +542,48 @@ class OLS(BaseOLS):
                 other_end += _spat_diag_out(self, w, 'ols', moran=moran)
             output(reg=self, vm=vm, robust=robust, other_end=other_end, latex=latex)
 
+
+class BaseWLS(BaseOLS):
+    """
+    Weighted Least Squares (WLS) based on BaseOLS.
+    Performs OLS on transformed variables (x*sqrt(w), y*sqrt(w)).
+
+    Parameters
+    ----------
+    y            : array
+                   nx1 array for dependent variable
+    x            : array
+                   Two dimensional array with n rows and one column for each
+                   independent (exogenous) variable.
+                    Note: must already include the constant if wanted
+    weights      : array
+                   nx1 array of weights for each observation.
+    **kwargs     : keyword arguments
+                   Arguments passed to BaseOLS (robust, gwk, sig2n_k)
+
+    Attributes
+    ----------
+    (Inherits all attributes from BaseOLS, but adjusted for weights)
+    weights      : array
+                   nx1 array of weights used
+    utu          : float
+                   Weighted sum of squared residuals
+    xtx          : float
+                   X'WX (Weighted Cross-product)
+    """
+
+    def __init__(self, y, x, w, **kwargs):
+        w_sqrt = np.sqrt(w)
+        x_w = x * w_sqrt
+        y_w = y * w_sqrt
+
+        super().__init__(y=y_w, x=x_w, pinv=True, **kwargs)
+
+        self.x = x
+        self.y = y
+        self.weights = w
+        self.predy = spdot(self.x, self.betas)
+        self.u = self.y - self.predy
 
 
 def _test():

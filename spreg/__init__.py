@@ -40,6 +40,7 @@ from .twosls_sp import *
 from .twosls_sp_regimes import *
 from .user_output import *
 from .utils import *
+from .panel import *
 
 with contextlib.suppress(PackageNotFoundError):
     __version__ = version("spreg")

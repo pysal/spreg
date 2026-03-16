@@ -10,9 +10,36 @@ import numpy as np
 import pandas as pd
 from scipy import sparse as sp
 from .sputils import spdot
+from . import user_output as USER
 
-__all__ = ["check_panel", "demean_panel"]
+def prepare_panel(y, x, w, name_y, name_x, slx_lags, slx_vars, title, add_constant=True):
+    """
+    Prepare the data for panel regression.
+    Parameters as in the panel regression classes, with the addition of:
+    add_constant : bool
+                   Whether to add a constant term to the data. Default is True.
+    """
+    warn = []
+    n_rows = USER.check_arrays(y, x)
+    x_constant, name_x, warn_add = USER.check_constant(x, name_x, just_rem=True)
+    warn.append(warn_add)
+    bigy, bigx, name_y, name_x, T, warn_add = check_panel(y, x_constant, w, name_y, name_x)
+    warn.append(warn_add)
+    if add_constant:
+        bigx, name_x, warn_add = USER.check_constant(bigx, name_x)
+        warn.append(warn_add)
+    name_x = USER.set_name_x(name_x, bigx, constant=not add_constant)
+    name_y = USER.set_name_y(name_y)
 
+    w = USER.check_weights(w, bigy, w_required=True, time=True, slx_lags=slx_lags)
+    kx = bigx.shape[1]
+
+    if slx_lags >0:
+        title += " WITH SLX"
+        bigx,name_x = USER.flex_wx(w,x=bigx,name_x=name_x,constant=add_constant,
+                                        slx_lags=slx_lags,slx_vars=slx_vars, panel=True)            
+    kwx = bigx.shape[1] - kx
+    return bigy, bigx, name_y, name_x, w, warn, slx_lags, title, kx, kwx, T
 
 def check_panel(y, x, w, name_y, name_x):
     """
@@ -39,7 +66,7 @@ def check_panel(y, x, w, name_y, name_x):
             except AttributeError:
                 name_y = y.name
         y = y.to_numpy()
-
+        
     if isinstance(x, (pd.Series, pd.DataFrame)):
         if name_x is None:
             try:
@@ -98,7 +125,7 @@ def check_panel(y, x, w, name_y, name_x):
                 name_bigx.append(namek)
             name_x = name_bigx
 
-    return bigy, bigx, name_y, name_x, warn
+    return bigy, bigx, name_y, name_x, T, warn
 
 
 def demean_panel(arr, n, t, phi=0):

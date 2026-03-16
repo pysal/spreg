@@ -15,9 +15,8 @@ from . import sputils as spu
 from libpysal import weights
 from libpysal import graph
 import scipy
-from scipy.sparse import csr_matrix
-from scipy.sparse import issparse
-from .utils import get_lags
+from scipy.sparse import csr_matrix, issparse
+from .utils import get_lags, get_lags_split
 from itertools import compress
 
 
@@ -113,7 +112,7 @@ def set_name_yend(name_yend, yend):
         return []
 
 
-def set_name_q(name_q, q):
+def set_name_q(name_q, q, q_lags=0):
     """Set the external instrument names in regression; return generic name if user
     provides no explicit name."
 
@@ -132,6 +131,11 @@ def set_name_q(name_q, q):
     if q is not None:
         if not name_q:
             return ["instrument_" + str(i + 1) for i in range(len(q[0]))]
+        else:
+            return name_q[:]
+    elif q_lags > 0:
+        if not name_q:
+            return ["lag_" + str(i + 1) for i in range(q_lags)]
         else:
             return name_q[:]
     else:
@@ -154,25 +158,40 @@ def set_name_yend_sp(name_y):
     """
     return "W_" + name_y
 
-def set_name_spatial_lags(names, w_lags, slx_vars="all"):
+def set_name_spatial_lags(names, w_lags, slx_vars="all", additional=0):
     """Set the spatial lag names for multiple variables and lag orders"
 
     Parameters
     ----------
     names      : string
                  Original variables' names.
+    w_lags     : int
+                 Number of spatial lags for each name in names.
+    slx_vars   : list of booleans or "all"
+                 List of booleans indicating which variables in names should be lagged. If "all", all variables will be lagged.
+    additional : int
+                 Number of additional lags to be added after the initial w_lags, used for instruments q.
 
     Returns
     -------
     lag_names : string
+    lag_names2 : string, only returned if additional > 0
 
     """
     if slx_vars != "all":
         names = list(compress(names,slx_vars))
     lag_names = ["W_" + s for s in names]
+    n_i = 1
     for i in range(w_lags-1):
         lag_names += ["W" + str(i+2) + "_" + s for s in names]
-    return lag_names
+        n_i += 1
+    if additional > 0:
+        lag_names2 = []
+        for j in range(additional):
+            lag_names2 += ["W" + str(j+n_i+1) + "_" + s for s in names]
+        return (lag_names,lag_names2)
+    else:
+        return lag_names
 
 def set_name_q_sp(name_x, w_lags, name_q, lag_q, force_all=False):
     """Set the spatial instrument names in regression; return generic name if user
@@ -923,7 +942,7 @@ def check_constant(x, name_x=None, just_rem=False):
     else:
         return x_constant, keep_x, warn
 
-def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
+def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All",panel=False,q_lags=0):
     """
     Adds spatially lagged variables to an existing x matrix with or without a constant term
     Adds variable names prefaced by W_ for the lagged variables
@@ -939,12 +958,20 @@ def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
     slx_lags : order of spatial lags, default = 1
     slx_vars : either "All" (default) for all variables lagged, or a list
                of booleans matching the columns of x that will be lagged or not
+    panel    : boolean, default = False
+               if True, data is panel and spatial lags are computed accordingly
+    q_lags    : int, default = 0
+               if > 0, spatial lags of the variables not included in slx_vars will
+               also be computed and added to the returned matrices, with names set accordingly
 
     Returns
     -------
     a tuple with
     bigx     : concatenation of original x matrix and spatial lags
     bignamex : list of variable names including spatial lags
+    if q_lags > 0, also returns
+    bigq     : spatial lags of the variables not included in slx_vars
+    bignameq : list of variable names for the spatial lags of the variables not included in slx_vars
 
     """
     if constant == True:
@@ -954,18 +981,39 @@ def flex_wx(w,x,name_x,constant=True,slx_lags=1,slx_vars="All"):
         xwork = x
         xnamework = name_x
     
+    q_vars = []
     if isinstance(slx_vars,list):
         if len(slx_vars) == len(xnamework):
+            if q_lags > 0:
+                q_vars = [not x for x in slx_vars]
+                if sum(q_vars) > 0:
+                    qwork = xwork[:, q_vars]
+                    qnamework = list(compress(xnamework,q_vars))
             xwork = xwork[:,slx_vars]
             xnamework = list(compress(xnamework,slx_vars))
         else:
             raise Exception("Mismatch number of columns and length slx_vars")
-    
-    lagx = get_lags(w,xwork,slx_lags)
-    xlagname = set_name_spatial_lags(xnamework,slx_lags)
-    bigx = np.hstack((x,lagx))
-    bignamex = name_x + xlagname
-    return(bigx,bignamex)
+
+    if q_lags > 0:
+        lagx, lag_xq = get_lags_split(w, xwork, slx_lags+q_lags, slx_lags)
+        if sum(q_vars) > 0:
+            lag_xq2 = get_lags(w, qwork, q_lags)
+            qlagname2 = set_name_spatial_lags(qnamework,q_lags)
+            bigq = np.hstack((lag_xq,lag_xq2))
+        else:
+            bigq = lag_xq
+            qlagname2 = []
+        xlagname,qlagname = set_name_spatial_lags(xnamework,slx_lags, additional=q_lags)
+        bignameq = qlagname2 + qlagname 
+        bigx = np.hstack((x,lagx))
+        bignamex = name_x + xlagname
+        return(bigx,bignamex,bigq,bignameq)
+    else:
+        lagx = get_lags(w, xwork, slx_lags, panel=panel)
+        xlagname = set_name_spatial_lags(xnamework,slx_lags)
+        bigx = np.hstack((x,lagx))
+        bignamex = name_x + xlagname
+        return(bigx,bignamex)
 
 def check_coords(data,name_coords):
     '''
