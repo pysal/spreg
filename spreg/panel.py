@@ -642,15 +642,15 @@ class PanelRE(RegressionPropsY, RegressionPropsVM):
                 
         other_end += "\n"
         other_end += "VARIANCE COMPONENTS ESTIMATES\n"
-        other_end += f"{"-" * 84 }\n"
+        other_end += f"{'-' * 84 }\n"
         other_end += f"Sigma2_epsilon (Idiosyncratic)    {self.sigma2_epsilon:12.4f}\n"
         other_end += f"Sigma2_mu (Individual)            {self.sigma2_mu:12.4f}\n"
         other_end += f"Theta (Quasi-demeaning weight)    {self.theta:12.4f}\n"
-        other_end += f"{"-" * 84 }\n"
+        other_end += f"{'-' * 84 }\n"
 
         if spat_diag or not np.isnan(self.hausman_stat):
             other_end += "\nDIAGNOSTIC TESTS\n"
-            other_end += f"{"-" * 84 }\n"
+            other_end += f"{'-' * 84 }\n"
             other_end += "TEST                             DF        VALUE           PROB\n"
             
             if not np.isnan(self.hausman_stat):
@@ -857,7 +857,7 @@ class GM_ErrorPooled(BaseGM_ErrorPooled):
         if nonspat_diag:
             self.bsk = BSK_tests(self, w, which=['LMC_RE'])
             other_end = "\nDIAGNOSTIC TESTS\n"
-            other_end += f"{"-" * 84 }\n"
+            other_end += f"{'-' * 84 }\n"
             other_end += "TEST                             DF        VALUE           PROB\n"
             for i in range(len(self.bsk)):
                 other_end += f"{self.bsk['Test'][i]:30s} {self.bsk['df'][i]:3d}   {self.bsk['Statistic'][i]:12.4f}       {self.bsk['p-value'][i]:8.5f}\n"  
@@ -1070,7 +1070,7 @@ class ML_ErrorPooled(BaseML_ErrorPooled):
         if nonspat_diag:
             self.bsk = BSK_tests(self, w, which=['LMC_RE'])
             other_end = "\nDIAGNOSTIC TESTS\n"
-            other_end += f"{"-" * 84 }\n"
+            other_end += f"{'-' * 84 }\n"
             other_end += "TEST                             DF        VALUE           PROB\n"
             for i in range(len(self.bsk)):
                 other_end += f"{self.bsk['Test'][i]:30s} {self.bsk['df'][i]:3d}   {self.bsk['Statistic'][i]:12.4f}       {self.bsk['p-value'][i]:8.5f}\n"  
