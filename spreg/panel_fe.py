@@ -1,4 +1,12 @@
 """
+######################################################################################
+#####                                                                            #####
+##### DEPRECATION WARNING (VERSION 1.9.0):                                       #####
+#####                                                                            #####
+##### ALL FUNCTIONS IN THIS FILE ARE DEPRECATED AND WERE SUPERSEDED BY PANEL.PY  #####
+#####                                                                            #####
+######################################################################################
+
 Spatial Fixed Effects Panel model based on: :cite:`Elhorst2003`
 """
 
@@ -29,6 +37,7 @@ __all__ = ["Panel_FE_Lag", "Panel_FE_Error"]
 
 
 class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
+
     """
     Base ML method for a fixed effects spatial lag model (note no consistency
     checks, diagnostics or constants added) :cite:`Elhorst2003`.
@@ -180,7 +189,7 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
             (
                 np.zeros((self.k, 1)),
                 self.t * tr1 / self.sig2,
-                self.n * self.t / (2.0 * self.sig2**2),
+                self.n * self.t / (2.0 * self.sig2 ** 2),
             )
         )
 
@@ -193,6 +202,7 @@ class BasePanel_FE_Lag(RegressionPropsY, RegressionPropsVM):
 
 
 class Panel_FE_Lag(BasePanel_FE_Lag):
+
     """
     ML estimation of the fixed effects spatial lag model with all results and
     diagnostics :cite:`Elhorst2003`.
@@ -321,10 +331,11 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
         name_w=None,
         name_ds=None,
     ):
+        set_warn(self, "This function is deprecated and was superseded by spreg.ML_LagFE in panel.py")
         n_rows = USER.check_arrays(y, x)
-        x_constant, name_x, warn = USER.check_constant(x, name_x, True)
+        x_constant, name_x, warn = USER.check_constant(x, name_x, just_rem=True)
         set_warn(self, warn)
-        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w, name_y, name_x)
+        bigy, bigx, name_y, name_x, T, warn = check_panel(y, x_constant, w, name_y, name_x)
         set_warn(self, warn)
         w = USER.check_weights(w, bigy, w_required=True, time=True)
 
@@ -344,6 +355,7 @@ class Panel_FE_Lag(BasePanel_FE_Lag):
 
 
 class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
+
     """
     Base ML method for a fixed effects spatial error model (note no consistency
     checks, diagnostics or constants added) :cite:`Elhorst2003`.
@@ -468,7 +480,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
 
         v1 = np.vstack((self.t * (tr2 + tr3), self.t * tr1 / self.sig2))
         v2 = np.vstack(
-            (self.t * tr1 / self.sig2, self.t * self.n / (2.0 * self.sig2**2))
+            (self.t * tr1 / self.sig2, self.t * self.n / (2.0 * self.sig2 ** 2))
         )
 
         v = np.hstack((v1, v2))
@@ -485,6 +497,7 @@ class BasePanel_FE_Error(RegressionPropsY, RegressionPropsVM):
 
 
 class Panel_FE_Error(BasePanel_FE_Error):
+
     """
     ML estimation of the fixed effects spatial error model with all results and
     diagnostics :cite:`Elhorst2003`.
@@ -608,10 +621,11 @@ class Panel_FE_Error(BasePanel_FE_Error):
         name_w=None,
         name_ds=None,
     ):
+        set_warn(self, "This function is deprecated and was superseded by spreg.ML_ErrorFE in panel.py")
         n_rows = USER.check_arrays(y, x)
         x_constant, name_x, warn = USER.check_constant(x, name_x, True)
         set_warn(self, warn)
-        bigy, bigx, name_y, name_x, warn = check_panel(y, x_constant, w, name_y, name_x)
+        bigy, bigx, name_y, name_x, T, warn = check_panel(y, x_constant, w, name_y, name_x)
         set_warn(self, warn)
         w = USER.check_weights(w, bigy, w_required=True, time=True)
 

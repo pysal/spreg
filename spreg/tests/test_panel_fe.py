@@ -1,4 +1,8 @@
 import unittest
+
+"""
+Deprecated in version 1.9.0 
+
 import libpysal
 import numpy as np
 from spreg.panel_fe import Panel_FE_Lag, Panel_FE_Error
@@ -91,7 +95,7 @@ class Test_Panel_FE_Error(unittest.TestCase):
         np.testing.assert_allclose(reg.aic, aic, RTOL)
         schwarz = 135886.27609456133
         np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
-
+"""
 
 if __name__ == "__main__":
     unittest.main()

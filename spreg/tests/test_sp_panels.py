@@ -1,10 +1,12 @@
 import unittest
+"""
+Deprecated in version 1.9.0 
+
 import numpy as np
 import libpysal
 from libpysal.common import RTOL
 from spreg.sp_panels import *
 ATOL = 1e-12
-
 
 class Test_GM_KKP(unittest.TestCase):
     def setUp(self):
@@ -83,6 +85,7 @@ class Test_GM_KKP(unittest.TestCase):
        [7.311490e-02, 7.868543e-01],
        [9.652492e+00, 1.890949e-03]]),RTOL*10)
         np.testing.assert_allclose(reg.chow.joint[0],158.7225,RTOL)
+"""
 
 if __name__ == '__main__':
     unittest.main()

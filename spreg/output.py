@@ -49,7 +49,7 @@ def out_part_top(strSummary, reg, m):
         _reg = reg.multi[m]  # _reg = local object with equation specific regression results
     title = "\nSUMMARY OF OUTPUT: " + _reg.title + "\n"
     strSummary += title
-    strSummary += "-" * (len(title) - 2) + "\n"
+    strSummary += "-" * 84 + "\n"
     strSummary += "%-20s:%12s\n" % ("Data set", _reg.name_ds)
     try:
         strSummary += "%-20s:%12s\n" % ("Weights matrix", _reg.name_w)
@@ -63,7 +63,7 @@ def out_part_top(strSummary, reg, m):
         _reg.n,
     )
 
-    if not 'Probit' in _reg.__class__.__name__:
+    if not _reg.__class__.__name__.endswith('Probit'):
         strSummary += "%-20s:%12.4f                %-22s:%12d\n" % (
             "Mean dependent var",
             _reg.mean_y,
@@ -91,7 +91,8 @@ def out_part_top(strSummary, reg, m):
         _reg.__summary["summary_zt"] = "t"
     else:
         _reg.z_stat = diagnostics.t_stat(_reg, z_stat=True)
-        if 'NSLX' not in _reg.__class__.__name__ and 'Probit' not in _reg.__class__.__name__:
+        if _reg.__class__.__name__ not in ('NSLX','PSM','LagPSM') and not _reg.__class__.__name__.endswith('Probit'):
+            print(_reg.__class__.__name__)
             _reg.pr2 = diagnostics_tsls.pr2_aspatial(_reg)
             strSummary += "%-20s:%12.4f\n" % ("Pseudo R-squared", _reg.pr2)
         _reg.__summary["summary_zt"] = "z"
@@ -631,7 +632,6 @@ def _summary_impacts(reg, w, spat_impacts, slx_lags=0, slx_vars="All",regimes=Fa
     sp_multipliers = {}
     for i in spat_impacts:
         spmult = spmultiplier(w, reg.rho, method=i)   # computes the multipliers, slx_lags not needed
-        
         strSummary += spmult["warn"]
         btot, bdir, bind = _sp_effects(reg, variables, spmult, slx_lags,slx_vars)  # computes the impacts, needs slx_lags
         sp_multipliers[spmult["method"]] = spmult['adi'], spmult['aii'].item(), spmult['ati'].item()
@@ -738,7 +738,7 @@ def _nslx_out(reg, section):
                 strSummary += text[i] + text_wrapper.fill(param_i) + "\n"
     return strSummary
 
-def _probit_out(reg, spat_diag=False, sptests_only=False):
+def _probit_out(reg, spat_diag=False, sptests_only=False, predflag=False):
     """
     Summary of the Probit model.
 
@@ -751,9 +751,9 @@ def _probit_out(reg, spat_diag=False, sptests_only=False):
     strSummary: string with Probit model summary specifics
 
     """
-
+    strSummary_end = ""
     if not sptests_only:
-        strSummary_top = "%-20s:%12.2f                %-22s:%12d\n%-20s:%12.2f                %-22s:%12d\n%-20s:%12.2f                %-22s:%12.4f\n%-20s:%12.2f                %-22s:%12.4f\n%-20s:%12.2f                %-22s:%12.4f\n" % (
+        strSummary_top = "%-20s:%12.2f                %-22s:%12d\n%-20s:%12.2f                %-22s:%12d\n" % (
         "True positive rate",
         reg.fit["TPR"],
         "Number of Variables",
@@ -762,65 +762,75 @@ def _probit_out(reg, spat_diag=False, sptests_only=False):
         reg.fit["TNR"],
         "Degrees of Freedom",
         reg.n - reg.k,
-        "Balanced accuracy",
-        reg.fit["BA"],
-        "Log-Likelihood",
-        reg.logl,            
-        "% correctly pred.",
-        reg.fit["PREDPC"],
-        "LR test",
-        reg.LR[0],
-        "McFadden's rho",
-        reg.mcfadrho,
-        "LR test (p-value)",
-        reg.LR[1],
         )
-
-        strSummary_mid = "\nMARGINAL EFFECTS\n"
-        if reg.scalem == "phimean":
-            strSummary_mid += "Method: Mean of individual marginal effects\n"
-        elif reg.scalem == "xmean":
-            strSummary_mid += "Method: Marginal effects at variables mean\n"
-        strSummary_mid += "------------------------------------------------------------------------------------\n"
-        strSummary_mid += "            Variable      Slope            Std.Error     z-Statistic     Probability\n"
-        strSummary_mid += "------------------------------------------------------------------------------------\n"
-        for i in range(len(reg.slopes)):
-            strSummary_mid += "%20s    %12.5f    %12.5f    %12.5f    %12.5f\n" % (
-                reg.name_x[i + 1],
-                reg.slopes[i][0],
-                reg.slopes_std_err[i][0],
-                reg.slopes_z_stat[i][0],
-                reg.slopes_z_stat[i][1],
+        if reg.__class__.__name__ == 'Probit':
+            strSummary_top += "%-20s:%12.2f                %-22s:%12.4f\n%-20s:%12.2f                %-22s:%12.4f\n%-20s:%12.2f                %-22s:%12.4f\n" % (
+            "Balanced accuracy",
+            reg.fit["BA"],
+            "Log-Likelihood",
+            reg.logl,            
+            "% correctly pred.",
+            reg.fit["PREDPC"],
+            "LR test",
+            reg.LR[0],
+            "McFadden's rho",
+            reg.mcfadrho,
+            "LR test (p-value)",
+            reg.LR[1],
             )
-        strSummary_mid += "------------------------------------------------------------------------------------\n"     
-    
-        strSummary_end = "\nCONFUSION MATRIX\n"
-        data = {
-            "Positive (1)": [
-                reg.predtable["actpos"],  # Observed positives
-                reg.predtable["predpos"],  # Predicted positives
-                reg.predtable["truepos"],  # Correctly predicted positives
-                reg.predtable["falseneg"]  # Wrongly predicted positives
-            ],
-            "Negative (0)": [
-                reg.predtable["actneg"],  # Observed negatives
-                reg.predtable["predneg"],  # Predicted negatives
-                reg.predtable["trueneg"],  # Correctly predicted negatives
-                reg.predtable["falsepos"]  # Wrongly predicted negatives
-            ]
-        }
 
-        rows = ["Observed", "Predicted", "Correctly Predicted", "Wrongly Predicted"]
-        strSummary_end += f"{'':<26}{'Positive (1)':<18}{'Negative (0)':<15}\n"
-        for row, pos, neg in zip(rows, data["Positive (1)"], data["Negative (0)"]):
-            strSummary_end += f"{row:<30}{pos:<15}{neg:<15}\n"
-        strSummary_end += "\n------------------------------------------------------------------------------------\n"
+            strSummary_mid = "\nMARGINAL EFFECTS\n"
+            if reg.scalem == "phimean":
+                strSummary_mid += "Method: Mean of individual marginal effects\n"
+            elif reg.scalem == "xmean":
+                strSummary_mid += "Method: Marginal effects at variables mean\n"
+            strSummary_mid += "------------------------------------------------------------------------------------\n"
+            strSummary_mid += "            Variable      Slope            Std.Error     z-Statistic     Probability\n"
+            strSummary_mid += "------------------------------------------------------------------------------------\n"
+            for i in range(len(reg.slopes)):
+                strSummary_mid += "%20s    %12.5f    %12.5f    %12.5f    %12.5f\n" % (
+                    reg.name_x[i + 1],
+                    reg.slopes[i][0],
+                    reg.slopes_std_err[i][0],
+                    reg.slopes_z_stat[i][0],
+                    reg.slopes_z_stat[i][1],
+                )
+            strSummary_mid += "------------------------------------------------------------------------------------\n"     
+        
+        else:
+            strSummary_top += "%-20s:%12.2f\n%-20s:%12.2f\n" % (
+            "Balanced accuracy",
+            reg.fit["BA"],        
+            "% correctly pred.",
+            reg.fit["PREDPC"],
+            )
+            strSummary_mid = ""
+
+        if predflag:
+            strSummary_end += "\nCONFUSION MATRIX\n"
+            data = {
+                "Positive (1)": [
+                    reg.predtable["actpos"],  # Observed positives
+                    reg.predtable["predpos"],  # Predicted positives
+                    reg.predtable["truepos"],  # Correctly predicted positives
+                    reg.predtable["falseneg"]  # Wrongly predicted positives
+                ],
+                "Negative (0)": [
+                    reg.predtable["actneg"],  # Observed negatives
+                    reg.predtable["predneg"],  # Predicted negatives
+                    reg.predtable["trueneg"],  # Correctly predicted negatives
+                    reg.predtable["falsepos"]  # Wrongly predicted negatives
+                ]
+            }
+
+            rows = ["Observed", "Predicted", "Correctly Predicted", "Wrongly Predicted"]
+            strSummary_end += f"{'':<26}{'Positive (1)':<18}{'Negative (0)':<15}\n"
+            for row, pos, neg in zip(rows, data["Positive (1)"], data["Negative (0)"]):
+                strSummary_end += f"{row:<30}{pos:<15}{neg:<15}\n"
+            strSummary_end += "\n------------------------------------------------------------------------------------\n"
 
     if spat_diag or sptests_only:
-        try:
-            strSummary_end += "\nDIAGNOSTICS FOR SPATIAL DEPENDENCE\n"
-        except:
-            strSummary_end = "\nDIAGNOSTICS FOR SPATIAL DEPENDENCE\n"
+        strSummary_end += "\nDIAGNOSTICS FOR SPATIAL DEPENDENCE\n"
         strSummary_end += "TEST                          DF             VALUE           PROB\n"  
         strSummary_end += "%-23s      %2d       %12.3f        %9.4f\n" % (
             "Kelejian-Prucha (error)",
@@ -841,8 +851,16 @@ def _probit_out(reg, spat_diag=False, sptests_only=False):
             reg.PS_error[1],
         )
         if sptests_only:
-            return strSummary_end
-    else:
-        strSummary_end = ""
+            return strSummary_end        
 
     return strSummary_top, strSummary_mid, strSummary_end
+
+def _replace_header(summary, new_header):
+    # Check text in output_start and out_part_top:
+    header = "REGRESSION RESULTS\n------------------\n\nSUMMARY OF OUTPUT: "
+    return summary.replace(header, header + new_header)
+
+def _replace_footer(summary, new_footer):
+    # Check text in out_part_end:
+    footer = "================================ END OF REPORT ====================================="
+    return summary.replace(footer, new_footer + footer)

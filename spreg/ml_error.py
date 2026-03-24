@@ -9,7 +9,7 @@ __author__ = "Luc Anselin luc.anselin@asu.edu,\
 import numpy as np
 import numpy.linalg as la
 from scipy import sparse as sp
-from scipy.sparse.linalg import splu as SuperLU
+from scipy.sparse.linalg import splu
 from .utils import RegressionPropsY, RegressionPropsVM, set_warn, get_lags
 from . import diagnostics as DIAG
 from . import user_output as USER
@@ -42,7 +42,7 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
                    nx1 array for dependent variable
     x            : array
                    Two dimensional array with n rows and one column for each
-                   independent (exogenous) variable, excluding the constant
+                   independent (exogenous) variable, including the constant
     w            : Sparse matrix
                    Spatial weights sparse matrix
     method       : string
@@ -190,15 +190,15 @@ class BaseML_Error(RegressionPropsY, RegressionPropsVM, REGI.Regimes_Frame):
                     tol=epsilon,
                 )
             elif methodML == "LU":
-                I = sp.identity(w.n)
-                Wsp = w.sparse  # need sparse here
+                I = sp.identity(w.n, format='csc')
+                Wsp = w.sparse.tocsc()  # need sparse here
                 res = minimize_scalar(
                     err_c_loglik_sp,
                     0.0,
                     bounds=(-1.0, 1.0),
                     args=(self.n, self.y, ylag, self.x, xlag, I, Wsp),
                     method="bounded",
-                    tol=epsilon,
+                    options={'xatol': epsilon},
                 )
                 W = Wsp
             elif methodML == "ORD":
@@ -567,26 +567,49 @@ def err_c_loglik(lam, n, y, ylag, x, xlag, W):
 
 
 def err_c_loglik_sp(lam, n, y, ylag, x, xlag, I, Wsp):
-    # concentrated log-lik for error model, no constants, LU
+    # Standardize lambda to scalar
     if isinstance(lam, np.ndarray):
-        if lam.shape == (1, 1):
-            lam = lam[0][0]  # why does the interior value change?
+        lam = lam.item() # More robust than lam[0][0]
+
+    # 1. Filter variables (Spatial Error Model)
     ys = y - lam * ylag
     xs = x - lam * xlag
-    ysys = np.dot(ys.T, ys)
+
+    # 2. OLS residuals (using solve instead of inv)
+    # Equivalent to: B = (X'X)^-1 X'y
     xsxs = np.dot(xs.T, xs)
-    xsxsi = np.linalg.inv(xsxs)
     xsys = np.dot(xs.T, ys)
-    x1 = np.dot(xsxsi, xsys)
-    x2 = np.dot(xsys.T, x1)
-    ee = ysys - x2
-    sig2 = ee[0][0] / n
+    
+    try:
+        # Solves Ax = B for x. stable and faster than inv
+        betas = np.linalg.solve(xsxs, xsys) 
+    except np.linalg.LinAlgError:
+        return np.inf # Return infinity if singular to steer optimizer away
+
+    # Calculate residuals
+    xb = np.dot(xs, betas)
+    e = ys - xb
+    
+    # Calculate sigma^2
+    # Dot product is safer for shape flexibility than explicit matrix mult
+    ee = np.dot(e.T, e) 
+    sig2 = ee.item() / n # .item() handles both scalar and 1x1 arrays safely
+
+    # 3. Log-Determinant (Jacobian)
+    # Note: If Wsp is constant, pre-calculating eigenvalues is faster than LU here
+    A = I - lam * Wsp
+    try:
+        # specific to scipy.sparse.linalg
+        lu_obj = splu(A.tocsc()) 
+        # Sum of log of diagonal of U is log(det(A))
+        jacob = np.sum(np.log(np.abs(lu_obj.U.diagonal())))
+    except RuntimeError:
+        return np.inf
+
+    # 4. Log-Likelihood
     nlsig2 = (n / 2.0) * np.log(sig2)
-    a = I - lam * Wsp
-    LU = SuperLU(a.tocsc())
-    jacob = np.sum(np.log(np.abs(LU.U.diagonal())))
-    # this is the negative of the concentrated log lik for minimization
     clik = nlsig2 - jacob
+
     return clik
 
 

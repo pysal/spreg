@@ -1,4 +1,8 @@
 import unittest
+
+"""
+Deprecated in version 1.9.0 
+
 import libpysal
 import numpy as np
 import pandas as pd
@@ -132,6 +136,6 @@ class Test_Panel_RE_Error(unittest.TestCase):
        schwarz = 14388.724960297608
        np.testing.assert_allclose(reg.schwarz, schwarz, RTOL)
 
-
+"""
 if __name__ == "__main__":
     unittest.main()

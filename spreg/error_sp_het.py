@@ -37,7 +37,7 @@ class BaseGM_Error_Het(RegressionPropsY):
                    nx1 array for dependent variable
     x            : array
                    Two dimensional array with n rows and one column for each
-                   independent (exogenous) variable, excluding the constant
+                   independent (exogenous) variable, including the constant
     w            : Sparse matrix
                    Spatial weights sparse matrix
     max_iter     : int
@@ -381,23 +381,9 @@ class GM_Error_Het(BaseGM_Error_Het):
         self.title = "GM SPATIALLY WEIGHTED LEAST SQUARES (HET)"
 
         if slx_lags >0:
-            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            #x_constant = np.hstack((x_constant, lag_x))
-#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags) # exclude constant
-
             x_constant,name_x = USER.flex_wx(w,x=x_constant,name_x=name_x,constant=True,
                                              slx_lags=slx_lags,slx_vars=slx_vars)
-
             self.title += " WITH SLX (SLX-Error)"
-
-        # OLD
-        #if slx_lags >0:
-            #lag_x = get_lags(w, x_constant[:, 1:], slx_lags)
-            #x_constant = np.hstack((x_constant, lag_x))
-#            name_x += USER.set_name_spatial_lags(name_x, slx_lags)
-            #name_x += USER.set_name_spatial_lags(name_x[1:], slx_lags)  # no constant
-            #self.title += " WITH SLX (SLX-Error)"
 
         BaseGM_Error_Het.__init__(
             self,

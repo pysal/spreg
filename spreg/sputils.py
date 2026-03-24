@@ -355,12 +355,10 @@ def _sp_effects(reg, variables, spmult, slx_lags=0,slx_vars="All"):
     """
     
     variables_x_index = variables.index
-
     m1 = spmult['ati']
     btot = m1 * reg.betas[variables_x_index]
     m2 = spmult['adi']
     bdir = m2 * reg.betas[variables_x_index]
-
     # Assumes all SLX effects are indirect effects. 
     if slx_lags > 0:
         if reg.output.regime.nunique() > 1:
@@ -379,7 +377,10 @@ def _sp_effects(reg, variables, spmult, slx_lags=0,slx_vars="All"):
                 flexwx_indices = list(compress(variables_x_index,slx_vars))   # indices of x variables in wx
             else:
                 flexwx_indices = variables_x_index    # all x variables
-            xind = [h - 1 for h in flexwx_indices]
+            if 'o' in reg.output['var_type'].values:
+                xind = [h - 1 for h in flexwx_indices]
+            else:
+                xind = [h for h in flexwx_indices]
             wchunk_size = len(variables_wx_index)//slx_lags
             for i in range(slx_lags):
                 start_idx = i * wchunk_size
