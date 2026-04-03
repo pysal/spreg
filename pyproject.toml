@@ -29,13 +29,13 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: GIS",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
-"scipy>=0.11",
-"numpy>=1.23",
-"pandas",
-"libpysal>=4.0.0",
-"scikit-learn>=0.22",
+    "scipy>=0.11",
+    "numpy>=1.23",
+    "pandas",
+    "libpysal>=4.0.0",
+    "scikit-learn>=0.22",
 ]
 
 [project.urls]
