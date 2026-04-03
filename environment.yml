@@ -2,7 +2,7 @@ name: spreg
 channels:
   - conda-forge
 dependencies:
-  - python>=3.10
+  - python
   - bokeh
   - folium
   - geojson
