@@ -1,13 +1,14 @@
-name: test
+name: py312_spreg-oldest
 channels:
   - conda-forge
 dependencies:
-  - python=3.14
+  - python=3.12
   # required
-  - libpysal
-  - numpy
-  - pandas
-  - scipy
+  - libpysal=4.12.1
+  - numpy=2.0.0
+  - pandas=2.3.0
+  - scikit-learn=1.5.0
+  - scipy=1.14.0
   # testing/formatting
   - codecov
   - pytest
@@ -16,11 +17,10 @@ dependencies:
   # optional
   - bokeh
   - folium
-  - geopandas
+  - geopandas=1.1.0
   - geojson
-  - matplotlib
+  - matplotlib=3.10
   - mplleaflet
   - numexpr
-  - scikit-learn
   - seaborn
   - statsmodels

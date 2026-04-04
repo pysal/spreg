@@ -29,13 +29,13 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: GIS",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
-    "scipy>=0.11",
-    "numpy>=1.23",
-    "pandas",
-    "libpysal>=4.0.0",
-    "scikit-learn>=0.22",
+    "libpysal>=4.12",
+    "numpy>=2.0.0",
+    "pandas>=2.3",
+    "scikit-learn>=1.5",
+    "scipy>=1.14",
 ]
 
 [project.urls]
@@ -43,7 +43,21 @@ Home = "https://github.com/pysal/spreg/"
 Repository = "https://github.com/pysal/spreg"
 
 [project.optional-dependencies]
-dev = ["pre-commit"]
+plus = [
+    "bokeh",
+    "folium",
+    "geojson",
+    "geopandas>=1.1",
+    "matplotlib>=3.10",
+    "mplleaflet",
+    "numba>=0.60",
+    "numexpr",
+    "seaborn",
+    "statsmodels",
+]
+dev = [
+    "pre-commit",
+]
 docs = [
     "nbsphinx",
     "numpydoc",
