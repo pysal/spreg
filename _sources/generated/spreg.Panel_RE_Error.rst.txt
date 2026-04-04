@@ -1,0 +1,33 @@
+﻿spreg.Panel\_RE\_Error
+======================
+
+.. currentmodule:: spreg
+
+.. autoclass:: Panel_RE_Error
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Panel_RE_Error.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Panel_RE_Error.mean_y
+      ~Panel_RE_Error.sig2n
+      ~Panel_RE_Error.sig2n_k
+      ~Panel_RE_Error.std_y
+      ~Panel_RE_Error.utu
+      ~Panel_RE_Error.vm
+   
+   

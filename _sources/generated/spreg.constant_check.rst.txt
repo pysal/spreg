@@ -1,0 +1,6 @@
+﻿spreg.constant\_check
+=====================
+
+.. currentmodule:: spreg
+
+.. autofunction:: constant_check

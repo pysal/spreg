@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spatial Panel Models in spreg &#8212; spreg v1.9.1.dev5+g66b6dcca6 Manual</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pysal-styles.css?v=b100b7f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=6866afa5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.9.1.dev5+g66b6dcca6</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../installation.html">Installation</a></li>
+                <li><a href="../tutorials.html">Tutorials</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Spatial Panel Models in spreg</a></li>
+<li><a class="reference internal" href="#Preliminaries">Preliminaries</a></li>
+<li><a class="reference internal" href="#Pooled-panel">Pooled panel</a></li>
+<li><a class="reference internal" href="#Fixed-Effects">Fixed Effects</a></li>
+<li><a class="reference internal" href="#Random-Effects">Random Effects</a></li>
+<li><a class="reference internal" href="#Pooled-SEM---GM-estimator">Pooled SEM - GM estimator</a></li>
+<li><a class="reference internal" href="#Pooled-SEM---ML-estimator">Pooled SEM - ML estimator</a></li>
+<li><a class="reference internal" href="#Error-model---Random-Effects---KKP-GM-Estimator">Error model - Random Effects - KKP GM Estimator</a></li>
+<li><a class="reference internal" href="#Error-model---Random-Effects---ML-Estimator">Error model - Random Effects - ML Estimator</a></li>
+<li><a class="reference internal" href="#Error-Model---Fixed-Effects---ML-Estimator">Error Model - Fixed Effects - ML Estimator</a></li>
+<li><a class="reference internal" href="#Lag-Model---Random-Effects---ML-Estimator">Lag Model - Random Effects - ML Estimator</a></li>
+<li><a class="reference internal" href="#Lag-Model---Fixed-Effects---ML-Estimator">Lag Model - Fixed Effects - ML Estimator</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="admonition note">
+<p>This page was generated from <a class="reference external" href="https://github.com/pysal/spreg/blob/master/notebooks/panels_examples.ipynb">notebooks/panels_examples.ipynb</a>.
+Interactive online version:
+<span class="raw-html"><a href="https://mybinder.org/v2/gh/pysal/spreg/master?filepath=notebooks/panels_examples.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p>
+</div>
+<section id="Spatial-Panel-Models-in-spreg">
+<h1>Spatial Panel Models in spreg<a class="headerlink" href="#Spatial-Panel-Models-in-spreg" title="Link to this heading">¶</a></h1>
+<p>This notebook presents an usage example of the spatial panel functions available in spreg as of version 1.9.0. Prepared by: Luc Anselin and Pedro Amaral</p>
+</section>
+<section id="Preliminaries">
+<h1>Preliminaries<a class="headerlink" href="#Preliminaries" title="Link to this heading">¶</a></h1>
+<p>Import required libraries and load the example data.</p>
+<p>In this example, we will use data on NCOVR US County Homicides (3085 areas) included in libpysal. We will extract the HR (homicide rates) data in the 70’s, 80’s and 90’s from the dataframe and make them the dependent variable for the regression. Note that the data can also be passed in the long format instead of wide format (i.e. a vector with n*t rows and a single column for the dependent variable and a matrix of dimension n*t x k for the independent variables).</p>
+<p>For explanatory variables, we will extract RD and PS in the same time periods from the dataframe to be used as independent variables in the regression.</p>
+<p>IMPORTANT: If in wide format as in the example below, the data must be organized in a way that all time periods of a given variable are side-by-side and in the correct time order. That is: x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc. By default a vector of ones will be added to the independent variables passed in.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">libpysal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">spreg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/miniconda3/envs/env14/lib/python3.14/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">load_example</span><span class="p">(</span><span class="s1">&#39;NCOVR&#39;</span><span class="p">)</span>
+<span class="n">shp_path</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;NAT.shp&#39;</span><span class="p">)</span>
+<span class="n">dfs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">shp_path</span><span class="p">)</span>
+
+<span class="c1"># Subset to East Coast states to have a smaller sample</span>
+<span class="n">east_fips</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">54</span><span class="p">]</span>
+<span class="n">dfs2</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;STFIPS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">east_fips</span><span class="p">)]</span>
+
+<span class="n">wq1</span> <span class="o">=</span> <span class="n">libpysal</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">Queen</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">dfs2</span><span class="p">,</span><span class="n">ids</span><span class="o">=</span><span class="s1">&#39;FIPSNO&#39;</span><span class="p">)</span>
+<span class="n">wq1</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+
+<span class="n">y_var</span> <span class="o">=</span> <span class="n">dfs2</span><span class="p">[[</span><span class="s1">&#39;HR70&#39;</span><span class="p">,</span> <span class="s1">&#39;HR80&#39;</span><span class="p">,</span> <span class="s1">&#39;HR90&#39;</span><span class="p">]]</span>
+<span class="n">x_var</span> <span class="o">=</span> <span class="n">dfs2</span><span class="p">[[</span><span class="s1">&#39;RD70&#39;</span><span class="p">,</span><span class="s1">&#39;RD80&#39;</span><span class="p">,</span><span class="s1">&#39;RD90&#39;</span><span class="p">,</span><span class="s1">&#39;PS70&#39;</span><span class="p">,</span><span class="s1">&#39;PS80&#39;</span><span class="p">,</span><span class="s1">&#39;PS90&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<p>spreg version 1.9.0 offers the following panel functions (in addition to the SUR estimators):</p>
+<ol class="arabic simple">
+<li><p>OLS and Basic Panel Classes</p></li>
+</ol>
+<ul class="simple">
+<li><p>PooledOLS Description: Baseline pooled regression for panel data. Initializes and runs the pooled OLS estimation with optional BSK spatial diagnostics.</p></li>
+<li><p>PanelFE Description: Fixed Effects (Within) estimator for panel data. Performs the “Within Transformation” (demeaning) and executes the regression.</p></li>
+<li><p>PanelRE Description: Random Effects (GLS) estimator. Estimates variance components using Swamy-Arora, computes quasi-demeaning, and performs the Hausman test.</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>GMM-Based Spatial Error Classes</p></li>
+</ol>
+<ul class="simple">
+<li><p>GM_ErrorPooled Description: Pooled Spatial Error Model (SEM) via GMM. Based on the heteroskedasticity-robust estimator proposed by <code class="docutils literal notranslate"><span class="pre">Arraiz2010</span></code>, available in the spreg function <code class="docutils literal notranslate"><span class="pre">GM_Error_Het</span></code>.</p></li>
+<li><p>GM_ErrorRE Description: KKP spatial random effects model.</p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>Maximum Likelihood (ML) Spatial Classes</p></li>
+</ol>
+<ul class="simple">
+<li><p>ML_ErrorPooled Description: Pooled ML SEM with diagnostic output.</p></li>
+<li><p>ML_ErrorFE Description: ML estimation for Fixed Effects Spatial Error models.</p></li>
+<li><p>ML_ErrorRE Description: ML estimation for Random Effects Spatial Error models using Ord’s eigenvalue approach.</p></li>
+<li><p>ML_LagFE Description: ML estimation for Fixed Effects Spatial Lag models with spatial impacts.</p></li>
+<li><p>ML_LagRE Description: ML Spatial Lag Random Effects to estimate both the spatial lag (ρ) and the random effects component (ϕ)</p></li>
+</ul>
+<p>In the examples shown below, the following notation will be used:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(Y\)</span>: <span class="math notranslate nohighlight">\(NT \times 1\)</span> vector of the dependent variable</p></li>
+<li><p><span class="math notranslate nohighlight">\(X\)</span>: <span class="math notranslate nohighlight">\(NT \times K\)</span> matrix of exogenous variables</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta\)</span>: <span class="math notranslate nohighlight">\(K \times 1\)</span> vector of parameters</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_N\)</span>: <span class="math notranslate nohighlight">\(N \times N\)</span> spatial weights matrix</p></li>
+<li><p><span class="math notranslate nohighlight">\(\iota_T\)</span>: <span class="math notranslate nohighlight">\(T \times 1\)</span> vector of ones</p></li>
+<li><p><span class="math notranslate nohighlight">\(\otimes\)</span>: Kronecker product</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu\)</span>: <span class="math notranslate nohighlight">\(N \times 1\)</span> vector of individual fixed or random effects</p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon\)</span>: <span class="math notranslate nohighlight">\(NT \times 1\)</span> vector of idiosyncratic errors</p></li>
+<li><p><span class="math notranslate nohighlight">\(\rho\)</span>: Spatial lag parameter</p></li>
+<li><p><span class="math notranslate nohighlight">\(\lambda\)</span>: Spatial error parameter</p></li>
+</ul>
+</section>
+<section id="Pooled-panel">
+<h1>Pooled panel<a class="headerlink" href="#Pooled-panel" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = X\beta + \epsilon\]</div>
+<p><em>where :math:`epsilon sim N(0, sigma^2 I_{NT})`</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>spat_diag: If True, then compute the BSK tests (boolean, default = True)</p></li>
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>BSK_list: List of BSK tests to compute if spat_diag is True. Options are “all”, “LMJ”, “LM1”, “LM2”, “LMC_spatial”, “LMC_RE” (default: [“LMJ”, “LM1”, “LM2”]).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panel</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">PooledOLS</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">,</span> <span class="n">spat_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slx_lags</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: POOLED OLS PANEL
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           3
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364
+R-squared           :      0.3641
+Adjusted R-squared  :      0.3636
+Sum squared residual:     83215.9                F-statistic           :    676.8331
+Sigma-square        :      35.201                Prob(F-statistic)     :  3.906e-233
+S.E. of regression  :       5.933                Log likelihood        :   -7571.669
+Sigma-square ML     :      35.157                Akaike info criterion :   15149.338
+S.E of regression ML:      5.9293                Schwarz criterion     :   15166.646
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     t-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         7.41873         0.15201        48.80313         0.00000
+                  RD         4.77170         0.13421        35.55307         0.00000
+                  PS         1.30852         0.15173         8.62399         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+
+SPATIAL DIAGNOSTIC TESTS
+------------------------------------------------------------------------------------
+TEST                             DF        VALUE           PROB
+LM Marginal RE (LM1)             1        13.5268        0.00000
+LM Marginal Spatial (LM2)        1        19.9909        0.00000
+LM Joint (LMJ)                   2       582.6102        0.00000
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Fixed-Effects">
+<h1>Fixed Effects<a class="headerlink" href="#Fixed-Effects" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = (\iota_T \otimes I_N)\mu + X\beta + \epsilon\]</div>
+<p><em>where :math:`iota_T` is a :math:`T times 1` vector of ones, and :math:`mu` is an :math:`N times 1` vector of fixed effects.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelFE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">PanelFE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelFE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: FIXED EFFECTS PANEL (ONE-WAY)
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           2
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2365
+Pseudo R-squared    :      0.0362
+Sum squared residual:      612992                F-statistic           :   2056.4811
+Sigma-square        :      23.750                Prob(F-statistic)     :           0
+S.E. of regression  :       4.873                Log likelihood        :   -9935.016
+Sigma-square ML     :     258.974                Akaike info criterion :   19874.032
+S.E of regression ML:     16.0927                Schwarz criterion     :   19885.571
+Fixed-effects mean  :     12.9384
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+                  RD         0.50537         0.42470         1.18996         0.23406
+                  PS        -8.02695         1.24083        -6.46899         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Individual effects (mu_i) for the first 5 observations</span>
+<span class="n">panelFE</span><span class="o">.</span><span class="n">mu_i</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[ 3.36232066],
+       [ 1.60766964],
+       [-0.51299016],
+       [ 8.92060208],
+       [ 2.99745542]])
+</pre></div></div>
+</div>
+</section>
+<section id="Random-Effects">
+<h1>Random Effects<a class="headerlink" href="#Random-Effects" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = X\beta + v\]</div>
+<div class="math notranslate nohighlight">
+\[v = (\iota_T \otimes I_N)\mu + \epsilon\]</div>
+<p><em>where :math:`mu sim N(0, sigma_mu^2 I_N)` represents the random effects, and :math:`epsilon sim N(0, sigma_epsilon^2 I_{NT})`.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>spat_diag: If True (default), then compute the ‘LMC_spatial’ BSK test (boolean).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelRE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">PanelRE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelRE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: RANDOM EFFECTS (ONE-WAY) PANEL
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           3
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364
+Pseudo R-squared    :      0.3639
+Sum squared residual:     83401.1                F-statistic           :    600.5147
+Sigma-square        :      24.807                Prob(F-statistic)     :  1.296e-211
+S.E. of regression  :       4.981                Log likelihood        :   -7574.300
+Sigma-square ML     :      24.807                Akaike info criterion :   15154.600
+S.E of regression ML:      4.9806                Schwarz criterion     :   15171.908
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         7.57431         0.19243        39.36224         0.00000
+                  RD         4.46700         0.16293        27.41586         0.00000
+                  PS         1.10059         0.19119         5.75642         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+
+VARIANCE COMPONENTS ESTIMATES
+------------------------------------------------------------------------------------
+Sigma2_epsilon (Idiosyncratic)         23.7802
+Sigma2_mu (Individual)                 10.3181
+Theta (Quasi-demeaning weight)          0.3409
+------------------------------------------------------------------------------------
+
+DIAGNOSTIC TESTS
+------------------------------------------------------------------------------------
+TEST                             DF        VALUE           PROB
+Hausman Specification Test       2       107.7615        0.00000
+LM Conditional Spatial           1        11.8355        0.00000
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Pooled-SEM---GM-estimator">
+<h1>Pooled SEM - GM estimator<a class="headerlink" href="#Pooled-SEM---GM-estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = X\beta + u\]</div>
+<div class="math notranslate nohighlight">
+\[u = \lambda(I_T \otimes W_N)u + \epsilon\]</div>
+<p><em>where :math:`lambda` is the spatial error coefficient and :math:`W_N` is the spatial weights matrix.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>max_iter: Maximum number of iterations of steps 2a and 2b from <code class="docutils literal notranslate"><span class="pre">Arraiz2010</span></code> (int, default = 1).</p></li>
+<li><p>step1c: If True, then include Step 1c from <code class="docutils literal notranslate"><span class="pre">Arraiz2010</span></code> (boolean, default = False).</p></li>
+<li><p>nonspat_diag: If True (default), then compute the ‘LMC_RE’ BSK test.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelSEM</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">GM_ErrorPooled</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelSEM</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: GMM POOLED SPATIAL ERROR MODEL (SEM)
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           3
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364
+Pseudo R-squared    :      0.3636
+N. of iterations    :           1                Step1c computed       :          No
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         7.54099         0.27761        27.16348         0.00000
+                  RD         4.52263         0.21905        20.64645         0.00000
+                  PS         1.06316         0.23034         4.61558         0.00000
+              lambda         0.50345         0.02804        17.95214         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+
+DIAGNOSTIC TESTS
+------------------------------------------------------------------------------------
+TEST                             DF        VALUE           PROB
+LM Conditional RE                1         8.3638        0.00000
+Warning: The properties of the LM Conditional RE test using GM have not been
+         established. We recommend using ML_ErrorPooled.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Pooled-SEM---ML-estimator">
+<h1>Pooled SEM - ML estimator<a class="headerlink" href="#Pooled-SEM---ML-estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = X\beta + u\]</div>
+<div class="math notranslate nohighlight">
+\[u = \lambda(I_T \otimes W_N)u + \epsilon\]</div>
+<p><em>where :math:`lambda` is the spatial error coefficient and :math:`W_N` is the spatial weights matrix.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>method: if ‘LU’ (default), LU decomposition for sparse matrices (Recommended for Panel); if ‘ord’, Ord eigenvalue calculation (Slow for large Panel); if ‘full’, brute force (Should not use for Panel).</p></li>
+<li><p>nonspat_diag: If True (default), then compute the ‘LMC_RE’ BSK test.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelML_SEM</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">ML_ErrorPooled</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelML_SEM</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: ML POOLED SPATIAL ERROR MODEL (SEM)
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :     dep_var                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           3
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364
+Pseudo R-squared    :      0.3636
+Log likelihood      :  -7416.9763
+Sigma-square ML     :     29.5004                Akaike info criterion :   14839.953
+S.E of regression   :      5.4314                Schwarz criterion     :   14857.261
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         7.54329         0.22626        33.33920         0.00000
+                  RD         4.51673         0.15559        29.03023         0.00000
+                  PS         1.05694         0.16540         6.39042         0.00000
+              lambda         0.45384         0.02472        18.36254         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+
+DIAGNOSTIC TESTS
+------------------------------------------------------------------------------------
+TEST                             DF        VALUE           PROB
+LM Conditional RE                1         7.7786        0.00000
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Error-model---Random-Effects---KKP-GM-Estimator">
+<h1>Error model - Random Effects - KKP GM Estimator<a class="headerlink" href="#Error-model---Random-Effects---KKP-GM-Estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = X\beta + u\]</div>
+<div class="math notranslate nohighlight">
+\[u = \lambda(I_T \otimes W_N)u + v\]</div>
+<div class="math notranslate nohighlight">
+\[v = (\iota_T \otimes I_N)\mu + \epsilon\]</div>
+<p><em>where the spatial error process (:math:`lambda`) applies to the composite error term, meaning both the random effects (:math:`mu`) and idiosyncratic errors (:math:`epsilon`) are spatially correlated.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>full_weights: (boolean) Considers different weights for each of the 6 moment conditions if True or only 2 sets of weights for the first 3 and the last 3 moment conditions if False (default)</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelSEM_RE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">GM_ErrorRE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelSEM_RE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: GMM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP)
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           3
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364
+Pseudo R-squared    :      0.3634
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         7.61779         0.26073        29.21762         0.00000
+                  RD         4.33248         0.17641        24.55953         0.00000
+                  PS         0.97987         0.19391         5.05331         0.00000
+              lambda         0.43686
+            sigma2_v        23.90314
+            sigma2_1        41.39357
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Error-model---Random-Effects---ML-Estimator">
+<h1>Error model - Random Effects - ML Estimator<a class="headerlink" href="#Error-model---Random-Effects---ML-Estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = X\beta + v\]</div>
+<div class="math notranslate nohighlight">
+\[v = (\iota_T \otimes I_N)\mu + u\]</div>
+<div class="math notranslate nohighlight">
+\[u = \lambda(I_T \otimes W_N)u + \epsilon\]</div>
+<p><em>where the spatial error process (:math:`lambda`) applies only to the idiosyncratic error term (:math:`u`). The individual random effects (:math:`mu`) remain spatially independent.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelSEM_RE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">ML_ErrorRE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelSEM_RE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: ML SPATIAL ERROR PANEL MODEL (SEM) - RANDOM EFFECTS
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      8.8420                Number of Variables   :           3
+S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364
+Pseudo R-squared    :      0.3638
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         7.58728         0.22993        32.99879         0.00000
+                  RD         4.39257         0.17090        25.70273         0.00000
+                  PS         1.05883         0.18969         5.58183         0.00000
+              lambda         0.44058         0.00496        88.90567         0.00000
+            sigma2_u         6.02048         0.03671       164.01180         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Error-Model---Fixed-Effects---ML-Estimator">
+<h1>Error Model - Fixed Effects - ML Estimator<a class="headerlink" href="#Error-Model---Fixed-Effects---ML-Estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = (\iota_T \otimes I_N)\mu + X\beta + u\]</div>
+<div class="math notranslate nohighlight">
+\[u = \lambda(I_T \otimes W_N)u + \epsilon\]</div>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelSEM_FE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">ML_ErrorFE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelSEM_FE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: ML SPATIAL ERROR PANEL MODEL - FIXED EFFECTS
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      0.0000                Number of Variables   :           2
+S.D. dependent var  :      4.0669                Degrees of Freedom    :        2365
+Pseudo R-squared    :      0.0422
+Log likelihood      :  -6608.0839
+Sigma-square ML     :     15.4572                Akaike info criterion :   13220.168
+S.E of regression   :      3.9316                Schwarz criterion     :   13231.706
+Fixed-effects mean  :     12.7425
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+                  RD         0.60867         0.36417         1.67139         0.09465
+                  PS        -7.68123         1.08867        -7.05559         0.00000
+              lambda         0.19578         0.02973         6.58437         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Individual effects (mu_i) for the first 5 observations</span>
+<span class="n">panelSEM_FE</span><span class="o">.</span><span class="n">mu_i</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[ 3.31195411],
+       [ 1.67335124],
+       [-0.18020496],
+       [ 8.72536659],
+       [ 3.03582746]])
+</pre></div></div>
+</div>
+</section>
+<section id="Lag-Model---Random-Effects---ML-Estimator">
+<h1>Lag Model - Random Effects - ML Estimator<a class="headerlink" href="#Lag-Model---Random-Effects---ML-Estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = \rho(I_T \otimes W_N)Y + X\beta + v\]</div>
+<div class="math notranslate nohighlight">
+\[v = (\iota_T \otimes I_N)\mu + \epsilon\]</div>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>spat_impacts: Include average direct impact (ADI), average indirect impact (AII), and average total impact (ATI) in summary results; Options are ‘simple’, ‘full’, ‘power’, ‘all’ or None; (str or list, default = ‘simple’).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelSAR_RE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">ML_LagRE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelSAR_RE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: ML SPATIAL LAG PANEL - RANDOM EFFECTS
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      6.5609                Number of Variables   :           4
+S.D. dependent var  :      6.1552                Degrees of Freedom    :        2363
+Pseudo R-squared    :      0.3692
+Log likelihood      :  -7383.2780
+Sigma-square ML     :     23.9269                Akaike info criterion :   14774.556
+S.E of regression   :      4.8915                Schwarz criterion     :   14797.633
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+            CONSTANT         4.50846         0.26075        17.29006         0.00000
+                  RD         3.58070         0.16225        22.06916         0.00000
+                  PS         1.19552         0.16745         7.13966         0.00000
+                W_HR         0.35801         0.02398        14.92908         0.00000
+                 phi         0.74201         0.02132        34.80229         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+
+SPATIAL LAG MODEL IMPACTS
+Impacts computed using the &#39;simple&#39; method.
+            Variable         Direct        Indirect          Total
+                  RD         3.5807          1.9968          5.5775
+                  PS         1.1955          0.6667          1.8622
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+</section>
+<section id="Lag-Model---Fixed-Effects---ML-Estimator">
+<h1>Lag Model - Fixed Effects - ML Estimator<a class="headerlink" href="#Lag-Model---Fixed-Effects---ML-Estimator" title="Link to this heading">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[Y = \rho(I_T \otimes W_N)Y + (\iota_T \otimes I_N)\mu + X\beta + \epsilon\]</div>
+<p><em>where :math:`rho` is the spatial lag (autoregressive) coefficient.</em></p>
+<p>Optional arguments include (among others):</p>
+<ul class="simple">
+<li><p>slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags&gt;0, the specification becomes of the SLX type (integer, default = 0).</p></li>
+<li><p>slx_vars: “all” or list of booleans to select x variables to be lagged (str or list, default = “all”).</p></li>
+<li><p>spat_impacts: Include average direct impact (ADI), average indirect impact (AII), and average total impact (ATI) in summary results; Options are ‘simple’, ‘full’, ‘power’, ‘all’ or None; (str or list, default = ‘simple’).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">panelSAR_FE</span> <span class="o">=</span> <span class="n">spreg</span><span class="o">.</span><span class="n">ML_LagFE</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_var</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">wq1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">panelSAR_FE</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+REGRESSION RESULTS
+------------------
+
+SUMMARY OF OUTPUT: ML SPATIAL LAG PANEL - FIXED EFFECTS
+------------------------------------------------------------------------------------
+Data set            :     unknown
+Weights matrix      :     unknown
+Dependent Variable  :          HR                Number of Observations:        2367
+Mean dependent var  :      0.0000                Number of Variables   :           3
+S.D. dependent var  :      4.0669                Degrees of Freedom    :        2364
+Pseudo R-squared    :      0.0659
+Log likelihood      :  -6607.9807
+Sigma-square ML     :     15.4592                Akaike info criterion :   13221.961
+S.E of regression   :      3.9318                Schwarz criterion     :   13239.269
+Fixed-effects mean  :     12.4434
+
+------------------------------------------------------------------------------------
+            Variable     Coefficient       Std.Error     z-Statistic     Probability
+------------------------------------------------------------------------------------
+                  RD         0.52398         0.34274         1.52880         0.12631
+                  PS        -7.08071         1.00944        -7.01449         0.00000
+                W_HR         0.19301         0.02930         6.58807         0.00000
+------------------------------------------------------------------------------------
+Warning: Assuming panel is in wide format.
+y[:, 0] refers to T0, y[:, 1] refers to T1, etc.
+x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.
+
+SPATIAL LAG MODEL IMPACTS
+Impacts computed using the &#39;simple&#39; method.
+            Variable         Direct        Indirect          Total
+                  RD         0.5240          0.1253          0.6493
+                  PS        -7.0807         -1.6935         -8.7742
+================================ END OF REPORT =====================================
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Individual effects (mu_i) for the first 5 observations</span>
+<span class="n">panelSAR_FE</span><span class="o">.</span><span class="n">mu_i</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[3.16956916],
+       [1.72726064],
+       [0.25762143],
+       [8.24781692],
+       [3.18171931]])
+</pre></div></div>
+</div>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/notebooks/panels_examples.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
