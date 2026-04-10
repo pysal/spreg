@@ -1,0 +1,6 @@
+﻿spreg.breusch\_pagan
+====================
+
+.. currentmodule:: spreg
+
+.. autofunction:: breusch_pagan

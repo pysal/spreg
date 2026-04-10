@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>spreg.diagnostics_panel &#8212; spreg v1.9.1.dev6+g6ad47261a Manual</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=9afac83c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pysal-styles.css?v=b100b7f1" />
+    <script src="../../_static/documentation_options.js?v=6f370c14"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../../_static/pysal_favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          spreg</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.9.1.dev6+g6ad47261a</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../installation.html">Installation</a></li>
+                <li><a href="../../tutorials.html">Tutorials</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../references.html">References</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/1_sample_data.html">PySAL Sample Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/2_data_input_output.html">Data Input/Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/3_basic_mapping.html">Basic Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/4_spatial_weights.html">Spatial Weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/5_OLS.html">Basic Ordinary Least Squares Regression (OLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/6_TWOSLS.html">Two Stage Least Squares Regression (2SLS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/7_spatial_models.html">Spatial Model Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/8_spatial_multipliers.html">Spatial Multipliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/9_specification_tests.html">Specification Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/10_specification_tests_properties.html">Specification Tests - Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/11_distance_decay.html">Distance Decay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/12_estimating_slx.html">Estimating SLX Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/13_ML_estimation_spatial_lag.html">Maximum Likelihood Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/14_IV_estimation_spatial_lag.html">Instrumental Variables Estimation - Spatial Lag Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/15_ML_estimation_spatial_error.html">Maximum Likelihood Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/16_GMM_estimation_spatial_error.html">GMM Estimation - Spatial Error Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/17_GMM_higher_order.html">GMM Estimation - Higher Order Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/skater_reg.html">Skater Regression</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#classic-models">Classic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-regression-models">Spatial Regression Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#discrete-choice-models">Discrete Choice Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#regimes-models">Regimes Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#seemingly-unrelated-regressions">Seemingly-Unrelated Regressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-panel-models">Spatial Panel Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#diagnostics">Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#spatial-specification-search">Spatial Specification Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#dgp">DGP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for spreg.diagnostics_panel</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Diagnostics for panel data estimation</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Wei Kang weikang9009@gmail.com, </span><span class="se">\</span>
+<span class="s2">              Pedro Amaral pedroamaral@cedeplar.ufmg.br, </span><span class="se">\</span>
+<span class="s2">              Pablo Estrada pabloestradace@gmail.com&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">la</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sparse</span> <span class="k">as</span> <span class="n">sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_output</span> <span class="k">as</span> <span class="n">USER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ols</span><span class="w"> </span><span class="kn">import</span> <span class="n">OLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">spdot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.panel_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_panel</span>
+
+<span class="n">chisqprob</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">chisq</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">chisq</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;panel_LMlag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;panel_LMerror&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;panel_rLMlag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;panel_rLMerror&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;panel_Hausman&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="panel_LMlag">
+<a class="viewcode-back" href="../../generated/spreg.panel_LMlag.html#spreg.panel_LMlag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel_LMlag</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lagrange Multiplier test on lag spatial autocorrelation in panel data.</span>
+<span class="sd">    :cite:`Anselin2008`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nxt or (nxt)x1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   nx(txk) or (nxt)xk array for independent (exogenous)</span>
+<span class="sd">                   variables, excluding the constant</span>
+<span class="sd">    w            : pysal W object</span>
+<span class="sd">                   Spatial weights object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lme          : tuple</span>
+<span class="sd">                   Pair of statistic and p-value for the LM lag test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name_y</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">check_panel</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+    <span class="n">ols</span> <span class="o">=</span> <span class="n">OLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">n</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Wsp_nt</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">)</span>
+    <span class="n">wxb</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">ols</span><span class="o">.</span><span class="n">predy</span><span class="p">)</span>
+    <span class="n">ww</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">wTw</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">trw</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">wTw</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">num1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">spdot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">xtxi</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)))</span>
+    <span class="n">num2</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">wxb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">wxb</span><span class="p">))</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">num2</span> <span class="o">+</span> <span class="p">(</span><span class="n">trw</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">*</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span><span class="p">)</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span>
+    <span class="n">utwy</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">utwy</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">sig2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">J</span><span class="p">)</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="panel_LMerror">
+<a class="viewcode-back" href="../../generated/spreg.panel_LMerror.html#spreg.panel_LMerror">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel_LMerror</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lagrange Multiplier test on error spatial autocorrelation in panel data.</span>
+<span class="sd">    :cite:`Anselin2008`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nxt or (nxt)x1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   nx(txk) or (nxt)xk array for independent (exogenous)</span>
+<span class="sd">                   variables, excluding the constant</span>
+<span class="sd">    w            : pysal W object</span>
+<span class="sd">                   Spatial weights object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lme          : tuple</span>
+<span class="sd">                   Pair of statistic and p-value for the LM error test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name_y</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">check_panel</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+    <span class="n">ols</span> <span class="o">=</span> <span class="n">OLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">n</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Wsp_nt</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">)</span>
+    <span class="n">ww</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">wTw</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">trw</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">wTw</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">utwu</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="p">))</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="n">utwu</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">sig2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">trw</span><span class="p">)</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="panel_rLMlag">
+<a class="viewcode-back" href="../../generated/spreg.panel_rLMlag.html#spreg.panel_rLMlag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel_rLMlag</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robust Lagrange Multiplier test on lag spatial autocorrelation in</span>
+<span class="sd">    panel data. :cite:`Elhorst2014`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nxt or (nxt)x1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   nx(txk) or (nxt)xk array for independent (exogenous)</span>
+<span class="sd">                   variables, excluding the constant</span>
+<span class="sd">    w            : pysal W object</span>
+<span class="sd">                   Spatial weights object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lme          : tuple</span>
+<span class="sd">                   Pair of statistic and p-value for the Robust LM lag test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name_y</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">check_panel</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+    <span class="n">ols</span> <span class="o">=</span> <span class="n">OLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">n</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Wsp_nt</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">)</span>
+    <span class="n">wxb</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">ols</span><span class="o">.</span><span class="n">predy</span><span class="p">)</span>
+    <span class="n">ww</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">wTw</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">trw</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">wTw</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">utwu</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="p">))</span>
+    <span class="n">num1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">spdot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">xtxi</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)))</span>
+    <span class="n">num2</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">wxb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">wxb</span><span class="p">))</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">num2</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">*</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span><span class="p">)</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span>
+    <span class="n">utwy</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="p">(</span><span class="n">utwy</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span> <span class="o">-</span> <span class="n">utwu</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">trw</span><span class="p">)</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="panel_rLMerror">
+<a class="viewcode-back" href="../../generated/spreg.panel_rLMerror.html#spreg.panel_rLMerror">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel_rLMerror</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robust Lagrange Multiplier test on error spatial autocorrelation in</span>
+<span class="sd">    panel data. :cite:`Elhorst2014`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y            : array</span>
+<span class="sd">                   nxt or (nxt)x1 array for dependent variable</span>
+<span class="sd">    x            : array</span>
+<span class="sd">                   nx(txk) or (nxt)xk array for independent (exogenous)</span>
+<span class="sd">                   variables, excluding the constant</span>
+<span class="sd">    w            : pysal W object</span>
+<span class="sd">                   Spatial weights object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lme          : tuple</span>
+<span class="sd">                   Pair of statistic and p-value for the Robust LM error test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name_y</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">check_panel</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">,</span> <span class="n">warn</span> <span class="o">=</span> <span class="n">USER</span><span class="o">.</span><span class="n">check_constant</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name_x</span><span class="p">)</span>
+    <span class="n">ols</span> <span class="o">=</span> <span class="n">OLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">n</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Wsp_nt</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">)</span>
+    <span class="n">wxb</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">ols</span><span class="o">.</span><span class="n">predy</span><span class="p">)</span>
+    <span class="n">ww</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">wTw</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">trw</span> <span class="o">=</span> <span class="n">ww</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">wTw</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">utwu</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="p">))</span>
+    <span class="n">num1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">spdot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">xtxi</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)))</span>
+    <span class="n">num2</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">wxb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">wxb</span><span class="p">))</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">num2</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">*</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span><span class="p">)</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span>
+    <span class="n">utwy</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">Wsp_nt</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">lm</span> <span class="o">=</span> <span class="p">(</span><span class="n">utwu</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">/</span> <span class="n">J</span> <span class="o">*</span> <span class="n">utwy</span> <span class="o">/</span> <span class="n">ols</span><span class="o">.</span><span class="n">sig2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">t</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">trw</span> <span class="o">/</span> <span class="n">J</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="panel_Hausman">
+<a class="viewcode-back" href="../../generated/spreg.panel_Hausman.html#spreg.panel_Hausman">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel_Hausman</span><span class="p">(</span><span class="n">panel_fe</span><span class="p">,</span> <span class="n">panel_re</span><span class="p">,</span> <span class="n">sp_lag</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hausman test on panel data with spatial interactions. :cite:`Elhorst2014`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    panel_fe     : panel_fe</span>
+<span class="sd">                   Instance from a fixed effects panel spatial regression</span>
+<span class="sd">    panel_re     : panel_re</span>
+<span class="sd">                   Instance from a random effects panel spatial regression</span>
+<span class="sd">    sp_lag       : boolean</span>
+<span class="sd">                   if True, calculate Hausman test for spatial lag model.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    h            : tuple</span>
+<span class="sd">                   Pair of statistic and p-value for the Hausman test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">panel_fe</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">panel_re</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">panel_fe</span><span class="o">.</span><span class="n">betas</span> <span class="o">-</span> <span class="n">panel_re</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">panel_fe</span><span class="p">,</span> <span class="s2">&quot;lam&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">panel_re</span><span class="p">,</span> <span class="s2">&quot;lam&quot;</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">panel_fe</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">panel_re</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Only same spatial interaction allowed&quot;</span><span class="p">)</span>
+
+    <span class="n">vard</span> <span class="o">=</span> <span class="n">panel_re</span><span class="o">.</span><span class="n">varb</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">panel_fe</span><span class="o">.</span><span class="n">varb</span>
+    <span class="n">vardi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">vard</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">spdot</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">spdot</span><span class="p">(</span><span class="n">vardi</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+    <span class="n">pval</span> <span class="o">=</span> <span class="n">chisqprob</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">panel_re</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pval</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">BSK_tests</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">GM_BSK</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform Baltagi, Song, and Koh (2003) LM tests for Spatial Panel Data.</span>
+<span class="sd">    </span>
+<span class="sd">    Tests Included:</span>
+<span class="sd">    1. LM Joint: Joint test for Random Effects and Spatial Error.</span>
+<span class="sd">    2. LM Marginal RE: Test for RE assuming no Spatial Error.</span>
+<span class="sd">    3. LM Marginal Spatial: Test for Spatial Error assuming no RE.</span>
+<span class="sd">    4. LM Conditional Spatial: Test for Spatial Error allowing for RE.</span>
+<span class="sd">    5. LM Conditional RE: Test for RE allowing for Spatial Error.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reg     : spreg regression object</span>
+<span class="sd">              A fitted spreg panel model </span>
+<span class="sd">              (usually either PooledOLS, PanelRE, ML_ErrorPooled, or GM_ErrorPooled)</span>
+<span class="sd">    w       : pysal W object</span>
+<span class="sd">              Spatial weights matrix.</span>
+<span class="sd">    GM_BSK : boolean</span>
+<span class="sd">              If True, use GM estimator for Pooled SEM.</span>
+<span class="sd">              Ignored if reg is already a GM_ErrorPooled or ML_ErrorPooled instance.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    summary : pd.DataFrame</span>
+<span class="sd">              Table with Test Statistic, p-value, and Conclusion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.panel</span><span class="w"> </span><span class="kn">import</span> <span class="n">PanelRE</span><span class="p">,</span> <span class="n">BaseML_ErrorPooled</span><span class="p">,</span> <span class="n">BaseGM_ErrorPooled</span><span class="p">,</span> <span class="n">PooledOLS</span>
+
+    <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">which</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LMJ&quot;</span><span class="p">,</span> <span class="s2">&quot;LM1&quot;</span><span class="p">,</span> <span class="s2">&quot;LM2&quot;</span><span class="p">,</span> <span class="s2">&quot;LMC_spatial&quot;</span><span class="p">,</span> <span class="s2">&quot;LMC_RE&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">which</span> <span class="o">=</span> <span class="p">[</span><span class="n">which</span><span class="p">]</span>
+
+    <span class="n">test_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">stats_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pvals</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="s1">&#39;trcWtW_WW&#39;</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">trcWtW_WW</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">w_sparse</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span>
+        <span class="n">wtw</span> <span class="o">=</span> <span class="n">w_sparse</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">w_sparse</span>
+        <span class="n">w2</span> <span class="o">=</span> <span class="n">w_sparse</span> <span class="o">@</span> <span class="n">w_sparse</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">wtw</span> <span class="o">+</span> <span class="n">w2</span><span class="p">)</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>    
+
+    <span class="n">N</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">n</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">n</span> <span class="o">//</span> <span class="n">N</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="n">which</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LMJ&quot;</span><span class="p">,</span> <span class="s2">&quot;LM1&quot;</span><span class="p">,</span> <span class="s2">&quot;LM2&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">reg</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;PooledOLS&#39;</span><span class="p">:</span>
+            <span class="n">pooled_mod</span> <span class="o">=</span> <span class="n">PooledOLS</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pooled_mod</span> <span class="o">=</span> <span class="n">reg</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="n">which</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LMJ&quot;</span><span class="p">,</span> <span class="s2">&quot;LM1&quot;</span><span class="p">]):</span>
+            <span class="c1"># G term (Random Effects) - Eq 2.11</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">pooled_mod</span><span class="o">.</span><span class="n">u</span> 
+            <span class="n">u_mat</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+            <span class="n">u_sum_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">u_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+            <span class="n">u_sq_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_sum_sq</span> <span class="o">/</span> <span class="n">u_sq_sum</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="c1"># LM1: Marginal RE (Eq 2.12)</span>
+            <span class="n">LM1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="p">)</span> <span class="o">*</span> <span class="n">G</span>
+            <span class="n">pval_LM1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM1</span><span class="p">)</span> 
+
+            <span class="k">if</span> <span class="s2">&quot;LM1&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+                <span class="n">test_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;LM Marginal RE (LM1)&quot;</span><span class="p">)</span>
+                <span class="n">stats_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LM1</span><span class="p">)</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pval_LM1</span><span class="p">)</span>            
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">test</span> <span class="ow">in</span> <span class="n">which</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LMJ&quot;</span><span class="p">,</span> <span class="s2">&quot;LM2&quot;</span><span class="p">]):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            # H matrix approach - matches vectorial below (but slower)</span>
+<span class="sd">            w_full = w.full()[0]</span>
+<span class="sd">            w_wt = w_full + w_full.T</span>
+<span class="sd">            w_wt2 = w_wt / 2.0 # LA</span>
+<span class="sd">            b2 = np.trace(np.dot(w_wt, w_wt))/2.0</span>
+<span class="sd">            #Iwwt = np.kron(np.eye(T), w_wt) / 2</span>
+<span class="sd">            Iwwt = np.kron(np.eye(T), w_wt2) # LA</span>
+<span class="sd">            num_H2 = np.dot(np.dot(u.T, Iwwt), u).item()</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># H term (Spatial Error) - Eq 2.11</span>
+            <span class="n">Wu_mat</span> <span class="o">=</span> <span class="n">u_mat</span> <span class="o">@</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">Wu_vec</span> <span class="o">=</span> <span class="n">Wu_mat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">num_H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">*</span> <span class="n">Wu_vec</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="n">num_H</span> <span class="o">/</span> <span class="n">u_sq_sum</span>
+
+            <span class="c1"># LM2: Marginal Spatial (Eq 2.16)</span>
+            <span class="n">LM2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">b</span> <span class="p">)</span> <span class="o">*</span> <span class="n">H</span>
+            <span class="n">pval_LM2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM2</span><span class="p">)</span> 
+
+            <span class="k">if</span> <span class="s2">&quot;LM2&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+                <span class="n">test_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;LM Marginal Spatial (LM2)&quot;</span><span class="p">)</span>
+                <span class="n">stats_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LM2</span><span class="p">)</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pval_LM2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;LMJ&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+            <span class="c1"># Joint Test (Eq 2.19)</span>
+            <span class="k">if</span> <span class="n">LM1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">LM2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">LM_J</span> <span class="o">=</span> <span class="n">LM1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">LM2</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">prob_ch1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM_J</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">prob_ch2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM_J</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">pval_J</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">prob_ch1</span> <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">prob_ch2</span>
+            <span class="k">elif</span> <span class="n">LM1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">LM2</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">LM_J</span> <span class="o">=</span> <span class="n">LM1</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">pval_J</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM_J</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> 
+            <span class="k">elif</span> <span class="n">LM1</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">LM2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">LM_J</span> <span class="o">=</span> <span class="n">LM2</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">pval_J</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM_J</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LM_J</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">pval_J</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+            <span class="n">test_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;LM Joint (LMJ)&quot;</span><span class="p">)</span>
+            <span class="n">stats_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LM_J</span><span class="p">)</span>
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pval_J</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;LMC_spatial&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reg</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;PanelRE&#39;</span><span class="p">:</span>
+            <span class="n">re_mod</span> <span class="o">=</span> <span class="n">PanelRE</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spat_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">re_mod</span> <span class="o">=</span> <span class="n">reg</span>
+        <span class="c1"># Conditional LM Spatial (Eq 2.24 - 2.25)</span>
+        <span class="n">u_re_raw</span> <span class="o">=</span> <span class="n">re_mod</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">re_mod</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">re_mod</span><span class="o">.</span><span class="n">betas</span><span class="p">)</span>
+        <span class="n">u_re_mat</span> <span class="o">=</span> <span class="n">u_re_raw</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # Matrix computation - matches vectorial below</span>
+<span class="sd">        JbT = np.ones((T,T)) / T</span>
+<span class="sd">        Et = np.eye(T) - JbT</span>
+<span class="sd">        Et_k_In = np.kron(Et, np.eye(N))</span>
+<span class="sd">        JbT_k_In = np.kron(JbT, np.eye(N))</span>
+<span class="sd">        sig2_v = np.dot(np.dot(u_re_raw.T, Et_k_In), u_re_raw).item() / (N * (T-1))</span>
+<span class="sd">        sig2_1 = np.dot(np.dot(u_re_raw.T, JbT_k_In), u_re_raw).item() / N</span>
+<span class="sd">        wtw = w_full.T + w_full</span>
+<span class="sd">        Dp1 = (sig2_v/(sig2_1**2))*np.kron(JbT, wtw)</span>
+<span class="sd">        Dp2 = (1/sig2_v)*np.kron(Et, wtw)</span>
+<span class="sd">        D_lambda_alt = 0.5 * np.dot(np.dot(u_re_raw.T, Dp1 + Dp2), u_re_raw).item()</span>
+<span class="sd">        denon_var_alt = ((T-1) + (sig2_v**2 / sig2_1**2)) * b</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Vector computation</span>
+        <span class="n">u_re_mean</span> <span class="o">=</span> <span class="n">u_re_mat</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
+        <span class="n">sig_1sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">u_re_mean</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+        
+        <span class="n">u_dev</span> <span class="o">=</span> <span class="n">u_re_mat</span> <span class="o">-</span> <span class="n">u_re_mean</span> 
+        <span class="n">sig_v2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">u_dev</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1"># Term 1:</span>
+        <span class="n">Wu_mean</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u_re_mean</span><span class="p">)</span>
+        <span class="n">quad_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">u_re_mean</span> <span class="o">*</span> <span class="n">Wu_mean</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> 
+        <span class="n">term1</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig_v2</span> <span class="o">/</span> <span class="p">(</span><span class="n">sig_1sq</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">T</span> <span class="o">*</span> <span class="n">quad_mean</span>
+        
+        <span class="c1"># Term 2:</span>
+        <span class="n">Wu_re_mat</span> <span class="o">=</span> <span class="n">u_re_mat</span> <span class="o">@</span> <span class="n">w</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">quad_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">u_re_mat</span> <span class="o">*</span> <span class="n">Wu_re_mat</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">term2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sig_v2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">quad_full</span> <span class="o">-</span> <span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">quad_mean</span><span class="p">))</span>
+        
+        <span class="n">D_lambda</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">term1</span> <span class="o">+</span> <span class="n">term2</span><span class="p">)</span>
+        <span class="n">denom_var</span> <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">sig_v2</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">sig_1sq</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="n">LM_cond_spatial</span> <span class="o">=</span> <span class="n">D_lambda</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">denom_var</span><span class="p">)</span>
+        <span class="n">pval_cond_spatial</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM_cond_spatial</span><span class="p">)</span>
+
+        <span class="n">test_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;LM Conditional Spatial&quot;</span><span class="p">)</span>
+        <span class="n">stats_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LM_cond_spatial</span><span class="p">)</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pval_cond_spatial</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;LMC_RE&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+        <span class="c1"># Conditional LM RE (Eq 2.26 - 2.31)</span>
+        <span class="k">if</span> <span class="n">reg</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;BaseGM_ErrorPooled&#39;</span><span class="p">,</span> <span class="s1">&#39;GM_ErrorPooled&#39;</span><span class="p">,</span> <span class="s1">&#39;BaseML_ErrorPooled&#39;</span><span class="p">,</span> <span class="s1">&#39;ML_ErrorPooled&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">GM_BSK</span><span class="p">:</span>
+                <span class="n">sem_mod</span> <span class="o">=</span> <span class="n">BaseGM_ErrorPooled</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sem_mod</span> <span class="o">=</span> <span class="n">BaseML_ErrorPooled</span><span class="p">(</span><span class="n">reg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sem_mod</span> <span class="o">=</span> <span class="n">reg</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # Matrix computation (slower)</span>
+<span class="sd">        sem_mod = BaseML_ErrorPooled(reg_ols.y, reg_ols.x, w)</span>
+<span class="sd">        lam_est = sem_mod.betas[-1,0]</span>
+<span class="sd">        u_sem = sem_mod.u</span>
+
+<span class="sd">        W_mat = w.full()[0]</span>
+<span class="sd">        B_est = np.eye(N) - lam_est * W_mat</span>
+<span class="sd">        BtB = np.dot(B_est.T, B_est)</span>
+<span class="sd">        </span>
+<span class="sd">        sig2_v = np.dot(np.dot(u_sem.T,np.kron(np.eye(T),BtB)),u_sem).item() / (N*T) # Eq. A.29</span>
+<span class="sd">        sig4_v = sig2_v**2</span>
+
+<span class="sd">        BtB2 = np.dot(BtB, BtB)</span>
+<span class="sd">        JTBB2 = np.kron(np.ones((T,T)), BtB2)</span>
+<span class="sd">        D_mu_p2 = np.dot(np.dot(u_sem.T,JTBB2), u_sem).item() / (2*sig4_v)</span>
+<span class="sd">        D_mu_alt = D_mu_p2 - (np.trace(BtB) * (T/(2*sig2_v)))</span>
+
+<span class="sd">        h = np.trace(BtB)</span>
+<span class="sd">        WtB_BtW = np.dot(W_mat.T, B_est) + np.dot(B_est.T, W_mat) </span>
+<span class="sd">        d = np.trace(WtB_BtW)</span>
+<span class="sd">        e = np.trace(BtB2)</span>
+<span class="sd">        BtB_inv = np.linalg.inv(BtB) </span>
+<span class="sd">        g = np.trace(np.dot(WtB_BtW, BtB_inv))</span>
+<span class="sd">        term_c = np.dot(WtB_BtW, BtB_inv)</span>
+<span class="sd">        c = np.trace(np.dot(term_c, term_c))</span>
+
+<span class="sd">        LM_mu_num = D_mu_alt * np.sqrt((2*sig4_v/T) * ((N*sig4_v*c) - (sig4_v*(g**2))))</span>
+<span class="sd">        LM_mu_den = np.sqrt((T*N*sig4_v*e*c)-(N*sig4_v*(d**2))-(T*sig4_v*e*(g**2))+(2*sig4_v*g*h*d)-(sig4_v*c*(h**2)))</span>
+<span class="sd">        LM_mu_alt = LM_mu_num / LM_mu_den</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="c1"># Vector approach</span>
+        <span class="n">lam_est</span> <span class="o">=</span> <span class="n">sem_mod</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">u_sem</span> <span class="o">=</span> <span class="n">sem_mod</span><span class="o">.</span><span class="n">u</span> 
+        <span class="n">u_sem_mat</span> <span class="o">=</span> <span class="n">u_sem</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+
+        <span class="n">W_mat</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">full</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">B_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">-</span> <span class="n">lam_est</span> <span class="o">*</span> <span class="n">W_mat</span>
+        <span class="n">BB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B_est</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">B_est</span><span class="p">)</span>
+        <span class="n">BB_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">BB</span><span class="p">)</span> 
+        
+        <span class="n">v_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">u_sem_mat</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="n">v_mat</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">B_est</span> <span class="o">@</span> <span class="n">u_sem_mat</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v_mat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">sig2_v</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">v</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">sig2_v</span> <span class="o">=</span> <span class="n">sig2_v</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="n">WB_BW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W_mat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">B_est</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B_est</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">W_mat</span><span class="p">)</span> 
+        
+        <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">BB</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">WB_BW</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">BB</span><span class="p">,</span> <span class="n">BB</span><span class="p">))</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">WB_BW</span><span class="p">,</span> <span class="n">BB_inv</span><span class="p">))</span>
+        
+        <span class="n">term_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">WB_BW</span><span class="p">,</span> <span class="n">BB_inv</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">term_c</span><span class="p">,</span> <span class="n">term_c</span><span class="p">))</span>
+        
+        <span class="n">t1</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sig2_v</span><span class="p">))</span> <span class="o">*</span> <span class="n">h</span>
+        
+        <span class="n">u_mean</span> <span class="o">=</span> <span class="n">u_sem_mat</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">quad_form</span> <span class="o">=</span> <span class="n">u_mean</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">BB</span><span class="p">,</span> <span class="n">BB</span><span class="p">)</span> <span class="o">@</span> <span class="n">u_mean</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sig2_v</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">quad_form</span>
+        <span class="n">D_mu</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">+</span> <span class="n">t2</span>
+        
+        <span class="n">term_inside_num</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="n">c</span> <span class="o">-</span> <span class="n">g</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">term_inside_num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">term_inside_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">numerator_final</span> <span class="o">=</span> <span class="n">D_mu</span> <span class="o">*</span> <span class="n">sig2_v</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">term_inside_num</span><span class="p">)</span>
+        
+        <span class="n">denom_val</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="n">N</span><span class="o">*</span><span class="n">e</span><span class="o">*</span><span class="n">c</span> <span class="o">-</span> <span class="n">N</span><span class="o">*</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">T</span><span class="o">*</span><span class="n">g</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">e</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">g</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d</span> <span class="o">-</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span>
+        <span class="k">if</span> <span class="n">denom_val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">denom_val</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">denominator_final</span> <span class="o">=</span> <span class="n">sig2_v</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">denom_val</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">denominator_final</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LM_cond_RE</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LM_cond_RE</span> <span class="o">=</span> <span class="n">numerator_final</span> <span class="o">/</span> <span class="n">denominator_final</span>
+            
+        <span class="n">pval_cond_RE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">LM_cond_RE</span><span class="p">)</span>
+
+        <span class="n">test_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;LM Conditional RE&quot;</span><span class="p">)</span>
+        <span class="n">stats_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LM_cond_RE</span><span class="p">)</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pval_cond_RE</span><span class="p">)</span>
+
+    <span class="n">res_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Test&quot;</span><span class="p">:</span> <span class="n">test_names</span><span class="p">,</span>
+        <span class="s2">&quot;Statistic&quot;</span><span class="p">:</span> <span class="n">stats_list</span><span class="p">,</span>
+        <span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">dfs</span><span class="p">,</span>
+        <span class="s2">&quot;p-value&quot;</span><span class="p">:</span> <span class="n">pvals</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">res_data</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-, pysal developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 9.1.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
