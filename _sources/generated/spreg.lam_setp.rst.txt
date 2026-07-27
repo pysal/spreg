@@ -1,0 +1,6 @@
+﻿spreg.lam\_setp
+===============
+
+.. currentmodule:: spreg
+
+.. autofunction:: lam_setp

@@ -1,0 +1,833 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Spatial Multipliers\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### (revised 09/17/2024)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Preliminaries"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This notebook takes a closer look at the spatial pattern induced by spatial lag terms in a regression specification. The usual notion of *average* impacts is disassembled into its individual components, with a particular focus on its spatial distribution. Three broad types of models are considered: a linear SLX model, a model with a spatially lagged dependent variable (Wy), and nonlinear SLX models."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Prerequisites"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This notebook includes material that relies more on familiarity with Python than the previous notebooks, specifically the manipulation of pandas data frames and geopandas geo data frames, as well as the interpretation of the helper functions. In addition, spatial weights functionality and choropleth mapping are used extensively. Both were covered in previous notebooks. Two specialized routines are included from `spreg`, i.e., `i_multipliers` (to compute the individual multipliers) and `make_wnslx` (to create the lag operator in nonlinear SLX models). It is also assumed that the sample data set **Police** is installed (if not, execute `libpysal.examples.load_example(\"Police\")` first, with the module `libpysal.examples` imported)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Modules Needed"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The usual imports include numpy, pandas, geopandas and matplotlib (for mapping). More specialized imports consist of `examples.get_path` and `weights` from `libpysal`, as well as `i_multipliers` (from `spreg.sputils`) and `make_wnslx` (from `spreg.utils`). To allow the complete set of observations (n=82) to be listed in the notebook, the `pd.options.display.max_rows` should be set to a value larger than 82. Also, as usual, numpy `set_printoptions` should be set to `legacy=\"1.25\"`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import warnings \n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "import os \n",
+    "os.environ['USE_PYGEOS'] = '0'\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import geopandas as gpd\n",
+    "import matplotlib.pyplot as plt\n",
+    "from libpysal.examples import get_path\n",
+    "import libpysal.weights as weights\n",
+    "from spreg.sputils import i_multipliers\n",
+    "from spreg.utils import make_wnslx\n",
+    "np.set_printoptions(legacy=\"1.25\")\n",
+    "pd.options.display.max_rows = 100"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Functionality Used"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- from numpy: \n",
+    "  - array\n",
+    "\n",
+    "- from pandas/geopandas:\n",
+    "  - idxmax, idxmin\n",
+    "  - iloc\n",
+    "  - plot\n",
+    "  - concat\n",
+    "  - read_file\n",
+    "  - centroid\n",
+    "  - describe\n",
+    "  \n",
+    "- from libpysal.examples:\n",
+    "  - get_path\n",
+    "\n",
+    "- from libpysal.weights:\n",
+    "  - Queen.from_dataframe\n",
+    "  - neighbors\n",
+    "  - cardinalities\n",
+    "  - KNN.from_dataframe\n",
+    "  - Kernel.from_dataframe\n",
+    "\n",
+    "- from spreg:\n",
+    "  - sputils.i_multipliers\n",
+    "  - utils.make_wnslx"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Helper Functions"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Since many operations will be repeated almost verbatim for the different types of weights and multipliers, two helper functions are used. One, `multmap`, simplifies the mapping, with (very) limited customization. If additional customization is desired, it must be made in the function itself. The function is essentially a wrapper around the commands to make a quantile choropleth map for a geo data frame.\n",
+    "\n",
+    "The second function, `nbreffect`, finds the minimum and maximum locations for a given type of multiplier effect and then calls `multmap` to create the associated map."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def multmap(dfm,column='EonNbrs',model='slx'):\n",
+    "    \"\"\"\n",
+    "    Creates a quintile map (k=5) for the multipliers computed by means\n",
+    "    of i_multiplier\n",
+    "\n",
+    "    Arguments\n",
+    "    ---------\n",
+    "    dfm       : merged geo data frame with original data and spatial multiplier\n",
+    "                data frame\n",
+    "    column    : type of multiplier to be mapped, default is EonNbrs\n",
+    "    model     : spatial model, default is slx (i.e., only weights matrix)\n",
+    "\n",
+    "    Returns\n",
+    "    -------\n",
+    "    Draws map\n",
+    "\n",
+    "    \"\"\"\n",
+    "    ax = dfm.plot(\n",
+    "            column = column,\n",
+    "            scheme = 'Quantiles',\n",
+    "            k = 5,\n",
+    "            cmap = 'YlOrRd',\n",
+    "            edgecolor = \"Black\",\n",
+    "            linewidth = 0.2,\n",
+    "            figsize = (6,6),\n",
+    "            legend = True,\n",
+    "            legend_kwds={\"loc\":\"center left\",\"bbox_to_anchor\":(1,0.5), \"title\": column}\n",
+    "    )\n",
+    "    newtitle = \"Spatial Multipliers for \" + model\n",
+    "    ax.set_title(newtitle)\n",
+    "    ax.set_axis_off()\n",
+    "    plt.show()\n",
+    "    return\n",
+    "\n",
+    "\n",
+    "def nbreffect(dfs,dfm,oid,mult='EonNbrs',model='slx'):\n",
+    "    \"\"\"\n",
+    "    Computes the minimum and maximum value and location for a given type of multiplier\n",
+    "    and calls multmap to create a quintile map\n",
+    "\n",
+    "    Arguments\n",
+    "    ---------\n",
+    "    dfs       : initial geo data frame\n",
+    "    dfm       : data frame with multipliers\n",
+    "    oid       : pandas series with ID variable\n",
+    "    multi     : type of multiplier, default is EonNbrs\n",
+    "    model     : spatial model, default is slx\n",
+    "\n",
+    "    \"\"\"\n",
+    "    if mult == 'Direct':\n",
+    "        coli = 1\n",
+    "    elif mult == 'EofNbrs':\n",
+    "        coli = 2\n",
+    "    elif mult == 'EonNbrs':\n",
+    "        coli = 3\n",
+    "    else:\n",
+    "        raise Exception(\"Invalid column\")\n",
+    "    imax = int(dfm[[mult]].idxmax())\n",
+    "    print(f\"The maximum is {dfm.iloc[imax,coli]:0.3f} with id {int(oid.iloc[imax])}\")\n",
+    "    imin = int(dfm[[mult]].idxmin())\n",
+    "    print(f\"The minimum is {dfm.iloc[imin,coli]:0.3f} with id {int(oid.iloc[imin])}\")\n",
+    "    dfmap = pd.concat([dfs,dfm],axis=1)\n",
+    "    multmap(dfmap,column=mult,model=model)\n",
+    "    return\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Data Input"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The different multipliers are illustrated with the **Police** sample data set. A geo data frame is created which is used in the remainder to construct the spatial weights. The only input is the shape file:\n",
+    "\n",
+    "- police.shp (shx,dbf): police expenditure data for 82 Mississippi counties\n",
+    "\n",
+    "The variable `FIPSNO` is taken as the id variable and turned into a pandas Series `fipsid`. The variable itself is set to `idvar`. This makes it easy to use the same code for other data sets (replace infileshp, fipsid and idvar by the appropriate file name/variable name)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "infileshp = \"police.shp\"   # input shape file\n",
+    "inpath = get_path(infileshp)\n",
+    "dfs = gpd.read_file(inpath)\n",
+    "print(dfs.columns)\n",
+    "fipsid = dfs[[\"FIPSNO\"]]\n",
+    "idvar = \"FIPSNO\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Coordinates"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The construction of the sparse weights for the nonlinear SLX power and exponential functions requires a numpy array of X and Y coordinates as input. The **Police** data set does not include those variables explicitly, but they can be computed as the centroids of the polygons, using the `centroid` attribute of the geopandas data frame.\n",
+    "\n",
+    "However, the `make_wnslx` function needs the coordinates as a numpy array, whereas the result of the `centroid` attribute is a geopandas geoseries with `POINT` geometries. This is turned into a numpy array by extracting the x and y coordinates and passing these to `np.array`. As it turns out, the result must be transposed, since as is, it becomes a 2 by 82 matrix and not the desired 82 by 2 matrix.\n",
+    "\n",
+    "Note that the coordinates are decimal degrees (longitude-latitude), which will require the argument `distance_metric = \"Arc\"` in the `make_wnslx` function."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gcent = dfs.centroid\n",
+    "print(type(gcent))\n",
+    "print(gcent.head())\n",
+    "coords = np.array((gcent.x,gcent.y)).T\n",
+    "print(coords.shape)\n",
+    "coords[0:5,:]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Spatial Weights Characteristics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The simplest calculations are for the linear SLX model, where the spatial spillovers are limited to the neighbors as specified in the spatial weights matrix. With row-standardization, the effect **of** the neighbors always sums to one, so by constructions it is the same (=1) for all observations. Similarly, because the spatial weights have zero on the diagonal, there is no direct effect other than that already captured by coefficients of the X-variables. However, because the row-standardization introduces an asymmetry in the weights (but not in the contiguity structure), the effect **on** the neighbors of a change in X in a given location is **not constant** across all observations. This effect is the sum of the column elements associated with each observation. Whereas the mean of these sums is the same as the mean of the row sums and equals one, there remains considerable variation among the contributions of changes in a variable at a location on its neighbors. This is masked by using average effects.\n",
+    "\n",
+    "The following three examples show the spatial distribution of the individual multipliers for queen contiguity, k-nearest neighbors and kernel weights. Queen contiguity is intrinsically symmetric, but becomes asymmetric after row-standardization. K-nearest neighbor weights tend not to be symmetric to begin with (k-nearest neighbor is not a symmetric relationship). Kernel weights that are based on a fixed distance band are symmetric. Since they are not row-standardized, the effect **of** the neighbors and effect **on** the neighbors is the same. However, when kernel weights are based on an adaptive bandwidth (such as k-nearest neighbors), they will be intrinsically asymmetric and the row and column elements for an observation will differ. In all cases, the average masks sometimes substantial spatial variation among observations."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Queen Contiguity Weights"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As covered in a previous notebook, queen contiguity weights are constructed from the geo data frame by means of `weights.Queen.from_dataframe`, here using `ids=idvar` for the id-variable (which is `\"FIPSNO\"` in this notebook). The weights are row-standardized and then the individual multipliers are calculated using `i_multipliers` with `model=\"slx\"` and `id=fipsid` (the pandas Series with FIPSNO created above). There is no need to specify a spatial coefficient since the default is `coef=0.0`. Some descriptive statistics are provided by `describe()`.\n",
+    "\n",
+    "The first column gives the ID-variable that was used and is not very meaningful. The second column describes the **Direct** effects, which are zero by construction. The last two columns pertain to the **effect of neighbors** (row sum, **EofNbrs**) and the **effect on neighbors** (column sum, **EonNbrs**)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "wq = weights.Queen.from_dataframe(dfs,ids=idvar)\n",
+    "wq.transform = 'r'\n",
+    "queen = i_multipliers(wq,model='slx',id=fipsid)\n",
+    "queen.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As expected, the **mean** of both effect of neighbors and effect on neighbors is the same and equals one. However, there is quite a bit of variation in the effect **on** neighbors, with a range from 0.560 to 1.667 and a standard deviation of 0.25. The full range of variability can be seen by printing out the complete data frame (to see all the rows, the pandas `options.display.max_rows` must be set to more than 82)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(queen)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The position and ID of the largest and smallest effects on neighbors can be found by means of `idxmax` and `idxmin` applied to the `EonNbrs` data series. This yields the county with FIPS 28131 (Stone) for the maximum and the county with FIPS 28045 (Hancock) for the minimum. The spatial variation (and location of minimum and maximum) is directly related to the graph-theoretic structure of the spatial weights."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "imax = int(queen[['EonNbrs']].idxmax())\n",
+    "print(f'The maximum is {queen.iloc[imax,3]:0.3f} with id {int(fipsid.iloc[imax])}')\n",
+    "imin = int(queen[['EonNbrs']].idxmin())\n",
+    "print(f'The minimum is {queen.iloc[imin,3]:0.3f} with id {int(fipsid.iloc[imin])}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To get a better insight into the effect of the asymmetry introduced by the row-standardization, the following lines of code extract the list of neighbors for county 28131, then checks their respective cardinalities from `wq.cardinalities` and computes the cumulative sum of the corresponding weights (the inverse of the cardinalities). Because many of the neighbors have themselves (much) fewer than seven neighbors, their contribution to the cumulative sum is more than 1/7, yielding an overall multiplier effect that can become larger than one. The opposite case is where the neighbors have more neighbors themselves, yielding a spatial weight less than 1/7 which contributes to a multiplier effect that can be smaller than one.\n",
+    "\n",
+    "As an exercise, repeat this analysis for the county with the minimum multiplier of 0.560 by entering its fips code in `wq.neighbors` (county 28045 - this county only has three neighbors)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nbrs = wq.neighbors[28131]\n",
+    "print(\"neighbor list \",nbrs)\n",
+    "cards = wq.cardinalities\n",
+    "j = 0\n",
+    "for i in nbrs:\n",
+    "    u = cards[i]\n",
+    "    print(f\"for {i}, the number of neighbors is {u}, with weight {1.0/u:0.3f}\")\n",
+    "    j += 1.0/u\n",
+    "print(f\"total effect on neighbors: {j:0.3f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The spatial distribution of the multiplier effects can be mapped. This functionality is wrapped in the functions listed at the top of the notebook, but first each step is spelled out in detail here. To begin, `pd.concat` is used to add the new dataframe to the existing spatial data frame. Because this operation will be repeated for each type of multiplier, the merged data frame is given a new name (otherwise, `dfs` would be accumulating all the multiplier effecs that have the same name). The multipliers are visualized in a quintile map (k=5) using a common set of customizations as covered in the mapping notebook.\n",
+    "\n",
+    "The resulting map reveals considerable variation in the spatial pattern. From a policy perspective, the darkest counties are the ones with the most impact on their neighbors and thus they could be targeted for maximum effect place-based policies."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfq = pd.concat([dfs,queen],axis=1)\n",
+    "ax = dfq.plot(\n",
+    "    column = 'EonNbrs',\n",
+    "    scheme = 'Quantiles',\n",
+    "    k = 5,\n",
+    "    cmap = 'YlOrRd',\n",
+    "    edgecolor = \"Black\",\n",
+    "    linewidth = 0.2,\n",
+    "    figsize = (6,6),\n",
+    "    legend = True,\n",
+    "    legend_kwds={\"loc\":\"center left\",\"bbox_to_anchor\":(1,0.5), \"title\": 'EonNbrs'}\n",
+    ")\n",
+    "ax.set_title(\"Spatial Multipliers\")\n",
+    "ax.set_axis_off()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Since the mapping will be repeated for each multiplier, the various settings are encapsulated in the `multmap` helper function listed at the top of the notebook. As a result, the map can now be obtained with a single line command."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "multmap(dfq)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### K-Nearest Neighbor Weights"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "K-nearest neighbor weights are constructed from the geo data frame by means of `weights.KNN.from_dataframe`. Since the median number of neighbors for queen contiguity was 5, k is set to 5 as well, to keep some degree of comparability. The multipliers are again obtained with `i_multipliers` passing the row-standardized weights, the model (`slx`) and the identifiers (`idvar`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "wk = weights.KNN.from_dataframe(dfs,k=5,ids=idvar)\n",
+    "wk.transform = 'r'\n",
+    "knn = i_multipliers(wk,model='slx',id=fipsid)\n",
+    "knn.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Again, by construction, the direct effects are zero and the effect of the neighbors is 1, due to row-standardization. However, there is considerable variation in the effect **on** neighbors, again due to the asymmetry of the weights. The multipliers range from 0.4 to 1.8, a wider range than for queen contiguity.\n",
+    "\n",
+    "Further insight into the spatial pattern of the multipliers is obtained by means of the helper function `nbreffect`, which combines identifying maximum and miminum with the mapping of `multmap`. The arguments are the original data frame, `dfs`, the multiplier data frame for k-nearest neighbor weights, `knn`, the id variable, `fipsid`, the type of multiplier, `EonNbrs`, and the model, `slx`. This gives all the desired results with a one line command."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nbreffect(dfs,knn,fipsid,mult='EonNbrs',model='slx')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The spatial pattern shows quite a few differences with that for the queen weights, highlighting the importance of the structure of the spatial weights. The maximum location is now county 28081 (Lee) and the minimum is county 28157 (Wilkinson). More specialized map comparison techniques (such as a co-location map) can be used to compare the two patterns, but this is not further pursued here.\n",
+    "\n",
+    "Note how the quantile map for knn only shows four categories, even though k was set to 5. This is due to the large number of ties, which results in the two bottom categories being collapsed. This is a common problem for quantile maps when there is insufficient variation in the variable considered (here, all multiples of 0.2)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Kernel Weights"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Kernel weights are illustrated for a `triangular` function (the default) computed for a variable bandwidth (`fixed=False`) determined by the 10 k-nearest neighbors. With `diagonal=True`, the diagonal elements all equal one. The function `i_multiplier` is called with the kernel weights (`wkern`), `model=\"kernel\"` and the same id (`fipsid`) as before.\n",
+    "\n",
+    "The result data frame is `kern`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "wkern = weights.Kernel.from_dataframe(dfs,k=10,ids=idvar,fixed=False,diagonal=True)\n",
+    "kern = i_multipliers(wkern,model='kernel',id=fipsid)\n",
+    "kern.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The direct effects are all equal to one by construction. Both the effect of the neighbors (row sum - without the diagonal) and effect on the neighbors (column sum - without the diagonal) show substantial variation, even though their means are the same. The effect of the neighbors ranges from 1.789 to 3.833, whereas the effect on the neighbors goes from 1.562 to 3.890, a slightly larger range.\n",
+    "\n",
+    "The location of the extrema and the map for the individual multipliers can again be obtained by means of `nbreffect`. Since this now has to be done for `EofNbrs` as well as `EonNbrs`, both are put in a list and the results are produced by a simple loop, minimizing code repetition."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,kern,fipsid,mult=eff,model='kernel')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The resulting respective maximum and minimum locations are quite distinct, as are the associated spatial patterns. A closer examination of the spatial (mis)match is left as an exercise."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Spatial Lag"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The spatial spillovers in a model that includes a spatially lagged dependent variable Wy are determined by the structure of the inverse matrix $(I - \\rho W)^{-1}$. This is illustrated here for the queen contiguity weights. Similar results can be obtained for the k-nearest neighbor weights.\n",
+    "\n",
+    "The `i_multipliers` function needs as arguments the spatial weights (`wq`), a value for the spatial autoregressive coefficient (`coef=0.5`), the model type (`lag`) and the `id`. Descriptive statistics are provided by `describe`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lag5 = i_multipliers(wq,coef=0.5,model='lag',id=fipsid)\n",
+    "lag5.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The mean of **Direct**, 1.066, is what is typically referred to as **ADI** or average direct impact, whereas the mean of either **EofNbrs** or **EonNbrs**, 0.934, is the **AII** or average indirect impact. Since $\\rho = 0.5$, the average total impact (**ATI**) is  $1.0 / (1.0 - \\rho)$, or 2.0. Clearly this equals the sum of 1.066 and 0.934.\n",
+    "\n",
+    "The averages mask considerable individual variation. The range of variation is fairly small for the direct effects - from 1.046 to 1.096 - and the effect of neighbors - from 0.904 to 0.954 -, but is quite substantial for the effect on neighbors - from 0.532 to 1.482.\n",
+    "\n",
+    "Details are again provided by means of the `nbreffects` function, now with `model = \"lag\"`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['Direct','EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,lag5,fipsid,mult=eff,model='lag')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The spatial pattern of the direct effects and effects from neighbors are the exact opposite. This reflects how the total effect is split between these two parts: larger direct effects imply smaller indirect effects and vice versa. On the other hand, the spatial pattern for the effect on neighbors is quite distinct. It shows great similarity (but is not identical) to the spatial pattern for the queen weights as such (SLX)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Interestingly, the magnitude of the spatial autoregressive coefficient, while it affects the mean impact measures, does not affect the spatial pattern of the multipliers, which remains exactly the same. This is because the spatial pattern is determined by the network structure in the weights and the coefficient is just a scaling factor.\n",
+    "\n",
+    "This is illustrated by using 0.3 as the spatial autoregressive coefficient."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lag3 = i_multipliers(wq,coef=0.3,model='lag',id=fipsid)\n",
+    "lag3.describe()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['Direct','EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,lag3,fipsid,mult=eff,model='lag')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Negative Exponential Distance Function"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The multiplier effects for a nonlinear SLX model can be computed in the same way as before, from the diagonals, row sums and column sums of the parameterized weights matrix $W(\\alpha)$. Two cases are considered: a negative exponential distance transformation and an inverse power distance transformation. The input for the estimation of this model, in `spreg.NSLX`, is a sparse CSR matrix of distance measures that are standardized with respect to the bandwidth for each observation (fixed or variable). This ensures a well-behaved distance metric and a distance decay process.\n",
+    "\n",
+    "For the negative exponential transformation in the nonlinear SLX model, the transformation is $e^{-\\alpha z_{ij}}$, where $z_{ij} = d_{ij} / d_{bw}$ for $d_{ij} \\le d_{bw}$, and 0 otherwise, with $d_{bw}$ as the bandwidth. \n",
+    "\n",
+    "The input is a sparse CSR matrix, constructed by means of `make_wnslx` with the parameter `exponential`. As input it takes a numpy array of coordinates (see above), a tuple of parameters setting the number of nearest neighbors (here 10), whether the bandwidth is adaptive (`np.inf`) or fixed (a value), and the type of transformation (`exponential`). Since the coordinates are lat-lon decimal degrees, `distance_metric = \"Arc\"` to compute great circle distances. The result is a sparse CSR matrix. Its contents can be shown by means of `toarray`, which turns it into a regular (full) numpy array. This is just a view of the array and does not affect its sparse representation.\n",
+    "\n",
+    "Since the transformed distance input is the fraction of the bandwidth, it results in smaller values closer to the origin and a value of 1.0 for the farthest nearest neighbor. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "wexp = make_wnslx(coords,params=(10,np.inf,\"exponential\"),leafsize=30,distance_metric='Arc')\n",
+    "print(type(wexp))\n",
+    "wexp.toarray()[0:1,:]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Some descriptive statistics and the spatial pattern are obtained in the same way as before, using `i_multipliers` and `nbreffect`. The parameter is set to `coef = 2.0` and the model is `exponential`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "exp2 = i_multipliers(wexp,coef=2.0,model='exponential',id=fipsid)\n",
+    "exp2.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The mean multiplier of 2.648 ranges from 2.117 to 3.315 for the effect of neighbors, and from 1.368 to 3.871 for the effect on neighbors. The spatial distribution of the multipliers is again distinct."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,exp2,fipsid,mult=eff,model='exponential')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Again, a different value of the coefficient affects the mean multiplier, but the spatial distribution remains the same. For example, with `coef = 1.5`, the mean multiplier becomes 3.636, reflecting the less steep distance decay that results from the smaller parameter.\n",
+    "\n",
+    "This is important for the interpretation of the model. Unlike the other spatial models, a larger value of the coefficient in the nonlinear SLX models results in a *smaller multiplier*."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "exp15 = i_multipliers(wexp,coef=1.5,model='exponential',id=fipsid)\n",
+    "exp15.describe()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,exp15,fipsid,mult=eff,model='exponential')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Inverse Distance Power Function"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For the inverse distance power function, the transformation is $1.0 / d_{ij}^{\\alpha}$. This is implemented as $z_{ij}^{\\alpha}$, where $z_{ij}$ is guaranteed to be less than one, as $z_{ij} = 1 - d_{ij}/d_{bw}$ for $d_{ij} \\le d_{bw}$, and zero otherwise. Hence, the distance measure for this transformation corresponds to a triangular kernel for the given bandwidth, with the diagonals zeroed out. The fraction of the bandwidth decreases as the distance increases, eventually yielding zero for the value of k. \n",
+    "\n",
+    "Again, the corresponding weights are computed by means of the `make_wnslx` function (from `spreg.utils`). As input it takes a numpy array of coordinates (see above), a tuple of parameters setting the number of nearest neighbors (here 10), whether the bandwidth is variable (`np.inf`) or fixed (a value), and the type of transformation (`power`). Since the coordinates are lat-lon decimal degrees, `distance_metric = \"Arc\"` to compute great circle distances. The result is a sparse CSR matrix. Its contents can be shown by means of `toarray`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "winv = make_wnslx(coords,params=(10,np.inf,\"power\"),distance_metric='Arc')\n",
+    "print(type(winv))\n",
+    "winv.toarray()[0:1,:]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The sparse array `winv` is the spatial weights argument to the function `i_multipliers`. A coefficient of 2.0 is used as `coef` and the model is specified as `power`. The id is the same as before. Some summary characteristics are shown by means of `describe`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pow2 = i_multipliers(winv,coef=2.0,model='power',id=fipsid)\n",
+    "pow2.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The mean multiplier effect is 1.279, but it ranges from 0.628 to 2.124 for the effect of neighbors and from 0.709 to 1.917 for the effect on neighbors. Again, the mean masks considerable spatial variation. The direct effects are zero by construction.\n",
+    "\n",
+    "The spatial pattern of the individual multipliers can be investigated in the same way as for the other multipliers by means of the `nbreffects` function."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,pow2,fipsid,mult=eff,model='power')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Again, the spatial pattern of multipliers is not affected by the spatial parameter, but solely determined by the graph structure implied by the spatial weights before applying the transformation. This is illustrated with `coef = 1.5`. The mean effect of 1.902 is different and larger than for `coef=2.0`. This is due to the slower distance decay with the smaller coefficient, which gives larger weight to neighbors further away. The spatial pattern is unchanged."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pow15 = i_multipliers(winv,coef=1.5,model='power',id=fipsid)\n",
+    "pow15.describe()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "effects = ['EofNbrs','EonNbrs']\n",
+    "for eff in effects:\n",
+    "    nbreffect(dfs,pow15,fipsid,mult=eff,model='power')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Practice\n",
+    "\n",
+    "The similarities and differences between the different spatial layouts can be investigated more closely. In addition, the correlation between the multiplier vectors, respective locations of extrema and other characteristics can be examined. Of course, the same type of analysis can be investigated for other spatial weights and/or another data set."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "py312",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

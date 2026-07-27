@@ -1,0 +1,6 @@
+﻿spreg.spsearch.gets\_sdm
+========================
+
+.. currentmodule:: spreg.spsearch
+
+.. autofunction:: gets_sdm

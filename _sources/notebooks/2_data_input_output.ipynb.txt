@@ -1,0 +1,795 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "6c2d40bf",
+   "metadata": {},
+   "source": [
+    "# Data Input/Output\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### 09/06/2024"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f411eb3f",
+   "metadata": {},
+   "source": [
+    "## Preliminaries"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3c764aed",
+   "metadata": {},
+   "source": [
+    "In this notebook, some elementary functionality is covered to carry out data input and output from and to different types of files. The key concept is a so-called *DataFrame*, a tabular representation of the data with observations as rows and variables as columns.\n",
+    "\n",
+    "This is implemented by means of *pandas* for generic text files (as well as many other formats) and *geopandas* for spatial data files (shape files or geojson files). The functionality will be illustrated with the **Police** sample data set that contains police expenditure data for Mississippi counties. It is assumed that this data has been installed using `libpysal.examples.load_example(\"Police\")`.\n",
+    "\n",
+    "A video recording is available from the GeoDa Center YouTube channel playlist *Applied Spatial Regression - Notebooks*, at https://www.youtube.com/watch?v=7yWOgPEBQmE&list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6&index=2."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "936a0938",
+   "metadata": {},
+   "source": [
+    "### Modules Needed\n",
+    "\n",
+    "The work horse for spatial analysis in Python is the *PySAL* library. However, before addressing specific spatial functionality, the use of *pandas* and *geopandas* will be illustrated to load data into so-called data frames. In addition, *libpysal* is needed to access the sample data sets. All of these rely on *numpy* as a dependency.\n",
+    "\n",
+    "The full set of imports is shown below. Also, in this notebook, the `get_path` functionality of `libpysal.examples` is imported separately, without the rest of *libpysal*."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "db02c49b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import os\n",
+    "os.environ['USE_PYGEOS'] = '0'\n",
+    "import geopandas as gpd\n",
+    "from libpysal.examples import get_path"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "203e4930",
+   "metadata": {},
+   "source": [
+    "### Functions Used\n",
+    "\n",
+    "- from numpy:\n",
+    "  - array\n",
+    "  - shape\n",
+    "  - tolist\n",
+    "  - reshape\n",
+    "\n",
+    "- from pandas:\n",
+    "  - read_csv\n",
+    "  - head\n",
+    "  - info\n",
+    "  - list\n",
+    "  - columns\n",
+    "  - describe\n",
+    "  - corr\n",
+    "  - DataFrame\n",
+    "  - concat\n",
+    "  - to_csv\n",
+    "  - drop\n",
+    "  \n",
+    "- from geopandas:\n",
+    "  - read_file\n",
+    "  - to_file\n",
+    "\n",
+    "- from libpysal:\n",
+    "  - get_path"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2c3416ff",
+   "metadata": {},
+   "source": [
+    "### Files\n",
+    "\n",
+    "Data input and output will be illustrated with the **Police** sample data set. This data set contains the same information in several different formats, such as csv, dbf, shp and geojson, which will be illustrated in turn. The following files will be used:\n",
+    "\n",
+    "- **police.shp,shx,dbf,prj**: shape file (four files) for 82 counties\n",
+    "- **police.csv**: the same data in csv text format\n",
+    "- **police.geojson**: the spatial layer in geojson format\n",
+    "\n",
+    "All the files are defined here, and referred to generically afterwards, so that it will be easy to re-run the commands for a separate application. The only changes needed would be the file names and/or variable names (if needed)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "d82e2963",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "infilecsv = \"police.csv\"     # input csv file\n",
+    "outfilecsv = \"test1.csv\"     # output csv file\n",
+    "infiledbf = \"police.dbf\"     # input dbf file\n",
+    "outfiledbf = \"test2.csv\"     # output dbf file\n",
+    "infileshp = \"police.shp\"     # input shape file\n",
+    "outfileshp =  \"test3.shp\"    # output shape file\n",
+    "infilegeo = \"police.geojson\" # input geojson file\n",
+    "outfilegeo = \"test4.geojson\" # output geojson file"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cbbc97ea",
+   "metadata": {},
+   "source": [
+    "## Text Files\n",
+    "\n",
+    "### Input\n",
+    "\n",
+    "The input file for csv formatted data is **infilecsv**. In the example, this is the csv file **police.csv**. The path to the installed sample data set is found with `get_path` (note the form of the `import` statement, which means that the full prefix `libpysal.examples` is not needed).\n",
+    "\n",
+    "The pandas command `read_csv` creates a data frame, essentially a data table. One of its attributes is `shape`, the dimension of the table as number of rows (observations) and number of columns (variables). `df.head( )` lists the first few rows of the actual table."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d6dd6bae",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "inpath = get_path(infilecsv)\n",
+    "df = pd.read_csv(inpath)\n",
+    "print(df.shape)\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e56ab718",
+   "metadata": {},
+   "source": [
+    "### Contents"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e89780e4",
+   "metadata": {},
+   "source": [
+    "A technical way to see the contents of a *pandas* data frame is to use the `info` command. This gives the class, range of the index (used internally to refer to rows) and the data type of the variables (columns)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4e12746d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.info()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7f9d50a2",
+   "metadata": {},
+   "source": [
+    "An arguably more intuitive sense of the contents of the data frame is to just list the names of all the variables. This can be accomplished several different ways, illustrating the flexibility of *pandas*. However, it is important to know what type of object the result of each operation yields. Depending on the approach, this could be a list, a pandas index object or a numpy array. Assuming the wrong type for the result can cause trouble.\n",
+    "\n",
+    "The following four approaches will each extract the column headers, but yield the result as a different type of object. This will determine how it can be further manipulated:\n",
+    "\n",
+    "- `list(df)`: creates a simple list with the variable names\n",
+    "\n",
+    "- `df.columns`: yields the columns as a pandas index object\n",
+    "\n",
+    "- `df.columns.values`: yields the columns as a numpy array\n",
+    "\n",
+    "- `df.columns.values.tolist( )`: yields the columns as a list, same as `list(df)`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c4ece4ae",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "varlist1 = list(df)\n",
+    "print(varlist1)\n",
+    "type(varlist1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dce1b796",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "varlist2 = df.columns\n",
+    "print(varlist2)\n",
+    "type(varlist2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "33196a5d",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "varlist3 = df.columns.values\n",
+    "print(varlist3)\n",
+    "type(varlist3)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e08f9aa3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "varlist4 = df.columns.values.tolist()\n",
+    "print(varlist4)\n",
+    "type(varlist4)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "31293509",
+   "metadata": {},
+   "source": [
+    "### Descriptive Statistics\n",
+    "\n",
+    "A quick summary of the data set is provided by the `describe` command."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ba2bfbb0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5936652f",
+   "metadata": {},
+   "source": [
+    "### Extracting Variables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d167db2c",
+   "metadata": {},
+   "source": [
+    "Variables (columns) can easily be extracted from a dataframe by listing their names in a list and subsetting the data frame (there are other ways as well, but they will not be considered here). It is important to keep in mind that the result is a different view of the same data frame, which may not be what is expected. In fact, in many applications in the context of *spreg*, the result should be a numpy array. This requires an extra step to cast the data frame to an array object.\n",
+    "\n",
+    "Also, in many contexts, an additional variable may need to be added to the data frame. For example, this will be needed for regression residuals and predicted values in a later notebook. To illustrate some of the steps involved, the variable **COLLEGE** will be turned into its complement (i.e., percent population without a college degree) and subsequently added to the data frame. To illustrate some descriptive statistics, **POLICE** will be extracted as well.\n",
+    "\n",
+    "First, the variable names are put in a list to subset the data frame and check the type. Make sure to use double brackets, the argument to the subset [ ] is a list, so [[list of variable names in quotes, separated by commas]]. The result is a *pandas* data frame or series (one variable).\n",
+    "\n",
+    "Note: if you want to do this for your own data set, possibly using different variables and different expressions, you will need to adjust the code below accordingly. Typically, this is avoided in these notebooks, but here there is no option to make things totally generic."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7ef84f45",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df1 = df[['POLICE','COLLEGE']]\n",
+    "type(df1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "964daaa4",
+   "metadata": {},
+   "source": [
+    "A more elegant approach and one that will make it much easier to reuse the code for different data sets and variables is to enter the variable names in a list first, and then pass that to subset the data frame."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ab77cecf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "varnames = ['POLICE','COLLEGE']\n",
+    "df2 = df[varnames]\n",
+    "type(df2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "db80a141",
+   "metadata": {},
+   "source": [
+    "At this point, it is much more meaningful to get the descriptive statistics using `describe`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6cddcd1a",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "df2.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f67f53ea",
+   "metadata": {},
+   "source": [
+    "A correlation coefficient is obtained by means of the `corr` method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "83f15c59",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df2.corr()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8e99466c",
+   "metadata": {},
+   "source": [
+    "### Extracting Variables to a Numpy Array"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "10df9613",
+   "metadata": {},
+   "source": [
+    "As mentioned, when using variables in the context of **spreg** routines, they will often need to be numpy arrays, not a data frame. This is accomplished by means of the `numpy.array` function (`np.array` in the notation used here). The `shape` attribute is a check to make sure that the resulting matrices have the correct format. In the example:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1eb1d639",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x1 = np.array(df[varnames])\n",
+    "print(x1.shape)\n",
+    "type(x1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cdab7c0e",
+   "metadata": {},
+   "source": [
+    "### Computations"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0255cfee",
+   "metadata": {},
+   "source": [
+    "New variables (columns) can be added to an existing data frame by means of straightforward element by element computations. However, to do this within the data frame structure is a bit cumbersome, since the data frame name needs to be included for each variable. On the other hand, the result is immediately attached to the data frame. \n",
+    "\n",
+    "Alternatively, the computations can be carried out using the numpy array and subsequently attached to the data frame. However, for a one-dimensional result, the shape of the result is a one-dimensional numpy array, not a row or a column vector. To obtain the latter, the `reshape` command needs to be used.\n",
+    "\n",
+    "For example, to compute the complement of the percentage with a college degree (in column 1 of array **x1**), the second column of the array is subtracted from 100. The element-by-element computation gives the desired result, but not the correct shape."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4ee6a4eb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "noncollege = 100.0 - x1[:,1]\n",
+    "noncollege"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "87b3dc37",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "noncollege.shape"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "041ced4c",
+   "metadata": {},
+   "source": [
+    "The correct dimension is obtained by means of `reshape(-1,1)`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2beb3219",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "noncollege = noncollege.reshape(-1,1)\n",
+    "print(noncollege.shape)\n",
+    "noncollege[0:5,:]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4af49803",
+   "metadata": {},
+   "source": [
+    "Note the extra brackets in the (82,1) column vector compared to the (82, ) numpy array above."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "16331996",
+   "metadata": {},
+   "source": [
+    "### Concatenating Data Frames"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "47a9ceb6",
+   "metadata": {},
+   "source": [
+    "In order to add the result of the matrix calculation to the data frame, two steps are involved. First, the numpy array is turned into into a data frame using `pandas.DataFrame`, making sure to give meaningful names to the columns by means of the `columns` argument. Then the `pandas.concat` function is applied to join the two data frames together. One can of course combine the two operations into one line, but here they are kept separate for clarity. **NONCOLLEGE** is added as the last variable in the data frame.\n",
+    "\n",
+    "Note that `axis=1` is set as an argument to the `concat` function to make sure a column is added (`axis=0` is to add a row)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7b415460",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dd = pd.DataFrame(noncollege,columns=['NONCOLLEGE'])\n",
+    "df = pd.concat([df,dd],axis=1)\n",
+    "print(df.columns)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "48bae79a",
+   "metadata": {},
+   "source": [
+    "### Output"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8183fbf0",
+   "metadata": {},
+   "source": [
+    "If desired, the new data frame can be written to a csv file using the `to_csv` command. The only required argument is the filename. For example, with the generic file name **outfilecsv** as defined at the top of the notebook, the file will be written to the current working directory. Its contents can be examined with any text editor or by loading it into a spreadsheet program. \n",
+    "\n",
+    "To avoid the index numbers as a first unnamed column (i.e., the default row names), an extra argument is `index = False`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "a39e0475",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.to_csv(outfilecsv,index=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5bf3069",
+   "metadata": {},
+   "source": [
+    "### DBase Files (dbf)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "65673215",
+   "metadata": {},
+   "source": [
+    "A common (but old) format for tabular data bases is the dBase format, with file extension dbf. Even though it is old (and, arguably, out of date), this format is still quite useful because it is used to store the data (attributes) in one of the common spatial data formats, the shape file popularized by ESRI (see below).\n",
+    "\n",
+    "As it happens, *pandas* is currently not able to read data from a dbf file directly into a data frame. Specialized packages exist that implement this functionality (like *simpledbf*). However, as it happens, *geopandas*, considered in more detail below, also reads dbf files by means of its `read_file` command. No special arguments are needed, since the file format is derived from the file extension.\n",
+    "\n",
+    "For example, to read the data from **police.dbf** (the same as in **police.csv**), the path to the sample data file **infiledbf** is found with `get_path` and passed to the `geopandas.read_file` command. The result is a **GeoDataFrame**, not a regular **DataFrame**. This is an artifact of the dbf file being in the same directory as the shape file. The same command applied to the dbf file in isolation will be a **DataFrame**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e8ca9603",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "inpath = get_path(infiledbf)\n",
+    "dfdb = gpd.read_file(inpath)\n",
+    "print(dfdb.shape)\n",
+    "print(type(dfdb))\n",
+    "print(dfdb.columns)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "56c081ac",
+   "metadata": {},
+   "source": [
+    "A close look at the dimensions and the columns reveals an additional column (22 compared to 21) with column name `geometry`. This can be removed by means of the `drop(columns = \"geometry\")` command."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "70540bdd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfdb = dfdb.drop(columns = 'geometry')\n",
+    "print(dfdb.shape)\n",
+    "print(type(dfdb))\n",
+    "print(dfdb.columns)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "53dc84ac",
+   "metadata": {},
+   "source": [
+    "Now, the dimension is tha same as for the csv file and the `geometry` column has disappeared. Also, the `type` of the result is a regular **DataFrame**.\n",
+    "\n",
+    "As mentioned, if the dbf file is in a directory without the presence of a spatial layer, the `geometry` column will not be present. In that case, the result is a regular **DataFrame**, NOT a **GeoDataFrame**.\n",
+    "\n",
+    "It is important to keep this in mind, since *pandas* has currently no support for writing dbf files, whereas *geopandas* only has support for writing dbf files that contain a `geometry` column. However, a *pandas* data frame can be written to a csv file as seen before, using `to_csv`. The input dbf file can thus be converted to a csv file, but any changes cannot be saved to another dbf file.\n",
+    "\n",
+    "In general, working with dbf files in isolation is to be discouraged."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "4f1e648e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfdb.to_csv(outfiledbf,index=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c5e63b68",
+   "metadata": {},
+   "source": [
+    "## Spatial Data Files"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2ae3e939",
+   "metadata": {},
+   "source": [
+    "### Spatial Data\n",
+    "\n",
+    "Spatial data are characterized by the combination of locational information (the precise\n",
+    "definition of points, lines or areas) and so-called attribute information (variables). \n",
+    "\n",
+    "There are many formats to store spatial information, in files as well as in relational databases. To keep\n",
+    "things simple, first the so-called *shape file* format is considered, a standard supported by ESRI, one of the \n",
+    "major commercial GIS vendors. In addition, *geojson* will be covered as well, since it is an increasingly common open source format."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5e70392d",
+   "metadata": {},
+   "source": [
+    "### Reading a shape file\n",
+    "\n",
+    "The terminology is a bit confusing, since there is no such thing as *one* shape file, but there is instead\n",
+    "a collection of three (or four) files. One file has the extension **.shp**, one **.shx**, one **.dbf**, and\n",
+    "one **.prj** (with the projection information). The first three are required, the fourth one is optional,\n",
+    "but highly recommended. The files should all be in the same directory and have the same main file name.\n",
+    "\n",
+    "In Python, the easiest way to read shape files is to use *geopandas*. The command is `read_file`, followed by the file pathname in parentheses. The program is smart enough to figure out the file format from the file extension *.shp*. As we saw before for the dbf format, the result is a geopandas data frame, a so-called **GeoDataFrame**, say **dfs**, which is a *pandas* **DataFrame** with an additional column for the geometry.\n",
+    "\n",
+    "All the standard pandas commands also apply to a geopandas data frame.\n",
+    "\n",
+    "The example uses the **police.shp** sample file as the input file, as specified in `infileshp` at the top of the notebook. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e85db1bb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "inpath = get_path(infileshp)\n",
+    "dfs = gpd.read_file(inpath)\n",
+    "print(dfs.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ed98200b",
+   "metadata": {},
+   "source": [
+    "Note how the data frame has one more column than the one created from the csv file. This is the same as in the dbf example above. The last column is **geometry**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "20d61cd6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(dfs.columns)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "237a031d",
+   "metadata": {},
+   "source": [
+    "### Creating New Variables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "81350492",
+   "metadata": {},
+   "source": [
+    "Just as for a standard pandas data frame, variables can be transformed, new variables created and data frames merged. The commands are the same as before and will not be repeated here."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e1d8cdd2",
+   "metadata": {},
+   "source": [
+    "### Reading a GeoJSON File"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "28bc5379",
+   "metadata": {},
+   "source": [
+    "Reading any of the supported spatial formats is implemented by the same `read_file` command. As mentioned, *geopandas* figures out the right format from the file extension. The result is identical to the one for the shape file."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fbf89311",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "inpath = get_path(infilegeo)\n",
+    "dfg = gpd.read_file(inpath)\n",
+    "print(dfg.shape)\n",
+    "print(type(dfg))\n",
+    "print(dfg.columns)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e0598e91",
+   "metadata": {},
+   "source": [
+    "### Writing a GeoDataFrame"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c7a7c818",
+   "metadata": {},
+   "source": [
+    "The output is accomplished by the `to_file` command. This supports many different output formats, but the default is the ESRI shape file, so we do not have to specify any arguments other than the filename. Here, we use the output file name specified in `outfileshp`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "ff7d08e7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfs.to_file(outfileshp)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "15ff186d",
+   "metadata": {},
+   "source": [
+    "Writing a geojson file works in exactly the same way, for example, using the output file specified in **outputgeo**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "fef50cad",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfg.to_file(outfilegeo)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ad019ff",
+   "metadata": {},
+   "source": [
+    "## Practice"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "72ca1664",
+   "metadata": {},
+   "source": [
+    "Use your own data set or one of the PySAL sample data sets to load a spatial data frame, create some new variables, optionally get descriptive statistics and write out an updated data set. This type of operation will be used frequently in the course of the regression analysis, for example, to add predicted values and/or residuals to a spatial layer."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

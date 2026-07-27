@@ -1,0 +1,29 @@
+﻿spreg.GMM\_Error
+================
+
+.. currentmodule:: spreg
+
+.. autoclass:: GMM_Error
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GMM_Error.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GMM_Error.mean_y
+      ~GMM_Error.std_y
+   
+   

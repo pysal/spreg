@@ -1,0 +1,6 @@
+﻿spreg.t\_stat
+=============
+
+.. currentmodule:: spreg
+
+.. autofunction:: t_stat

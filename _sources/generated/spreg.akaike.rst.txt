@@ -1,0 +1,6 @@
+﻿spreg.akaike
+============
+
+.. currentmodule:: spreg
+
+.. autofunction:: akaike
