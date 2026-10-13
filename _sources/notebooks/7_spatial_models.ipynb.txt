@@ -1,0 +1,822 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7b8975c4",
+   "metadata": {},
+   "source": [
+    "# Spatial Model Specifications\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### (revised 09/07/2024)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4cfd0985",
+   "metadata": {},
+   "source": [
+    "## Preliminaries\n",
+    "\n",
+    "In this notebook, the basic model specifications that include spatial dependence into a linear spatial regression are introduced. This is implemented through the use of a spatially lagged variable. The spatial lag is applied to the dependent variable, as $Wy$, to the explanatory variables (excluding the constant term), as $WX$, and to the error terms, as $We$. For technical details, see the relevant chapters in Anselin and Rey (2014). *Modern Spatial Econometrics in Practice*.\n",
+    "\n",
+    "As an illustration, the effect of a spatial misspecification will be investigated. Specifically, the impact spatial effects have on the classical OLS estimates will be assessed when they are present in the data generating process (DGP), but ignored in the regression specification. To accomplish this, some simple simulation experiments are carried out.\n",
+    "\n",
+    "### Prerequisites\n",
+    "\n",
+    "Familiarity with OLS estimation in *spreg* is assumed, as covered in the *OLS notebook*. For the graphs, it may be useful to have some familiarity with *matplotlib*, although to just replicate the graphs used here, that is not really needed."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6494b68c",
+   "metadata": {},
+   "source": [
+    "### Modules Needed\n",
+    "\n",
+    "The main module for spatial regression in PySAL is *spreg*. In addition, *libpysal* is needed for spatial weights manipulation, and *pandas* for data frame manipulation. In the current illustrations, *geopandas* is not needed.\n",
+    "\n",
+    "In addition, in order to plot the results of the simulation experiments, *seaborn* will be used, which in turns relies on *matplotlib* as a dependency. While under the hood, everything is actually *matplotlib* code, *seaborn* is a bit more intuitive and easier to achieve simple results. An in-depth coverage of the *seaborn* functionality is beyond the current scope, but the illustrations given here should be enough to get some decent graphs. For full details, see https://seaborn.pydata.org.\n",
+    "\n",
+    "Finally, the module *time* is imported to provide some timing results (optional)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "e398e42f",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import time\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "from libpysal import weights\n",
+    "from spreg import OLS, make_x, make_xb, make_wx, make_wxg, make_error, \\\n",
+    "    dgp_lag, dgp_sperror, dgp_slx, dgp_spdurbin"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ac85fb3",
+   "metadata": {},
+   "source": [
+    "### Functions Used\n",
+    "\n",
+    "- from numpy:\n",
+    "  - random.default_rng\n",
+    "  - zeros\n",
+    "\n",
+    "- from pandas:\n",
+    "  - DataFrame\n",
+    "  - describe\n",
+    "  - melt\n",
+    "  \n",
+    "- from seaborn:\n",
+    "  - displot\n",
+    "\n",
+    "- from matplotlib.pyplot:\n",
+    "  - show\n",
+    "  \n",
+    "- from libpysal:\n",
+    "  - weights.lat2W\n",
+    "  - w.transform\n",
+    "  - w.n\n",
+    "  \n",
+    "- from spreg:\n",
+    "  - OLS\n",
+    "  - make_x\n",
+    "  - make_xb\n",
+    "  - make_wx\n",
+    "  - make_wxg\n",
+    "  - make_error\n",
+    "  - dgp_lag\n",
+    "  - dgp_sperror\n",
+    "  - dgp_slx\n",
+    "  - dgp_spdurbin\n",
+    "  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "67da216d",
+   "metadata": {},
+   "source": [
+    "### Files and Variables\n",
+    "\n",
+    "In this notebook, no actual data are used, but data sets will be created by means of simulation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a0f82891",
+   "metadata": {},
+   "source": [
+    "### Model Parameters\n",
+    "\n",
+    "The various model parameters are set here, so that it is easy to replicate the experiments for different sample sizes and coefficient values.\n",
+    "\n",
+    "- gridx: the number of cells in the horizontal dimension of a regular lattice of dimension gridx x gridy -- set to 20\n",
+    "- gridy: the number of cells in the vertical dimension of a regular lattice of dimension gridx x gridy -- set to 20\n",
+    "- b1: a list with regression parameters (includes a coefficient for the constant term as the first element) -- set to 1, 1\n",
+    "- rndseed: the random seed to ensure reproducibility -- set to 123456789\n",
+    "- reps: the number of replications -- set to 1000\n",
+    "- rhovals: a list with spatial autoregressive coefficients $\\rho$ for the lag variables Wy -- set to [0, 0.2, 0.5, 0.7, 0.9]\n",
+    "- lamvals: a list with spatial coefficients $\\lambda$ for the error lag variables We -- set to [0, 0.2, 0.5, 0.7, 0.9]\n",
+    "- gamvals: a list with coefficients for the SLX variable (WX) -- set to [0.1, 0.3, 0.5, 0.7, 0,9]\n",
+    "- gamma: coefficient for WX in the Spatial Durbin Model - set to 0.5\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "d1fa8d01",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gridx = 20\n",
+    "gridy = 20\n",
+    "b1 = [1, 1]\n",
+    "rndseed = 123456789\n",
+    "reps = 1000\n",
+    "rhovals = [0, 0.2, 0.5, 0.7, 0.9]\n",
+    "lamvals = [0, 0.2, 0.5, 0.7, 0.9]\n",
+    "gamvals = [0.1, 0.3, 0.5, 0.7, 0.9]\n",
+    "gamma = 0.5"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f89d7018",
+   "metadata": {},
+   "source": [
+    "### Spatial Weights"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b6b5e514",
+   "metadata": {},
+   "source": [
+    "Row-standardized queen contiguity spatial weights are constructed for a regular lattice. The number of observations is the product of row and column dimensions of the grid. The *libpysal* command `weights.lat2W` with `rook=False` is used to obtain queen weights."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bfec5df5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "w = weights.lat2W(gridx,gridy,rook=False) \n",
+    "w.transform = 'r'\n",
+    "n = w.n\n",
+    "n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "16237db8",
+   "metadata": {},
+   "source": [
+    "### X Matrices\n",
+    "\n",
+    "The X matrix is constructed using the `make_X` command from the `dgp` module in `spreg`, with the default uniform distribution. Next, $X\\beta$ is computed with `make_xb` and $WX$ with `make_wx`. This uses the X matrix (without a constant column), the spatial weights and the provided regression parameters as inputs. The resulting matrices will be used as input to create the dependent vector $y$ for specific data generating processes (DGP). For these DGP, the regression coefficients and random seed specified on top are used.\n",
+    "\n",
+    "Note that in this example `make_x` will make a one column vector, since there is only one slope coefficient. In `make_xb`, a constant column is added automatically. So, whereas a constant column is not included in **x1**, the result of `make_x`, its coefficient **must** be included in the coefficient list **b1** to compute $X \\beta$ correctly. The result is a column vector."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "4111b0a9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create X\n",
+    "rng=np.random.default_rng(seed=rndseed) # set seed for X\n",
+    "x1 = make_x(rng,n,mu=[0],varu=[6],method=\"uniform\")\n",
+    "xb1 = make_xb(x1,b1) # no constant in x1, but a coefficient for the constant in b1\n",
+    "wx1 = make_wx(x1,w) # default first order no constant"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cfb212ba",
+   "metadata": {},
+   "source": [
+    "## Spatial Lag Model"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "05175efb",
+   "metadata": {},
+   "source": [
+    "The spatial lag model takes on the form:\n",
+    "\\begin{equation*}\n",
+    "y = \\rho Wy + X\\beta + u,\n",
+    "\\end{equation*}\n",
+    "where $Wy$ is the spatial lag term, $\\rho$ is the spatial autoregressive coefficient, $\\beta$ are the regression coefficients, and $u$ is an error vector."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "857a3138",
+   "metadata": {},
+   "source": [
+    "The dependent variable for a spatial lag model is generated by means of `spreg.dgp_lag`. This uses the reduced form for the spatial lag model:\n",
+    "\n",
+    "\\begin{equation*}\n",
+    "y = (I - \\rho W)^{-1} X\\beta + (I - \\rho W)^{-1}u.\n",
+    "\\end{equation*}\n",
+    "\n",
+    "Interest centers on finding out what happens to the estimated coefficient $\\hat{\\beta}$ when the true DGP is the spatial lag model, but the estimation ignores the spatial lag term and uses OLS. In other words, $\\beta$ is estimated in the regression $y = X\\beta + u$. The properties of the OLS estimates in this misspecified regression are investigated by means of a small simulation.\n",
+    "\n",
+    "The simulation consists of the following steps:\n",
+    "\n",
+    "- initialize the result matrix for the estimates of $\\beta$\n",
+    "\n",
+    "- in each step of the replications, generate $y$ from the DGP and obtain $\\hat{\\beta}$ from an OLS estimation\n",
+    "\n",
+    "- run the simulation loop over all replications and spatial parameters and collect the results\n",
+    "\n",
+    "- turn the results matrix into a DataFrame\n",
+    "\n",
+    "- compute descriptive statistics\n",
+    "\n",
+    "- plot the distribution of parameter estimates for different values of the spatial parameter\n",
+    "\n",
+    "For greatest efficiency, these steps could all be combined in one big function, but to get a good sense of what is going on in each step, for now they are kept separate."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b4fb1339",
+   "metadata": {},
+   "source": [
+    "#### Initialize results matrix\n",
+    "\n",
+    "For each value of $\\rho$ as a column, the results matrix will have the $\\beta$ estimate for each replication in the row. The matrix is thus of dimension **reps** times number of $\\rho$ values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "609e63c1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "best = np.zeros((reps,len(rhovals)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "568db8d2",
+   "metadata": {},
+   "source": [
+    "#### Simulation loop"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "917baa9b",
+   "metadata": {},
+   "source": [
+    "The first step is to initialize the random seed for reproducibility. The function `spreg.make_error` is used to generate a standard normal random error vector. Then, together with the computed $X\\beta$, the error term is used to generate $y$ by means of `spreg.dgp_lag`. \n",
+    "\n",
+    "The $\\hat{\\beta}$ coefficient is extracted from the regression object as the second element in the `betas` attribute of the regression object obtained from `spreg.OLS`, and then entered in the results matrix. Running 1000 replications may take a minute or so, depending on hardware."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "970eb532",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "rng=np.random.default_rng(seed=rndseed)\n",
+    "for r in range(len(rhovals)):\n",
+    "    for i in range(reps):\n",
+    "        u = make_error(rng,n)\n",
+    "        y = dgp_lag(u,xb1,w,rhovals[r])\n",
+    "        reg = OLS(y,x1,nonspat_diag=False)\n",
+    "        best[i,r] = reg.betas[1]\n",
+    "t1 = time.time()\n",
+    "print(\"time in minutes: \",(t1-t0)/60.0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "80a03c0c",
+   "metadata": {},
+   "source": [
+    "#### Results data frame"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6a1b328a",
+   "metadata": {},
+   "source": [
+    "By means of Python list comprehension, a list of meaningful column headers is created that is related to the spatial parameter values.\n",
+    "\n",
+    "The result array is then converted to a *pandas* Data Frame using this list as the column names."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cfaaaf52",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rr = [\"rho\"+str(r) for r in rhovals]\n",
+    "results = pd.DataFrame(best,columns=rr)\n",
+    "results.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a984c06e",
+   "metadata": {},
+   "source": [
+    "#### Descriptive statistics\n",
+    "\n",
+    "The default descriptive statistics are obtained by means of the `describe` method of the *pandas* data frame. Of most interest are the **mean** and the standard deviation (**std**). Any difference between the mean and the true value of $\\beta$ indicates *bias*, whereas changes in the standard deviation suggest a change in precision with values of $\\rho$."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9dc786a8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "results.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "27895f57",
+   "metadata": {},
+   "source": [
+    "The descriptive statistics for this example illustrate how the estimate for $\\beta$ becomes more and more biased with increasing values of $\\rho$, with a mean of 1.002 under the null to a mean of 1.389 for $\\rho = 0.9$. In addition, the standard deviation of the estimate increases as well, from a value of 0.0198 under the null to 0.0409 for $\\rho = 0.9$, more than double (which also means that the variance is four times as large)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "46564172",
+   "metadata": {},
+   "source": [
+    "#### Graphing the results"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d6374d21",
+   "metadata": {},
+   "source": [
+    "Using *seaborn*, it is very straightforward to plot the distribution of a column in a data frame by means of the `sns.displot` command, specifying `kind=\"kde\"`. The other arguments are the name of the data frame (here, **results**) and the x-axis, for example **rho0.5**. The command `plt.show()` is included to show the plot."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f8df6de8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sns.displot(results, x=\"rho0.5\", kind=\"kde\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ddc26ff8",
+   "metadata": {},
+   "source": [
+    "The plot illustrates how the mean is no longer centered on the value of 1.000, but instead on 1.06."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "536eaec2",
+   "metadata": {},
+   "source": [
+    "Plotting the distribution of the estimates for all the spatial parameters on a single plot is a little trickier, and requires the use of the *pandas* `melt` functionality. As it stands, the data frame **results** is in so-called wide format, with a different column for each value of $\\rho$. *seaborn* likes this to be in so-called long format, or *tidy* (in R terminology), where all the $\\beta$ estimates form one long column with an additional variable that gives the value for $\\rho$. In a sense, each individual estimation result becomes a separate observation, with a value for $\\rho$ and a value for the $\\beta$ estimate.\n",
+    "\n",
+    "To accomplish this, two arguments need to be set, one for the new column that will contain the values of $\\rho$, `var_name`, the other for the regression coefficient that matches the replication-rho combination, named `value_name` in the *pandas* terminology. In the example, `var_name` becomes **\"rho\"**, since each of the columns contains the prefix **rho**, and `value_name` become **\"b\"**. The result is a long data frame."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "98e4caed",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reslong = results.melt(var_name='rho',value_name='b')\n",
+    "reslong"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "039dbdac",
+   "metadata": {},
+   "source": [
+    "At this point, the `sns.displot` command can be applied to the new data frame with `x=\"b\"` and differentiated by the value of $\\rho$ by specifying the `hue=\"rho\"`. As before, `kind=\"kde\"` for a kernel density curve. Other parameters can be set as well, but that's beyond the current scope."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cf600550",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sns.displot(reslong,x=\"b\",hue=\"rho\",kind=\"kde\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "51bb8bfb",
+   "metadata": {},
+   "source": [
+    "The plots clearly illustrate both the increasing bias as well as the larger variance with growing values of the spatial autoregressive parameter."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6596947d",
+   "metadata": {},
+   "source": [
+    "## Spatial Error Model"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "390441fc",
+   "metadata": {},
+   "source": [
+    "The same exercise is now repeated for a spatial error specification, using `spreg.dgp_sperror`. The error model is:\n",
+    "\n",
+    "$y = X\\beta + u$, with $u = \\lambda Wu + e$,\n",
+    "\n",
+    "where $\\lambda$ is the spatial autoregressive coefficient for the error vector.\n",
+    "\n",
+    "The values for $\\lambda$ are specified in **lamvals** at the top of the notebook. \n",
+    "\n",
+    "The default for a spatial error vector is an autoregressive process, with `model='sar'` as the option in `spreg.dgp_sperror` (since it is the default, it doesn't have to be specified, but it is included here for clarity).\n",
+    "\n",
+    "Note how the parameter vectors have been changed to **lamvals** and the column names in the data frame have the **lam** predicate. In all other respects, the logic is the same as for the previous experiment."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "81a27ac8",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "best = np.zeros((reps,len(lamvals)))\n",
+    "rng=np.random.default_rng(seed=rndseed)\n",
+    "for r in range(len(lamvals)):\n",
+    "    for i in range(reps):\n",
+    "        u = make_error(rng,n)\n",
+    "        y = dgp_sperror(u,xb1,w,lamvals[r],model=\"sar\")\n",
+    "        reg = OLS(y,x1,nonspat_diag=False)\n",
+    "        best[i,r] = reg.betas[1]\n",
+    "t1 = time.time()\n",
+    "print(\"time in minutes: \",(t1-t0)/60.0)\n",
+    "rr = [\"lam\"+str(r) for r in lamvals]\n",
+    "results = pd.DataFrame(best,columns=rr)\n",
+    "results.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e5357938",
+   "metadata": {},
+   "source": [
+    "In contrast to the spatial lag model, the estimates for $\\beta$ remain unbiased, with the mean centered on the correct value of 1.0. However, as the spatial parameter increases, the standard error goes from 0.0198 under the null to 0.0409 for $\\lambda = 0.9$, four times as much.\n",
+    "\n",
+    "A graph can be created for all values of $\\lambda$ in the same way as before."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d8f95820",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reslong = results.melt(var_name='lam',value_name='b')\n",
+    "sns.displot(reslong,x=\"b\",hue=\"lam\",kind=\"kde\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2f425024",
+   "metadata": {},
+   "source": [
+    "The pattern is confirmed by the graphs, with a lower curve corresponding to a larger variance. Note how for $\\lambda = 0.2$, the effect is negligible, with even a slightly smaller standard error. The impact becomes really pronounced for larger values of $\\lambda$."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "41b77f6a",
+   "metadata": {},
+   "source": [
+    "### Moving Average Errors"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "29078f0a",
+   "metadata": {},
+   "source": [
+    "For comparison, the simulations are also run for a spatial moving average error process. In this model, the error vector is:\n",
+    "\n",
+    "\\begin{equation*}\n",
+    "u = \\lambda We + e,\n",
+    "\\end{equation*}\n",
+    "with $e$ as a standard normal error vector.\n",
+    "\n",
+    "The commands to carry out the simulation are all the same, except that in `spreg.dgp_sperror`, the `model` argument should be set to `\"ma\"`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8f425e2c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "best = np.zeros((reps,len(lamvals)))\n",
+    "rng=np.random.default_rng(seed=rndseed)\n",
+    "for r in range(len(lamvals)):\n",
+    "    for i in range(reps):\n",
+    "        u = make_error(rng,n)\n",
+    "        y = dgp_sperror(u,xb1,w,lamvals[r],model=\"ma\")\n",
+    "        reg = OLS(y,x1,nonspat_diag=False)\n",
+    "        best[i,r] = reg.betas[1]\n",
+    "t1 = time.time()\n",
+    "print(\"time in minutes: \",(t1-t0)/60.0)\n",
+    "rr = [\"lam\"+str(r) for r in lamvals]\n",
+    "results = pd.DataFrame(best,columns=rr)\n",
+    "results.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "83958659",
+   "metadata": {},
+   "source": [
+    "Here, the effect on the variance is much less pronounced, going from 0.020 under the null to 0.022 with $\\rho = 0.9$. The same can be observed in the frequency graphs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "67c29fe0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reslong = results.melt(var_name='lam',value_name='b')\n",
+    "sns.displot(reslong,x=\"b\",hue=\"lam\",kind=\"kde\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e020c365",
+   "metadata": {},
+   "source": [
+    "## SLX"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b7ac083e",
+   "metadata": {},
+   "source": [
+    "The same approach is followed to assess the effect of ignoring a spatially lagged explanatory variable (SLX) on the regression slope coefficient. Formally, the SLX specification is:\n",
+    "\n",
+    "\\begin{equation*}\n",
+    "y = X \\beta + WX \\gamma + u,\n",
+    "\\end{equation*}\n",
+    "\n",
+    "where $WX$ does not contain a constant term (the spatial lag of a constant term is the same constant, which would create perfect multicollinearity) and $\\gamma$ is a vector of parameters.\n",
+    "\n",
+    "The DGP for the SLX model is obtained from `spreg.dgp_slx`. Both **xb1** and **wxg1** need to be passed as arguments. The latter is the product $WX \\gamma$, which must be computed for each different value of $\\gamma$.\n",
+    "\n",
+    "To investigate a range of values for $\\gamma$, some slight adjustments to the code are needed. In the simulation loop, **wxg1** must be updated for each new value of $\\gamma$. Otherwise, the logic remains the same as before."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f5441e84",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "best = np.zeros((reps,len(gamvals)))\n",
+    "rng=np.random.default_rng(seed=rndseed)\n",
+    "for r in range(len(gamvals)):\n",
+    "    wxg1 = make_wxg(wx1,r)\n",
+    "    for i in range(reps):\n",
+    "        u = make_error(rng,n)\n",
+    "        y = dgp_slx(u,xb1,wxg1)\n",
+    "        reg = OLS(y,x1,nonspat_diag=False)\n",
+    "        best[i,r] = reg.betas[1]\n",
+    "t1 = time.time()\n",
+    "print(\"time in minutes: \",(t1-t0)/60.0)\n",
+    "rr = [\"gam\"+str(r) for r in gamvals]\n",
+    "results = pd.DataFrame(best,columns=rr)\n",
+    "results.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "03987a3d",
+   "metadata": {},
+   "source": [
+    "This result illustrates the classic *omitted variable bias* effect, since the ignored WX is nothing but an omitted regressor. The effect is a slight increase in bias of the $\\beta$ estimate, that becomes larger with larger $\\gamma$. The effect on the variance is minimal."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a9a7cb61",
+   "metadata": {},
+   "source": [
+    "This behavior is nicely illustrated by the frequency plots, which show a gradual shift away from the value of 1.0, but in contrast to what happens for the spatial lag model, all the curves have basically the same shape, indicating a minimal effect on the variance."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed484563",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reslong = results.melt(var_name='gam',value_name='b')\n",
+    "sns.displot(reslong,x=\"b\",hue=\"gam\",kind=\"kde\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7a14f9b6",
+   "metadata": {},
+   "source": [
+    "## Spatial Durbin"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "33f966f7",
+   "metadata": {},
+   "source": [
+    "The final model illustrated here is a Spatial Durbin model, which includes both a spatially lagged dependent variable, $Wy$, and spatially lagged explanatory variables (SLX), $WX$:\n",
+    "\n",
+    "\\begin{equation*}\n",
+    "y = Wy + X\\beta + WX \\gamma + u.\n",
+    "\\end{equation*}\n",
+    "\n",
+    "The dependent variable is generated by means of the reduced form, similar to what is the case for a spatial lag model, but now including the SLX term as part of the regression:\n",
+    "\n",
+    "\\begin{equation*}\n",
+    "y = (I - \\rho W)^{-1} (X\\beta + WX\\gamma) + (I - \\rho W)^{-1} u.\n",
+    "\\end{equation*}\n",
+    "\n",
+    "\n",
+    "The effect of a misspecified spatial Durbin model is illustrated for a range of spatial autoregressive coefficients. For the sake of simplicity, $\\lambda$ is kept fixed, but of course, there could be a double loop over values of both $\\rho$ and $\\lambda$. The relevant function is `spreg.dgp_spdurbin`. It takes as arguments and error term, **xb**, **wxg**, the spatial weights **w**, and the spatial parameter $\\rho$ ($\\gamma$ is used in the calculation of **wxg**, outside of the loop)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9f4a38b2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "rng=np.random.default_rng(seed=rndseed)\n",
+    "wxg1 = dgp.make_wxg(wx1,gamma)\n",
+    "for r in range(len(rhovals)):\n",
+    "    for i in range(reps):\n",
+    "        u = make_error(rng,n)\n",
+    "        y = dgp_spdurbin(u,xb1,wxg1,w,rhovals[r])\n",
+    "        reg = OLS(y,x1,nonspat_diag=False)\n",
+    "        best[i,r] = reg.betas[1]\n",
+    "t1 = time.time()\n",
+    "print(\"time in minutes: \",(t1-t0)/60.0)\n",
+    "rr = [\"rho\"+str(r) for r in rhovals]\n",
+    "results = pd.DataFrame(best,columns=rr)\n",
+    "results.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "306c0dd1",
+   "metadata": {},
+   "source": [
+    "The effect on the bias of the regression coefficient is similar but greater than for the simple spatial lag model, but the standard error changes in very much the same way, essentially doubling over the range of $\\rho$.\n",
+    "\n",
+    "This is nicely illustrated by the series of frequency curves, with the right-most curve centered on 1.6."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1ff89fbf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reslong = results.melt(var_name='rho',value_name='b')\n",
+    "sns.displot(reslong,x=\"b\",hue=\"rho\",kind=\"kde\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "495f233d",
+   "metadata": {},
+   "source": [
+    "## Other Options"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7801863f",
+   "metadata": {},
+   "source": [
+    "The *dgp* module contains several other options, such as:\n",
+    "\n",
+    "- SLX error model with SAR and MA errors: `spreg.dgp_slxerror`\n",
+    "\n",
+    "- SAR-Error model: `spreg.dgp_lagerr`\n",
+    "\n",
+    "- SARMA model: `spreg.dgp_lagerr` with `model=\"ma\"`\n",
+    "\n",
+    "- GNS SAR model: `spreg.dgp_gns`\n",
+    "\n",
+    "- GNS MA model: `spreg.dgp_gns` with `model=\"ma\"`\n",
+    "\n",
+    "In addition, the random errors can be generated for different variance values, and besides the default normal distribution, for a `laplace`, `cauchy` or `lognormal` distribution by specifying the argument `method`.\n",
+    "\n",
+    "Finally, the X matrix can be generated with a uniform distribution (the default), but also for independent normal vectors (`method = 'normal'`) and bivariate correlated vectors (`method = 'bivnormal'`). While the latter can only be implemented for two explanatory variables, the number of regressors for the other options is not constrained."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "65aadbff",
+   "metadata": {},
+   "source": [
+    "## Practice\n",
+    "\n",
+    "Assess the properties of OLS for different forms of spatial misspecifications. For example, you could examine the effect of negative spatial coefficients, or of multiple spatially lagged regressors, as well as the misspecification caused by the models that were not included in the examples, such as SAR-Error and SLX-Error. You could also experiment with different sample sizes and different spatial weights, especially weights with different connectedness characteristics.\n",
+    "\n",
+    "For now, the treatment of estimation has been limited to classic OLS. Before venturing into the estimation of the spatial models, it is important to have a good sense of the implications of ignoring spatial effects and to what extent they matter.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

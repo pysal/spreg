@@ -1,0 +1,22 @@
+﻿spreg.AKtest
+============
+
+.. currentmodule:: spreg
+
+.. autoclass:: AKtest
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AKtest.__init__
+   
+   
+
+   
+   
+   

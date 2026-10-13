@@ -1,0 +1,385 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7b8975c4",
+   "metadata": {},
+   "source": [
+    "# PySAL Sample Data Sets\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### (revised 09/06/2024)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4cfd0985",
+   "metadata": {},
+   "source": [
+    "## Preliminaries\n",
+    "\n",
+    "In this notebook, the installation and input of PySAL sample data sets is reviewed.\n",
+    "\n",
+    "A video recording is available from the GeoDa Center YouTube channel playlist *Applied Spatial Regression - Notebooks*, at https://www.youtube.com/watch?v=qwnLkUFiSzY&list=PLzREt6r1NenmhNy-FCUwiXL17Vyty5VL6."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a443690f",
+   "metadata": {},
+   "source": [
+    "### Prerequisites\n",
+    "\n",
+    "Very little is assumed in terms of prerequisites. Sample data files are examined and loaded with *libpysal* and *geopandas* is used to read the data. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6494b68c",
+   "metadata": {},
+   "source": [
+    "### Modules Needed\n",
+    "\n",
+    "The three modules needed to work with sample data are *libpysal*, *pandas* and *geopandas*. \n",
+    "\n",
+    "Some additional imports are included to avoid excessive warning messages. With later versions of PySAL, these may not be needed."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "e398e42f",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    },
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "import os\n",
+    "os.environ['USE_PYGEOS'] = '0'\n",
+    "\n",
+    "import pandas as pd\n",
+    "import geopandas as gpd\n",
+    "import libpysal"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4deb9fda",
+   "metadata": {},
+   "source": [
+    "In order to have some more flexibility when listing the contents of data frames, the `display.max_rows` option is set to 100 (this step can easily be skipped, but then the listing of example data sets below will be incomplete)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dda117c5",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "pd.options.display.max_rows = 100\n",
+    "pd.options.display.max_rows"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ac85fb3",
+   "metadata": {},
+   "source": [
+    "### Functionality Used\n",
+    "\n",
+    "- from pandas/geopandas:\n",
+    "  - read_file\n",
+    "  \n",
+    "- from libpysal:\n",
+    "  - examples.available\n",
+    "  - examples.explain\n",
+    "  - examples.load_example\n",
+    "  - examples.get_path"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b9b0c168",
+   "metadata": {},
+   "source": [
+    "### Input Files"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "74ab0075",
+   "metadata": {},
+   "source": [
+    "All notebooks used for this course are organized such that the relevant filenames and variables names are listed at the top, so that they can be easily adjusted for use with your own data sets and variables. In this notebook, the use of PySAL sample data sets is illustrated. For other data sets, the general approach is the same, except that either the files must be present in the current working directory, or the full pathname must be specified. In later notebooks, only sample data sets will be used.\n",
+    "\n",
+    "Here, the **Chi-SDOH** sample shape file is illustrated. The specific file names are:\n",
+    "\n",
+    "- **Chi-SDOH.shp,shx,dbf,prj**: a shape file (four files!) with socio-economic determinants of health for 2014 in 791 Chicago tracts\n",
+    "\n",
+    "In the other *spreg* notebooks, it is assumed that will you have installed the relevant example data sets using functionality from the *libpysal.examples* module. This is illustrated in detail here, but will not be repeated in the other notebooks. If the files are not loaded using the `libpysal.examples` functionality, they can be downloaded as individual files from https://github.com/lanselin/spreg_sample_data/ or https://geodacenter.github.io/data-and-lab/. You must then pass the full path to **infileshp** used as arguments in the corresponding `geopandas.read_file` command.\n",
+    "\n",
+    "The input file is specified generically as **infileshp** (for the shape file). "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "4d4335bb",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "infileshp = \"Chi-SDOH.shp\"            # input shape file with data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "45549ced",
+   "metadata": {},
+   "source": [
+    "## Accessing a PySAL Remote Sample Data Set "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bd0db16e-fe3c-45c6-85d9-178d42d016c5",
+   "metadata": {},
+   "source": [
+    "### Installing a remote sample data set"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "69b1e985",
+   "metadata": {},
+   "source": [
+    "All the needed files associated with a remote data set must be installed locally. The list of available remote data sets is shown by means of `libpysal.examples.available()`. When the file is also installed, the matching item in the **Installed** column will be given as **True**. \n",
+    "\n",
+    "If the sample data set has not yet been installed, **Installed** is initially set to **False**. For example, if the **chicagoSDOH** data set is not installed, item **79** in the list (**chicagoSDOH**), is given as **False**. Once the example data set is loaded, this will be changed to **True**.\n",
+    "\n",
+    "The example data set only needs to be loaded once. After that, it will be available for all future use in *PySAL* (not just in the current notebook), using the standard `get_path` functionality of `libpysal.examples`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "474197b2",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "libpysal.examples.available()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bee29a1d",
+   "metadata": {},
+   "source": [
+    "The contents of any `PySAL` example data set can be shown by means of `libpysal.examples.explain`. Note that this does **not** load the data set, but it accesses the contents remotely (you will need an internet connection). As listed, the data set is for 791 census tracts in Chicago and it contains 65 variables."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "02d1d8a4",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "libpysal.examples.explain(\"chicagoSDOH\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f2748a31",
+   "metadata": {},
+   "source": [
+    "The example data set is installed locally by means of `libpysal.examples.load_example` and passing the name of the remote example. Note the specific path to which the data sets are downloaded, you will need that if you ever want to remove the data set."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f5f24ea0",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "libpysal.examples.load_example(\"chicagoSDOH\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9c737fc3",
+   "metadata": {},
+   "source": [
+    "At this point, when checking `available`, the data set is listed as **True** under **Installed**. As mentioned, the installation only needs to be carried out once."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a772500e",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "libpysal.examples.available()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "35566ba3",
+   "metadata": {},
+   "source": [
+    "### Reading Input Files from the Example Data Set"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "73afed82",
+   "metadata": {},
+   "source": [
+    "The actual path to the files contained in the local copy of the remote data set is found by means of `libpysal.examples.get_path`. This is then passed to the *geopandas* `read_file` function in the usual way. Here, this is a bit cumbersome, but the command can be simplified by specific statements in the module import, such as `from libpysal.examples import get_path`. The latter approach will be used in later notebooks, but here the full command is used. \n",
+    "\n",
+    "For example, the path to the input shape file is (this may be differ somewhat depending on how and where PySAL is installed):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cc1d2a01",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "libpysal.examples.get_path(infileshp)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d11c88fd",
+   "metadata": {},
+   "source": [
+    "As mentioned earlier, if the example data are not installed locally by means of `libpysal.examples`, the `get_path` command must be replaced by an explicit reference to the correct file path name. This is easiest if the files are in the current working directory, in which case just specifying the file names in **infileshp** etc. is sufficient.\n",
+    "\n",
+    "The shape file is read by means of the *geopandas* `read_file` command, to which the full file pathname is passed obtained from `libpysal.examples.get_path(infileshp)`. To check if all is right, the shape of the data set (number of observations, number of variables) is printed (using the standard `print( )` command), as well as the list of variable names (columns in *pandas* speak). Details on dealing with *pandas* and *geopandas* data frames are covered in a later notebook."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b8d93a92",
+   "metadata": {
+    "collapsed": true,
+    "jupyter": {
+     "outputs_hidden": true
+    }
+   },
+   "outputs": [],
+   "source": [
+    "inpath = libpysal.examples.get_path(infileshp)\n",
+    "dfs = gpd.read_file(inpath)\n",
+    "print(dfs.shape)\n",
+    "print(dfs.columns)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "604e8ab2",
+   "metadata": {},
+   "source": [
+    "### Removing an Installed Remote Sample Data Set"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6974e1b6",
+   "metadata": {},
+   "source": [
+    "In case that for some reason the installed remote **chicagoSDOH** data set is no longer needed, it can be removed by means of standard linux commands (or equivalent, for other operating systems). For example, on a Mac or Linux-based system, one first moves to the directory where the files were copied to. This is the same path that was shown when `load_example` was executed. In the example for a Mac OS operating system, this was shown in **Downloading chicagoSDOH to /Users/luc/Library/Application Support/pysal/chicagoSDOH**.\n",
+    "\n",
+    "So, in a terminal window, one first moves to /Users/your_user_name/Library/'Application Support'/pysal (don't forget the quotes) on a Mac system (and equivalent for other operating systems). There, the **chicagoSDOH** directory will be present. It is removed by means of:\n",
+    "    \n",
+    "`rm -r chicagoSDOH`\n",
+    "    \n",
+    "Of course, once removed, it will have to be reinstalled if needed in the future."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "94d9a818-6ce8-4658-b51a-54ad7178c795",
+   "metadata": {},
+   "source": [
+    "## Practice"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b29d53d4-69c7-411f-887d-efb6bc6b426f",
+   "metadata": {},
+   "source": [
+    "If you want to use other PySAL data sets to practice the spatial regression functionality in *spreg*, make sure to install them using the instructions given in this notebook. For example, load the **Police** data set (item 52 in the list), which will be used as an example in later notebooks."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

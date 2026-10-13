@@ -1,0 +1,6 @@
+﻿spreg.sur\_lrtest
+=================
+
+.. currentmodule:: spreg
+
+.. autofunction:: sur_lrtest

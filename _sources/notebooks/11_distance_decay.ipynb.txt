@@ -1,0 +1,472 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7b8975c4",
+   "metadata": {},
+   "source": [
+    "# Distance Decay\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### (revised 09/18/2024)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4cfd0985",
+   "metadata": {},
+   "source": [
+    "## Preliminaries\n",
+    "\n",
+    "In this notebook, a closer look is taken at the distance decay implied by different kernel functions that are used in the linear SLX model, as well as by the nonlinear distance transformations used in the NSLX specification. Since these functions are derived for the k-nearest neighbors, the spatial patterning of these neighbors will affect how much relevance the values observed at those locations have for the spatial lag. For example, if the nearest neighbors are all rather far away from the origin, e.g., with a relative distance (z) of 0.5 or more, a steep distance decay will essentially eliminate their effect.\n",
+    "\n",
+    "### Prerequisites\n",
+    "\n",
+    "Familiarity with *numpy*, *pandas* operations and the `plot` function for *pandas* dataframes is assumed. Further customization can be carried out by means of specific features of *matplotlib*, but that is not considered here."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6494b68c",
+   "metadata": {},
+   "source": [
+    "### Modules Needed\n",
+    "\n",
+    "Since no *spreg* functions are used, the imports are limited to *numpy*, *pandas* and *matplotlib.pyplot* (the latter is optional)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 85,
+   "id": "e398e42f",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "np.set_printoptions(legacy = \"1.25\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ac85fb3",
+   "metadata": {},
+   "source": [
+    "### Functions Used\n",
+    "\n",
+    "- from numpy:\n",
+    "  - linspace\n",
+    "  - reshape\n",
+    "  - hstack\n",
+    "\n",
+    "- from pandas:\n",
+    "  - DataFrame\n",
+    "  - concat\n",
+    "  - plot\n",
+    "  \n",
+    "- from matplotlib.pyplot:\n",
+    "  - show\n",
+    "  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "67da216d",
+   "metadata": {},
+   "source": [
+    "### Files and Variables\n",
+    "\n",
+    "In this notebook, no actual data are used."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3ca18922",
+   "metadata": {},
+   "source": [
+    "## Distance Metric"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "71e1aa24",
+   "metadata": {},
+   "source": [
+    "To obtain comparable graphs, the distance is scaled to a value less than one. This corresponds to the $z$ value that is computed relative to the bandwidth. This approach avoids problems due to the varying scale of the actual distance metric (e.g., meters vs. km) and makes all distance decay functions comparable.\n",
+    "\n",
+    "For the purpose of graphing, 20 equidistance points are used in the interval 0-1, by means of `numpy.linspace`.\n",
+    "\n",
+    "In practice, the $z$ values are computed for up to k nearest neighbors, which are not necessarily equally spaced. In fact, the weight of neighbors will vary depending on whether they are close to the origin or closer to the farthest nearest neighbor."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "95f932d6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "z = np.linspace(0.0,1.0,num=21)\n",
+    "z = z.reshape(-1,1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8fe8a0df",
+   "metadata": {},
+   "source": [
+    "## Kernel Functions"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ecced701",
+   "metadata": {},
+   "source": [
+    "### Triangular Kernel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ba12119c",
+   "metadata": {},
+   "source": [
+    "The triangular kernel is $1.0 - z$. Note that in the SLX implementation, the value at the origin (diagonal) is set to zero. It is kept at 1.0 here to make the graph clearer."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "78a29421",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "tri = 1.0 - z\n",
+    "tri = tri.reshape(-1,1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f62b6952",
+   "metadata": {},
+   "source": [
+    "The kernel function is matched with the distance metric to create a simple plot."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "848554c8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "p1 = np.hstack((z,tri))\n",
+    "df1 = pd.DataFrame(p1,columns=[\"distance\",\"triangular\"])\n",
+    "df1.plot(x=\"distance\",y=\"triangular\",kind=\"line\",title=\"Triangular Kernel\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af65df28",
+   "metadata": {},
+   "source": [
+    "As expected, the result is a linear decline with distance, yielding a weight equal to $1.0 - z$ at each point. The function terminates with a value of zero for $z = 1.0$."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "35f2b7f4",
+   "metadata": {},
+   "source": [
+    "### Quadratic/Epanechnikov Kernel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "03c7482b",
+   "metadata": {},
+   "source": [
+    "The quadratric or Epanechnikov kernel takes the value $1.0 - z^2$. Strictly speaking, this value is scaled by 3/4, but this can be ignored here. The resulting distance decay graph is obtained in the same way as before."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "90ead891",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "z2 = z**2\n",
+    "z2 = z2.reshape(-1,1)\n",
+    "epa = 1.0 - z2\n",
+    "p2 = np.hstack((z,epa))\n",
+    "df2 = pd.DataFrame(p2,columns=[\"distance\",\"quadratic\"])\n",
+    "df2.plot(x=\"distance\",y=\"quadratic\",kind=\"line\",title=\"Epanechnikov Kernel\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "553aab44",
+   "metadata": {},
+   "source": [
+    "Note how the curvature is above the line that connects the two endpoints, yielding generally higher weights for the neighbors than the corresponding triangular kernel weights."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d30dbb5a",
+   "metadata": {},
+   "source": [
+    "### Quartic Kernel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "88e81846",
+   "metadata": {},
+   "source": [
+    "The quartic kernel is $(1.0 - z^2)^2$. Again, this is customary scaled by 15/16, which is ignored here. The graph is obtained in the same way."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "50bf33cc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "quar = (1.0 - z2) ** 2\n",
+    "p3 = np.hstack((z,quar))\n",
+    "df3 = pd.DataFrame(p3,columns=[\"distance\",\"quartic\"])\n",
+    "df3.plot(x=\"distance\",y=\"quartic\",kind=\"line\",title=\"Quartic Kernel\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b334715e",
+   "metadata": {},
+   "source": [
+    "Note the characteristic reverse S-shape with higher than linear weights close to the original, changing to less than linear values in the second half of the distance range.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "55c52e32",
+   "metadata": {},
+   "source": [
+    "### Gaussian Kernel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "778b96cc",
+   "metadata": {},
+   "source": [
+    "The Gaussian kernel takes the form $\\sqrt{(2 \\pi)}. e^{-z^2/2}$. For the graph, the scaling factor is again ignored. Note that in contrast to the quadratic and quartic kernel functions, this would yield a value at the origin of larger than one, and generally remain above one in the distance range considered. It is therefore applied without the scaling factor. The graph is obtained in the same fashion as before."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "32cd8caf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "zz = -z2 / 2.0\n",
+    "gs = np.exp(zz)\n",
+    "p4 = np.hstack((z,gs))\n",
+    "df4 = pd.DataFrame(p4,columns=[\"distance\",\"Gaussian\"])\n",
+    "df4.plot(x=\"distance\",y=\"Gaussian\",kind=\"line\",title=\"Gaussian Kernel\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f788fb57",
+   "metadata": {},
+   "source": [
+    "Similar to the pattern for the quadratic kernel, this yields weights above the diagonal for the distance range. Also note that the value at the end point is not zero, but around 0.6 (in fact, for $z = 1$, the kernel value is $e^{-1/2} = 0.6$)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b9ef737e",
+   "metadata": {},
+   "source": [
+    "### Comparison"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "79857c9b",
+   "metadata": {},
+   "source": [
+    "To facilitate a comparison of the distance decay patterns generated by the different functions, they are next plotted together, anchored to the value of one at the origin."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8f5eda88",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pall = pd.concat((df1,df2[\"quadratic\"],df3[\"quartic\"],df4[\"Gaussian\"]),axis=1)\n",
+    "pall.plot(x=\"distance\",y=[\"triangular\",\"quadratic\",\"quartic\",\"Gaussian\"],kind=\"line\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7f2b7b32",
+   "metadata": {},
+   "source": [
+    "The curves clearly show how the nonlinear functions provide differential weights with distance. Relative to the triangular kernel, only the quartic function penalizes more distant locations more. As pointed out earlier, the Gaussian kernel gives much higher weights than the other curves, implying very little distance decay."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "77f18355",
+   "metadata": {},
+   "source": [
+    "## Negative Exponential Distance Function"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fc914b9f",
+   "metadata": {},
+   "source": [
+    "The negative exponential distance function that is implemented for the nonlinear SLX model uses the transformation $e^{-\\alpha z}$, where $z$ is the same distance fraction as for the kernel functions. This function can be readily graphed for a range of values of the $\\alpha$ parameter. Note that $\\alpha$ is taken to be positive. Negative values for this coefficient are not allowed, since they would yield increasing weights with distance, violating Tobler's law. For $\\alpha = 0$, the weights are constant and equal to one."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c6e72b8f",
+   "metadata": {},
+   "source": [
+    "To illustrate the shape of the distance decay function for different parameter values, a range from 0 to 6.0 is considered. To graph the functions, only a simple computation is needed, which is implemented in a `for` loop."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ff43c93b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "a = [0.0, 0.5, 1.0, 2.0, 6.0]\n",
+    "\n",
+    "p5 = z\n",
+    "for i in a:\n",
+    "    za = - i * z\n",
+    "    expon = np.exp(za)\n",
+    "    p5 = np.hstack((p5,expon))\n",
+    "\n",
+    "cols = [\"exp\" + str(i) for i in a]\n",
+    "cols.insert(0,\"distance\")\n",
+    "\n",
+    "df5 = pd.DataFrame(p5,columns=cols)\n",
+    "df5.plot(x=\"distance\",y=cols[1:],kind=\"line\",title=\"Negative Exponential Distance\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a335ca6f",
+   "metadata": {},
+   "source": [
+    "Using $\\alpha = 1.0$ as a reference, values less than 1.0 yield a much slower distance decay and vice versa. Note that the value of the weight at the end point is $e^{-\\alpha}$, which is larger than zero for small values of $\\alpha$. Once $\\alpha$ becomes larger, the distance decay becomes very steep. As illustrated in the graph, for a value of 6.0, the weights are essentially zero for $z > 0.5$, wiping out the effect of any nearest neighbors beyond that distance. It is important to keep this in mind when interpreting the coefficient estimates in a NSLX model."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "46c208e1",
+   "metadata": {},
+   "source": [
+    "## Inverse Distance Power Function"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "46b3a138",
+   "metadata": {},
+   "source": [
+    "The inverse distance power transformation takes the form $(1.0 - z)^{\\alpha}$, with $\\alpha$ taking on a postive value. Using the same procedure as before, the implied distance decay can be graphed for a range of parameter values. For $\\alpha = 0$, the curve is again horizontal."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fff8c90e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "a = [0.0, 0.5, 1.0, 2.0, 6.0]\n",
+    "\n",
+    "p6 = z\n",
+    "zz = 1.0 - z\n",
+    "\n",
+    "for i in a:\n",
+    "    za = zz**i\n",
+    "    p6 = np.hstack((p6,za))\n",
+    "\n",
+    "cols = [\"pow\" + str(i) for i in a]\n",
+    "cols.insert(0,\"distance\")\n",
+    "\n",
+    "df6 = pd.DataFrame(p6,columns=cols)\n",
+    "df6.plot(x=\"distance\",y=cols[1:],kind=\"line\",title=\"Inverse Distance Power Function\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d7ec2734",
+   "metadata": {},
+   "source": [
+    "In contrast to the negative exponential function, the weights end up (by construction) with a value of zero at the bandwidth distance. Coefficient values less than one yield a distance decay with much larger weights for shorter distances, only dropping off more rapidly in the farthest distance range. Values of $\\alpha$ larger than one imply a much steeper (steeper than a linear curve) decay. Even more so than for the negative exponential function, larger values for $\\alpha$ yield essentially zero weights for smaller and smaller distances. In the graph, this is already the case for $z$ around 0.4, again eliminating the impact of nearest neighbors that are farther away."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "65aadbff",
+   "metadata": {},
+   "source": [
+    "## Practice\n",
+    "\n",
+    "It is straightforward to experiment with some other parameter values and possibly other distance transformations. Consider some other kernel functions, currently not supported by PySAL, such as the tricube ($(1.0 - z^3)^3$) or cosine kernel ($(\\pi/4).cos((\\pi/2) z)$).\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

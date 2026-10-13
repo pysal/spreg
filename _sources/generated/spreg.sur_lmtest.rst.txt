@@ -1,0 +1,6 @@
+﻿spreg.sur\_lmtest
+=================
+
+.. currentmodule:: spreg
+
+.. autofunction:: sur_lmtest

@@ -1,0 +1,6 @@
+﻿spreg.r2
+========
+
+.. currentmodule:: spreg
+
+.. autofunction:: r2

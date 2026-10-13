@@ -1,0 +1,29 @@
+﻿spreg.NSLX
+==========
+
+.. currentmodule:: spreg
+
+.. autoclass:: NSLX
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~NSLX.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~NSLX.mean_y
+      ~NSLX.std_y
+   
+   

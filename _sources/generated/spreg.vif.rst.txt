@@ -1,0 +1,6 @@
+﻿spreg.vif
+=========
+
+.. currentmodule:: spreg
+
+.. autofunction:: vif

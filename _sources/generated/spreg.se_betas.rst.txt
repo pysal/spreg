@@ -1,0 +1,6 @@
+﻿spreg.se\_betas
+===============
+
+.. currentmodule:: spreg
+
+.. autofunction:: se_betas

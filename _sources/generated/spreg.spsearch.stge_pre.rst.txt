@@ -1,0 +1,6 @@
+﻿spreg.spsearch.stge\_pre
+========================
+
+.. currentmodule:: spreg.spsearch
+
+.. autofunction:: stge_pre

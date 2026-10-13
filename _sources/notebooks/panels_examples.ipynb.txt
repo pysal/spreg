@@ -1,0 +1,1050 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Spatial Panel Models in spreg\n",
+    "This notebook presents a usage example of the spatial panel functions available in spreg as of version 1.9.1.\n",
+    "Prepared by: Luc Anselin and Pedro Amaral"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Preliminaries\n",
+    "Import required libraries and load the example data. \n",
+    "\n",
+    "In this example, we will use data on NCOVR US County Homicides (3085 areas) included in libpysal. We will extract the HR (homicide rates) data in the 70's, 80's and 90's from the dataframe and make them the dependent variable for the regression. Note that the data can also be passed in the long format instead of wide format (i.e. a vector with n\\*t rows and a single column for the dependent variable and a matrix of dimension n\\*t x k for the independent variables).\n",
+    "\n",
+    "For explanatory variables, we will extract RD and PS in the same time periods from the dataframe to be used as independent variables in the regression.\n",
+    "\n",
+    "IMPORTANT: If in wide format as in the example below, the data must be organized in a way that all time periods of a given variable are side-by-side and in the correct time order. That is: x[:, 0:T] refers to T periods of $k_1$, x[:, T+1:2T] refers to $k_2$, etc. By default a vector of ones will be added to the independent variables passed in.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-01-03T16:26:49.970828Z",
+     "start_time": "2021-01-03T16:26:48.621823Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import libpysal\n",
+    "import spreg\n",
+    "import geopandas as gpd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "libpysal.examples.load_example('NCOVR')\n",
+    "shp_path = libpysal.examples.get_path('NAT.shp')\n",
+    "dfs = gpd.read_file(shp_path)\n",
+    "\n",
+    "# Subset to East Coast states to have a smaller sample\n",
+    "east_fips = [9, 10, 11, 12, 13, 23, 24, 25, 33, 34, 36, 37, 42, 44, 45, 50, 51, 54]\n",
+    "dfs2 = dfs[dfs['STFIPS'].isin(east_fips)]\n",
+    "\n",
+    "wq1 = libpysal.weights.Queen.from_dataframe(dfs2,ids='FIPSNO')\n",
+    "wq1.transform = 'r'\n",
+    "\n",
+    "y_var = dfs2[['HR70', 'HR80', 'HR90']]\n",
+    "x_var = dfs2[['RD70','RD80','RD90','PS70','PS80','PS90']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "spreg version 1.9.1 offers the following panel functions (in addition to the SUR estimators):\n",
+    "\n",
+    "1. OLS and Basic Panel Classes\n",
+    "- PooledOLS\n",
+    "    Description: Baseline pooled regression for panel data. Initializes and runs the pooled OLS estimation with optional BSK spatial diagnostics.\n",
+    "\n",
+    "- PanelFE\n",
+    "    Description: Fixed Effects (Within) estimator for panel data. Performs the \"Within Transformation\" (demeaning) and executes the regression.\n",
+    "\n",
+    "- PanelRE\n",
+    "    Description: Random Effects (GLS) estimator. Estimates variance components using Swamy-Arora, computes quasi-demeaning, and performs the Hausman test.\n",
+    "\n",
+    "\n",
+    "2. GMM-Based Spatial Error Classes\n",
+    "- GM_ErrorPooled\n",
+    "    Description: Pooled Spatial Error Model (SEM) via GMM. Based on the heteroskedasticity-robust estimator proposed by `Arraiz2010`, available in the spreg function `GM_Error_Het`.\n",
+    "\n",
+    "- GM_ErrorRE\n",
+    "    Description: KKP spatial random effects model.\n",
+    "\n",
+    "\n",
+    "3. Maximum Likelihood (ML) Spatial Classes\n",
+    "- ML_ErrorPooled\n",
+    "    Description: Pooled ML SEM with diagnostic output.\n",
+    "\n",
+    "- ML_ErrorFE\n",
+    "    Description: ML estimation for Fixed Effects Spatial Error models.\n",
+    "\n",
+    "- ML_ErrorRE\n",
+    "    Description: ML estimation for Random Effects Spatial Error models using Ord's eigenvalue approach.\n",
+    "\n",
+    "- ML_LagFE\n",
+    "    Description: ML estimation for Fixed Effects Spatial Lag models with spatial impacts.\n",
+    "\n",
+    "- ML_LagRE\n",
+    "    Description: ML Spatial Lag Random Effects to estimate both the spatial lag (ρ) and the random effects component (ϕ)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In the examples shown below, the following notation will be used:\n",
+    "* $Y$: $NT \\times 1$ vector of the dependent variable\n",
+    "* $X$: $NT \\times K$ matrix of exogenous variables\n",
+    "* $\\beta$: $K \\times 1$ vector of parameters\n",
+    "* $W_N$: $N \\times N$ spatial weights matrix\n",
+    "* $\\iota_T$: $T \\times 1$ vector of ones\n",
+    "* $\\otimes$: Kronecker product\n",
+    "* $\\mu$: $N \\times 1$ vector of individual fixed or random effects\n",
+    "* $\\epsilon$: $NT \\times 1$ vector of idiosyncratic errors\n",
+    "* $\\rho$: Spatial lag parameter\n",
+    "* $\\lambda$: Spatial error parameter"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Pooled panel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = X\\beta + \\epsilon$$\n",
+    "*where $\\epsilon \\sim N(0, \\sigma^2 I_{NT})$*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- spat_diag: If True, then compute the BSK tests (boolean, default = True)\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- BSK_list: List of BSK tests to compute if spat_diag is True. \n",
+    "                     Options are \"all\", \"LMJ\", \"LM1\", \"LM2\", \"LMC_spatial\", \"LMC_RE\" \n",
+    "                     (default: [\"LMJ\", \"LM1\", \"LM2\"]).\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: POOLED OLS PANEL\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           3\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2364\n",
+      "R-squared           :      0.3641\n",
+      "Adjusted R-squared  :      0.3636\n",
+      "Sum squared residual:     83215.9                F-statistic           :    676.8331\n",
+      "Sigma-square        :      35.201                Prob(F-statistic)     :  3.906e-233\n",
+      "S.E. of regression  :       5.933                Log likelihood        :   -7571.669\n",
+      "Sigma-square ML     :      35.157                Akaike info criterion :   15149.338\n",
+      "S.E of regression ML:      5.9293                Schwarz criterion     :   15166.646\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     t-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         7.41873         0.15201        48.80313         0.00000\n",
+      "                  RD         4.77170         0.13421        35.55307         0.00000\n",
+      "                  PS         1.30852         0.15173         8.62399         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "SPATIAL DIAGNOSTIC TESTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "TEST                             DF        VALUE           PROB\n",
+      "LM Marginal RE (LM1)             1        13.5268        0.00000\n",
+      "LM Marginal Spatial (LM2)        1        19.9909        0.00000\n",
+      "LM Joint (LMJ)                   2       582.6102        0.00000\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panel = spreg.PooledOLS(y=y_var, x=x_var, w=wq1, spat_diag=True, slx_lags=0)\n",
+    "print(panel.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can also add time fixed effects with the argument `time_effects=True`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: POOLED OLS PANEL WITH TIME DUMMIES\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           5\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2362\n",
+      "R-squared           :      0.3666\n",
+      "Adjusted R-squared  :      0.3655\n",
+      "Sum squared residual:     82891.8                F-statistic           :    341.7606\n",
+      "Sigma-square        :      35.094                Prob(F-statistic)     :  2.658e-232\n",
+      "S.E. of regression  :       5.924                Log likelihood        :   -7567.051\n",
+      "Sigma-square ML     :      35.020                Akaike info criterion :   15144.102\n",
+      "S.E of regression ML:      5.9178                Schwarz criterion     :   15172.949\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     t-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         7.80035         0.23029        33.87257         0.00000\n",
+      "                  RD         4.78176         0.13438        35.58493         0.00000\n",
+      "                  PS         1.31468         0.15154         8.67540         0.00000\n",
+      "              time_2        -0.88538         0.29827        -2.96835         0.00302\n",
+      "              time_3        -0.27378         0.29881        -0.91622         0.35964\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "SPATIAL DIAGNOSTIC TESTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "TEST                             DF        VALUE           PROB\n",
+      "LM Marginal RE (LM1)             1        13.6660        0.00000\n",
+      "LM Marginal Spatial (LM2)        1        19.7664        0.00000\n",
+      "LM Joint (LMJ)                   2       577.4706        0.00000\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panel_t = spreg.PooledOLS(y=y_var, x=x_var, w=wq1, spat_diag=True, slx_lags=0, time_effects=True)\n",
+    "print(panel_t.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Fixed Effects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = (\\iota_T \\otimes I_N)\\mu + X\\beta + \\epsilon$$\n",
+    "\n",
+    "*where $\\iota_T$ is a $T \\times 1$ vector of ones, and $\\mu$ is an $N \\times 1$ vector of fixed effects.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PanelFE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: FIXED EFFECTS PANEL (TWO-WAY)\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           4\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2363\n",
+      "Pseudo R-squared    :      0.7154\n",
+      "Sum squared residual:     37242.6                F-statistic           :   1980.1123\n",
+      "Sigma-square        :      23.661                Prob(F-statistic)     :           0\n",
+      "S.E. of regression  :       4.864                Log likelihood        :   -6620.153\n",
+      "Sigma-square ML     :      15.734                Akaike info criterion :   13248.306\n",
+      "S.E of regression ML:      3.9666                Schwarz criterion     :   13271.384\n",
+      "Individual FE mean  :     13.2519\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "                  RD         0.45933         0.43621         1.05301         0.29233\n",
+      "                  PS        -7.76315         1.24162        -6.25246         0.00000\n",
+      "              time_2        -0.72031         0.24557        -2.93317         0.00336\n",
+      "              time_3        -0.61024         0.25150        -2.42638         0.01525\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelFE = spreg.PanelFE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelFE.summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[3.74145206],\n",
+       "       [2.07285211],\n",
+       "       [0.11815978],\n",
+       "       [9.14970737],\n",
+       "       [3.50770994]])"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Individual fixedeffects (fixed_effects) for the first 5 observations\n",
+    "panelFE.fixed_effects[0:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Random Effects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = X\\beta + v$$\n",
+    "$$v = (\\iota_T \\otimes I_N)\\mu + \\epsilon$$\n",
+    "\n",
+    "*where $\\mu \\sim N(0, \\sigma_\\mu^2 I_N)$ represents the random effects, and $\\epsilon \\sim N(0, \\sigma_\\epsilon^2 I_{NT})$.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- spat_diag: If True (default), then compute the 'LMC_spatial' BSK test (boolean).\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PanelRE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: RANDOM EFFECTS PANEL (TWO-WAY)\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           5\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2362\n",
+      "Pseudo R-squared    :      0.3663\n",
+      "Sum squared residual:     83069.7                F-statistic           :    304.2376\n",
+      "Sigma-square        :      24.634                Prob(F-statistic)     :  2.904e-211\n",
+      "S.E. of regression  :       4.963                Log likelihood        :   -7569.587\n",
+      "Sigma-square ML     :      24.634                Akaike info criterion :   15149.175\n",
+      "S.E of regression ML:      4.9633                Schwarz criterion     :   15178.021\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         7.96329         0.24138        32.99033         0.00000\n",
+      "                  RD         4.48233         0.16365        27.39044         0.00000\n",
+      "                  PS         1.11105         0.19109         5.81414         0.00000\n",
+      "              time_2        -0.87882         0.24992        -3.51642         0.00044\n",
+      "              time_3        -0.31160         0.25087        -1.24209         0.21420\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "VARIANCE COMPONENTS ESTIMATES\n",
+      "------------------------------------------------------------------------------------\n",
+      "Sigma2_epsilon (Idiosyncratic)         23.6611\n",
+      "Sigma2_mu (Individual)                 10.3578\n",
+      "Theta (Quasi-demeaning weight)          0.3425\n",
+      "------------------------------------------------------------------------------------\n",
+      "\n",
+      "DIAGNOSTIC TESTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "TEST                             DF        VALUE           PROB\n",
+      "Hausman Specification Test       4       104.8838        0.00000\n",
+      "LM Conditional Spatial           1        11.3924        0.00000\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelRE = spreg.PanelRE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelRE.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Pooled SEM - GM estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = X\\beta + u$$\n",
+    "$$u = \\lambda(I_T \\otimes W_N)u + \\epsilon$$\n",
+    "\n",
+    "*where $\\lambda$ is the spatial error coefficient and $W_N$ is the spatial weights matrix.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- max_iter: Maximum number of iterations of steps 2a and 2b from `Arraiz2010` (int, default = 1).\n",
+    "- step1c: If True, then include Step 1c from `Arraiz2010` (boolean, default = False).\n",
+    "- nonspat_diag: If True (default), then compute the 'LMC_RE' BSK test.\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "GM_ErrorPooled\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: GMM POOLED SPATIAL ERROR MODEL (SEM) WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           5\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2362\n",
+      "Pseudo R-squared    :      0.3661\n",
+      "N. of iterations    :           1                Step1c computed       :          No\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         7.92549         0.52087        15.21578         0.00000\n",
+      "                  RD         4.52893         0.21980        20.60451         0.00000\n",
+      "                  PS         1.06665         0.22974         4.64295         0.00000\n",
+      "              time_2        -0.88294         0.57053        -1.54758         0.12172\n",
+      "              time_3        -0.27761         0.58097        -0.47784         0.63277\n",
+      "              lambda         0.49960         0.02820        17.71501         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "DIAGNOSTIC TESTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "TEST                             DF        VALUE           PROB\n",
+      "LM Conditional RE                1         8.3469        0.00000\n",
+      "Warning: The properties of the LM Conditional RE test using GM have not been\n",
+      "         established. We recommend using ML_ErrorPooled.\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelSEM = spreg.GM_ErrorPooled(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelSEM.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Pooled SEM - ML estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = X\\beta + u$$\n",
+    "$$u = \\lambda(I_T \\otimes W_N)u + \\epsilon$$\n",
+    "\n",
+    "*where $\\lambda$ is the spatial error coefficient and $W_N$ is the spatial weights matrix.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- method: if 'LU' (default), LU decomposition for sparse matrices (Recommended for Panel); \n",
+    "                   if 'ord', Ord eigenvalue calculation (Slow for large Panel); \n",
+    "                   if 'full', brute force (Should not use for Panel).\n",
+    "\n",
+    "- nonspat_diag: If True (default), then compute the 'LMC_RE' BSK test.\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)               "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ML_ErrorPooled\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: ML POOLED SPATIAL ERROR MODEL (SEM) WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           5\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2362\n",
+      "Pseudo R-squared    :      0.3661\n",
+      "Log likelihood      :  -7415.3400\n",
+      "Sigma-square ML     :     29.4794                Akaike info criterion :   14840.680\n",
+      "S.E of regression   :      5.4295                Schwarz criterion     :   14869.527\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         7.92772         0.36546        21.69220         0.00000\n",
+      "                  RD         4.52292         0.15549        29.08778         0.00000\n",
+      "                  PS         1.06039         0.16516         6.42020         0.00000\n",
+      "              time_2        -0.88297         0.49770        -1.77409         0.07605\n",
+      "              time_3        -0.27716         0.49814        -0.55639         0.57795\n",
+      "              lambda         0.45075         0.02479        18.18283         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "DIAGNOSTIC TESTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "TEST                             DF        VALUE           PROB\n",
+      "LM Conditional RE                1         7.7867        0.00000\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelML_SEM = spreg.ML_ErrorPooled(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelML_SEM.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Error model - Random Effects - KKP GM Estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = X\\beta + u$$\n",
+    "$$u = \\lambda(I_T \\otimes W_N)u + v$$\n",
+    "$$v = (\\iota_T \\otimes I_N)\\mu + \\epsilon$$\n",
+    "\n",
+    "*where the spatial error process ($\\lambda$) applies to the composite error term, meaning both the random effects ($\\mu$) and idiosyncratic errors ($\\epsilon$) are spatially correlated.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- full_weights: (boolean) Considers different weights for each of the 6 moment\n",
+    "                  conditions if True or only 2 sets of weights for the\n",
+    "                  first 3 and the last 3 moment conditions if False (default)\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "GM_ErrorRE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: GMM SPATIAL ERROR PANEL MODEL - RANDOM EFFECTS (KKP) WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           5\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2362\n",
+      "Pseudo R-squared    :      0.3658\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         8.00947         0.36223        22.11171         0.00000\n",
+      "                  RD         4.33873         0.17675        24.54686         0.00000\n",
+      "                  PS         0.98289         0.19398         5.06702         0.00000\n",
+      "              time_2        -0.87936         0.43506        -2.02123         0.04326\n",
+      "              time_3        -0.30258         0.43570        -0.69446         0.48739\n",
+      "              lambda         0.43481    \n",
+      "            sigma2_v        23.83305    \n",
+      "            sigma2_1        41.44246    \n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelSEM_RE = spreg.GM_ErrorRE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelSEM_RE.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Error model - Random Effects - ML Estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = X\\beta + v$$\n",
+    "$$v = (\\iota_T \\otimes I_N)\\mu + u$$\n",
+    "$$u = \\lambda(I_T \\otimes W_N)u + \\epsilon$$\n",
+    "\n",
+    "*where the spatial error process ($\\lambda$) applies only to the idiosyncratic error term ($u$). The individual random effects ($\\mu$) remain spatially independent.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ML_ErrorRE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: ML SPATIAL ERROR PANEL MODEL (SEM) - RANDOM EFFECTS WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      8.8420                Number of Variables   :           5\n",
+      "S.D. dependent var  :      7.4372                Degrees of Freedom    :        2362\n",
+      "Pseudo R-squared    :      0.3662\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         7.97586         0.34060        23.41702         0.00000\n",
+      "                  RD         4.40256         0.17082        25.77277         0.00000\n",
+      "                  PS         1.06403         0.18945         5.61627         0.00000\n",
+      "              time_2        -0.88101         0.43623        -2.01959         0.04343\n",
+      "              time_3        -0.29602         0.43681        -0.67769         0.49797\n",
+      "              lambda         0.43445         0.00506        85.93267         0.00000\n",
+      "            sigma2_u         6.07456         0.03674       165.31880         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelSEM_RE = spreg.ML_ErrorRE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelSEM_RE.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Error Model - Fixed Effects - ML Estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = (\\iota_T \\otimes I_N)\\mu + X\\beta + u$$\n",
+    "$$u = \\lambda(I_T \\otimes W_N)u + \\epsilon$$\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ML_ErrorFE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: ML SPATIAL ERROR PANEL MODEL - FIXED EFFECTS WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      0.0000                Number of Variables   :           4\n",
+      "S.D. dependent var  :      4.0669                Degrees of Freedom    :        2363\n",
+      "Pseudo R-squared    :      0.0482\n",
+      "Log likelihood      :  -6603.0402\n",
+      "Sigma-square ML     :     15.4047                Akaike info criterion :   13214.080\n",
+      "S.E of regression   :      3.9249                Schwarz criterion     :   13237.158\n",
+      "Individual FE mean  :     13.0962\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "                  RD         0.57502         0.37000         1.55413         0.12015\n",
+      "                  PS        -7.50039         1.08379        -6.92055         0.00000\n",
+      "              time_2        -0.73178         0.24282        -3.01372         0.00258\n",
+      "              time_3        -0.59552         0.24712        -2.40989         0.01596\n",
+      "              lambda         0.18464         0.02990         6.17509         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelSEM_FE = spreg.ML_ErrorFE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelSEM_FE.summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[3.70982062],\n",
+       "       [2.1301645 ],\n",
+       "       [0.38974858],\n",
+       "       [9.01973087],\n",
+       "       [3.5246372 ]])"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Individual fixed effects (mu_i) for the first 5 observations\n",
+    "panelSEM_FE.fixed_effects[0:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Lag Model - Random Effects - ML Estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = \\rho(I_T \\otimes W_N)Y + X\\beta + v$$\n",
+    "$$v = (\\iota_T \\otimes I_N)\\mu + \\epsilon$$\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- spat_impacts: Include average direct impact (ADI), average indirect impact (AII),\n",
+    "                    and average total impact (ATI) in summary results;\n",
+    "                    Options are 'simple', 'full', 'power', 'all' or None;\n",
+    "                    (str or list, default = 'simple').\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False).\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ML_LagRE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: ML SPATIAL LAG PANEL - RANDOM EFFECTS WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      6.5463                Number of Variables   :           7\n",
+      "S.D. dependent var  :      6.1475                Degrees of Freedom    :        2360\n",
+      "Pseudo R-squared    :      0.3699\n",
+      "Log likelihood      :  -7379.9922\n",
+      "Sigma-square ML     :     23.8393                Akaike info criterion :   14773.984\n",
+      "S.E of regression   :      4.8826                Schwarz criterion     :   14814.370\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "            CONSTANT         4.75649         0.30540        15.57459         0.00000\n",
+      "                  RD         3.60734         0.16273        22.16809         0.00000\n",
+      "                  PS         1.20358         0.16758         7.18209         0.00000\n",
+      "              time_2        -0.58553         0.24670        -2.37351         0.01762\n",
+      "              time_3        -0.08517         0.24690        -0.34497         0.73012\n",
+      "                W_HR         0.35428         0.02405        14.73405         0.00000\n",
+      "                 phi         0.74036         0.02129        34.77480         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "SPATIAL LAG MODEL IMPACTS\n",
+      "Impacts computed using the 'simple' method.\n",
+      "            Variable         Direct        Indirect          Total\n",
+      "                  RD         3.6073          1.9792          5.5866\n",
+      "                  PS         1.2036          0.6604          1.8639\n",
+      "              time_2        -0.5855         -0.3213         -0.9068\n",
+      "              time_3        -0.0852         -0.0467         -0.1319\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelSAR_RE = spreg.ML_LagRE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelSAR_RE.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Lag Model - Fixed Effects - ML Estimator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "$$Y = \\rho(I_T \\otimes W_N)Y + (\\iota_T \\otimes I_N)\\mu + X\\beta + \\epsilon$$\n",
+    "\n",
+    "*where $\\rho$ is the spatial lag (autoregressive) coefficient.*\n",
+    "\n",
+    "Optional arguments include (among others):\n",
+    "- slx_lags: Number of spatial lags of X to include in the model specification. If slx_lags>0, the specification becomes of the SLX type (integer, default = 0).\n",
+    "- slx_vars: \"all\" or list of booleans to select x variables to be lagged (str or list, default = \"all\"). \n",
+    "- spat_impacts: Include average direct impact (ADI), average indirect impact (AII),\n",
+    "                    and average total impact (ATI) in summary results;\n",
+    "                    Options are 'simple', 'full', 'power', 'all' or None;\n",
+    "                    (str or list, default = 'simple').\n",
+    "- time_effects: If True, then include time dummies in the model specification (the first time period is omitted), (boolean, default = False).                    \n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ML_LagFE\n",
+      "REGRESSION RESULTS\n",
+      "------------------\n",
+      "\n",
+      "SUMMARY OF OUTPUT: ML SPATIAL LAG PANEL - FIXED EFFECTS WITH TIME EFFECTS\n",
+      "------------------------------------------------------------------------------------\n",
+      "Data set            :     unknown\n",
+      "Weights matrix      :     unknown\n",
+      "Dependent Variable  :          HR                Number of Observations:        2367\n",
+      "Mean dependent var  :      0.0000                Number of Variables   :           5\n",
+      "S.D. dependent var  :      4.0669                Degrees of Freedom    :        2362\n",
+      "Pseudo R-squared    :      0.0684\n",
+      "Log likelihood      :  -6603.2997\n",
+      "Sigma-square ML     :     15.4124                Akaike info criterion :   13216.599\n",
+      "S.E of regression   :      3.9259                Schwarz criterion     :   13245.446\n",
+      "Individual FE mean  :     11.1174\n",
+      "\n",
+      "------------------------------------------------------------------------------------\n",
+      "            Variable     Coefficient       Std.Error     z-Statistic     Probability\n",
+      "------------------------------------------------------------------------------------\n",
+      "                  RD         0.50779         0.35209         1.44222         0.14924\n",
+      "                  PS        -6.92694         1.00983        -6.85953         0.00000\n",
+      "              time_2        -0.58665         0.19954        -2.93997         0.00328\n",
+      "              time_3        -0.44757         0.20437        -2.18999         0.02852\n",
+      "                W_HR         0.18083         0.02952         6.12514         0.00000\n",
+      "------------------------------------------------------------------------------------\n",
+      "Warning: Assuming panel is in wide format.\n",
+      "y[:, 0] refers to T0, y[:, 1] refers to T1, etc.\n",
+      "x[:, 0:T] refers to T periods of k1, x[:, T+1:2T] refers to k2, etc.\n",
+      "\n",
+      "SPATIAL LAG MODEL IMPACTS\n",
+      "Impacts computed using the 'simple' method.\n",
+      "            Variable         Direct        Indirect          Total\n",
+      "                  RD         0.5078          0.1121          0.6199\n",
+      "                  PS        -6.9269         -1.5291         -8.4560\n",
+      "              time_2        -0.5866         -0.1295         -0.7161\n",
+      "              time_3        -0.4476         -0.0988         -0.5464\n",
+      "================================ END OF REPORT =====================================\n"
+     ]
+    }
+   ],
+   "source": [
+    "panelSAR_FE = spreg.ML_LagFE(y=y_var, x=x_var, w=wq1, time_effects=True)\n",
+    "print(panelSAR_FE.summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[2.76615386],\n",
+       "       [1.55072091],\n",
+       "       [0.29991187],\n",
+       "       [7.93198396],\n",
+       "       [3.20451278]])"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Individual fixed effects (mu_i) for the first 5 observations\n",
+    "panelSAR_FE.fixed_effects[0:5]"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "env14",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.3"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {
+    "height": "103px",
+    "width": "212px"
+   },
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
