@@ -7,6 +7,8 @@
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/spreg/badges/version.svg)](https://anaconda.org/conda-forge/spreg)
 ![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/pysal/spreg/latest)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4421373.svg)](https://zenodo.org/record/4421373)
+[![Discord](https://img.shields.io/badge/Discord-join%20chat-7289da?style=flat&logo=discord&logoColor=cccccc&link=https://discord.gg/sDRKC3uzqP)](https://discord.gg/sDRKC3uzqP)
+
 
 ## PySAL Spatial Econometrics Package
 
