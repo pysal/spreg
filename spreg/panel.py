@@ -745,10 +745,11 @@ class GM_ErrorPooled(BaseGM_ErrorPooled):
                    Default: False                   
     nonspat_diag  : boolean
                    If True (default), then compute the 'LMC_RE' BSK test.
-    maxit         : integer
+    max_iter     : int
                    Maximum number of iterations of steps 2a and 2b from
+                   :cite:`Arraiz2010`.
     step1c       : boolean
-                   If True, then include Step 1c from :cite:`Arraiz2010                   
+                   If True, then include Step 1c from :cite:`Arraiz2010`.
     vm           : boolean
                    If True, include variance-covariance matrix in summary
                    results
@@ -1518,13 +1519,12 @@ class GM_ErrorRE(BaseGM_ErrorRE, REGI.Regimes_Frame):
         self.name_x.extend(["lambda", " sigma2_v", "sigma2_1"])
         self.name_w = USER.set_name_w(name_w, w)
 
-        """ Yet to be implemented within new output frame
-        if regimes is not None:
-            self.kf += 3
-            self.chow = REGI.Chow(self)
-            self.title += " WITH REGIMES"
-            regimes = True
-        """
+        # Yet to be implemented within new output frame
+        # if regimes is not None:
+        #     self.kf += 3
+        #     self.chow = REGI.Chow(self)
+        #     self.title += " WITH REGIMES"
+        #     regimes = True
         self.output = pd.DataFrame(self.name_x, columns=['var_names'])
         self.output['var_type'] = ['o'] + ['x'] * (kx-1) + ['wx'] * kwx + ["lambda", "sigma2_v", "sigma2_1"]
         self.output['regime'], self.output['equation'] = (0, 0)
