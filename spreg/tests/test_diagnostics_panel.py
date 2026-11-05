@@ -43,7 +43,7 @@ class Test_Panel_Diagnostics(unittest.TestCase):
         re_lag = Panel_RE_Lag(self.y, self.x, self.w)
 #        re_error = Panel_RE_Error(self.y, self.x, self.w)
         Hlag = panel_Hausman(fe_lag, re_lag)
-        exp = np.array([-67.26822586935438, 1.0])
+        exp = np.array([67.26822586935438, 8.558462840974696e-14])
         np.testing.assert_allclose(Hlag, exp, RTOL)
 #        Herror = panel_Hausman(fe_error, re_error)
 #        exp = np.array([-84.38351088621853, 1.0])

@@ -215,7 +215,8 @@ def panel_Hausman(panel_fe, panel_re, sp_lag=True):
     else:
         raise Exception("Only same spatial interaction allowed")
 
-    vard = panel_re.varb[1:, 1:] - panel_fe.varb
+    # H = d' [Var(b_FE) - Var(b_RE)]^{-1} d
+    vard = panel_fe.varb - panel_re.varb[1:, 1:]
     vardi = la.inv(vard)
     h = spdot(d.T, spdot(vardi, d))
     pval = chisqprob(h, panel_re.k)
