@@ -152,16 +152,44 @@ class TestPanel(unittest.TestCase):
             w=self.w, 
         )
 
-        expected_betas = np.array([[7.587277, 4.392572, 1.058833, 0.440583, 6.020487]])
+        expected_betas = np.array([[7.579505, 4.408276, 1.054316, 0.47401, 4.103961]])
         np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-3)
         
-        expected_vm = np.array([5.286577e-02, 2.920644e-02, 3.598327e-02, 2.455856e-05,
-       1.347449e-03])
+        expected_vm = np.array([5.544454e-02, 2.825699e-02, 3.366076e-02, 6.821100e-04,
+       4.396125e-01])
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
 
         other = [model.logll, model.phi]
-        expected_other = [-7445.639541,  0.2503416]
+        expected_other = [-7391.019693, 0.163581]
         np.testing.assert_allclose(other, expected_other, rtol=1e-3)
+
+    def test_ML_ErrorRE_likelihood(self):
+        # The concentrated likelihood must match the one computed with the
+        # full covariance Omega = sigma2 [I_T kron (B'B)^-1 + ratio J_T kron I_N],
+        # for a symmetric and for a nonsymmetric W.
+        rng = np.random.default_rng(722)
+        n, t = 16, 4
+        w = libpysal.weights.lat2W(4, 4)
+        w.transform = "r"
+        x = np.column_stack([np.ones(n * t), rng.normal(size=(n * t, 2))])
+        y = x @ np.array([[1.0], [0.8], [-0.4]]) + rng.normal(size=(n * t, 1))
+        W_dir = np.random.default_rng(8).uniform(size=(n, n))
+        np.fill_diagonal(W_dir, 0)
+        W_dir /= W_dir.sum(axis=1, keepdims=True)
+        model = PANEL.BaseML_ErrorRE.__new__(PANEL.BaseML_ErrorRE)
+        model.y, model.x, model.t = y, x, t
+        for W in (w.full()[0], W_dir):
+            for lam, ratio in [(0.2, 0.4), (-0.3, 1.1), (0.0, 0.0)]:
+                B = np.eye(n) - lam * W
+                omega = np.kron(np.eye(t), np.linalg.inv(B.T @ B))
+                omega += ratio * np.kron(np.ones((t, t)), np.eye(n))
+                prec = np.linalg.inv(omega)
+                beta = np.linalg.solve(x.T @ prec @ x, x.T @ prec @ y)
+                e = y - x @ beta
+                sig2 = (e.T @ prec @ e).item() / (n * t)
+                expected = (n * t) / 2 * np.log(sig2) + np.linalg.slogdet(omega)[1] / 2
+                actual = model.err_c_loglik_ord((lam, ratio), W)
+                np.testing.assert_allclose(actual, expected, rtol=1e-10)
 
     def test_ML_LagFE(self):
         model = PANEL.ML_LagFE(
@@ -331,15 +359,15 @@ class TestPanel(unittest.TestCase):
             time_effects=True,
         )
         expected_betas = np.array(
-            [[7.975858, 4.402556, 1.064028, -0.881005, -0.29602, 0.434449, 6.074556]]
+            [[7.967076, 4.416442, 1.058529, -0.881745, -0.289958, 0.469578, 4.130502]]
         )
         np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-3)
         expected_vm = np.array(
-            [1.160089e-01, 2.918016e-02, 3.589305e-02, 1.902962e-01, 1.908026e-01, 2.556006e-05, 1.350158e-03]
+            [1.304097e-01, 2.822704e-02, 3.357389e-02, 2.257601e-01, 2.262508e-01, 6.891300e-04, 4.413573e-01]
         )
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
         other = [model.logll, model.phi]
-        expected_other = [-7443.594837, 0.253001]
+        expected_other = [-7389.246958, 0.164849]
         np.testing.assert_allclose(other, expected_other, rtol=1e-3)
 
     def test_ML_LagFE_twoway(self):
@@ -530,15 +558,15 @@ class TestPanel(unittest.TestCase):
             slx_lags=1,
         )
         expected_betas = np.array(
-            [[7.507443, 4.232198, 0.994743, -0.902304, -0.219382, 0.811176, 0.772035, 0.432543, 6.051531]]
+            [[7.492923, 4.317585, 0.996715, -0.902959, -0.220738, 0.710184, 0.785575, 0.463142, 4.195373]]
         )
         np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-3)
         expected_vm = np.array(
-            [1.438760e-01, 3.950852e-02, 4.639000e-02, 1.884604e-01, 1.897577e-01, 8.751699e-02, 1.246807e-01, 2.587219e-05, 1.340475e-03]
+            [1.581116e-01, 3.606320e-02, 4.119090e-02, 2.195702e-01, 2.209273e-01, 8.506672e-02, 1.188495e-01, 6.997900e-04, 4.443928e-01]
         )
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
         other = [model.logll, model.phi]
-        expected_other = [-7439.046097, 0.252864]
+        expected_other = [-7385.322259, 0.168101]
         np.testing.assert_allclose(other, expected_other, rtol=1e-3)
 
     def test_ML_LagFE_twoway_slx(self):
