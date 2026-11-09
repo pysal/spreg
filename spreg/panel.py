@@ -1335,9 +1335,9 @@ class BaseGM_ErrorRE(RegressionPropsY):
                     trace of WW. Computed in 1st step of _moments_kkp
         """
         N = ws.shape[0]
-        T12 = 2 * trace_w2 / N
+        T12 = 2 * trace_w2
         wtw = ws.T.dot(ws)
-        T22 = wtw.power(2).sum()
+        T22 = 2 * wtw.power(2).sum()
         wtpw = ws.T + ws
         T23 = wtw.multiply(wtpw).sum()
         d_wwpwtw = ws.multiply(ws.T).sum(0) + wtw.diagonal()

@@ -122,11 +122,25 @@ class TestPanel(unittest.TestCase):
             full_weights=True
         )
 
-        expected_betas = np.array([[ 7.652912,  4.247395,  0.938772,  0.441378, 22.563049, 46.80849 ]])
+        expected_betas = np.array([[ 7.613709,  4.340652,  0.981145,  0.448915, 24.18813 , 40.364909]])
         np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-4)
-        
-        expected_vm = np.array([0.077874, 0.034282, 0.04252 ]) 
+
+        expected_vm = np.array([0.068669, 0.030833, 0.036947])
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-4)
+
+    def test_GM_ErrorRE_Tau(self):
+        # Tau must equal T_W in Kapoor, Kelejian and Prucha (2007)
+        ws = self.w.sparse
+        W = ws.toarray()
+        N = W.shape[0]
+        WtW = W.T @ W
+        t12 = 2 * np.trace(WtW) / N
+        t22 = 2 * np.trace(WtW @ WtW) / N
+        t23 = np.trace(WtW @ (W.T + W)) / N
+        t33 = np.trace(W @ W + WtW) / N
+        expected_Tau = np.array([[2, t12, 0], [t12, t22, t23], [0, t23, t33]])
+        Tau = PANEL.BaseGM_ErrorRE._get_Tau(None, ws, ws.power(2).sum())
+        np.testing.assert_allclose(Tau, expected_Tau, rtol=1e-10)
 
     def test_ML_ErrorFE(self):
         model = PANEL.ML_ErrorFE(
