@@ -4,6 +4,7 @@ import pandas as pd
 import scipy.stats as stats
 import scipy.sparse as sps
 from scipy.optimize import minimize_scalar, minimize
+from scipy.linalg import cho_factor, cho_solve
 from libpysal.weights import WSP
 from .error_sp_het import BaseGM_Error_Het
 from .ml_error import BaseML_Error
@@ -11,7 +12,7 @@ from .diagnostics_panel import BSK_tests
 from .utils import RegressionPropsY, RegressionPropsVM, set_warn, optim_moments, get_spFilter, spdot, inverse_prod
 from .sputils import spdot, spfill_diagonal, spinv
 from .ols import BaseOLS
-from .panel_utils import prepare_panel, demean_panel, time_inv_check
+from .panel_utils import prepare_panel, demean_panel, time_inv_check, _error_re_filter
 from .output import output, _nonspat_mid, _nonspat_top, _summary_iteration, _summary_impacts
 from . import regimes as REGI
 from . import user_output as USER
@@ -1934,6 +1935,8 @@ class BaseML_ErrorRE(RegressionPropsY, RegressionPropsVM):
                    kx1 array of estimated coefficients
     lam          : float
                    estimate of spatial autoregressive coefficient
+    phi          : float
+                   Variance ratio sigma2_u / sigma2
     sig2_u       : float
                    Sigma squared for random effects
     u            : array
@@ -1959,7 +1962,7 @@ class BaseML_ErrorRE(RegressionPropsY, RegressionPropsVM):
     vm           : array
                    Variance covariance matrix (k+2 x k+2)
     vm1          : array
-                   Variance covariance matrix (k+3 x k+3) includes sigma2
+                   Covariance of (beta, lambda, sigma2_u, sigma2)
     sig2         : float
                    Sigma squared used in computations
     logll        : float
@@ -1967,201 +1970,78 @@ class BaseML_ErrorRE(RegressionPropsY, RegressionPropsVM):
     """
 
     def __init__(self, y, x, w, epsilon=0.0000001):
-
         N = w.n
         NT = y.shape[0]
         self.t = NT // N
         self.k = x.shape[1]
         self.epsilon = epsilon
-
-        self.y = y
-        self.x = x
-
+        self.y, self.x = y, x
         W = w.full()[0]
-        Wsp = w.sparse
-        
-        y_reshaped = self.y.reshape(self.t, N)
-        ylag = (y_reshaped @ Wsp.T).reshape(-1, 1)
-        
-        x_reshaped = self.x.reshape(self.t, N, self.k)
-        xlag = np.zeros_like(self.x)
-        for i in range(self.k):
-            xlag[:, i] = (x_reshaped[:, :, i] @ Wsp.T).reshape(-1)
 
-        I = np.identity(N)
-        evals, evecs = la.eig(W)
-        
-        y_mean_small = y_reshaped.mean(axis=0).reshape(N, 1)        
-        x_mean_small = x_reshaped.mean(axis=0) # N x k
-
+        # Optimize the variance ratio itself so a zero RE variance is admissible.
         res = minimize(
             self.err_c_loglik_ord,
             (0.0, 0.1),
-            bounds=((-0.999, 0.999), (1e-8, 1e+09)),
+            args=(W,),
+            bounds=((-0.999, 0.999), (0.0, None)),
             method="L-BFGS-B",
-            args=(
-                evals,
-                evecs,
-                N,
-                self.t,
-                self.y,
-                self.x,
-                ylag,
-                xlag,
-                y_mean_small, 
-                x_mean_small,
-                I,
-                Wsp,
-            ),
-            options={'ftol': 1e-9}
+            jac="3-point",
+            options={"ftol": 1e-12, "gtol": epsilon},
         )
         self.lam, self.phi = res.x
-        self.phi = self.phi**2
-
-        ln2pi = np.log(2.0 * np.pi)
-        self.logll = (
-            -res.fun - NT / 2.0 * ln2pi - NT / 2.0
-        )
-
-        I = np.identity(N)
-        B = I - self.lam * W
-
-        BB = np.dot(B.T, B)
-        BB_inv = la.inv(BB)
-
-        Omega_between = (self.t * self.phi * I) + BB_inv
-
-        eig_O, vec_O = la.eigh(Omega_between)
-        P = np.dot(vec_O, np.dot(np.diag(eig_O**(-0.5)), vec_O.T))
-
-        pr = P - B  
-        
-        pr_y_mean = np.dot(pr, y_mean_small)
-        pr_x_mean = np.dot(pr, x_mean_small)
-
-        term_y = np.tile(pr_y_mean.T, (self.t, 1)).reshape(-1, 1)
-        term_x = np.tile(pr_x_mean, (self.t, 1)).reshape(-1, self.k)
-
-        yrand = self.y + term_y
-        xrand = self.x + term_x
-
-        ys = yrand - self.lam * ylag
-        xs = xrand - self.lam * xlag
-
-        xsxs = spdot(xs.T, xs)
+        ys, xs, _ = _error_re_filter(y, x, W, self.t, self.lam, self.phi)
+        xsxs = xs.T @ xs
         xsxsi = la.inv(xsxs)
-        xsys = spdot(xs.T, ys)
-        b = spdot(xsxsi, xsys)
-
-        self.u = self.y - spdot(self.x, b)
-        self.predy = self.y - self.u
-
-        self.e_filtered = ys - spdot(xs, b)
-        self.sig2 = spdot(self.e_filtered.T, self.e_filtered) / NT
-
-        varb = self.sig2 * xsxsi
+        b = la.solve(xsxs, xs.T @ ys)
+        self.u = y - x @ b
+        self.predy = y - self.u
+        self.e_filtered = ys - xs @ b
+        self.sig2 = self.e_filtered.T @ self.e_filtered / NT
         self.sig2_u = self.phi * self.sig2
-
         self.betas = np.vstack((b, self.lam, self.sig2_u))
+        self.logll = -res.fun - NT / 2 * (np.log(2 * np.pi) + 1)
+        self.varb = self.sig2 * xsxsi
 
-        a = -self.lam * W
-        spfill_diagonal(a, 1.0)
-        aTai = la.inv(spdot(a.T, a))
-        wa_aw = spdot(W.T, a) + spdot(a.T, W)
-        gamma = spdot(wa_aw, aTai)
-        vi = la.inv(self.t * np.sqrt(self.phi) * I + aTai)
-        sigma = spdot(vi, aTai)
-
-        tr1 = gamma.diagonal().sum()
-        tr2 = vi.diagonal().sum()
-        tr3 = sigma.diagonal().sum()
-
-        sigma_gamma = spdot(sigma, gamma)
-        tr4 = sigma_gamma.diagonal().sum()
-
-        sigma_vi = spdot(sigma, vi)
-        tr5 = sigma_vi.diagonal().sum()
-
-        sigma_gamma_vi = spdot(sigma_gamma, vi)
-        tr6 = sigma_gamma_vi.diagonal().sum()
-
-        sigma_gamma_sigma = spdot(sigma_gamma, sigma)
-        tr7 = sigma_gamma_sigma.diagonal().sum()
-
-        v1 = np.vstack(
-            (
-                (self.t - 1) / 2 * tr1 ** 2 + 1 / 2 * tr4 ** 2,
-                self.t / (2 * self.sig2) * tr6,
-                (self.t - 1) / (2 * self.sig2) * tr1 + 1 / (2 * self.sig2) * tr7,
-            )
+        # Gaussian information for (lambda, sigma2_u, sigma2). The mean and
+        # covariance parameters are orthogonal in a spatial error model.
+        B = np.eye(N) - self.lam * W
+        C = la.inv(B.T @ B)
+        K = W.T @ B + B.T @ W
+        C_lam = C @ K @ C
+        sig2 = self.sig2.item()
+        between_cov = sig2 * C + self.t * self.sig2_u.item() * np.eye(N)
+        factor = cho_factor(between_cov, lower=True, check_finite=False)
+        within_scores = (K @ C, np.zeros_like(C), np.eye(N) / sig2)
+        between_scores = tuple(
+            cho_solve(factor, derivative, check_finite=False)
+            for derivative in (sig2 * C_lam, self.t * np.eye(N), C)
         )
-        v2 = np.vstack(
-            (
-                self.t / (2 * self.sig2) * tr6,
-                self.t ** 2 / (2.0 * self.sig2 ** 2) * tr2 ** 2,
-                self.t / (2.0 * self.sig2 ** 2) * tr5,
-            )
+        info = np.array(
+            [
+                [
+                    ((self.t - 1) * np.sum(a * b.T) + np.sum(c * d.T)) / 2
+                    for b, d in zip(within_scores, between_scores)
+                ]
+                for a, c in zip(within_scores, between_scores)
+            ]
         )
-        v3 = np.vstack(
-            (
-                (self.t - 1) / (2 * self.sig2) * tr1 + 1 / (2 * self.sig2) * tr7,
-                self.t / (2.0 * self.sig2 ** 2) * tr5,
-                1 / (2.0 * self.sig2 ** 2) * ((self.t - 1) * N + tr3 ** 2),
-            )
-        )
-
-        v = np.hstack((v1, v2, v3))
-
-        vm1 = np.linalg.inv(v)
-
-        vv = np.hstack((varb, np.zeros((self.k, 2))))
-        vv1 = np.hstack((np.zeros((2, self.k)), vm1[:2, :2]))
-
-        self.vm = np.vstack((vv, vv1))
+        self.vm1 = np.zeros((self.k + 3, self.k + 3))
+        self.vm1[: self.k, : self.k] = self.varb
+        self.vm1[self.k :, self.k :] = la.inv(info)
+        self.vm = self.vm1[:-1, :-1]
         self.n = NT
 
-    def err_c_loglik_ord(self, 
-        lam_phi, evals, evecs, n, t, bigy, bigx, ylag, xlag, y_mean, x_mean, I, Wsp
-    ):
-        lam, phi = lam_phi
-        cvals = t * phi ** 2 + 1 / (1 - lam * evals) ** 2
-        P = np.dot(np.diag(cvals ** (-0.5)), evecs.T)
-        
-        pr = P - (I - lam * Wsp)
-        
-        pr_y = np.dot(pr, y_mean)
-        pr_x = np.dot(pr, x_mean)
-        
-        term_y = np.tile(pr_y, (t, 1))
-        term_x = np.tile(pr_x, (t, 1))
+    def err_c_loglik_ord(self, lam_ratio, W):
+        """Negative concentrated likelihood, excluding Gaussian constants."""
+        lam, ratio = lam_ratio
+        ys, xs, logdet = _error_re_filter(self.y, self.x, W, self.t, lam, ratio)
+        b = la.solve(xs.T @ xs, xs.T @ ys)
+        e = ys - xs @ b
+        NT = self.y.shape[0]
+        sig2 = (e.T @ e).item() / NT
+        return NT / 2 * np.log(sig2) + logdet / 2
 
-        yrand = bigy + term_y
-        xrand = bigx + term_x
-        
-        ys = yrand - lam * ylag
-        xs = xrand - lam * xlag
-        
-        ysys = np.dot(ys.T, ys)
-        xsxs = np.dot(xs.T, xs)
-        xsxsi = la.inv(xsxs)
-        xsys = np.dot(xs.T, ys)
-        x1 = np.dot(xsxsi, xsys)
-        x2 = np.dot(xsys.T, x1)
-        ee = ysys - x2
-        
-        sig2 = ee[0][0] / (n * t)
-        nlsig2 = (n * t / 2.0) * np.log(sig2)
 
-        revals = t * phi ** 2 * (1 - lam * evals) ** 2
-        phi_jacob = 1 / 2 * np.log(1 + revals).sum()
-
-        jacob = t * np.log(1 - lam * evals).sum()
-        if isinstance(jacob, complex):
-            jacob = jacob.real
-            
-        clik = nlsig2 + phi_jacob - jacob
-        return clik
-    
 class ML_ErrorRE(BaseML_ErrorRE):
 
     """

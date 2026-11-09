@@ -9,8 +9,32 @@ __author__ = "Wei Kang weikang9009@gmail.com, \
 import numpy as np
 import pandas as pd
 from scipy import sparse as sp
+from scipy.linalg import solve_triangular
 from .sputils import spdot
 from . import user_output as USER
+
+
+def _error_re_filter(y, x, W, t, lam, ratio):
+    """Whiten SEM RE data with iid individual effects; ratio = sigma2_u / sigma2.
+
+    For B = I - lambda W, the within covariance is (B'B)^-1 and the
+    between covariance is (B'B)^-1 + T * ratio * I. Factoring the latter
+    after applying B avoids diagonalizing a possibly nonsymmetric W.
+    Returns filtered y, filtered X, and log|Omega / sigma2|.
+    """
+    n = W.shape[0]
+    B = np.eye(n) - lam * W
+    z = np.column_stack((y, x))
+    means = z.reshape(t, n, -1).mean(axis=0)
+    centered = z - np.tile(means, (t, 1))
+    within = centered - lam * np.matmul(W, centered.reshape(t, n, -1)).reshape(z.shape)
+    between_cov = np.eye(n) + t * ratio * (B @ B.T)
+    chol = np.linalg.cholesky(between_cov)
+    between = solve_triangular(chol, B @ means, lower=True, check_finite=False)
+    filtered = within + np.tile(between, (t, 1))
+    logdet = 2 * np.log(np.diag(chol)).sum() - 2 * t * np.linalg.slogdet(B)[1]
+    return filtered[:, :1], filtered[:, 1:], logdet
+
 
 def prepare_panel(y, x, w, name_y, name_x, slx_lags, slx_vars, title, time_effects, add_constant=True):
     """
