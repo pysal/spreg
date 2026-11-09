@@ -108,9 +108,9 @@ Tutorials
 
 .. toctree::
     :maxdepth: 1
-    :caption: Spatial Panel Models with Fixed Effects
+    :caption: Spatial Panel Models
     
-    notebooks/Panel_FE_example.ipynb
+    notebooks/panels_examples.ipynb
 
 .. toctree::
     :maxdepth: 1

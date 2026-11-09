@@ -94,7 +94,23 @@ Spatial panel models allow for evaluating correlation in both spatial and time d
 
 .. autosummary::
    :toctree: generated/
-    
+
+    spreg.PooledOLS
+    spreg.PanelFE
+    spreg.PanelRE
+    spreg.GM_ErrorPooled
+    spreg.ML_ErrorPooled
+    spreg.GM_ErrorRE
+    spreg.ML_ErrorFE
+    spreg.ML_ErrorRE
+    spreg.ML_LagFE
+    spreg.ML_LagRE
+
+The following classes are deprecated and superseded by the classes above.
+
+.. autosummary::
+   :toctree: generated/
+
     spreg.Panel_FE_Lag
     spreg.Panel_FE_Error
     spreg.Panel_RE_Lag
@@ -140,6 +156,7 @@ Diagnostic tests are useful for identifying model fit, sufficiency, and specific
     spreg.panel_rLMlag
     spreg.panel_rLMerror
     spreg.panel_Hausman
+    spreg.diagnostics_panel.BSK_tests
     spreg.sputils.spmultiplier
     spreg.diagnostics_probit.sp_tests
 
