@@ -225,8 +225,13 @@ class TestPanel(unittest.TestCase):
         expected_betas = np.array([[4.508465, 3.580695, 1.19552 , 0.358007, 0.742009]])
         np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-3)
         
-        expected_vm = np.array([0.067993, 0.026325, 0.028039, 0.000575, 0.000455])
+        expected_vm = np.array([0.06799, 0.026324, 0.028039, 0.000575, 0.000523])
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
+        np.testing.assert_allclose(model.vm[-1, -1], 0.00052336, rtol=1e-3)
+
+        # the information matrix must be symmetric
+        info = np.linalg.inv(model.vm1)
+        np.testing.assert_allclose(info, info.T, rtol=1e-10, atol=1e-8)
 
         other = [model.aic, model.schwarz, model.logll]
         expected_other = [14774.555911, 14797.633426, -7383.277956]
@@ -238,6 +243,49 @@ class TestPanel(unittest.TestCase):
         impact_out = model.summary[-135:-85] #Check actual impact output lines
         expected_impact_out = "PS         1.1955          0.6667          1.8622"
         self.assertIn(expected_impact_out, impact_out)
+
+    def test_ML_LagRE_information(self):
+        # The information matrix must equal the Gaussian Fisher information of
+        # the reduced form y ~ N(A^-1 X beta, A^-1 Omega A^-1').
+        rng = np.random.default_rng(11)
+        n, t = 12, 4
+        w = libpysal.weights.lat2W(3, 4)
+        w.transform = "r"
+        W = w.full()[0]
+        x = np.column_stack([np.ones(n * t), rng.normal(size=(n * t, 2))])
+        errors = rng.normal(size=(t, n)) + rng.normal(scale=1.5, size=n)
+        y = np.linalg.solve(
+            np.kron(np.eye(t), np.eye(n) - 0.3 * W),
+            x @ np.array([[1.0], [0.8], [-0.4]]) + errors.reshape(-1, 1),
+        )
+        model = PANEL.BaseML_LagRE(y, x, w)
+        k = x.shape[1]
+        theta = np.r_[model.betas.ravel(), model.sig2.item()]
+
+        def moments(par):
+            beta, (rho, phi, sig2) = par[:k], par[k:]
+            ainv = np.linalg.inv(np.kron(np.eye(t), np.eye(n) - rho * W))
+            between = np.kron(np.ones((t, t)) / t, np.eye(n))
+            omega = sig2 * (np.eye(n * t) + (phi**-2 - 1) * between)
+            return ainv @ x @ beta, ainv @ omega @ ainv.T
+
+        prec = np.linalg.inv(moments(theta)[1])
+        deriv = []
+        for i in range(theta.size):
+            h = np.zeros(theta.size)
+            h[i] = 1e-5 * max(1.0, abs(theta[i]))
+            (mu_p, c_p), (mu_m, c_m) = moments(theta + h), moments(theta - h)
+            deriv.append(((mu_p - mu_m) / (2 * h[i]), (c_p - c_m) / (2 * h[i])))
+        # I_ij = mu_i' C^-1 mu_j + tr(C^-1 C_i C^-1 C_j) / 2
+        fisher = np.array(
+            [
+                [a @ prec @ b + np.trace(prec @ ca @ prec @ cb) / 2 for b, cb in deriv]
+                for a, ca in deriv
+            ]
+        )
+        np.testing.assert_allclose(
+            np.linalg.inv(model.vm1), fisher, rtol=2e-7, atol=1e-6
+        )
 
     def test_PooledOLS_twoway(self):
         model = PANEL.PooledOLS(
