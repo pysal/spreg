@@ -26,7 +26,7 @@ class Test_Panel_Diagnostics(unittest.TestCase):
 
     def test_LM(self):
         lmlag = panel_LMlag(self.y, self.x, self.w)
-        exp = np.array([1.472807526666869, 0.22490325114767176])
+        exp = np.array([52.06732964449592, 5.36298288480122e-13])
         np.testing.assert_allclose(lmlag, exp, RTOL)
         lmerror = panel_LMerror(self.y, self.x, self.w)
         exp = np.array([81.69630396101608, 1.5868998506678388e-19])

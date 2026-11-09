@@ -60,7 +60,7 @@ def panel_LMlag(y, x, w):
     trw = ww.diagonal().sum() + wTw.diagonal().sum()
     num1 = np.asarray(sp.identity(t * n) - spdot(x, spdot(ols.xtxi, x.T)))
     num2 = spdot(wxb.T, spdot(num1, wxb))
-    num = num2 + (trw * trw * ols.sig2)
+    num = num2 + (t * trw * ols.sig2)
     J = num / ols.sig2
     utwy = spdot(ols.u.T, spdot(Wsp_nt, y))
     lm = utwy ** 2 / (ols.sig2 ** 2 * J)
