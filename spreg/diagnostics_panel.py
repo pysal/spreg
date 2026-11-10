@@ -274,16 +274,18 @@ def BSK_tests(reg, w, which="all", GM_BSK=False):
 
     if any(test in which for test in ["LMJ", "LM1", "LM2"]):
         if reg.__class__.__name__ != 'PooledOLS':
-            pooled_mod = PooledOLS(reg.y, reg.x)
+            pooled_mod = PooledOLS(reg.y, reg.x, w, spat_diag=False)
         else:
             pooled_mod = reg
 
+        # Pooled OLS residuals, shared by LM1 and LM2
+        u = pooled_mod.u
+        u_mat = u.reshape((T, N))
+        u_sq_sum = np.sum(u**2)
+
         if any(test in which for test in ["LMJ", "LM1"]):
             # G term (Random Effects) - Eq 2.11
-            u = pooled_mod.u 
-            u_mat = u.reshape((T, N))
             u_sum_sq = np.sum(np.sum(u_mat, axis=0)**2) 
-            u_sq_sum = np.sum(u**2)
             G = (u_sum_sq / u_sq_sum) - 1
 
             # LM1: Marginal RE (Eq 2.12)

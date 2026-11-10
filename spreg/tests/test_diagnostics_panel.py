@@ -3,10 +3,10 @@ import libpysal
 import numpy as np
 import geopandas as gpd
 from spreg.diagnostics_panel import panel_LMlag, panel_LMerror, panel_rLMlag
-from spreg.diagnostics_panel import panel_rLMerror, panel_Hausman
+from spreg.diagnostics_panel import panel_rLMerror, panel_Hausman, BSK_tests
 from spreg.panel_fe import Panel_FE_Lag
 from spreg.panel_re import Panel_RE_Lag
-from spreg.panel import ML_LagFE, ML_LagRE
+from spreg.panel import ML_LagFE, ML_LagRE, PooledOLS, PanelRE
 from libpysal.common import RTOL
 
 class Test_Panel_Diagnostics(unittest.TestCase):
@@ -56,6 +56,36 @@ class Test_Panel_Diagnostics(unittest.TestCase):
         Hlag = panel_Hausman(fe_lag, re_lag)
         exp = np.array([67.26822703188164, 1.640790543222799e-14])
         np.testing.assert_allclose(Hlag, exp, RTOL)
+
+
+class Test_BSK(unittest.TestCase):
+    def setUp(self):
+        rng = np.random.default_rng(42)
+        self.w = libpysal.weights.lat2W(5, 5)
+        self.w.transform = "r"
+        n, t = self.w.n, 4
+        mu = np.tile(rng.normal(size=n), t)
+        self.x = rng.normal(size=(n * t, 2))
+        self.y = (1 + self.x @ np.array([1.0, -1.0]) + mu
+                  + rng.normal(size=n * t)).reshape(-1, 1)
+        self.pooled = PooledOLS(self.y, self.x, self.w, spat_diag=False)
+
+    def test_marginal_tests_from_other_models(self):
+        # LM1, LM2 and LMJ only depend on the pooled OLS residuals
+        which = ["LM1", "LM2", "LMJ"]
+        exp = BSK_tests(self.pooled, self.w, which=which)
+        re = PanelRE(self.y, self.x, self.w, spat_diag=False)
+        res = BSK_tests(re, self.w, which=which)
+        np.testing.assert_allclose(res["Statistic"], exp["Statistic"], RTOL)
+
+    def test_single_tests(self):
+        full = BSK_tests(self.pooled, self.w, which=["LM1", "LM2", "LMJ"])
+        for i, test in enumerate(["LM1", "LM2", "LMJ"]):
+            res = BSK_tests(self.pooled, self.w, which=test)
+            self.assertEqual(len(res), 1)
+            np.testing.assert_allclose(
+                res["Statistic"][0], full["Statistic"][i], RTOL
+            )
 
 
 if __name__ == "__main__":
