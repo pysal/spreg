@@ -3,6 +3,7 @@ import io
 import unittest
 import libpysal
 import numpy as np
+from scipy import stats
 import geopandas as gpd
 from spreg.diagnostics_panel import panel_LMlag, panel_LMerror, panel_rLMlag
 from spreg.diagnostics_panel import panel_rLMerror, panel_Hausman, BSK_tests
@@ -88,6 +89,27 @@ class Test_BSK(unittest.TestCase):
             np.testing.assert_allclose(
                 res["Statistic"][0], full["Statistic"][i], RTOL
             )
+
+    def test_joint_pvalue(self):
+        # Baltagi, Song and Koh (2003, eq. 2.20): the null distribution of LMJ
+        # is (1/4)chi2(0) + (1/2)chi2(1) + (1/4)chi2(2) for every sign of
+        # LM1 and LM2. Without random effects or spatial correlation the
+        # signs vary, so the samples below include the mixed cases.
+        n, t = self.w.n, 4
+        signs = set()
+        for seed in range(8):
+            rng = np.random.default_rng(seed)
+            x = rng.normal(size=(n * t, 2))
+            y = (x @ np.array([1.0, -1.0]) + rng.normal(size=n * t)).reshape(-1, 1)
+            pooled = PooledOLS(y, x, self.w, spat_diag=False)
+            res = BSK_tests(pooled, self.w, which=["LM1", "LM2", "LMJ"])
+            lm1, lm2, lmj = res["Statistic"]
+            signs.add((lm1 > 0, lm2 > 0))
+            exp = 1.0
+            if lmj > 0:
+                exp = 0.5 * stats.chi2.sf(lmj, 1) + 0.25 * stats.chi2.sf(lmj, 2)
+            np.testing.assert_allclose(res["p-value"][2], exp, RTOL)
+        self.assertTrue({(True, False), (False, True)} & signs)
 
     def test_no_stdout(self):
         out = io.StringIO()
