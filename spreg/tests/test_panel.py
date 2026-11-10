@@ -158,6 +158,11 @@ class TestPanel(unittest.TestCase):
         expected_vm = np.array([5.544454e-02, 2.825699e-02, 3.366076e-02, 6.821100e-04,
        4.396125e-01])
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-3)
+        # variances of lambda and sigma2_u are small, so also check them in
+        # relative terms
+        np.testing.assert_allclose(
+            model.vm.diagonal()[-2:], expected_vm[-2:], rtol=1e-3
+        )
 
         other = [model.logll, model.phi]
         expected_other = [-7391.019693, 0.163581]
@@ -169,8 +174,13 @@ class TestPanel(unittest.TestCase):
         # for a symmetric and for a nonsymmetric W.
         rng = np.random.default_rng(722)
         n, t = 16, 4
+        # binary rook weights are symmetric (with repeated eigenvalues); scale
+        # them to a unit spectral radius so the same lambdas are admissible
         w = libpysal.weights.lat2W(4, 4)
-        w.transform = "r"
+        w.transform = "b"
+        W_sym = w.full()[0]
+        W_sym /= np.abs(np.linalg.eigvalsh(W_sym)).max()
+        np.testing.assert_allclose(W_sym, W_sym.T)
         x = np.column_stack([np.ones(n * t), rng.normal(size=(n * t, 2))])
         y = x @ np.array([[1.0], [0.8], [-0.4]]) + rng.normal(size=(n * t, 1))
         W_dir = np.random.default_rng(8).uniform(size=(n, n))
@@ -178,7 +188,7 @@ class TestPanel(unittest.TestCase):
         W_dir /= W_dir.sum(axis=1, keepdims=True)
         model = PANEL.BaseML_ErrorRE.__new__(PANEL.BaseML_ErrorRE)
         model.y, model.x, model.t = y, x, t
-        for W in (w.full()[0], W_dir):
+        for W in (W_sym, W_dir):
             for lam, ratio in [(0.2, 0.4), (-0.3, 1.1), (0.0, 0.0)]:
                 B = np.eye(n) - lam * W
                 omega = np.kron(np.eye(t), np.linalg.inv(B.T @ B))
@@ -190,6 +200,50 @@ class TestPanel(unittest.TestCase):
                 expected = (n * t) / 2 * np.log(sig2) + np.linalg.slogdet(omega)[1] / 2
                 actual = model.err_c_loglik_ord((lam, ratio), W)
                 np.testing.assert_allclose(actual, expected, rtol=1e-10)
+
+    def test_ML_ErrorRE_information(self):
+        # The covariance must be the inverse of the Gaussian Fisher information
+        # of y ~ N(X beta, Omega), with
+        # Omega = sigma2_u J_T kron I_N + sigma2 I_T kron (B'B)^-1.
+        rng = np.random.default_rng(9)
+        n, t = 16, 4
+        w = libpysal.weights.lat2W(4, 4)
+        w.transform = "r"
+        W = w.full()[0]
+        x = np.column_stack([np.ones(n * t), rng.normal(size=(n * t, 2))])
+        eps = np.linalg.solve(np.eye(n) - 0.4 * W, rng.normal(size=(n, t))).T
+        u = eps + rng.normal(scale=0.8, size=n)
+        y = x @ np.array([[1.0], [0.8], [-0.4]]) + u.reshape(-1, 1)
+        model = PANEL.BaseML_ErrorRE(y, x, w)
+        k = x.shape[1]
+        theta = np.r_[
+            model.betas[:k, 0], model.lam, model.sig2_u.item(), model.sig2.item()
+        ]
+
+        def moments(par):
+            beta, (lam, sig2_u, sig2) = par[:k], par[k:]
+            B = np.eye(n) - lam * W
+            omega = sig2_u * np.kron(np.ones((t, t)), np.eye(n))
+            omega += sig2 * np.kron(np.eye(t), np.linalg.inv(B.T @ B))
+            return x @ beta, omega
+
+        prec = np.linalg.inv(moments(theta)[1])
+        deriv = []
+        for i in range(theta.size):
+            h = np.zeros(theta.size)
+            h[i] = 1e-5 * max(1.0, abs(theta[i]))
+            (mu_p, c_p), (mu_m, c_m) = moments(theta + h), moments(theta - h)
+            deriv.append(((mu_p - mu_m) / (2 * h[i]), (c_p - c_m) / (2 * h[i])))
+        # I_ij = mu_i' C^-1 mu_j + tr(C^-1 C_i C^-1 C_j) / 2
+        fisher = np.array(
+            [
+                [a @ prec @ b + np.trace(prec @ ca @ prec @ cb) / 2 for b, cb in deriv]
+                for a, ca in deriv
+            ]
+        )
+        np.testing.assert_allclose(
+            np.linalg.inv(model.vm1), fisher, rtol=1e-6, atol=1e-6
+        )
 
     def test_ML_LagFE(self):
         model = PANEL.ML_LagFE(
