@@ -123,7 +123,14 @@ class TestPanel(unittest.TestCase):
         )
 
         expected_betas = np.array([[ 7.613709,  4.340652,  0.981145,  0.448915, 24.18813 , 40.364909]])
-        np.testing.assert_allclose(model.betas.T, expected_betas, atol=1e-4)
+        np.testing.assert_allclose(
+            model.betas.T[:, :4], expected_betas[:, :4], atol=1e-4
+        )
+        # the variance components vary across platforms by about 1e-5 in
+        # relative terms
+        np.testing.assert_allclose(
+            model.betas.T[:, 4:], expected_betas[:, 4:], rtol=1e-4
+        )
 
         expected_vm = np.array([0.068669, 0.030833, 0.036947])
         np.testing.assert_allclose(model.vm.diagonal(), expected_vm, atol=1e-4)
