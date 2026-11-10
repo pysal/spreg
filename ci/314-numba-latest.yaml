@@ -6,6 +6,8 @@ dependencies:
   # required
   - libpysal
   - numpy
+  # libopenblas 0.3.34 crashes on AMD Zen 4/5 under Windows (OpenMathLib/OpenBLAS#6013)
+  - libopenblas !=0.3.34
   - pandas
   - scikit-learn
   - scipy
