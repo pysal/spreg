@@ -1,3 +1,5 @@
+import contextlib
+import io
 import unittest
 import libpysal
 import numpy as np
@@ -6,7 +8,7 @@ from spreg.diagnostics_panel import panel_LMlag, panel_LMerror, panel_rLMlag
 from spreg.diagnostics_panel import panel_rLMerror, panel_Hausman, BSK_tests
 from spreg.panel_fe import Panel_FE_Lag
 from spreg.panel_re import Panel_RE_Lag
-from spreg.panel import ML_LagFE, ML_LagRE, PooledOLS, PanelRE
+from spreg.panel import ML_LagFE, ML_LagRE, PooledOLS, PanelFE, PanelRE
 from libpysal.common import RTOL
 
 class Test_Panel_Diagnostics(unittest.TestCase):
@@ -86,6 +88,13 @@ class Test_BSK(unittest.TestCase):
             np.testing.assert_allclose(
                 res["Statistic"][0], full["Statistic"][i], RTOL
             )
+
+    def test_no_stdout(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            PanelFE(self.y, self.x, self.w)
+            PanelRE(self.y, self.x, self.w)
+        self.assertEqual(out.getvalue(), "")
 
 
 if __name__ == "__main__":
