@@ -1,0 +1,22 @@
+﻿spreg.LMtests
+=============
+
+.. currentmodule:: spreg
+
+.. autoclass:: LMtests
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LMtests.__init__
+   
+   
+
+   
+   
+   

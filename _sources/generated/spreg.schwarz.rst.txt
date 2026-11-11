@@ -1,0 +1,6 @@
+﻿spreg.schwarz
+=============
+
+.. currentmodule:: spreg
+
+.. autofunction:: schwarz

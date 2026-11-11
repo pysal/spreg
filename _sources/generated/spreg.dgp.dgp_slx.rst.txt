@@ -1,0 +1,6 @@
+﻿spreg.dgp.dgp\_slx
+==================
+
+.. currentmodule:: spreg.dgp
+
+.. autofunction:: dgp_slx

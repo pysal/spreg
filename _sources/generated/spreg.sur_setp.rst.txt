@@ -1,0 +1,6 @@
+﻿spreg.sur\_setp
+===============
+
+.. currentmodule:: spreg
+
+.. autofunction:: sur_setp

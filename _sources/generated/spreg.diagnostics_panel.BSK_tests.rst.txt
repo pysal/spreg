@@ -1,0 +1,6 @@
+﻿spreg.diagnostics\_panel.BSK\_tests
+===================================
+
+.. currentmodule:: spreg.diagnostics_panel
+
+.. autofunction:: BSK_tests

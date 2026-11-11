@@ -1,0 +1,6 @@
+﻿spreg.diagnostics\_probit.sp\_tests
+===================================
+
+.. currentmodule:: spreg.diagnostics_probit
+
+.. autofunction:: sp_tests

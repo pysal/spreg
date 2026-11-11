@@ -1,0 +1,33 @@
+﻿spreg.PanelRE
+=============
+
+.. currentmodule:: spreg
+
+.. autoclass:: PanelRE
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PanelRE.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PanelRE.mean_y
+      ~PanelRE.sig2n
+      ~PanelRE.sig2n_k
+      ~PanelRE.std_y
+      ~PanelRE.utu
+      ~PanelRE.vm
+   
+   

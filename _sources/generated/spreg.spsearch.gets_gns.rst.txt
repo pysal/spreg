@@ -1,0 +1,6 @@
+﻿spreg.spsearch.gets\_gns
+========================
+
+.. currentmodule:: spreg.spsearch
+
+.. autofunction:: gets_gns

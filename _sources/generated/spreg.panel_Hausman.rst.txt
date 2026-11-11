@@ -1,0 +1,6 @@
+﻿spreg.panel\_Hausman
+====================
+
+.. currentmodule:: spreg
+
+.. autofunction:: panel_Hausman

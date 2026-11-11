@@ -1,0 +1,6 @@
+﻿spreg.koenker\_bassett
+======================
+
+.. currentmodule:: spreg
+
+.. autofunction:: koenker_bassett

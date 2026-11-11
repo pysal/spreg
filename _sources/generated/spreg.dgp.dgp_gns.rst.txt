@@ -1,0 +1,6 @@
+﻿spreg.dgp.dgp\_gns
+==================
+
+.. currentmodule:: spreg.dgp
+
+.. autofunction:: dgp_gns

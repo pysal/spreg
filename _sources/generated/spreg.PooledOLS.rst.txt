@@ -1,0 +1,33 @@
+﻿spreg.PooledOLS
+===============
+
+.. currentmodule:: spreg
+
+.. autoclass:: PooledOLS
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PooledOLS.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PooledOLS.mean_y
+      ~PooledOLS.sig2n
+      ~PooledOLS.sig2n_k
+      ~PooledOLS.std_y
+      ~PooledOLS.utu
+      ~PooledOLS.vm
+   
+   

@@ -1,0 +1,35 @@
+﻿spreg.ML\_LagRE
+===============
+
+.. currentmodule:: spreg
+
+.. autoclass:: ML_LagRE
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ML_LagRE.__init__
+      ~ML_LagRE.lag_c_loglik_sp
+      ~ML_LagRE.phi_c_loglik
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ML_LagRE.mean_y
+      ~ML_LagRE.sig2n
+      ~ML_LagRE.sig2n_k
+      ~ML_LagRE.std_y
+      ~ML_LagRE.utu
+      ~ML_LagRE.vm
+   
+   

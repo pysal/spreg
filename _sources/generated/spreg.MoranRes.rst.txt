@@ -1,0 +1,22 @@
+﻿spreg.MoranRes
+==============
+
+.. currentmodule:: spreg
+
+.. autoclass:: MoranRes
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MoranRes.__init__
+   
+   
+
+   
+   
+   

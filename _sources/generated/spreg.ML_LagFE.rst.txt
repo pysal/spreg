@@ -1,0 +1,34 @@
+﻿spreg.ML\_LagFE
+===============
+
+.. currentmodule:: spreg
+
+.. autoclass:: ML_LagFE
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ML_LagFE.__init__
+      ~ML_LagFE.lag_c_loglik_sp
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ML_LagFE.mean_y
+      ~ML_LagFE.sig2n
+      ~ML_LagFE.sig2n_k
+      ~ML_LagFE.std_y
+      ~ML_LagFE.utu
+      ~ML_LagFE.vm
+   
+   

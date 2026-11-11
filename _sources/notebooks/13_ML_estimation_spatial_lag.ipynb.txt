@@ -1,0 +1,887 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "89145993",
+   "metadata": {},
+   "source": [
+    "# Maximum Likelihood Estimation - Spatial Lag Model\n",
+    "\n",
+    "### Luc Anselin\n",
+    "\n",
+    "### (revised 09/19/2024)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a85427f9",
+   "metadata": {},
+   "source": [
+    "## Preliminaries\n",
+    "\n",
+    "This notebook is the first of two that deal with the estimation of the spatial Lag model and the spatial Durbin model. Here, the Maximum Likelihood approach is illustrated. Instrumental variable estimation is considered in a separate notebook.\n",
+    "\n",
+    "The maximum likelihood estimation in `spreg` is primarily included for pedagogical purposes. Generally, the instrumental variables approach is preferred. In addition, an optimal maximum likelihood estimation implementation, based on the Smirnov-Anselin (2001) approximation, is not currently implemented in `spreg`. It is implemented in C++ in `GeoDa`. This is the preferred approach for ML estimation in large(r) data sets, although it currently does not support estimation of the spatial Durbin specification (this must be implemented by hand by constructing the spatially lagged explanatory variables explicitly).\n",
+    "\n",
+    "The `spreg` module implements ML estimation of the spatial lag model in the `ML_Lag` class. Given the problems in the optimization of the log-likelihood for the SARSAR model (and the issues with interpretation of the results), ML estimation of this model is purposely not included. For the same reason, the general nested model is not implemented either. These models can be estimated by means of IV/GMM.\n",
+    "\n",
+    "The estimation of the Spatial Durbin model is implemented through the inclusion of the `slx_lags` argument. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f9a2c9eb",
+   "metadata": {},
+   "source": [
+    "### Modules Needed\n",
+    "\n",
+    "As before, the main module is *spreg* for spatial regression analysis. From this, `OLS` and `ML_Lag` are imported. In addition, the utilities in *libpysal* (to open spatial weights and access the sample data set), *pandas* and *geopandas* are needed, as well as *time* (for some timing results), *matplotlib.pyplot* and *seaborn* for visualization. All of these rely on *numpy* as a dependency. Finally, in order to carry out the Likelihood Ratio tests, `likratiotest` is imported from `spreg.diagnostics`.\n",
+    "\n",
+    "The usual *numpy* `set_printoptions` is included as well."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "5ac490b0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "import os\n",
+    "os.environ['USE_PYGEOS'] = '0'\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import geopandas as gpd\n",
+    "import time\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "from libpysal.io import open\n",
+    "from libpysal.examples import get_path\n",
+    "from libpysal.weights import lag_spatial\n",
+    "\n",
+    "from spreg import OLS, ML_Lag\n",
+    "from spreg.diagnostics import likratiotest\n",
+    "np.set_printoptions(legacy=\"1.25\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0ee18820",
+   "metadata": {},
+   "source": [
+    "### Functions Used\n",
+    "\n",
+    "- from pandas/geopandas:\n",
+    "  - read_file\n",
+    "  - DataFrame\n",
+    "  - head\n",
+    "  - describe\n",
+    "  - corr\n",
+    "  \n",
+    "- from libpysal:\n",
+    "  - io.open\n",
+    "  - examples.get_path\n",
+    "  - weights.lag_spatial\n",
+    " \n",
+    "- from numpy:\n",
+    "  - hstack\n",
+    "\n",
+    "- from matplotlib/seaborn:\n",
+    "  - regplot\n",
+    "  - show\n",
+    "\n",
+    "- from spreg:\n",
+    "  - spreg.OLS\n",
+    "  - spreg.ML_Lag\n",
+    "  - spreg.diagnostics.likratiotest"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "47934d1b-7587-4ddf-be38-83904eede8e8",
+   "metadata": {},
+   "source": [
+    "### Variable definition and data input"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bfb04af4-4521-4ac0-8e55-d3b92f54a403",
+   "metadata": {},
+   "source": [
+    "The data set and spatial weights are from the **chicagoSDOH** sample data set:\n",
+    "\n",
+    "- **Chi-SDOH.shp,shx,dbf,prj**: socio-economic indicators of health for 2014 in 791 Chicago tracts\n",
+    "- **Chi-SDOH_q.gal**: queen contiguity weights\n",
+    "\n",
+    "To illustrate the methods, a descriptive model is used that relates the rate of uninsured households in a tract(for health insurance, **EP_UNINSUR**) to the lack of high school education (**EP_NOHSDP**), the economic deprivation index (**HIS_ct**), limited command of English (**EP_LIMENG**) and the lack of access to a vehicle (**EP_NOVEH**). This is purely illustrative of a spatial lag specification and does not have a particular theoretical or policy motivation.\n",
+    "\n",
+    "The file names and variable names are set in the usual manner. Any customization for different data sets/weights and different variables should be specified in this top cell."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "14a1e98e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "infileshp = get_path(\"Chi-SDOH.shp\")     # input shape file with data\n",
+    "infileq = get_path(\"Chi-SDOH_q.gal\")     # queen contiguity weights created with GeoDa\n",
+    "\n",
+    "y_name = 'EP_UNINSUR'\n",
+    "x_names = ['EP_NOHSDP','HIS_ct','EP_LIMENG','EP_NOVEH']\n",
+    "ds_name = 'Chi-SDOH'\n",
+    "w_name = 'Chi-SDOH_q'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d9514984-a22e-4d5b-a993-f40771a290a0",
+   "metadata": {},
+   "source": [
+    "The `read_file` and `open` functions are used to access the sample data set and contiguity weights. The weights are row-standardized and the data frames for the dependent and explanatory variables are constructed. As before, this functionality is agnostic to the actual data sets and variables used, since it relies on the specification given in the initial block above."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "3248d23d-2247-40bf-a3a5-3ba21b477aa8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dfs = gpd.read_file(infileshp)\n",
+    "wq =  open(infileq).read()    \n",
+    "wq.transform = 'r'    # row-transform the weights\n",
+    "y = dfs[y_name]\n",
+    "x = dfs[x_names]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2aea09bf",
+   "metadata": {},
+   "source": [
+    "## OLS and SLX with Spatial Diagnostics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fb5eb774-814b-467e-ad51-11d21d3cee50",
+   "metadata": {},
+   "source": [
+    "Standard OLS and SLX regressions with spatial diagnostics are carried out to provide a point of reference. Moran's I is included by setting `moran=True` and, of course, `spat_diag=True` as well. Refer to the specific OLS notebook for further details."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fdb2b8ce-6ae8-4a15-a6c7-7ec23700dfc7",
+   "metadata": {},
+   "source": [
+    "### OLS"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "379724ce",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ols1 = OLS(y,x,w=wq,spat_diag=True,moran=True,\n",
+    "                 name_w=w_name,name_ds=ds_name)\n",
+    "print(ols1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9d0e0f74-5877-4497-8e7b-79394b6701fd",
+   "metadata": {},
+   "source": [
+    "The specification achieves an acceptable $R^2$ of about 0.63 and all coefficients are positive and highly significant.\n",
+    "\n",
+    "The non-spatial diagnostics suggest non-normality as well as a hight degree of heteroskedasticity. There is no problem with multicollinearity.\n",
+    "\n",
+    "The spatial diagnostics against the SARERR alternatives show very significant LM-Lag and LM-Error, but of the two robust tests, only RLM-Lag is highly significant (RLM-Error only at p < 0.03). Hence, there is a strong indication that a Lag rather than an Error alternative may be appropriate. While the joint LM test is also highly significant, this is likely due to a strong one-sided (Lag) alternative.\n",
+    "\n",
+    "Interestingly, the diagnostics against a spatial Durbin alternative strongly support the latter as well. Both LM tests and their robust forms are highly significant, and so is the joint test. Moreover, the value for the robust forms of the test is smaller than the original, which is the expected behavior (although not always reflected in empirical practice).\n",
+    "\n",
+    "In sum, in addition to a spatial Lag model as an alternative, the spatial Durbin specification deserves consideration as well."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0cfc5d4e-a1b3-4b07-8120-2def922d8ef6",
+   "metadata": {},
+   "source": [
+    "### SLX"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "53f9b90d-7f6d-4b3e-9e99-83430957fe3a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "slx1 = OLS(y,x,w=wq,slx_lags=1,spat_diag=True,moran=True,\n",
+    "                 name_w=w_name,name_ds=ds_name)\n",
+    "print(slx1.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9ee2be15-2067-4caf-b02b-aca6b46118c5",
+   "metadata": {},
+   "source": [
+    "Relative to the classic regression model, the fit improves slightly, but the constant, **EP_NOHSDP** and **HIS_CT** become non-significant at p = 0.01 (they are marginally signifcant at p=0.05). All but one coefficient of the SLX terms are significant (**W_EP_NOVEH** is not). The signs and magnitudes of the SLX coefficients relative to their unlagged counterparts remain a bit confusing. Only for **EP_LIMENG** and **W_EP_LIMENG** are they the same, with the lag coefficient smaller than the unlagged one, in accordance with Tobler's law. The coefficient for **W_HIS_ct** is significant and larger than that of **HIS_ct**, while the latter is not significant at p = 0.01. In other words, the interpretation of these results in terms of distance decay and Tobler's law may be a bit problematic.\n",
+    "\n",
+    "In terms of diagnostics, there is a slight problem with multicollinearity (often the case in SLX specifications), strong non-normality and evidence of heteroskedasticity. Moran's I is significant, as are both LM-tests, but neither of the robust forms is significant. Based on the relative magnitudes of the test statistics, there is a slight indication of a possible Lag alternative, i.e., a spatial Durbin specification. However, this indication is not as strong as that provided by the LM-SDM test statistics in the classic specification."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a8a0c186-dd30-4f64-9a5b-d95bb562ebde",
+   "metadata": {},
+   "source": [
+    "## ML Estimation of the Lag Model"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4cc74112-a2eb-4efa-9116-d1e5197d20ed",
+   "metadata": {},
+   "source": [
+    "### Principle"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0385d805-bfb4-4e79-b0ed-0fc59c811926",
+   "metadata": {},
+   "source": [
+    "The point of departure of the Maximum Likelihood estimation of the spatial Lag model is an assumption of normal, independent and identically distributed errors. From this, the distribution for the observable vector of the dependent variable is obtained as multivariate normal.\n",
+    "\n",
+    "For the lag model $y = \\rho Wy + X\\beta + u$, the corresponding log-likelihood is:\n",
+    "\n",
+    "\n",
+    "$$\\ln L =  \\ln | I - \\rho W |  -(n/2)(\\ln 2\\pi) - (n/2) \\ln \\sigma^2   \\\\\n",
+    "     - (1/2 \\sigma^2)(y - \\rho W y - X \\beta)'(y - \\rho W y - X \\beta)$$\n",
+    "\n",
+    "Except for the first term, this is identical to the log-likelihood in the classic regression model. The maximization of the classic log-likelihood would correspond to the minimization of the sum of squared residuals, in this case $(y - \\rho W y - X \\beta)'(y - \\rho W y - X \\beta)$, but this ignores the Jacobian term $\\ln | I - \\rho W |$. As a consequence, simple minimization of the sum of squared residuals (i.e., OLS), which ignores this Jacobian term, will yield biased estimates.\n",
+    "\n",
+    "Maximization of the log-likelihood is simplified since a *concentrated* likelihood can be derived that is only a function of the single parameter $\\rho$. Once an estimate for $\\rho$ is obtained, the corresponding estimates for $\\beta$ and $\\sigma^2$ are easily computed. For technical details, see Chapter 8 of Anselin and Rey (2014).\n",
+    "\n",
+    "Inference is based on an asymptotic variance matrix, which is computed as the inverse of the so-called information matrix (the expected value of the matrix of second partial derivatives of the log-likelihood function)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1bfd7648-bdd1-4ebb-bcf5-4dc74782693d",
+   "metadata": {},
+   "source": [
+    "### Implementation methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4ada2a0d-81fc-4b07-8ba9-d7e1bc101b1a",
+   "metadata": {},
+   "source": [
+    "ML estimation of the classic spatial lag model is implemented by means of `spreg.ML_Lag`, with all the standard regression arguments (i.e., at a minimum, **y**, **x** and **w**). Three different methods are implemented: `full`, `ord` an `LU`. These differ only in the way the Jacobian term $\\ln | I - \\rho W |$ is computed. As the logarithm of the determinant of a $n \\times n$ matrix, this calculation runs into numerical difficulties for large(r) data sets.\n",
+    "\n",
+    "The default optimization method is *brute force*, or `method=\"full\"`.\n",
+    "This uses dense matrix expressions to calculate the required determinants and inverse matrix terms.\n",
+    "This method should *not* be used for large(r) data sets.\n",
+    "\n",
+    "The Ord eigenvalue method, `method=\"ord\"` (Ord, 1975) uses the eigenvalues of the spatial weights matrix as a shortcut to\n",
+    "compute the Jacobian determinant. Since this method relies on eigenvalue computations, it also is\n",
+    "not reliable for large(r) data sets. The `method` argument must be included (since the default\n",
+    "is `method=\"full\"`).\n",
+    "\n",
+    "The `method=\"LU\"` uses the LU (Cholesky) matrix decomposition for sparse matrices to efficiently\n",
+    "compute the Jacobian determinant for large data sets. The sparse matrix conversion is\n",
+    "done internally, so the only needed additional argument is `method = \"LU\"`. This is the only reliable method for larger data sets."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "75672c3c-9170-4135-bdaf-2a335eec8090",
+   "metadata": {},
+   "source": [
+    "The ML estimation is illustrated for the same specification as before, first using `method=\"full\"`. Since this is also the default, it is not necessary to explicitly include this argument, but it is listed here for clarity. To compare the relative speed of the different methods, `time.time()` is used.\n",
+    "\n",
+    "In addition, since the impacts calculation is set to `simple` by default, it is turned off for now by means of `spat_impacts = None` (see below for more specifics)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "71307ef9-cc53-46a6-866e-5bd521e4503e",
+   "metadata": {},
+   "source": [
+    "#### Method `full`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1975d6b2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "lag1a = ML_Lag(y,x,w=wq,method=\"full\",\n",
+    "                     name_w=w_name,name_ds=ds_name,\n",
+    "                     spat_impacts=None)\n",
+    "t1 = time.time()\n",
+    "print(\"Time in seconds: \",t1-t0)\n",
+    "print(lag1a.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ec92847a-2982-4d67-a514-da927b0fd7f6",
+   "metadata": {},
+   "source": [
+    "The spatial autoregressive coefficient (**W_EP_UNINSUR**) at 0.39 is highly significant. The effect of its inclusion on the other coefficient estimates is major as well. All are substantially smaller than in the classic regression, except for the coefficient of **EP_NOVEH**, which is marginally larger. The main effect is on the constant term and the coefficient of **EP_NOHSDP**, neither of which is any longer significant. In essence, ignoring the spatial spillover effects in the classic regression means that some of these spillovers are reflected in the regression coefficients, which become biased with respect to their true magnitude. The spillover effects are considered more closely in the discussion of impacts below.\n",
+    "\n",
+    "In addition to the coefficient estimates, the output includes information about the model fit. There are two **Pseudo R-squared** measures: one is based on the *naive residuals*, $e = y - \\hat{\\rho} Wy - X\\hat{\\beta}$, the other (**Spatial Pseudo R-squared**) is computed from the forecasting errors when using the reduced form to compute predicted values. The two types of predicted values and residuals are included in the regression object as **predy** and **u** for the naive form and **predy_e** and **e_pred** for the reduced form results. As is typically the case, the measure of fit based on the reduced form predicted values is (slightly) worse than the naive one.\n",
+    "\n",
+    "Other indications of the fit of the model (although strictly speaking not measures of fit) are the **Log Likelihood** (-2418.99), the **Akaike info criterion** (4849.97), and the **Schwarz criterion**, also sometimes referred to as BIC (4878.01). Compared to the results for the classic regression (respectively -2465.21, 4940.42, and 4963.79), the log-likelihood is clearly less negative (thus larger) and the AIC and SC are smaller (better) than their counterparts.\n",
+    "\n",
+    "Other interesting attributes of the regression object are the regression coefficients, in **betas**, with the spatial autoregressive coefficient as the last element. The latter is also included separately as **rho**. The standard errors are in **std_err**, z-statistics and p-values in **z_stat**, and the complete variance-covariance matrix is **vm**."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9866e7c6-4fc9-4cf4-af2f-7587b6c2a490",
+   "metadata": {},
+   "source": [
+    "The contents of the **betas** and **rho** attributes show how the estimate for $\\rho$ is also the last element in **betas**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "386e6b44-9f51-4572-9ea1-7fa98f7beb4f",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "print(\"betas \",lag1a.betas)\n",
+    "print(\"rho \",lag1a.rho)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2d3b5229-f169-4d15-aafe-416f325183a5",
+   "metadata": {},
+   "source": [
+    "#### Method `ord`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6ba06a23-111a-430e-bd60-ce54ee60a660",
+   "metadata": {},
+   "source": [
+    "The Ord eigenvalue method is invoked by means of `method=\"ord\"`. All other attributes are the same as before (with again `spat_impacts = None`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e1ec4ab7-5eed-4c14-b046-2f9efff13642",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "lag1b = ML_Lag(y,x,w=wq,method=\"ord\",\n",
+    "                     name_w=w_name,name_ds=ds_name,\n",
+    "                     spat_impacts=None)\n",
+    "t1 = time.time()\n",
+    "print(\"Time in seconds: \",t1-t0)\n",
+    "print(lag1b.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ff1ea981-669d-4ba0-a200-6f41c17717f0",
+   "metadata": {},
+   "source": [
+    "The coefficient estimates are identical to those obtained with the `full` method. There are some slight differences in the computed standard errors (and thus also in the z-values and p-values), but the overall effect is minimal. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e0439c7c-771a-446f-8677-51570d7f8dea",
+   "metadata": {},
+   "source": [
+    "#### Method `LU`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "846b5ac1-e4b0-4b99-8a56-7663403935d1",
+   "metadata": {},
+   "source": [
+    "Again, all arguments are the same, except for `method = \"LU\"`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1e485647-951e-4b62-80be-b1bb505b5027",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "lag1c = ML_Lag(y,x,w=wq,method=\"LU\",\n",
+    "                     name_w=w_name,name_ds=ds_name,\n",
+    "                     spat_impacts=None)\n",
+    "t1 = time.time()\n",
+    "print(\"Time in seconds: \",t1-t0)\n",
+    "print(lag1c.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "34682841-1194-4f32-a14d-1aea4ce6b9e3",
+   "metadata": {},
+   "source": [
+    "In this case, the estimation results are identical to those for the `full` method."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a9f084bf-276f-44a7-863b-41835831d7ee",
+   "metadata": {},
+   "source": [
+    "## Spatial Multipliers - Impacts"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b6ed0760-3ba2-4f0e-a06d-a295c13e29b4",
+   "metadata": {},
+   "source": [
+    "In models that include a spatially lagged dependent variable Wy, with or without additional spatially lagged explanatory variables, the\n",
+    "impact of a change in X on y is not simply the coefficient of X, as is the case in the standard regression model. Instead, the effect that results from changes in the neighboring values must also be accounted for. These are the *spatial multipliers*, *indirect effects* or *spatial impacts*.\n",
+    "\n",
+    "In Kim, Phipps and Anselin (2003), it was shown that if the change in the explanatory variable is uniform across observations, the *spatial multiplier* is $1 / (1- \\rho)$, with the total effect of a change in variable\n",
+    "$x_k$ amounting to $\\beta_k / (1 - \\rho)$. In the example, the spatial multiplier in the spatial lag model (**lag1a**) would be \n",
+    "1.0 / (1.0 - 0.39151) = 1.643.\n",
+    "\n",
+    "The Kim et al. approach distinguishes between the direct effect, i.e., the coefficient of the $\\beta$ coefficients as estimated, and the total effect, which corresponds to this coefficient times the multiplier. An indirect effect is then the difference between the two.\n",
+    "\n",
+    "LeSage and Pace (2009) introduce a slightly different set of concepts and use the terms average direct impact ($ADI$), average indirect impact ($AII$) and average total impact ($ATI$) as summaries computed from the matrix expression $(I - \\rho W)^{-1}$ in the reduced form, $(I - \\rho W)^{-1}X\\beta$. The main difference is that what they refer to as *direct* effect also includes some feedbacks as reflected in the diagonal elements of the inverse matris. As a result, in their approach, the direct effects will differ from the estimates for $\\beta$. \n",
+    "\n",
+    "More formally, LeSage-Pace define $ADI$ as the average trace of the inverse matrix, or, $ADI = (1/n) tr[(I - \\rho W)^{-1}] = (1/n) \\sum_i (I - \\rho W)^{-1}_{ii}$. The $ATI$ is the average of all the elements of the matrix, or, $ATI = (1/n) \\sum_i \\sum_j (I - \\rho W)^{-1}$. Note that with some algebra, one can show that this equals $1 / (1 - \\rho)$, the same as the total multiplier in the Kim et al. approach.\n",
+    "\n",
+    "The $AII$ then follows as $ATI - ADI$. The actual impacts are obtained by multiplying the $\\beta$ coefficient by respectively $ATI$, $ADI$ and $AII$.\n",
+    "\n",
+    "The impact measures are listed in the spatial lag regression output when the `spat_impacts` argument is specified (it is by default set to `spat_impacts = \"simple\"`). Options include `simple` (Kim et al. approach), `full` and `power` (both based on LeSage-Pace, but with `full` using a dense matrix computation for the inverse, whereas `power` uses a power approximation with higher order weights), as well as `all`, for all three. In addition, any combination of methods can be passed in a list. For example, to obtain both Kim et al. and LeSage-Pace measures, the argument can be set as\n",
+    "`spat_impacts = [\"simple\",\"full\"]`, as in the listing below. Since the default setting is `spat_impacts = \"simple\"`, when listing the impacts is not desired, `spat_impacts` must explicitly be set to `None`.\n",
+    "\n",
+    "Based on extensive timing experiments for the LeSage-Pace approach, the `power` method is superior for data sets with more than 5,000 observations. For larger data sets, it quickly becomes the only viable option, being orders of magnitude faster than the brute force calculations. The Kim et al. approach has no such limitation, since it does not use any matrix calculations.\n",
+    "\n",
+    "Note that the reported impacts are only *average* effects. See the spatial multipliers notebook for a more extensive analysis of the associated spatial pattern."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4cb376e5-d8b2-4aaf-aad9-e3c659613419",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lag2 = ML_Lag(y,x,w=wq,method=\"full\",\n",
+    "                     name_w=w_name,name_ds=ds_name,\n",
+    "                     spat_impacts=['simple','full'])\n",
+    "print(lag2.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fc10afcc-0360-4c76-9482-dc6ba2f57153",
+   "metadata": {},
+   "source": [
+    "The listing of **SPATIAL LAG MODEL IMPACTS** for the `simple` and `full` methods clearly illustrates the slight differences between the two approaches. The **Total** effect is the same for both, but the distribution of the effect between **Direct** and **Indirect** is slightly different. For the `simple` method, the **Direct** effects are identical to the coefficient estimates, but for the `full` method, they are slightly larger. This is due to the use of the diagonal elements of the inverse matrix, rather than the original estimates. As a result, some of the spillover feed-back effects are characterized as **Direct**. As a consequence, the part attributed to the **Indirect** effect is larger for the `simple` method than for the `full` method.\n",
+    "\n",
+    "These measures should only be interpreted as rough indications of spatial spillovers since they are both based on a rather unrealistic assumption of a uniform change in the X-variable. Also, the **Total** effect is simply the original coefficient times the spatial multiplier. For example, for **EP_LIMENG**, this amounts to $0.3116 \\times 1.643 = 0.512$.\n",
+    "\n",
+    "This total effect can be compared to that implied by the SLX model, which would be the sum of $\\beta$ and $\\gamma$. For example, for **EP_LIMENG**, this would be $0.38547 + 0.22040 = 0.60587$, which is actually larger than the total effect suggested by the spatial lag model. In part, this can be explained by recognizing that the SLX model is a truncated form of the reduced form for the spatial lag specification, i.e., only the first order contiguity elements are included. When ignoring the remainder, its impact tends to be attributed to the coefficients of $\\beta$ and $\\gamma$."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2e768c5f-9216-48f7-ac1f-f25c2d7e0a43",
+   "metadata": {},
+   "source": [
+    "## Predicted Values and Residuals"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1c4af1a9-aba6-4b50-b4f1-f45694e634c4",
+   "metadata": {},
+   "source": [
+    "As mentioned, the *naive* predicted values and residuals are attributes of the regression object as **predy** and **u**. These are somewhat misleading, since they take the value of $Wy$ as observed, in a so-called *conditional* approach. In the *simultaneous* spatial lag model, the spatial pattern for the dependent variable $y$ is jointly determined as a function of the X-variables only. A predicted value that reflects this lesser degree of information is computed from the reduced form, as $y_{pr} = (I - \\hat{\\rho} W)^{-1} X\\hat{\\beta}$. This is **predy_e** in the regression object. The associated forecast error, $y - y_{pr}$ is **e_pred** in the regression object.\n",
+    "\n",
+    "The two types of predicted values and residuals can be readily turned into a data frame by means of `pd.DataFrame` applied to an array constructed with `np.hstack`, in the same way as was done for the OLS predicted values and residuals. In the example, the associated variable names are **ypred**, **yreduce**, **resid** and **forcerr**, passed as the `columns` argument.\n",
+    "\n",
+    "Descriptive statistics are obtained with `describe()`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "343c44c2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "preds = pd.DataFrame(np.hstack((lag1a.predy,lag1a.predy_e,lag1a.u,lag1a.e_pred)),columns=['ypred','yreduce','resid','forcerr'])\n",
+    "preds.describe()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9bd86573-c074-4aec-9d51-13314ca79451",
+   "metadata": {},
+   "source": [
+    "Note some important differences between the two concepts. First, whereas the mean of **ypred** equals the mean of the actual dependent variable of 18.4852 (see **Mean dependent var** in the regression output listing), the mean of the reduced form prediction is slightly different (18.5128). Consequently, the mean of **resid** is essentially zero, but the mean of **forcerr** is slightly negative, at -0.0375. There are other slight differences as well."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "18400a28-a42c-46ad-9657-f17932d67a68",
+   "metadata": {},
+   "source": [
+    "The correlation between the two concepts is high, but not perfect, respectively 0.988 for the predicted values and 0.978 for the residuals."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "44974590-467f-49ed-beec-9725184c233e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(f\"Correlation between predicted values: {preds['ypred'].corr(preds['yreduce']):0.3f}\")\n",
+    "print(f\"Correlation between residuals:        {preds['resid'].corr(preds['forcerr']):0.3f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "946ad797-705e-4782-9a46-f0865292e917",
+   "metadata": {},
+   "source": [
+    "#### Spatial pattern of residuals"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "20a5a87f-e2b2-4149-902c-7a2560b6da56",
+   "metadata": {},
+   "source": [
+    "A final interesting comparison is between the spatial pattern of the two types of residuals. To assess this, a simple Moran scatterplot is constructed, where the spatial lag is computed by means of `libpysal.lag_spatial`. The plot itself is constructed with `sns.regplot`, which superimposes a regression line on the scatter plot of the spatial lag on the original variable. No customization of the graph is carried out.\n",
+    "\n",
+    "For the *naive* residuals, this yields the following plot."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0ecebb8e-d396-4e1c-8092-b6db612aebee",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "werr = lag_spatial(wq,preds['resid']).reshape(-1,1)\n",
+    "sns.regplot(x=preds['resid'],y=werr)\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cd782036-bd82-45d5-90c7-2d527d46fd61",
+   "metadata": {},
+   "source": [
+    "The regression line is essentially flat, which means most/all of the remaining spatial correlation has been eliminated. In contrast, the Moran scatterplot for the prediction error shows a strong positive slope, suggesting remaining spatial clustering."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "245082da-2703-4282-bf5b-24c58f83edac",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "wfor = lag_spatial(wq,preds['forcerr']).reshape(-1,1)\n",
+    "sns.regplot(x=preds['forcerr'],y=wfor)\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "12ae004f-e7cc-47a1-85cc-6426152ff8d3",
+   "metadata": {},
+   "source": [
+    "Why would this be the case? Recall that the predicted value is computed as $y_{pr} = (I - \\hat{\\rho} W)^{-1} X\\hat{\\beta}$. However, the complete expression for the reduced form is $y = (I - \\rho W)^{-1} X\\beta + (I - \\rho W)^{-1}u$. Since the error term is unobserved and its mean is zero, the second term is ignored in the predicted value. As a result, the actual difference between $y$ and $y_{pr}$ is $e = (I - \\rho W)^{-1}u$. This can be written as $e = \\rho We + u$, a spatial autoregressive process, which accounts for the spatial pattern in the residuals.\n",
+    "\n",
+    "Since the residual is *not* filtered for the existing spatial correlation, it will remain spatially correlated itself. This is reflected in the positive slope of the regression line in the Moran scatter plot."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ed8bd5bc-4921-40f3-96c3-79dfd68ed92d",
+   "metadata": {},
+   "source": [
+    "#### Mapping predicted values and residuals"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "54225ac9-bdc4-4560-a62f-c2761b8ed963",
+   "metadata": {},
+   "source": [
+    "Optionally, the predicted values and residuals can be added to the spatial data frame in order to construct associated maps. However, since these maps create only visual impressions of spatial patterning, this is not further pursued here."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "708ffa42-763f-4ee2-acf0-2ab079795cfd",
+   "metadata": {},
+   "source": [
+    "## ML Estimation of Spatial Durbin Model"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5a27b8d3-13cb-4e6d-aef2-549f19c6dc6f",
+   "metadata": {},
+   "source": [
+    "ML estimation of the Spatial Durbin model is a special case of `spreg.ML_Lag`, with the additional argument of `slx_lags=1` (or a larger value). Everything else remains the same. More specifically, the three methods of `full`, `ord` and `LU` are again available. Only the default `full` is considered here. The results are essentially the same for the other methods. \n",
+    "\n",
+    "To illustrate the difference between the two types of impact measures, `spat_impacts` is set to `[\"simple\",\"full\"]` (note, the default setting remains `spat_impacts = \"simple\"`).\n",
+    "\n",
+    "Another default setting is `spat_diag = True`, which yields the results for the Common Factor Hypothesis test. To avoid this test, `spat_diag` must be set to `False`. In the illustration, both arguments are listed explicitly for clarity."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9d5bc8e4-3683-4bfd-a904-f944cc69a71b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "t0 = time.time()\n",
+    "spdur = ML_Lag(y,x,w=wq,slx_lags=1,\n",
+    "                    name_w=w_name,name_ds=ds_name,\n",
+    "                    spat_impacts = ['simple','full'],\n",
+    "                    spat_diag=True)\n",
+    "t1 = time.time()\n",
+    "print(\"Time in seconds: \",t1-t0)\n",
+    "print(spdur.summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "73b650f7-2272-4f1a-8d2b-e6c007f45d3a",
+   "metadata": {},
+   "source": [
+    "The inclusion of the spatial lag terms affects the results relative to both the original classic specification and the SLX model. The spatial autoregressive coefficient of 0.40 is highly significant. Similar to what happened in the SLX model relative to the classic specification, **EP_NOHSDP** and **HIS_ct** are no longer significant and neither is **W_EP_NOVEH**, but now **W_EP_LIMENG** is also no longer significant. As in the SLX specification, some of the signs and magnitudes of the WX coefficients run counter to Tobler's Law. According to the latter, the coefficients of $\\beta$ and the matching $\\gamma$ should be the same, which is not the case for **EP_NOHSDP** (but not significant) and **EP_NOVEH** (but the lag is not significant). A consistent pattern of opposite signs may be an indication that the common factor hypothesis holds (see below).\n",
+    "\n",
+    "Relative to the standard Lag model, the inclusion of the WX terms makes the spatial autoregressive coefficient slightly larger (0.40 relative to 0.39), but it renders **HIS_ct** non-significant (this is similar to what happened in the SLX model relative to the classic specification).\n",
+    "\n",
+    "Significance improves slightly relative to the SLX model, with a Log Likelihood of -2410.7 (compared to -2442.8), AIC of 4841.5 (relative to 4903.5), and SC of 4888.2 (relative to 4945.6).\n",
+    "\n",
+    "As in the spatial Lag model, there will be two types of predicted values and residuals, respectively based on a naive approach and the reduced form. This is not considered further since the treatment and interpretation are identical to that in the standard spatial Lag model.\n",
+    "\n",
+    "Further refinements of the model specification can be carried out by eliminating some lag terms by means of `slx_vars`, as in the SLX model. This is not further pursued here."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f3b96dfc-3502-4bc9-a3be-5b2b3e211a9e",
+   "metadata": {},
+   "source": [
+    "### Spatial Multipliers - Impacts"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e33def78-6d52-4c1d-b917-44bde828ab81",
+   "metadata": {},
+   "source": [
+    "The impact measures for the Spatial Durbin model follow the same logic as in the spatial lag model. They are derived from the reduced form, which is now, ignoring the error term:\n",
+    "\\begin{equation*}\n",
+    "y = (I - \\rho W)^{-1} X \\beta + (I - \\rho W)^{-1} WX \\gamma.\n",
+    "\\end{equation*}\n",
+    "The effect of this is that the various multipliers must be applied to both $\\beta$ and the matching $\\gamma$ to compute the overall impacts.\n",
+    "\n",
+    "As it turns out, the total multiplier is the same as in the lag model, i.e., $1.0 / (1.0 - \\rho)$. However, to get the total effect, this factor needs to be multiplied by both $\\beta$ and the matching $\\gamma$.\n",
+    "\n",
+    "For example, taking $\\rho = 0.4044$ as in the example, the total multiplier follows as $1.673$. The total impact for the variable **EP_LIMENG** (ignoring for now that **W_LIMENG** turned out to be non-significant) would be $1.673 \\times 0.37397 + 1.673 \\times 0.01243 = 0.6464$, the value given in the **Total** column of the impacts listing. As in the lag model, the total impact is the same for the Kim et al approach and the LeSage-Pace approach. The main difference is in the way the direct effect is computed.\n",
+    "\n",
+    "In the Kim et al approach, the direct effect is the coefficient of $\\beta$. This is a strict interpretation of direct effect, i.e., it considers the effect of $\\gamma$ to be indirect. This is consistent with the interpretation of $\\gamma$ in the SLX model, but it is not the approach used by LeSage-Pace in their original treatment. In their formulation, the $ADI$ is applied to both $\\beta$ and $\\gamma$ to compute the direct effect, typically yielding a larger value for the direct effect (as long as $\\beta$ and $\\gamma$ have the same sign). This approach is *not* followed by `spreg`. Instead, the direct effect is obtained by multiplying the $ADI$ with the $\\beta$ coefficient only. As a result, the share attributed to the indirect impact will be larger than in original the LeSage-Pace formulation (in contrast, the latter is followed in the `R` `spatialreg` package).\n",
+    "\n",
+    "The total and direct/indirect impacts can be compared to those suggested by the simple spatial lag model and the SLX model. For example, for **EP_LIMENG**, the total impact of a uniform change in that variable was 0.606 in SLX, 0.512 in the spatial lag model and 0.646 in the spatial Durbin specification. Of this (using the Kim et al logic), 0.220 was spatial spillover (indirect effect) in SLX, 0.201 in spatial lag, and 0.272 in the spatial Durbin model.\n",
+    "\n",
+    "As mentioned above, these impact measures are only summaries. A more meaningful indication of spatial spillovers would follow from a non-uniform change in (some of) the X variables through the use of the full reduced form. In addition, the average may mask some interesting spatial patterns, as demonstrated in an earlier notebook."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "38c65c92-c451-4e82-885e-4fe7212d3280",
+   "metadata": {},
+   "source": [
+    "### Common Factor Hypothesis"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "35b1381e-bf61-48df-924f-1623fb8169c0",
+   "metadata": {},
+   "source": [
+    "A complication in the interpretation of the spatial Durbin model occurs because the spatial autoregressive Error model has an equivalent counterpart\n",
+    "as a spatial Lag formulation that includes WX terms, i.e., the same specification as the spatial Durbin model. Formally:\n",
+    "\\begin{equation*}\n",
+    "y = X \\beta + (I - \\lambda W)^{-1} u = \\lambda Wy + X \\beta - \\lambda  WX \\beta + u.\n",
+    "\\end{equation*}\n",
+    "In this alternative specification, the coefficients for the $WX$ variables correspond to the negative product of the autoregressive\n",
+    "and the matching regression parameters (except for the constant term), the so-called *common factor constraint*. \n",
+    "\n",
+    "Following Anselin(1988), the test on the common factor hypothesis $H_0: \\rho \\beta^* + \\gamma = 0$\n",
+    "(with $\\beta^*$ as the vector of regression coefficients without the constant term) consists of three elements:\n",
+    "\n",
+    "- the constraint as a $h \\times 1$ vector $g = \\hat{\\rho} \\hat{\\beta}^* + \\hat{\\gamma}$ (with $h = k-1$)\n",
+    "- a $2h+1 \\times h$ matrix of partial derivatives:\n",
+    "\n",
+    "\\begin{equation*}\n",
+    "G = \\begin{bmatrix} \n",
+    "\\hat{\\rho} \\times I_h\\\\\n",
+    "I_h\\\\\n",
+    "\\hat{\\beta'}^*\n",
+    "\\end{bmatrix}\n",
+    "\\end{equation*}\n",
+    "- and the $2h+1 \\times 2h+1$ square asymptotic variance matrix $V$ from the estimated spatial Durbin model (**vm** in the regression object)\n",
+    "\n",
+    "Using the delta method, the common factor statistic then follows as:\n",
+    "\\begin{equation*}\n",
+    "CF = g'[G'VG]^{-1}g  \\sim \\chi^2(h).\n",
+    "\\end{equation*}\n",
+    "For our purposes, this suffices, although it should be noted that Juhl(2021) has pointed out potential problems due to the lack of\n",
+    "invariance of the Wald test to different reparameterizations of the null hypothesis."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "77471c34-f1a5-4cfe-9ece-f0ec8b5cc618",
+   "metadata": {},
+   "source": [
+    "A test on the common factor hypothesis is included in the spatial Durbin output when `spat_diag = True`, which is the default for this specification.\n",
+    "\n",
+    "In the example above, the value of the test statistic is 32.954, which strongly rejects the null. Some indication of the failure of the common factor hypothesis could also be gleaned from the lack of opposite signs of $\\beta$ and $\\gamma$, which is necessary for the constraint to hold with a positive $\\rho$."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9f5f5846-51fa-4ad4-985f-c11a68d2f380",
+   "metadata": {},
+   "source": [
+    "### Likelihood-Ratio Tests"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ab69fd57-726f-4f4d-8bd2-2273235feaa9",
+   "metadata": {},
+   "source": [
+    "A likelihood ratio test is $LR = 2.0 \\times (LogL_1 - LogL_0)$, where $LogL_1$ is the log-likelihood for the *unrestricted* model (i.e., with more non-zero parameters), and $LogL_0$ is the log-likelihood for the *restricted* model (i.e., where some parameters, like $\\rho$, are set to zero). For example, a likelihood ratio test on the coefficient $\\rho$ in the spatial lag model would use the log likelihood in the spatial lag model as $LogL_1$, and the log-likelihood from the classic regression as $LogL_0$. \n",
+    "\n",
+    "The $LR$ statistic is distributed as a Chi-square random variable with degrees of freedom equal to the number of restrictions, i.e., 1 for the spatial autoregressive coefficient, but more for the SLX and spatial Durbin models, depending on how many explanatory variables are included. The LR tests are an alternative to the Wald tests (asymptotic t-values) on the spatial coefficient and the LM tests for spatial effects considered earlier.\n",
+    "\n",
+    "A likelihood ratio test is implemented as `spreg.diagnostics.likratiotest`. Its two arguments are the regression object for the constrained model and the regression object for the unconstrained model. The result is a dictionary with the statistic (`likr`), the degrees of freedom (`df`) and the p-value (`p-value`)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fc1e3f8e-4901-4c8e-8cf9-5e41460d40fa",
+   "metadata": {},
+   "source": [
+    "Four different LR test consider the following constraints:\n",
+    "- Lag vs OLS, i.e., $\\rho = 0$ in the Lag model: arguments are **ols1** and **lag2**\n",
+    "- SDM vs OLS, i.e., both $\\rho = 0$ and $\\gamma = 0$ in the spatial Durbin model: argumentes are **ols1** and **spdur**\n",
+    "- SDM vs Lag, i.e., $\\gamma = 0$ in the spatial Durbin model: arguments are **lag2** and **spdur**\n",
+    "- SDM vs SLX, i.e., $\\rho = 0$ in the spatial Durbin model: arguments are **slx1** and **spdur**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4c3b9c76",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "LR_Lag = likratiotest(ols1,lag2)\n",
+    "LR_SDMO = likratiotest(ols1,spdur)\n",
+    "LR_SDML = likratiotest(lag2,spdur)\n",
+    "LR_SDMS = likratiotest(slx1,spdur)\n",
+    "\n",
+    "print(f\"LR statistic Lag-OLS: {LR_Lag[\"likr\"]:0.3f}, d.f. {LR_Lag[\"df\"]:2d}, p-value {LR_Lag[\"p-value\"]:0.4f}\")\n",
+    "print(f\"LR statistic SDM-OLS: {LR_SDMO[\"likr\"]:0.3f}, d.f. {LR_SDMO[\"df\"]:2d}, p-value {LR_SDMO[\"p-value\"]:0.4f}\")\n",
+    "print(f\"LR statistic SDM-Lag: {LR_SDML[\"likr\"]:0.3f}, d.f. {LR_SDML[\"df\"]:2d}, p-value {LR_SDML[\"p-value\"]:0.4f}\")\n",
+    "print(f\"LR statistic SDM-SLX: {LR_SDMS[\"likr\"]:0.3f}, d.f. {LR_SDMS[\"df\"]:2d}, p-value {LR_SDMS[\"p-value\"]:0.4f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ca6ed963-0f88-4354-8236-a94beba50e4a",
+   "metadata": {},
+   "source": [
+    "In the current example, all null hypotheses are strongly rejected. Based on this evidence alone, it would suggest that the most appropriate specification is the spatial Durbin model. However, conflicts with the signs and magnitudes of the coefficients make that model difficult to interpret. Most importantly, several parameters violate Tobler's law, one of the most important tenets of spatial analysis. While in and of itself this is not sufficient to dismiss the model specification, it does require careful consideration of the interpretation.\n",
+    "\n",
+    "The Likelihood Ratio, Wald (the square of the asymptotic t-ratio) and Lagrange Multiplier test statistics are considered to be *classic* tests. Asymptotically, they are equivalent, but in finite samples, they tend to follow the order LM < LR < W.\n",
+    "\n",
+    "For the lag model in this example, the LM-Lag test statistic was 109.463, the Wald test was 9.922^2 or 98.446, and the LR test (above) 92.446. Whereas the LR and Wald test follow the prescribed order, the LM-Lag test does not, which may point to potential remaining specification problems.\n",
+    "\n",
+    "As mentioned, the model can be refined by selectively setting `slx_vars`, but this is not pursued here."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3b086a22",
+   "metadata": {},
+   "source": [
+    "## Practice\n",
+    "\n",
+    "While the ML estimation paradigm is very powerful, it also is not robust to various forms of misspecification. This is difficult to consider when the results are viewed in isolation, but it is important to keep in mind. As practice, different model specifications could be considered, including adding additional explanatory variables, selectively removing some lag terms, and using different spatial weights. Make sure to carefully consider the interpretation of the estimated coefficients and associated direct and indirect effects."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -1,0 +1,26 @@
+﻿spreg.Probit
+============
+
+.. currentmodule:: spreg
+
+.. autoclass:: Probit
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Probit.__init__
+      ~Probit.gradient
+      ~Probit.hessian
+      ~Probit.ll
+      ~Probit.par_est
+   
+   
+
+   
+   
+   

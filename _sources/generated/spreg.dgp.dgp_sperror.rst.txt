@@ -1,0 +1,6 @@
+﻿spreg.dgp.dgp\_sperror
+======================
+
+.. currentmodule:: spreg.dgp
+
+.. autofunction:: dgp_sperror
