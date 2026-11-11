@@ -92,7 +92,6 @@ def out_part_top(strSummary, reg, m):
     else:
         _reg.z_stat = diagnostics.t_stat(_reg, z_stat=True)
         if _reg.__class__.__name__ not in ('NSLX','PSM','LagPSM') and not _reg.__class__.__name__.endswith('Probit'):
-            print(_reg.__class__.__name__)
             _reg.pr2 = diagnostics_tsls.pr2_aspatial(_reg)
             strSummary += "%-20s:%12.4f\n" % ("Pseudo R-squared", _reg.pr2)
         _reg.__summary["summary_zt"] = "z"

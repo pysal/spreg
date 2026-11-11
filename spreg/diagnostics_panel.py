@@ -274,16 +274,18 @@ def BSK_tests(reg, w, which="all", GM_BSK=False):
 
     if any(test in which for test in ["LMJ", "LM1", "LM2"]):
         if reg.__class__.__name__ != 'PooledOLS':
-            pooled_mod = PooledOLS(reg.y, reg.x)
+            pooled_mod = PooledOLS(reg.y, reg.x, w, spat_diag=False)
         else:
             pooled_mod = reg
 
+        # Pooled OLS residuals, shared by LM1 and LM2
+        u = pooled_mod.u
+        u_mat = u.reshape((T, N))
+        u_sq_sum = np.sum(u**2)
+
         if any(test in which for test in ["LMJ", "LM1"]):
             # G term (Random Effects) - Eq 2.11
-            u = pooled_mod.u 
-            u_mat = u.reshape((T, N))
             u_sum_sq = np.sum(np.sum(u_mat, axis=0)**2) 
-            u_sq_sum = np.sum(u**2)
             G = (u_sum_sq / u_sq_sum) - 1
 
             # LM1: Marginal RE (Eq 2.12)
@@ -327,17 +329,17 @@ def BSK_tests(reg, w, which="all", GM_BSK=False):
             # Joint Test (Eq 2.19)
             if LM1 > 0 and LM2 > 0:
                 LM_J = LM1**2 + LM2**2
-                prob_ch1 = 1 - stats.chi2.cdf(LM_J, df=1)
-                prob_ch2 = 1 - stats.chi2.cdf(LM_J, df=2)
-                pval_J = 0.5 * prob_ch1 + 0.25 * prob_ch2
             elif LM1 > 0 and LM2 <= 0:
                 LM_J = LM1**2
-                pval_J = 0.5 * (1 - stats.chi2.cdf(LM_J, df=1)) 
             elif LM1 <= 0 and LM2 > 0:
                 LM_J = LM2**2
-                pval_J = 0.5 * (1 - stats.chi2.cdf(LM_J, df=1))
             else:
                 LM_J = 0
+            # Under H0, LM_J follows (1/4)chi2(0) + (1/2)chi2(1) + (1/4)chi2(2)
+            # whatever the signs of LM1 and LM2 (Eq 2.20)
+            if LM_J > 0:
+                pval_J = 0.5 * stats.chi2.sf(LM_J, 1) + 0.25 * stats.chi2.sf(LM_J, 2)
+            else:
                 pval_J = 1.0
 
             test_names.append("LM Joint (LMJ)")
