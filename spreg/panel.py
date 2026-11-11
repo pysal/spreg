@@ -2801,23 +2801,23 @@ class BaseML_LagRE(RegressionPropsY, RegressionPropsVM):
             (
                 xTwpy / self.sig2,
                 self.t * (tr2 + tr3) + wpyTwpy / self.sig2,
-                -tr1 / self.sig2,
+                -2 * tr1 / self.phi,
                 self.t * tr1 / self.sig2,
             )
         )
         v3 = np.vstack(
             (
                 np.zeros((self.k, 1)),
-                -tr1 / self.sig2,
-                N * (1 + 1 / self.phi ** 2),
-                -N / self.sig2,
+                -2 * tr1 / self.phi,
+                2 * N / self.phi**2,
+                -N / (self.phi * self.sig2),
             )
         )
         v4 = np.vstack(
             (
                 np.zeros((self.k, 1)),
                 self.t * tr1 / self.sig2,
-                -N / self.sig2 ** 2,
+                -N / (self.phi * self.sig2),
                 NT / (2.0 * self.sig2 ** 2),
             )
         )
